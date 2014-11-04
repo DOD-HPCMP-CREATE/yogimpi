@@ -1,4 +1,9 @@
 #include <yogimpi.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h> /* for hostname */
 
 int YogiMPI_Send(void* buf, int count, YogiMPI_Datatype datatype, int dest,
                  int tag, YogiMPI_Comm comm) {
