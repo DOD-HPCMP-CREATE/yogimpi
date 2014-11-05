@@ -4,7 +4,6 @@
  *    */
 
 /* Additions for MPI-2 by Stephen Adamec, CREATE Air Vehicles 2014 */
-#include <mpi.h>
 
 #ifndef YOGIMPI_H 
 #define YOGIMPI_H 
@@ -155,7 +154,7 @@ struct YogiMPI_Status
   int YogiMPI_SOURCE;
   int YogiMPI_TAG;
   int YogiMPI_ERROR;
-  void * status;
+  void * mpi_status;
 };
 
 typedef struct YogiMPI_Status YogiMPI_Status;
@@ -270,8 +269,6 @@ double YogiMPI_Wtime();
 int YogiMPI_Init(int* argc, char ***argv);
 
 int YogiMPI_Finalize();
-
-/* New MPI 2.0 functions */
 
 int YogiMPI_Type_create_indexed_block(int count, int blocklength, 
                                       int array_of_displacements[],

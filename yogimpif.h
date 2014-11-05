@@ -51,22 +51,22 @@
     integer, parameter :: YogiMPI_DOUBLE_PRECISION = 10
     integer, parameter :: YogiMPI_BYTE = 12
     integer, parameter :: YogiMPI_PACKED = 13
-    integer, parameter :: YogiMPI_COMPLEX = 20
-    integer, parameter :: YogiMPI_DOUBLE_COMPLEX = 21
-    integer, parameter :: YogiMPI_LOGICAL = 22
+    integer, parameter :: YogiMPI_COMPLEX = 23
+    integer, parameter :: YogiMPI_DOUBLE_COMPLEX = 24
+    integer, parameter :: YogiMPI_LOGICAL = 25
 
 ! datatypes for reduction functions (Fortran)
-    integer, parameter :: YogiMPI_2REAL = 23 
-    integer, parameter :: YogiMPI_2DOUBLE_PRECISION = 24 
-    integer, parameter :: YogiMPI_2INTEGER = 25 
+    integer, parameter :: YogiMPI_2REAL = 26 
+    integer, parameter :: YogiMPI_2DOUBLE_PRECISION = 27 
+    integer, parameter :: YogiMPI_2INTEGER = 28
 
 ! optional datatypes (Fortran)
-    integer, parameter :: YogiMPI_INTEGER1 = 26
-    integer, parameter :: YogiMPI_INTEGER2 = 27 
-    integer, parameter :: YogiMPI_INTEGER4 = 28 
-    integer, parameter :: YogiMPI_INTEGER8 = 29
-    integer, parameter :: YogiMPI_REAL4 = 30 
-    integer, parameter :: YogiMPI_REAL8 = 31 
+    integer, parameter :: YogiMPI_INTEGER1 = 29
+    integer, parameter :: YogiMPI_INTEGER2 = 30 
+    integer, parameter :: YogiMPI_INTEGER4 = 31 
+    integer, parameter :: YogiMPI_INTEGER8 = 32
+    integer, parameter :: YogiMPI_REAL4 = 33
+    integer, parameter :: YogiMPI_REAL8 = 34 
 
 ! reserved communicators (C and Fortran)
     integer, parameter :: YogiMPI_COMM_WORLD = 1
