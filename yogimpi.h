@@ -279,4 +279,22 @@ int YogiMPI_Type_create_indexed_block(int count, int blocklength,
 
 YogiMPI_Comm YogiMPI_Comm_f2c(YogiMPI_Fint comm);
 
+int YogiMPI_Recv_init(void *buf, int count, YogiMPI_Datatype datatype, 
+		              int source, int tag, YogiMPI_Comm comm, 
+					  YogiMPI_Request *request);
+
+int YogiMPI_Scan(const void *sendbuf, void *recvbuf, int count, 
+		         YogiMPI_Datatype datatype, YogiMPI_Op op, YogiMPI_Comm comm);
+
+int YogiMPI_Startall(int count, YogiMPI_Request *array_of_requests);
+
+int YogiMPI_Alltoall(const void *sendbuf, int sendcount, 
+		             YogiMPI_Datatype sendtype, void *recvbuf, int recvcount,
+					 YogiMPI_Datatype recvtype, YogiMPI_Comm comm);
+
+int YogiMPI_Alltoallv(const void *sendbuf, const int *sendcounts,
+                      const int *sdispls, YogiMPI_Datatype sendtype, 
+					  void *recvbuf, const int *recvcounts, const int *rdispls,
+					  YogiMPI_Datatype recvtype, YogiMPI_Comm comm);
+
 #endif /* YOGIMPI_H */
