@@ -169,6 +169,8 @@ typedef long YogiMPI_Aint;
 /* MPI 2 definition * - TODO ./configure to check */
 typedef int YogiMPI_Fint;
 
+static void * const YogiMPI_IN_PLACE = (void *)-1;
+
 /* Now prototype functions. */
 
 int YogiMPI_Send(void* buf, int count, YogiMPI_Datatype datatype, int dest,
