@@ -11,18 +11,18 @@
  * Don't declare these in the header since C MPI apps should not use them,
  * but YogiMPI must know about them internally to provide a translation array.
  */
-static const YogiMPI_Datatype YogiMPI_COMPLEX = 23
-static const YogiMPI_Datatype YogiMPI_DOUBLE_COMPLEX = 24
-static const YogiMPI_Datatype YogiMPI_LOGICAL = 25
-static const YogiMPI_Datatype YogiMPI_2REAL = 26
-static const YogiMPI_Datatype YogiMPI_2DOUBLE_PRECISION = 27 
-static const YogiMPI_Datatype YogiMPI_2INTEGER = 28
-static const YogiMPI_Datatype YogiMPI_INTEGER1 = 29
-static const YogiMPI_Datatype YogiMPI_INTEGER2 = 30 
-static const YogiMPI_Datatype YogiMPI_INTEGER4 = 31 
-static const YogiMPI_Datatype YogiMPI_INTEGER8 = 32
-static const YogiMPI_Datatype YogiMPI_REAL4 = 33
-static const YogiMPI_Datatype YogiMPI_REAL8 = 34
+static const YogiMPI_Datatype YogiMPI_COMPLEX = 23;
+static const YogiMPI_Datatype YogiMPI_DOUBLE_COMPLEX = 24;
+static const YogiMPI_Datatype YogiMPI_LOGICAL = 25;
+static const YogiMPI_Datatype YogiMPI_2REAL = 26;
+static const YogiMPI_Datatype YogiMPI_2DOUBLE_PRECISION = 27;
+static const YogiMPI_Datatype YogiMPI_2INTEGER = 28;
+static const YogiMPI_Datatype YogiMPI_INTEGER1 = 29;
+static const YogiMPI_Datatype YogiMPI_INTEGER2 = 30;
+static const YogiMPI_Datatype YogiMPI_INTEGER4 = 31;
+static const YogiMPI_Datatype YogiMPI_INTEGER8 = 32;
+static const YogiMPI_Datatype YogiMPI_REAL4 = 33;
+static const YogiMPI_Datatype YogiMPI_REAL8 = 34;
 
 /* Total number of non-volatile datatypes.  Accounts for Fortran ones, too. */
 static const int YogiMPI_DATATYPE_VOLATILE_OFFSET = 35;
@@ -30,7 +30,7 @@ static const int YogiMPI_DATATYPE_VOLATILE_OFFSET = 35;
 /* Total number of datatypes, volatile and non-volatile.
  * Set the initial number of datatypes to the total non-volatile amount. 
  */
-static int num_datatypes = YogiMPI_DATATYPE_VOLATILE_OFFSET;
+static int num_datatypes = 35; 
 
 /* Now have a pointer to a pool of MPI datatypes, handing references to
  * users without exposing the opaque MPI handle.
@@ -276,7 +276,7 @@ YogiMPI_Comm alloc_new_volatile_comm(MPI_Comm mpi_comm, YogiMPI_Group group,
         new_slot < num_comms; ++new_slot);
 
     /* if not sufficient slots, increase number of slots */
-    if ( new_slot == num_comms_ ) {
+    if (new_slot == num_comms) {
         int new_num_comms = num_comms * 2;
         int i;
 
@@ -960,7 +960,7 @@ int YogiMPI_Comm_free(YogiMPI_Comm *comm) {
     MPI_Comm* mpi_comm = &comm_pool[*comm];
     MPI_Comm_free(mpi_comm);
 
-    YogiMPI_Group group = comm_groups[*comm];
+    YogiMPI_Group group = comm_groups_map[*comm];
     assert(group_ref_counts[group] > 0);
     --group_ref_counts[group];
     if (group_ref_counts[group] == 0) group_pool[group] = MPI_GROUP_NULL;

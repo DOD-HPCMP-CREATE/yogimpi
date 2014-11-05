@@ -38,7 +38,7 @@ static const int YogiMPI_ERR_UNKNOWN = 14;
 static const int YogiMPI_ERR_TRUNCATE = 15; 
 static const int YogiMPI_ERR_OTHER = 16; 
 static const int YogiMPI_ERR_INTERN = 17; 
-static const int YogiMPI_PENDING = 18; 
+static const int YogiMPI_ERR_PENDING = 18; 
 static const int YogiMPI_ERR_IN_STATUS = 19; 
 static const int YogiMPI_ERR_LASTCODE = 20; 
 
@@ -103,9 +103,9 @@ static const YogiMPI_Datatype YogiMPI_SHORT_INT = 18;
 static const YogiMPI_Datatype YogiMPI_LONG_DOUBLE_INT = 19;
 
 /* Optional datatypes (C) */ 
-static const YogiMPI_Datatype MPI_LONG_LONG_INT = 20;
-static const YogiMPI_Datatype MPI_INT32_T = 21;
-static const YogiMPI_Datatype MPI_INT64_T = 22;
+static const YogiMPI_Datatype YogiMPI_LONG_LONG_INT = 20;
+static const YogiMPI_Datatype YogiMPI_INT32_T = 21;
+static const YogiMPI_Datatype YogiMPI_INT64_T = 22;
 
 /* reserved communicators (C and Fortran) */
 static const YogiMPI_Comm YogiMPI_COMM_WORLD = 1;
