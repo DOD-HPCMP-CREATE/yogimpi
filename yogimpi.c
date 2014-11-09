@@ -631,14 +631,14 @@ int YogiMPI_Wait(YogiMPI_Request* request, YogiMPI_Status* status) {
     MPI_Request* mpi_request = request_to_mpi(*request);
     int mpi_err;
     if (YogiMPI_STATUS_IGNORE != status) {
-        MPI_Status mpi_status;
-        mpi_err = MPI_Wait(mpi_request, &mpi_status);
-        status_to_yogi(&mpi_status, status);
+        MPI_Status* mpi_status;
+        mpi_status = (MPI_Status*)malloc(sizeof(MPI_Status));
+        mpi_err = MPI_Wait(mpi_request, mpi_status);
+        status_to_yogi(mpi_status, status);
     }
     else {
         mpi_err = MPI_Wait(mpi_request, MPI_STATUS_IGNORE);
     }
-
     if (MPI_REQUEST_NULL == *mpi_request) { 
         assert(MPI_REQUEST_NULL == request_pool[*request]);
         *request = YogiMPI_REQUEST_NULL;

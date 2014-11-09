@@ -53,8 +53,8 @@ and I'm having a good time relaxing.\n");
                &request);
     printf("hello there user, I've just started this receive\n\
 on %s, and I'm having a good time relaxing.\n", my_cpu_name);
-    YogiMPI_Wait (&request, &status);
-    YogiMPI_Get_count (&status, YogiMPI_CHAR, &count);
+    YogiMPI_Wait(&request, &status);
+    YogiMPI_Get_count(&status, YogiMPI_CHAR, &count);
     printf("hello there user, it looks like %d characters \
 have just arrived:\n", count );
     printf("%s", recv_buffer);
