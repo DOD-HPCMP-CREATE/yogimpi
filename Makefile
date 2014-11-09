@@ -4,9 +4,11 @@ LDFLAGS=-shared
 
 .PHONY: default clean test
 
-default: yogimpi.c yogimpi.h
+default: yogimpi.c yogimpi_f90bridge.c yogimpi.h
 	$(CC) $(CFLAGS) -c yogimpi.c
-	$(CC) $(CFLAGS) $(LDFLAGS) yogimpi.o -o libyogimpi.so
+	$(CC) $(CFLAGS) -c yogimpi_f90bridge.c
+	$(CC) $(CFLAGS) $(LDFLAGS) yogimpi.o yogimpi_f90bridge.o \
+              -o libyogimpi.so
 
 clean:
 	$(RM) *.o *.so nonblock sendrecv testMatt
