@@ -54,13 +54,13 @@ void YOGIMPI_SSEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
       *ierror = YogiMPI_Ssend(buffer, *count, *datatype, *dest, *tag, *comm);
 }
 
-void YogiMPI_ISEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
+void YOGIMPI_ISEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
 		           int *comm, int *request, int *ierror) {
     *ierror = YogiMPI_Isend(buffer, *count, *datatype, *dest, *tag, *comm,
 		                    request);
 }
 
-void YogiMPI_IRECV(void *buffer, int *count, int *datatype, int *source, 
+void YOGIMPI_IRECV(void *buffer, int *count, int *datatype, int *source, 
 		           int *tag, int *comm, int *request, int *ierror) {
     *ierror = YogiMPI_Irecv(buffer, *count, *datatype, *source, *tag, *comm,
 		                    request);
