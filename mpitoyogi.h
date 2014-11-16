@@ -109,6 +109,7 @@
 #define MPI_REQUEST_NULL YogiMPI_REQUEST_NULL
 #define MPI_OP_NULL YogiMPI_OP_NULL
 #define MPI_INFO_NULL YogiMPI_INFO_NULL
+#define MPI_FILE_NULL YogiMPI_FILE_NULL
 
 #define MPI_GROUP_EMPTY YogiMPI_GROUP_EMPTY
 
@@ -116,9 +117,9 @@
 #define MPI_STATUS_IGNORE YogiMPI_STATUS_IGNORE
 #define MPI_STATUSES_IGNORE YogiMPI_STATUSES_IGNORE
 
-#define MPI_AYogiMPI_Aint
+#define MPI_Aint YogiMPI_Aint
 
-#define MPI_FYogiMPI_Fint
+#define MPI_Fint YogiMPI_Fint
 
 #define MPI_IN_PLACE YogiMPI_IN_PLACE
 
@@ -163,7 +164,14 @@
 #define MPI_Scan YogiMPI_Scan
 #define MPI_Startall YogiMPI_Startall
 #define MPI_Alltoall YogiMPI_Alltoall
-
 #define MPI_Alltoallv YogiMPI_Alltoallv
+#define MPI_File_close YogiMPI_File_close
+#define MPI_File_get_info YogiMPI_File_get_info
+#define MPI_File_open YogiMPI_File_open
+#define MPI_File_set_view YogiMPI_File_set_view
+#define MPI_File_write_all YogiMPI_File_write_all
+#define MPI_File_write_at YogiMPI_File_write_at
+#define MPI_Info_create YogiMPI_Info_create
+#define MPI_Info_set YogiMPI_Info_set
 
 #endif /* MPITOYOGI_H */

@@ -105,6 +105,7 @@
     integer, parameter :: YogiMPI_REQUEST_NULL = 0
     integer, parameter :: YogiMPI_DATATYPE_NULL = 0
     integer, parameter :: YogiMPI_INFO_NULL = 0
+	integer, parameter :: YogiMPI_FILE_NULL = 0
 
 ! Empty group
     integer, parameter :: YogiMPI_GROUP_EMPTY = 3

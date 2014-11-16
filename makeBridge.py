@@ -1,16 +1,19 @@
-file1 = open('mpitoyogi.h', 'r')
-file2 = open('mpitoyogi.h.new', 'w')
-for line in file1:
-    mpiCall = line.strip()
-    if not(mpiCall.startswith('#define') or
-           mpiCall.startswith('#ifndef')):
-        if 'MPI_' in mpiCall:
-            origLine = mpiCall.replace('Yogi', '')
-            file2.write('#define ' + origLine + " " + mpiCall + "\n")
-        else:
-            file2.write(line)
-    else:
-        file2.write(line)
-        
-file1.close()
-file2.close()
+# Simple Fortran preprocessor for YogiMPI
+import sys
+import os
+
+if len(sys.argv) != 3:
+    print("Usage: yogifpp <inputFile> <outputFile>") 
+
+inputFile = sys.argv[1]
+outputFile = sys.argv[2]
+
+if os.path.exists(sys.argv[1]):
+    raise ValueError("Cannot locate input file.")
+
+if os.path.exists(sys.argv[2]):
+    raise ValueError("Output file already exists!")
+
+definitionFile = 'mpiftoyogi.h'
+defHandle = open(definitionFile, 'r')
+
