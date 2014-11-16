@@ -1,15 +1,15 @@
-#include "yogimpi.h"
+#include "mpitoyogi.h"
 #include <stdio.h>
  
 int main(int argc, char *argv[])
 {
     int rank, size, i;
     int buffer[10];
-    YogiMPI_Status status;
+    MPI_Status status;
  
-    YogiMPI_Init(&argc, &argv);
-    YogiMPI_Comm_size(YogiMPI_COMM_WORLD, &size);
-    YogiMPI_Comm_rank(YogiMPI_COMM_WORLD, &rank);
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (size < 2)
     {
         printf("Please run with two processes.\n");fflush(stdout);
@@ -20,13 +20,13 @@ int main(int argc, char *argv[])
     {
         for (i=0; i<10; i++)
             buffer[i] = i;
-        YogiMPI_Send(buffer, 10, YogiMPI_INT, 1, 123, YogiMPI_COMM_WORLD);
+        MPI_Send(buffer, 10, MPI_INT, 1, 123, MPI_COMM_WORLD);
     }
     if (rank == 1)
     {
         for (i=0; i<10; i++)
             buffer[i] = -1;
-        YogiMPI_Recv(buffer, 10, YogiMPI_INT, 0, 123, YogiMPI_COMM_WORLD, &status);
+        MPI_Recv(buffer, 10, MPI_INT, 0, 123, MPI_COMM_WORLD, &status);
         for (i=0; i<10; i++)
         {
             if (buffer[i] != i)
@@ -34,6 +34,6 @@ int main(int argc, char *argv[])
         }
         fflush(stdout);
     }
-    YogiMPI_Finalize();
+    MPI_Finalize();
     return 0;
 }

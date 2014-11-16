@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include "yogimpi.h"
+#include "mpitoyogi.h"
 
 int main() {
-    YogiMPI_Init(NULL, NULL);
+    MPI_Init(NULL, NULL);
     int rank = -1;
-    YogiMPI_Comm_rank(YogiMPI_COMM_WORLD, &rank);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     printf("Hello, world, I am on rank %d\n", rank);
-    YogiMPI_Finalize();
+    MPI_Finalize();
     return 0;
 }
