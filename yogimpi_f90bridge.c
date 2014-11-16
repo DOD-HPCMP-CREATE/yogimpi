@@ -11,7 +11,14 @@
 #define YOGIMPI_GET_COUNT yogimpi_get_count_
 #define YOGIMPI_SSEND yogimpi_ssend_
 #define YOGIMPI_ISEND yogimpi_isend_
+#define YOGIMPI_ISSEND yogimpi_issend_
 #define YOGIMPI_IRECV yogimpi_irecv_
+#define YOGIMPI_TYPE_VECTOR yogimpi_type_vector_
+#define YOGIMPI_TYPE_CONTIGUOUS yogimpi_type_contiguous_
+#define YOGIMPI_TYPE_INDEXED yogimpi_type_indexed_
+#define YOGIMPI_TYPE_SIZE yogimpi_type_size_
+#define YOGIMPI_TYPE_COMMIT yogimpi_type_commit_
+#define YOGIMPI_TYPE_FREE yogimpi_type_free_
 #define YOGIMPI_WAIT yogimpi_wait_
 #define YOGIMPI_REQUEST_FREE yogimpi_request_free_
 #define YOGIMPI_BARRIER yogimpi_barrier_
@@ -28,6 +35,19 @@
 #define YOGIMPI_WTIME yogimpi_wtime_
 #define YOGIMPI_INIT yogimpi_init_
 #define YOGIMPI_FINALIZE yogimpi_finalize_
+#define YOGIMPI_TYPE_CREATE_INDEXED_BLOCK yogimpi_type_create_indexed_block_
+#define YOGIMPI_ALLTOALLV yogimpi_alltoallv_
+#define YOGIMPI_ALLTOALL yogimpi_alltoall_
+#define YOGIMPI_STARTALL yogimpi_startall_
+#define YOGIMPI_SCAN yogimpi_scan_
+#define YOGIMPI_FILE_CLOSE yogimpi_file_close_
+#define YOGIMPI_FILE_GET_INFO yogimpi_file_get_info_
+#define YOGIMPI_FILE_OPEN yogimpi_file_open_
+#define YOGIMPI_FILE_SET_VIEW yogimpi_file_set_view_
+#define YOGIMPI_FILE_WRITE_ALL yogimpi_file_write_all_
+#define YOGIMPI_FILE_WRITE_AT yogimpi_file_write_at_
+#define YOGIMPI_INFO_CREATE yogimpi_info_create_
+#define YOGIMPI_INFO_SET yogimpi_info_set_
 
 static YogiMPI_Status* status_to_c(int *status) {
 	return (YogiMPI_Status *)status;
@@ -58,6 +78,12 @@ void YOGIMPI_ISEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
 		           int *comm, int *request, int *ierror) {
     *ierror = YogiMPI_Isend(buffer, *count, *datatype, *dest, *tag, *comm,
 		                    request);
+}
+
+void YOGIMPI_ISSEND(void* buf, int *count, int *datatype, int *dest, 
+		            int *tag, int *comm,  int *request, int *ierror) {
+    *ierror = YogiMPI_Issend(buf, *count, *datatype, *dest, *tag, *comm,
+		                     request);
 }
 
 void YOGIMPI_IRECV(void *buffer, int *count, int *datatype, int *source, 
@@ -141,49 +167,116 @@ void YOGIMPI_FINALIZE(int *ierror)
   *ierror = YogiMPI_Finalize();
 }
 
-int YogiMPI_Type_create_indexed_block(int count, int blocklength, 
-                                      int array_of_displacements[],
-                                      YogiMPI_Datatype oldtype,
-                                      YogiMPI_Datatype *newtype);
+void YOGIMPI_TYPE_INDEXED(int *count, int *array_of_blocklengths, 
+                          int *array_of_displacements, int *oldtype,
+		                  int *newtype, int *ierror) {
+		
+	*ierror = YogiMPI_Type_indexed(*count, array_of_blocklengths, 
+		                           array_of_displacements, *oldtype, newtype);						 
+}
 
-YogiMPI_Comm YogiMPI_Comm_f2c(YogiMPI_Fint comm);
+void YOGIMPI_TYPE_VECTOR(int *count, int *blocklength, int *stride, 
+                         int *oldtype, int *newtype, int *ierror) {
+		
+	*ierror = YogiMPI_Type_vector(*count, *blocklength, *stride, *oldtype,
+			                      newtype);
+}
 
-int YogiMPI_Recv_init(void *buf, int count, YogiMPI_Datatype datatype, 
-		              int source, int tag, YogiMPI_Comm comm, 
-					  YogiMPI_Request *request);
+void YOGIMPI_TYPE_CONTIGUOUS(int *count, int *oldtype, int *newtype, 
+		                     int *ierror) {
+	*ierror = YogiMPI_Type_contiguous(*count, *oldtype, newtype);				 
+}
 
-int YogiMPI_Scan(const void *sendbuf, void *recvbuf, int count, 
-		         YogiMPI_Datatype datatype, YogiMPI_Op op, YogiMPI_Comm comm);
+void YOGIMPI_TYPE_COMMIT(YogiMPI_Datatype *datatype, int *ierror) {
+	*ierror = YogiMPI_Type_commit(datatype);
+}
 
-int YogiMPI_Startall(int count, YogiMPI_Request *array_of_requests);
+void YOGIMPI_TYPE_FREE(int *datatype, int *ierror) {
+	*ierror = YogiMPI_Type_free(datatype);
+}
 
-int YogiMPI_Alltoall(const void *sendbuf, int sendcount, 
-		             YogiMPI_Datatype sendtype, void *recvbuf, int recvcount,
-					 YogiMPI_Datatype recvtype, YogiMPI_Comm comm);
+void YOGIMPI_TYPE_SIZE(int *datatype, int *size, int *ierror) {
+	*ierror = YogiMPI_Type_size(*datatype, size);
+}
 
-int YogiMPI_Alltoallv(const void *sendbuf, const int *sendcounts,
-                      const int *sdispls, YogiMPI_Datatype sendtype, 
-					  void *recvbuf, const int *recvcounts, const int *rdispls,
-					  YogiMPI_Datatype recvtype, YogiMPI_Comm comm);
+void YOGIMPI_TYPE_CREATE_INDEXED_BLOCK(int *count, int *blocklength, 
+                                       int *array_of_displacements,
+                                       int *oldtype, int *newtype,
+									   int *ierror) {
+    *ierror = YogiMPI_Type_create_indexed_block(*count, *blocklength, 
+                                                array_of_displacements,
+                                                *oldtype, newtype);
+}
 
-int YogiMPI_File_close(YogiMPI_File *fh);
+void YOGIMPI_RECV_INIT(void *buf, int *count, int *datatype, int *source, 
+		               int *tag, int *comm, int *request, int *ierror) {
+    *ierror = YogiMPI_Recv_init(buf, *count, *datatype, *source, *tag, *comm,
+			                     request);
+}
 
-int YogiMPI_File_get_info(YogiMPI_File fh, YogiMPI_Info *info_used);
+void YOGIMPI_SCAN(void *sendbuf, void *recvbuf, int *count, int *datatype,
+		          int *op, int *comm, int *ierror) {
+    *ierror = YogiMPI_Scan(sendbuf, recvbuf, *count, *datatype, *op, *comm);
+}
 
-int YogiMPI_File_open(YogiMPI_Comm comm, char *filename, int amode, 
-		              YogiMPI_Info info, YogiMPI_File *fh);
+void YOGIMPI_STARTALL(int *count, int *array_of_requests, int *ierror) {
+    *ierror = YogiMPI_Startall(*count, array_of_requests);
+}
 
-int YogiMPI_File_set_view(YogiMPI_File fh, YogiMPI_Offset disp, 
-		                  YogiMPI_Datatype etype, YogiMPI_Datatype filetype,
-                          const char *datarep, YogiMPI_Info info);
+void YOGIMPI_ALLTOALL(void *sendbuf, int *sendcount, int *sendtype, 
+		              void *recvbuf, int *recvcount, int *recvtype, int *comm,
+					  int *ierror) {
+	*ierror = YogiMPI_Alltoall(sendbuf, *sendcount, *sendtype, recvbuf, 
+			                   *recvcount, *recvtype, *comm);
+}
 
-int YogiMPI_File_write_all(YogiMPI_File fh, const void *buf, int count, 
-		                   YogiMPI_Datatype datatype, YogiMPI_Status *status);
+void YOGIMPI_ALLTOALLV(void *sendbuf, int *sendcounts, int *sdispls, 
+		               int *sendtype, void *recvbuf, int *recvcounts,
+					   int *rdispls, int *recvtype, int *comm, int *ierror) {
+    *ierror = YogiMPI_Alltoallv(sendbuf, sendcounts, sdispls, *sendtype, 
+						        recvbuf, recvcounts, rdispls, *recvtype, *comm);
+}
 
-int YogiMPI_File_write_at(YogiMPI_File fh, YogiMPI_Offset offset, 
-		                  const void *buf, int count, YogiMPI_Datatype datatype, 
-					      YogiMPI_Status *status);
+void YOGIMPI_FILE_CLOSE(int *fh, int *ierror) {
+	*ierror = YogiMPI_File_close(fh);
+}
 
-int YogiMPI_Info_create(YogiMPI_Info *info);
+void YOGIMPI_FILE_GET_INFO(int *fh, int *info_used, int *ierror) {
+	*ierror = YogiMPI_File_get_info(*fh, info_used);
+}
 
-int YogiMPI_Info_set(YogiMPI_Info info, char *key, char *value);
+void YOGIMPI_FILE_OPEN(int *comm, char *filename, int *amode, int *info, 
+		               int *fh, int *ierror) {
+	*ierror = YogiMPI_File_open(*comm, filename, *amode, *info, fh);
+}
+
+void YOGIMPI_FILE_SET_VIEW(int *fh, long long int *disp, int *etype, 
+		                   int *filetype, char *datarep, int *info,
+						   int *ierror) { 
+    *ierror = YogiMPI_File_set_view(*fh, *disp, *etype, *filetype, datarep,
+    		                        *info);
+}
+
+/*
+void YOGIMPI_FILE_WRITE_ALL(int *fh, void *buf, int *count, int *datatype, 
+		                    int *status, int *ierror) {
+	*ierror = YogiMPI_File_write_all(*fh, buf, *count, *datatype, status);
+}
+*/
+
+/*
+void YOGIMPI_FILE_WRITE_AT(int *fh, long long int *offset, void *buf, 
+		                   int *count, int *datatype, int *status,
+						   int *ierror) {
+	*ierror = YogiMPI_File_write_at(*fh, *offset, buf, *count, *datatype, 
+						            status);
+}
+*/
+
+void YOGIMPI_INFO_CREATE(int *info, int *ierror) {
+	*ierror = YogiMPI_Info_create(info);
+}
+
+void YOGIMPI_INFO_SET(int *info, char *key, char *value, int *ierror) {
+    *ierror = YogiMPI_Info_set(*info, key, value);
+}

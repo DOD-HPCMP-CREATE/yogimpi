@@ -34,9 +34,7 @@
 
 
 ! status size and reserved index values (Fortran)
-!   Note that the following should always be true: 
-!   sizeof(YogiMPI_Status) == YogiMPI_STATUS_SIZE * sizeof(int)
-    integer, parameter :: YogiMPI_STATUS_SIZE = 6
+    integer, parameter :: YogiMPI_STATUS_SIZE = 4
     integer, parameter :: YogiMPI_SOURCE = 1 
     integer, parameter :: YogiMPI_TAG = 2 
     integer, parameter :: YogiMPI_ERROR = 3 
