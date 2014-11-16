@@ -144,6 +144,7 @@ static const YogiMPI_Datatype YogiMPI_DATATYPE_NULL = 0;
 static const YogiMPI_Request YogiMPI_REQUEST_NULL = 0;
 static const YogiMPI_Op YogiMPI_OP_NULL = 0;
 static const YogiMPI_Info YogiMPI_INFO_NULL = 0;
+static const YogiMPI_File YogiMPI_FILE_NULL = 0;
 
 /* Empty group */
 static const YogiMPI_Group YogiMPI_GROUP_EMPTY = 1;
@@ -165,6 +166,11 @@ static YogiMPI_Status * const YogiMPI_STATUSES_IGNORE = 0;
  * Currently aligned with MPICH2 and OpenMPI - TODO ./configure to check 
  */
 typedef long YogiMPI_Aint;
+
+/* MPI_Offset is implementation dependent.  Go ahead and pick a large type
+ * for it locally and then cast to the actual type within the function.
+ */
+typedef long long YogiMPI_Offset;
 
 /* MPI 2 definition * - TODO ./configure to check */
 typedef int YogiMPI_Fint;
@@ -296,5 +302,27 @@ int YogiMPI_Alltoallv(const void *sendbuf, const int *sendcounts,
                       const int *sdispls, YogiMPI_Datatype sendtype, 
 					  void *recvbuf, const int *recvcounts, const int *rdispls,
 					  YogiMPI_Datatype recvtype, YogiMPI_Comm comm);
+
+int YogiMPI_File_close(YogiMPI_File *fh);
+
+int YogiMPI_File_get_info(YogiMPI_File fh, YogiMPI_Info *info_used);
+
+int YogiMPI_File_open(YogiMPI_Comm comm, char *filename, int amode, 
+		              YogiMPI_Info info, YogiMPI_File *fh);
+
+int YogiMPI_File_set_view(YogiMPI_File fh, YogiMPI_Offset disp, 
+		                  YogiMPI_Datatype etype, YogiMPI_Datatype filetype,
+                          const char *datarep, YogiMPI_Info info);
+
+int YogiMPI_File_write_all(YogiMPI_File fh, const void *buf, int count, 
+		                   YogiMPI_Datatype datatype, YogiMPI_Status *status);
+
+int YogiMPI_File_write_at(YogiMPI_File fh, YogiMPI_Offset offset, 
+		                  const void *buf, int count, YogiMPI_Datatype datatype, 
+					      YogiMPI_Status *status);
+
+int YogiMPI_Info_create(YogiMPI_Info *info);
+
+int YogiMPI_Info_set(YogiMPI_Info info, char *key, char *value);
 
 #endif /* YOGIMPI_H */

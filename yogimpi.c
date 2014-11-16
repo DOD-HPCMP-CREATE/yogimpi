@@ -124,6 +124,20 @@ static MPI_Op *op_pool = 0;
    volatile */
 static const YogiMPI_Op YogiMPI_OP_VOLATILE_OFFSET = 13;
 
+/* Do the same thing for MPI_Info and MPI_File pools. */
+static int num_files = 10;
+static int num_infos = 10;
+/* Pointer to pool of MPI_File objects */
+static MPI_File *file_pool = 0;
+/* Pointer to pool of MPI_Info objects */
+static MPI_Info *info_pool = 0;
+/* From this offset onward up to num_files the File objects in file_pool are
+   volatile */
+static const YogiMPI_File YogiMPI_FILE_VOLATILE_OFFSET = 1;
+/* From this offset onward up to num_infos the Info objects in info_pool are
+   volatile */
+static const YogiMPI_Info YogiMPI_INFO_VOLATILE_OFFSET = 1;
+
 /*
  * conversion functions YogiMPI <-> MPI
  */
@@ -169,6 +183,18 @@ MPI_Request* request_to_mpi(YogiMPI_Request request)
 MPI_Op op_to_mpi(YogiMPI_Op op)
 { 
   return op_pool[op]; 
+}
+
+/* Converts a YogiMPI_File to MPI_File */
+MPI_File file_to_mpi(YogiMPI_File file)
+{ 
+  return file_pool[file]; 
+}
+
+/* Converts a YogiMPI_Info to MPI_Info */
+MPI_Info info_to_mpi(YogiMPI_Info info)
+{ 
+  return info_pool[info]; 
 }
 
 /* Convert MPI comparison constants to YogiMPI comparison constants */
@@ -362,6 +388,69 @@ YogiMPI_Comm alloc_new_comm_and_group(MPI_Comm mpi_comm, MPI_Group mpi_group) {
     return new_comm;
 }
 
+YogiMPI_File alloc_new_file(MPI_File mpi_file)
+{
+    /* Find a slot, start from 1 because 0 == YogiMPI_FILE_NULL */
+    YogiMPI_File file = 1; 
+    for(; file < num_files && file_pool[file] != MPI_FILE_NULL; ++file);
+
+    /* if not sufficient slots, increase number of slots */
+    if (file == num_files) {
+        int new_num_files = num_files * 2;
+
+        /* realloc */
+        MPI_File* new_files = (MPI_File*)malloc(new_num_files*sizeof(MPI_File));
+        memcpy(new_files,file_pool,num_files*sizeof(MPI_File));
+        free(file_pool);
+
+        int i;
+        for(i = num_files; i < new_num_files; ++i) {
+        	new_files[i] = MPI_FILE_NULL;
+        }
+
+        file_pool = new_files;
+        num_files = new_num_files;
+    }
+
+    assert(file < num_files);
+    assert(file_pool[file] == MPI_FILE_NULL);
+    file_pool[file] = mpi_file;
+
+    return file;
+}
+
+YogiMPI_Info alloc_new_info(MPI_Info mpi_info)
+{
+    /* Find a slot, start from 1 because 0 == YogiMPI_INFO_NULL */
+    YogiMPI_Info info = 1; 
+    for(; info < num_infos && info_pool[info] != MPI_INFO_NULL; ++info);
+
+    /* if not sufficient slots, increase number of slots */
+    if (info == num_infos) {
+        int new_num_infos = num_infos * 2;
+
+        /* realloc */
+        MPI_Info* new_infos = (MPI_Info*)malloc(new_num_infos*sizeof(MPI_Info));
+        memcpy(new_infos,info_pool,num_infos*sizeof(MPI_Info));
+        free(info_pool);
+
+        int i;
+        for(i = num_infos; i < new_num_infos; ++i) {
+        	new_infos[i] = MPI_INFO_NULL;
+        }
+
+        info_pool = new_infos;
+        num_infos = new_num_infos;
+    }
+
+    assert(info < num_infos);
+    assert(info_pool[info] == MPI_INFO_NULL);
+    info_pool[info] = mpi_info;
+
+    return info;
+}
+
+
 static void bind_mpi_err_constants() {
 
     mpi_error_codes[YogiMPI_SUCCESS]         = MPI_SUCCESS;
@@ -490,6 +579,18 @@ static void initialize_request_pool() {
     for(i = 0; i < num_requests; ++i) request_pool[i] = MPI_REQUEST_NULL;	
 }
 
+static void initialize_file_pool() {
+	int i;
+    file_pool = (MPI_File *)malloc(num_files*sizeof(MPI_File));
+    for(i = 0; i < num_files; ++i) file_pool[i] = MPI_FILE_NULL;	
+}
+
+static void initialize_info_pool() {
+	int i;
+    info_pool = (MPI_Info *)malloc(num_infos*sizeof(MPI_Info));
+    for(i = 0; i < num_infos; ++i) info_pool[i] = MPI_INFO_NULL;	
+}
+
 static void initialize_op_pool() {
 	int i;
     assert(num_ops > YogiMPI_OP_VOLATILE_OFFSET);
@@ -526,7 +627,9 @@ int YogiMPI_Init(int* argc, char ***argv)
     initialize_comm_pool();
     initialize_request_pool();
     initialize_op_pool();
-
+    initialize_info_pool();
+    initialize_file_pool();
+    
     /* Verify MPI_Status definition is the size expected by YogiMPI.  If not,
      * a lot of code will fail to work as expected.
      */
@@ -1013,6 +1116,14 @@ int YogiMPI_Finalize() {
         free(group_pool);
         group_pool = 0;
     }
+    if (info_pool) {
+        free(info_pool);
+        info_pool = 0;
+    }
+    if (file_pool) {
+        free(file_pool);
+        file_pool = 0;
+    }
     int mpi_err = MPI_Finalize();
     return error_to_yogi(mpi_err);
 }
@@ -1116,4 +1227,106 @@ int YogiMPI_Alltoallv(const void *sendbuf, const int *sendcounts,
     
     return error_to_yogi(mpi_error);	
 
+}
+
+int YogiMPI_File_open(YogiMPI_Comm comm, char *filename, int amode, 
+		              YogiMPI_Info info, YogiMPI_File *fh) {
+
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    MPI_Info mpi_info = info_to_mpi(info);
+    MPI_File mpi_file;
+    int mpi_error = MPI_File_open(mpi_comm, filename, amode, mpi_info, 
+    		                      &mpi_file);
+    *fh = alloc_new_file(mpi_file);
+    
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_File_close(YogiMPI_File *fh) {
+    MPI_File mpi_file = file_to_mpi(*fh); 
+    int mpi_error = MPI_File_close(&mpi_file);
+    file_pool[*fh] = MPI_FILE_NULL;
+    *fh = YogiMPI_FILE_NULL;
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_File_get_info(YogiMPI_File fh, YogiMPI_Info *info_used) {
+	MPI_File mpi_file = file_to_mpi(fh);
+	MPI_Info mpi_info;
+    int mpi_error = MPI_File_get_info(mpi_file, &mpi_info); 	
+    *info_used = alloc_new_info(mpi_info);
+    
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_File_set_view(YogiMPI_File fh, YogiMPI_Offset disp, 
+		                  YogiMPI_Datatype etype, YogiMPI_Datatype filetype,
+                          const char *datarep, YogiMPI_Info info) {
+
+	MPI_File mpi_file = file_to_mpi(fh);
+	MPI_Offset mpi_offset = (MPI_Offset)disp;
+	MPI_Datatype mpi_datatype = datatype_to_mpi(etype);
+	MPI_Datatype mpi_datatype2 = datatype_to_mpi(filetype);
+	MPI_Info mpi_info = info_to_mpi(info);
+    int mpi_error = MPI_File_set_view(mpi_file, mpi_offset, mpi_datatype,
+    		                          mpi_datatype2, datarep, mpi_info);    
+    return error_to_yogi(mpi_error);
+	
+}
+
+int YogiMPI_File_write_all(YogiMPI_File fh, const void *buf, int count, 
+		                   YogiMPI_Datatype datatype, YogiMPI_Status *status) {
+	MPI_File mpi_file = file_to_mpi(fh);
+	MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
+	int mpi_error;
+    if (YogiMPI_STATUS_IGNORE != status) {
+	    MPI_Status* mpi_status = (MPI_Status*)malloc(sizeof(MPI_Status));
+        mpi_error = MPI_File_write_all(mpi_file, buf, count, mpi_datatype,
+    		                           mpi_status);
+        status_to_yogi(mpi_status, status);
+    }
+    else {
+        mpi_error = MPI_File_write_all(mpi_file, buf, count, mpi_datatype,
+    		                           MPI_STATUS_IGNORE);    	
+    }
+    
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_File_write_at(YogiMPI_File fh, YogiMPI_Offset offset, 
+		                  const void *buf, int count, YogiMPI_Datatype datatype, 
+					      YogiMPI_Status *status) {
+	
+	MPI_File mpi_file = file_to_mpi(fh);
+	/* Cast this to correct type. */
+	MPI_Offset mpi_offset = (MPI_Offset)offset;
+	int mpi_error;
+	MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
+    if (YogiMPI_STATUS_IGNORE != status) {
+	    MPI_Status* mpi_status = (MPI_Status*)malloc(sizeof(MPI_Status));
+        mpi_error = MPI_File_write_at(mpi_file, mpi_offset, buf, count,
+    		                          mpi_datatype, mpi_status);
+        status_to_yogi(mpi_status, status);
+    }
+    else {
+        mpi_error = MPI_File_write_at(mpi_file, mpi_offset, buf, count,
+    		                          mpi_datatype, MPI_STATUS_IGNORE);    	
+    }
+    
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Info_create(YogiMPI_Info *info) {
+	MPI_Info mpi_info;
+    int mpi_error = MPI_Info_create(&mpi_info);
+    *info = alloc_new_info(mpi_info);
+    
+    return error_to_yogi(mpi_error);	
+}
+
+int YogiMPI_Info_set(YogiMPI_Info info, char *key, char *value) {
+	MPI_Info mpi_info = info_to_mpi(info);
+	int mpi_error = MPI_Info_set(mpi_info, key, value);
+    
+    return error_to_yogi(mpi_error);
 }
