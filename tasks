@@ -1,0 +1,24 @@
+These need to be defined in Fortran:
+
+#define MPI_Waitall YogiMPI_Waitall
+#define MPI_Send_init YogiMPI_Send_init
+#define MPI_Gatherv YogiMPI_Gatherv
+#define MPI_Scatterv YogiMPI_Scatterv
+#define MPI_Allgather YogiMPI_Allgather
+#define MPI_Allgatherv YogiMPI_Allgatherv
+
+Issues:
+
+- Need to handle status data structures in Fortran.
+- Need to handle non null-terminated strings from Fortran to C.
+- Verify that Integer*8 is a long long int.
+- Just permanently transform the headless source to run with YogiMPI.  We can add
+  some CMake Fortran-transform macros in the next couple of weeks.
+
+Next Steps:
+
+- Try building and running Fortran tests.
+- Make some C and Fortran tests for Gather, Scatter, and creating datatypes.
+- Try compiling and running plib tests.
+- Try compiling and running headless KCFD.
+- Try compiling and running headless KCFD with another YogiMPI built with another MPI distribution.
