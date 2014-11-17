@@ -155,7 +155,7 @@ struct YogiMPI_Status
   int YogiMPI_SOURCE;
   int YogiMPI_TAG;
   int YogiMPI_ERROR;
-  void * mpi_status;
+  int index;
 };
 
 typedef struct YogiMPI_Status YogiMPI_Status;

@@ -257,21 +257,19 @@ void YOGIMPI_FILE_SET_VIEW(int *fh, long long int *disp, int *etype,
     		                        *info);
 }
 
-/*
 void YOGIMPI_FILE_WRITE_ALL(int *fh, void *buf, int *count, int *datatype, 
 		                    int *status, int *ierror) {
-	*ierror = YogiMPI_File_write_all(*fh, buf, *count, *datatype, status);
+	*ierror = YogiMPI_File_write_all(*fh, buf, *count, *datatype, 
+			                         status_to_c(status));
 }
-*/
 
-/*
+
 void YOGIMPI_FILE_WRITE_AT(int *fh, long long int *offset, void *buf, 
 		                   int *count, int *datatype, int *status,
 						   int *ierror) {
 	*ierror = YogiMPI_File_write_at(*fh, *offset, buf, *count, *datatype, 
-						            status);
+						            status_to_c(status));
 }
-*/
 
 void YOGIMPI_INFO_CREATE(int *info, int *ierror) {
 	*ierror = YogiMPI_Info_create(info);

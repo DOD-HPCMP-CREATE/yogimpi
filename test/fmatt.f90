@@ -33,12 +33,12 @@ include 'yogimpif.h'
 
         call YogiMPI_Irecv(buf, 1, YogiMPI_INTEGER, 0, 1, YogiMPI_COMM_WORLD, request, ierr)
         call YogiMPI_Wait(request, status, ierr)
-        !call YogiMPI_Get_count(status, YogiMPI_INTEGER, msglen, ierr)
-        !if(msglen /= 1) then
-        !    print *, "ERROR: The length of the message is not 1"
-        !else
-        !    print *, "SUCCESS!"
-        !endif
+        call YogiMPI_Get_count(status, YogiMPI_INTEGER, msglen, ierr)
+        if(msglen /= 1) then
+            print *, "ERROR: The length of the message is not 1"
+        else
+            print *, "SUCCESS!"
+        endif
  
     endif
 
