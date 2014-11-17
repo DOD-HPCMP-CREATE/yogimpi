@@ -121,7 +121,10 @@
     integer, parameter :: YogiMPI_MODE_SEQUENTIAL = 256
     integer, parameter :: YogiMPI_MODE_APPEND = 128
 
+! MPI_Offset need an INTEGER*8 value.
+    integer, parameter :: YogiMPI_OFFSET_KIND = 8
+
 ! YogiMPI-specific values for MPI_STATUS_IGNORE and MPI_STATUSES_IGNORE
-    integer, parameter :: YogiMPI_STATUS_IGNORE = -1;
-    integer, parameter :: YogiMPI_STATUSES_IGNORE = -1;
+    integer, parameter :: YogiMPI_STATUS_IGNORE = -1
+    integer, parameter :: YogiMPI_STATUSES_IGNORE = -1
 

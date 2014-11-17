@@ -144,6 +144,7 @@
 #define MPI_Bcast YogiMPI_Bcast
 #define MPI_Gather YogiMPI_Gather
 #define MPI_Gatherv YogiMPI_Gatherv
+#define MPI_Scatter YogiMPI_Scatter
 #define MPI_Scatterv YogiMPI_Scatterv
 #define MPI_Allgather YogiMPI_Allgather
 #define MPI_Allgatherv YogiMPI_Allgatherv

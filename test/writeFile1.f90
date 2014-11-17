@@ -2,7 +2,8 @@ program writeFile1
 
 include 'yogimpif.h'
 
-    integer :: i, rank, size, offset, nints, N, ierr
+    integer :: i, rank, size, nints, N, ierr
+    integer(kind=YogiMPI_OFFSET_KIND) :: offset
     integer :: fhw, buf(16)
     integer :: status(YogiMPI_STATUS_SIZE)
 
