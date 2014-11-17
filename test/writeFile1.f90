@@ -13,11 +13,14 @@ include 'yogimpif.h'
     call YogiMPI_COMM_SIZE(YogiMPI_COMM_WORLD, size, ierr)
 
     do i=1,N
-        buf(i) = i 
+        buf(i) = i - 1 
     enddo
 
     offset = rank*(N/size)*4
-    call YogiMPI_FILE_OPEN(YogiMPI_COMM_WORLD, "datafile", OR(YogiMPI_MODE_CREATE, YogiMPI_MODE_WRONLY), YogiMPI_INFO_NULL, fhw)
+    call YogiMPI_FILE_OPEN(YogiMPI_COMM_WORLD, "datafile", &
+                           OR(YogiMPI_MODE_CREATE, YogiMPI_MODE_WRONLY), &
+                           YogiMPI_INFO_NULL, fhw, ierr)
+    print *, "here"
     print *, "Rank: ", rank, " Offset: ", offset
     call YogiMPI_FILE_WRITE_AT(fhw, offset, buf, (N/size), YogiMPI_INTEGER, status, ierr)
     call YogiMPI_FILE_CLOSE(fhw, ierr);

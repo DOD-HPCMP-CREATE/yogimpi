@@ -75,7 +75,7 @@ static const int YogiMPI_MODE_APPEND = 128;
  * If the underlying MPI implementation returns strings that are longer than
  * YogiMPI_MAX_PROCESSOR_NAME-1, the string will be truncated.
  */
-static const int YogiMPI_MAX_PROCESSOR_NAME = 32 ;
+static const int YogiMPI_MAX_PROCESSOR_NAME = 32;
 #define YogiMPI_MAX_ERROR_STRING 32 
 
 /* Elementary datatypes (C) */ 
@@ -242,6 +242,10 @@ int YogiMPI_Gatherv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
 int YogiMPI_Scatterv(void* sendbuf, int *sendcounts, int *displs, 
                      YogiMPI_Datatype sendtype, void* recvbuf, int recvcount,
                      YogiMPI_Datatype recvtype, int root, YogiMPI_Comm comm);
+
+int YogiMPI_Scatter(void *sendbuf, int sendcount, YogiMPI_Datatype sendtype,
+                    void *recvbuf, int recvcount, YogiMPI_Datatype recvtype, 
+					int root, YogiMPI_Comm comm);
 
 int YogiMPI_Allgather(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
                       void* recvbuf, int recvcount, YogiMPI_Datatype recvtype,

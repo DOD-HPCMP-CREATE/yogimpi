@@ -40,7 +40,9 @@
     integer, parameter :: YogiMPI_ERROR = 3 
 
 ! Maximum sizes for strings
-    integer, parameter :: YogiMPI_MAX_PROCESSOR_NAME = 32
+! This has to be one less than the value in C to account for null-terminated
+! strings.
+    integer, parameter :: YogiMPI_MAX_PROCESSOR_NAME = 31
 
 ! elementary datatypes (Fortran)
     integer, parameter :: YogiMPI_CHARACTER = 1

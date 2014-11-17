@@ -1,6 +1,7 @@
 /* File to bind YogiMPI C functions to Fortran. */
 
 #include "yogimpi.h"
+#include <string.h>
 #include <stdlib.h>
 
 /* Define how the C functions will appear to Fortran.  Typically this is all
@@ -48,10 +49,24 @@
 #define YOGIMPI_FILE_WRITE_AT yogimpi_file_write_at_
 #define YOGIMPI_INFO_CREATE yogimpi_info_create_
 #define YOGIMPI_INFO_SET yogimpi_info_set_
+#define YOGIMPI_WAITALL yogimpi_waitall_
+#define YOGIMPI_SEND_INIT yogimpi_send_init_
+#define YOGIMPI_GATHERV yogimpi_gatherv_
+#define YOGIMPI_SCATTER yogimpi_scatter_
+#define YOGIMPI_SCATTERV yogimpi_Scatterv_
+#define YOGIMPI_ALLGATHER yogimpi_allgather_
+#define YOGIMPI_ALLGATHERV yogimpi_allgatherv_
 
 static YogiMPI_Status* status_to_c(int *status) {
 	return (YogiMPI_Status *)status;
 }
+
+static char * null_terminate(char *fString, size_t slen) {
+    char * returnString = (char *)malloc(slen + 1);
+    strncpy(returnString, fString, slen);
+    returnString[slen] = '\0';
+    return returnString;
+}		
 
 void YOGIMPI_SEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
 		          int *comm, int *ierror) {
@@ -149,8 +164,12 @@ void YOGIMPI_COMM_FREE(int *comm, int *ierror) {
     *ierror = YogiMPI_Comm_free(comm);
 }
 
-void YOGIMPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror) {
-    *ierror = YogiMPI_Get_processor_name(name, resultlen); 
+void YOGIMPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
+		                        int name_len) {
+	char *interimName = null_terminate(name, name_len);
+    *ierror = YogiMPI_Get_processor_name(interimName, resultlen);
+    if (*resultlen > name_len) *resultlen = name_len;
+	strncpy(name, interimName, name_len);
 }
 
 double YOGIMPI_WTIME() {
@@ -246,14 +265,16 @@ void YOGIMPI_FILE_GET_INFO(int *fh, int *info_used, int *ierror) {
 }
 
 void YOGIMPI_FILE_OPEN(int *comm, char *filename, int *amode, int *info, 
-		               int *fh, int *ierror) {
-	*ierror = YogiMPI_File_open(*comm, filename, *amode, *info, fh);
+		               int *fh, int *ierror, int filename_len) {
+	*ierror = YogiMPI_File_open(*comm, null_terminate(filename, filename_len),
+			                    *amode, *info, fh);
 }
 
 void YOGIMPI_FILE_SET_VIEW(int *fh, long long int *disp, int *etype, 
 		                   int *filetype, char *datarep, int *info,
-						   int *ierror) { 
-    *ierror = YogiMPI_File_set_view(*fh, *disp, *etype, *filetype, datarep,
+						   int *ierror, int datarep_len) { 
+    *ierror = YogiMPI_File_set_view(*fh, *disp, *etype, *filetype, 
+    		                        null_terminate(datarep, datarep_len),
     		                        *info);
 }
 
@@ -275,6 +296,55 @@ void YOGIMPI_INFO_CREATE(int *info, int *ierror) {
 	*ierror = YogiMPI_Info_create(info);
 }
 
-void YOGIMPI_INFO_SET(int *info, char *key, char *value, int *ierror) {
-    *ierror = YogiMPI_Info_set(*info, key, value);
+void YOGIMPI_INFO_SET(int *info, char *key, char *value, int *ierror, 
+		              int key_len, int value_len) {
+    *ierror = YogiMPI_Info_set(*info, null_terminate(key, key_len),
+    		                   null_terminate(value, value_len));
+}
+
+void YOGIMPI_WAITALL(int *count, int *array_of_requests, int *array_of_statuses,
+		             int *ierror) {
+	*ierror = YogiMPI_Waitall(*count, array_of_requests, 
+			                  status_to_c(array_of_statuses));
+}
+
+void YOGIMPI_SEND_INIT(void *buf, int *count, int *datatype, int *dest,
+		               int *tag, int *comm, int *request, int *ierror) {
+    *ierror = YogiMPI_Send_init(buf, *count, *datatype, *dest, *tag, *comm,
+    		                    request);
+}
+
+void YOGIMPI_GATHERV(void *sendbuf, int *sendcount, int *sendtype, 
+		             void *recvbuf, int *recvcounts, int *displs,
+					 int *recvtype, int *root, int *comm, int *ierror) {
+	*ierror = YogiMPI_Gatherv(sendbuf, *sendcount, *sendtype, recvbuf, 
+			                  recvcounts, displs, *recvtype, *root, *comm);
+}
+
+void YOGIMPI_SCATTER(void *sendbuf, int *sendcount, int *sendtype,
+                     void *recvbuf, int *recvcount, int *recvtype, 
+					 int *root, int *comm, int *ierror) {
+	*ierror = YogiMPI_Scatter(sendbuf, *sendcount, *sendtype, recvbuf, 
+			                  *recvcount, *recvtype, *root, *comm);
+}
+
+void YOGIMPI_SCATTERV(void *sendbuf, int *sendcounts, int *displs, 
+                      int *sendtype, void *recvbuf, int *recvcount,
+		              int *recvtype, int *root, int *comm, int *ierror) {
+    *ierror = YogiMPI_Scatterv(sendbuf, sendcounts, displs, *sendtype, recvbuf,
+    		                   *recvcount, *recvtype, *root, *comm);
+}
+
+void YOGIMPI_ALLGATHER(void *sendbuf, int *sendcount, int *sendtype, 
+                       void* recvbuf, int *recvcount, int *recvtype, 
+		               int *comm, int *ierror) {
+	*ierror = YogiMPI_Allgather(sendbuf, *sendcount, *sendtype, recvbuf, 
+			                    *recvcount, *recvtype, *comm);
+}
+
+void YOGIMPI_ALLGATHERV(void *sendbuf, int *sendcount, int *sendtype, 
+                        void *recvbuf, int *recvcounts, int *displs, 
+		                int *recvtype, int *comm, int *ierror) {
+	*ierror = YogiMPI_Allgatherv(sendbuf, *sendcount, *sendtype, recvbuf, 
+			                     recvcounts, displs, *recvtype, *comm);
 }

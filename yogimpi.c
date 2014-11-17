@@ -962,6 +962,25 @@ int YogiMPI_Gatherv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
     return error_to_yogi(mpi_err);
 }
 
+int YogiMPI_Scatter(void *sendbuf, int sendcount, YogiMPI_Datatype sendtype,
+                    void *recvbuf, int recvcount, YogiMPI_Datatype recvtype, 
+					int root, YogiMPI_Comm comm) {
+	int mpi_err = YogiMPI_SUCCESS;
+	MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
+	MPI_Comm mpi_comm = comm_to_mpi(comm);
+	if (YogiMPI_IN_PLACE == sendbuf) {
+	    mpi_err = MPI_Scatter(sendbuf, sendcount, mpi_sendtype, MPI_IN_PLACE,
+	    		              0, MPI_DATATYPE_NULL, root, mpi_comm);
+	} 
+	else { 
+	    MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
+	    mpi_err = MPI_Scatter(sendbuf, sendcount, mpi_sendtype, recvbuf,
+	    		              recvcount, mpi_recvtype, root, mpi_comm);
+	}
+	return error_to_yogi(mpi_err);
+	
+}
+
 int YogiMPI_Scatterv(void* sendbuf, int *sendcounts, int *displs, 
 		             YogiMPI_Datatype sendtype, void* recvbuf, int recvcount,
 					 YogiMPI_Datatype recvtype, int root, YogiMPI_Comm comm) {

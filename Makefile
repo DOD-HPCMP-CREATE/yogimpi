@@ -18,7 +18,7 @@ default: yogimpi.c yogimpi_f90bridge.c yogimpi.h
 
 clean:
 	$(RM) *.o *.so nonblock sendrecv matt fsendrecv fmatt simple \
-              writeFile1 datafile fwriteFile1
+              writeFile1 datafile fwriteFile1 f_gatherscatter
 
 test: default 
 	$(CC) $(CFLAGS) test/simple.c -L. -lyogimpi -o simple
@@ -27,6 +27,8 @@ test: default
 	$(CC) $(CFLAGS) test/matt.c -L. -lyogimpi -o matt 
 	$(CC) $(CFLAGS) test/writeFile1.c -L. -lyogimpi -o writeFile1 
 	$(F90) $(FFLAGS) test/writeFile1.f90 -L. -lyogimpi -o fwriteFile1
+	$(F90) $(FFLAGS) test/f_gatherscatter.f90 -L. -lyogimpi \
+               -o f_gatherscatter
 	$(F90) $(FFLAGS) test/fsendrecv.f90 -L. -lyogimpi -o fsendrecv 
 	$(F90) $(FFLAGS) test/fmatt.f90 -L. -lyogimpi -o fmatt
 
