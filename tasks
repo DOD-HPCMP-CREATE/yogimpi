@@ -1,10 +1,10 @@
 Issues:
 
-- Just permanently transform the headless source to run with YogiMPI.  We can add
-  some CMake Fortran-transform macros in the next couple of weeks.
+- Some MPI-1 functions not implemented.
+- MPI_Status runaway memory allocation.
+- Fortran source isn't preprocessed to handle YogiMPI. 
 
 Next Steps:
 
-- Try compiling and running plib tests.
 - Try compiling and running headless KCFD.
 - Try compiling and running headless KCFD with another YogiMPI built with another MPI distribution.
