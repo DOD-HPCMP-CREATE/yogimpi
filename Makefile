@@ -1,9 +1,11 @@
 MPICC=mpicc
 #CC=gcc-mp-4.8
-CC=gcc
+#CC=gcc
+CC=icc
 MPIF90=mpif90
 #F90=gfortran-mp-4.8
-F90=gfortran
+#F90=gfortran
+F90=ifort
 FFLAGS=-I. -fPIC
 CFLAGS=-I. -fPIC
 LDFLAGS=-shared

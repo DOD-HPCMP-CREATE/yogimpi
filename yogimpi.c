@@ -1127,7 +1127,7 @@ int YogiMPI_Comm_split(YogiMPI_Comm comm, int color, int key,
 }
 
 int YogiMPI_Comm_free(YogiMPI_Comm *comm) {
-    assert(*comm < YogiMPI_COMM_VOLATILE_OFFSET || *comm >= num_comms);
+    assert(*comm < YogiMPI_COMM_VOLATILE_OFFSET || *comm <= num_comms);
     assert(comm_pool[*comm] != MPI_COMM_NULL);
 
     MPI_Comm* mpi_comm = &comm_pool[*comm];
@@ -1275,8 +1275,8 @@ int YogiMPI_Alltoall(const void *sendbuf, int sendcount,
     MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
 
-    int mpi_error = MPI_Alltoall(sendbuf, sendcount, sendtype, recvbuf,
-    		                     recvcount, recvtype, mpi_comm);
+    int mpi_error = MPI_Alltoall(sendbuf, sendcount, mpi_sendtype, recvbuf,
+    		                     recvcount, mpi_recvtype, mpi_comm);
     
     return error_to_yogi(mpi_error);	
 
@@ -1291,8 +1291,8 @@ int YogiMPI_Alltoallv(const void *sendbuf, const int *sendcounts,
     MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
 
-    int mpi_error = MPI_Alltoallv(sendbuf, sendcounts, sdispls, sendtype, 
-    		                  recvbuf, recvcounts, rdispls, recvtype, 
+    int mpi_error = MPI_Alltoallv(sendbuf, sendcounts, sdispls, mpi_sendtype, 
+    		                  recvbuf, recvcounts, rdispls, mpi_recvtype, 
 				  mpi_comm);
     
     return error_to_yogi(mpi_error);	
