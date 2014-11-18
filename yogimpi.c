@@ -831,9 +831,10 @@ int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests,
  
     /* reset requests */
     for(i = 0; i < count; ++i) {
-        assert(MPI_REQUEST_NULL == mpi_requests[i]);
-        * request_to_mpi(array_of_requests[i]) = MPI_REQUEST_NULL; 
-        array_of_requests[i] = YogiMPI_REQUEST_NULL;
+        if(mpi_requests[i] == MPI_REQUEST_NULL) {
+            *request_to_mpi(array_of_requests[i]) = MPI_REQUEST_NULL; 
+            array_of_requests[i] = YogiMPI_REQUEST_NULL;
+        }
     }
 
     free(mpi_requests);
@@ -1250,19 +1251,12 @@ int YogiMPI_Scan(const void *sendbuf, void *recvbuf, int count,
 int YogiMPI_Startall(int count, YogiMPI_Request *array_of_requests) {
     int i;
     MPI_Request* mpi_requests = (MPI_Request*)malloc(count*sizeof(MPI_Request));
-    for(i = 0; i < count; ++i) {
-    	mpi_requests[i] = * request_to_mpi(array_of_requests[i]);
+    for(i = 0; i < count; i++) {
+    	mpi_requests[i] = *request_to_mpi(array_of_requests[i]);
     }
     
     int mpi_error = MPI_Startall(count, mpi_requests);
 			
-    /* reset requests */
-    for(i = 0; i < count; ++i) {
-        assert(MPI_REQUEST_NULL == mpi_requests[i]);
-    	* request_to_mpi(array_of_requests[i]) = MPI_REQUEST_NULL; 
-    	array_of_requests[i] = YogiMPI_REQUEST_NULL;
-    }
-
     free(mpi_requests);
     
     return error_to_yogi(mpi_error);	
