@@ -128,3 +128,5 @@
     integer, parameter :: YogiMPI_STATUS_IGNORE = -1
     integer, parameter :: YogiMPI_STATUSES_IGNORE = -1
 
+    real*8 :: YOGIMPI_WTIME
+    external YogiMPI_WTIME

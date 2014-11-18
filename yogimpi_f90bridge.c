@@ -14,6 +14,7 @@
  */
 #define YOGIMPI_SEND yogimpi_send_
 #define YOGIMPI_RECV yogimpi_recv_
+#define YOGIMPI_RECV_INIT yogimpi_recv_init_
 #define YOGIMPI_GET_COUNT yogimpi_get_count_
 #define YOGIMPI_SSEND yogimpi_ssend_
 #define YOGIMPI_ISEND yogimpi_isend_
