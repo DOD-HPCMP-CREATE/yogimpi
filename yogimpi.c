@@ -6,7 +6,6 @@
 #include <string.h>
 #include <unistd.h> /* for hostname */
 
-
 /* Define some Fortran datatypes not used in C.
  * Don't declare these in the header since C MPI apps should not use them,
  * but YogiMPI must know about them internally to provide a translation array.
@@ -286,8 +285,8 @@ static void register_preindexed_comm(YogiMPI_Comm comm, MPI_Comm mpi_comm,
     comm_groups_map[comm] = group;
 }
 
-YogiMPI_Comm alloc_new_volatile_comm(MPI_Comm mpi_comm, YogiMPI_Group group, 
-		                             int is_inter) {
+static YogiMPI_Comm alloc_new_volatile_comm(MPI_Comm mpi_comm, YogiMPI_Group group, 
+		                                    int is_inter) {
 
     /* find new slot */
     YogiMPI_Comm new_slot = YogiMPI_COMM_VOLATILE_OFFSET;
@@ -334,7 +333,7 @@ YogiMPI_Comm alloc_new_volatile_comm(MPI_Comm mpi_comm, YogiMPI_Group group,
     return new_slot;
 }
 
-YogiMPI_Request alloc_new_request(MPI_Request mpi_request)
+static YogiMPI_Request alloc_new_request(MPI_Request mpi_request)
 {
     /* Find a slot, start from 1 because 0 == YogiMPI_REQUEST_NULL */
     YogiMPI_Request request = 1; 
@@ -367,7 +366,8 @@ YogiMPI_Request alloc_new_request(MPI_Request mpi_request)
     return request;
 }
 
-YogiMPI_Comm alloc_new_comm_and_group(MPI_Comm mpi_comm, MPI_Group mpi_group) {
+static YogiMPI_Comm alloc_new_comm_and_group(MPI_Comm mpi_comm, 
+		                                     MPI_Group mpi_group) {
     YogiMPI_Group group = alloc_new_volatile_group(mpi_group);
     YogiMPI_Comm new_comm = alloc_new_volatile_comm(mpi_comm, group, 0);
 
@@ -381,7 +381,7 @@ YogiMPI_Comm alloc_new_comm_and_group(MPI_Comm mpi_comm, MPI_Group mpi_group) {
     return new_comm;
 }
 
-YogiMPI_File alloc_new_file(MPI_File mpi_file)
+static YogiMPI_File alloc_new_file(MPI_File mpi_file)
 {
     /* Find a slot, start from 1 because 0 == YogiMPI_FILE_NULL */
     YogiMPI_File file = 1; 
@@ -412,7 +412,7 @@ YogiMPI_File alloc_new_file(MPI_File mpi_file)
     return file;
 }
 
-YogiMPI_Info alloc_new_info(MPI_Info mpi_info)
+static YogiMPI_Info alloc_new_info(MPI_Info mpi_info)
 {
     /* Find a slot, start from 1 because 0 == YogiMPI_INFO_NULL */
     YogiMPI_Info info = 1; 
@@ -481,7 +481,7 @@ static int store_status(MPI_Status *status)
   
 }
 
-YogiMPI_Status status_to_yogi(MPI_Status *mpi_status) {
+static YogiMPI_Status status_to_yogi(MPI_Status *mpi_status) {
 	YogiMPI_Status status;
     status.YogiMPI_SOURCE = mpi_status->MPI_SOURCE; 
     status.YogiMPI_TAG = mpi_status->MPI_TAG;
@@ -494,7 +494,7 @@ YogiMPI_Status status_to_yogi(MPI_Status *mpi_status) {
 }
 
 /* Convert a YogiMPI_Status object into an MPI_Status pointer */
-MPI_Status * status_to_mpi(YogiMPI_Status status)
+static MPI_Status * status_to_mpi(YogiMPI_Status status)
 {
   /* Reassign basic integer tags so they can be read by user */
   return status_pool[status.index];
@@ -1104,7 +1104,7 @@ int YogiMPI_Comm_split(YogiMPI_Comm comm, int color, int key,
 	MPI_Comm mpi_comm = comm_to_mpi(comm);
     MPI_Comm mpi_newcomm = MPI_COMM_NULL;
 
-    if ( YogiMPI_UNDEFINED == color ) {
+    if (YogiMPI_UNDEFINED == color) {
         /* Even though color == UNDEFINED, we must perform the call to 
          * comm_split in all procs because this is a global operation and thus 
          * otherwise we might be waiting infinitely 

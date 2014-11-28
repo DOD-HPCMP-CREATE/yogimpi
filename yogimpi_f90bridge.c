@@ -3,6 +3,7 @@
 #include "yogimpi.h"
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 /* What the Fortran value is for ignoring status. */
 #define FYOGIMPI_STATUS_IGNORE -1
@@ -62,6 +63,15 @@
 #define YOGIMPI_SCATTERV yogimpi_Scatterv_
 #define YOGIMPI_ALLGATHER yogimpi_allgather_
 #define YOGIMPI_ALLGATHERV yogimpi_allgatherv_
+
+/* Returns whether YogiMPI's Fortran layer should place MPI_STATUS_IGNORE and
+ * MPI_STATUSES_IGNORE as arguments when MPI_Status(es) are expected.  This
+ * overrides any choice the user makes.
+ */
+static int get_fignore_status() {
+    if (getenv("YMPI_FSTATUS_IGNORE") != NULL) return 1;
+    return 0;
+}
 
 static YogiMPI_Status* fstatus_to_c(int *status) {
 	return (YogiMPI_Status *)status;
@@ -139,7 +149,7 @@ void YOGIMPI_SEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
 
 void YOGIMPI_RECV(void *buffer, int *count, int *datatype, int *source, 
 		          int *tag, int *comm, int *status, int *ierror) {
-    if (*status == FYOGIMPI_STATUS_IGNORE) {
+    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
         *ierror = YogiMPI_Recv(buffer, *count, *datatype, *source, *tag, *comm,
         	                   YogiMPI_STATUS_IGNORE);	
     }
@@ -151,6 +161,8 @@ void YOGIMPI_RECV(void *buffer, int *count, int *datatype, int *source,
 
 void YOGIMPI_GET_COUNT(int *status, int *datatype, int *count, int *ierror)
 {
+	/* No overriding the MPI_Status argument - it cannot be ignored. */
+	assert(get_fignore_status() == 0);
     *ierror = YogiMPI_Get_count(fstatus_to_c(status), *datatype, count);
 }
 
@@ -178,7 +190,7 @@ void YOGIMPI_IRECV(void *buffer, int *count, int *datatype, int *source,
 }
 
 void YOGIMPI_WAIT(int *request, int *status, int *ierror) {
-	if (*status == FYOGIMPI_STATUS_IGNORE) {
+	if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
         *ierror = YogiMPI_Wait(request, YogiMPI_STATUS_IGNORE);
 	}
 	else {
@@ -355,7 +367,7 @@ void YOGIMPI_FILE_SET_VIEW(int *fh, long long int *disp, int *etype,
 
 void YOGIMPI_FILE_WRITE_ALL(int *fh, void *buf, int *count, int *datatype, 
 		                    int *status, int *ierror) {
-	if (*status == FYOGIMPI_STATUS_IGNORE) {
+	if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
 	    *ierror = YogiMPI_File_write_all(*fh, buf, *count, *datatype, 
 			                             YogiMPI_STATUS_IGNORE);		
 	}
@@ -369,7 +381,7 @@ void YOGIMPI_FILE_WRITE_ALL(int *fh, void *buf, int *count, int *datatype,
 void YOGIMPI_FILE_WRITE_AT(int *fh, long long int *offset, void *buf, 
 		                   int *count, int *datatype, int *status,
 						   int *ierror) {
-	if (*status == FYOGIMPI_STATUS_IGNORE) {
+	if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
 	    *ierror = YogiMPI_File_write_at(*fh, *offset, buf, *count, *datatype, 
 						                YogiMPI_STATUS_IGNORE);		
 	}

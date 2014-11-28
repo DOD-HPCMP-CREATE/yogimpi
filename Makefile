@@ -1,14 +1,28 @@
-MPICC=mpicc
-#CC=gcc-mp-4.8
-#CC=gcc
-CC=icc
-MPIF90=mpif90
-#F90=gfortran-mp-4.8
-#F90=gfortran
-F90=ifort
+PLAT?=gnu
 FFLAGS=-I. -fPIC
 CFLAGS=-I. -fPIC
 LDFLAGS=-shared
+
+ifeq ($(PLAT),gnu)
+MPICC=mpicc
+MPIF90=mpif90
+CC=gcc
+F90=gfortran
+endif
+
+ifeq ($(PLAT),mac)
+MPICC=mpicc
+MPIF90=mpif90
+CC=gcc-mp-4.8
+F90=gfortran-mp-4.8
+endif
+
+ifeq ($(PLAT),intel)
+MPICC=mpicc
+MPIF90=mpif90
+CC=icc
+F90=ifort
+endif
 
 .PHONY: default clean test
 
@@ -21,7 +35,7 @@ default: yogimpi.c yogimpi_f90bridge.c yogimpi.h
 clean:
 	$(RM) *.o *.so nonblock sendrecv matt fsendrecv fmatt simple \
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
-              nonblock_waitall fnonblock_waitall persist
+              nonblock_waitall fnonblock_waitall
 
 test: default 
 	$(CC) $(CFLAGS) test/simple.c -L. -lyogimpi -o simple
@@ -31,7 +45,6 @@ test: default
 	$(CC) $(CFLAGS) test/writeFile1.c -L. -lyogimpi -o writeFile1 
 	$(CC) $(CFLAGS) test/nonblock_waitall.c -L. -lyogimpi \
               -o nonblock_waitall
-	$(CC) $(CFLAGS) test/persist.c -L. -lyogimpi -o persist
 	$(F90) $(FFLAGS) test/writeFile1.f90 -L. -lyogimpi -o fwriteFile1
 	$(F90) $(FFLAGS) test/f_gatherscatter.f90 -L. -lyogimpi \
                -o f_gatherscatter
