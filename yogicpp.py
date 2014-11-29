@@ -48,11 +48,11 @@ class yogicpp(object):
             ihandle.close()
             for aPattern in self.definitions:
                 for i in range(len(rawFile)):
-                    mpiString = re.compile(r"(^|_|=|\s+|\(|\)|,|\*|\+)(" +\
+                    mpiString = re.compile(r"(^|_|=|\s|\(|\)|,|\*|\+)(" +\
                                            aPattern +\
-                                           r")(\s|,|\)|\()", re.IGNORECASE)
-                    rawFile[i] = mpiString.sub("\g<1>Yogi\g<2>\g<3>", 
-                                               rawFile[i], re.IGNORECASE)
+                                           r')(\s|,|\)|\()', re.IGNORECASE)
+                    rawFile[i] = mpiString.sub(r"\g<1>Yogi\g<2>\g<3>", 
+                                               rawFile[i])
                     rawFile[i] = re.sub(r"(\"|')mpif.h(\"|')", "'yogimpif.h'", 
                                         rawFile[i])
         
