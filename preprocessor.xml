@@ -3,154 +3,154 @@
   <Constant>MPI_ERR_BUFFER</Constant>
   <Constant>MPI_ERR_COUNT</Constant>
   <Constant>MPI_ERR_TYPE</Constant>
-MPI_ERR_TAG 
-MPI_ERR_COMM 
-MPI_ERR_RANK 
-MPI_ERR_REQUEST 
-MPI_ERR_ROOT
-MPI_ERR_GROUP 
-MPI_ERR_OP 
-MPI_ERR_TOPOLOGY 
-MPI_ERR_DIMS 
-MPI_ERR_ARG 
-MPI_ERR_UNKNOWN 
-MPI_ERR_TRUNCATE 
-MPI_ERR_OTHER 
-MPI_ERR_INTERN
-MPI_ERR_PENDING 
-MPI_ERR_IN_STATUS 
-MPI_ERR_LASTCODE 
+  <Constant>MPI_ERR_TAG</Constant>
+  <Constant>MPI_ERR_COMM</Constant> 
+  <Constant>MPI_ERR_RANK</Constant> 
+  <Constant>MPI_ERR_REQUEST</Constant> 
+  <Constant>MPI_ERR_ROOT</Constant>
+  <Constant>MPI_ERR_GROUP</Constant> 
+  <Constant>MPI_ERR_OP</Constant> 
+  <Constant>MPI_ERR_TOPOLOGY</Constant> 
+  <Constant>MPI_ERR_DIMS</Constant> 
+  <Constant>MPI_ERR_ARG</Constant> 
+  <Constant>MPI_ERR_UNKNOWN</Constant> 
+  <Constant>MPI_ERR_TRUNCATE</Constant> 
+  <Constant>MPI_ERR_OTHER</Constant> 
+  <Constant>MPI_ERR_INTERN</Constant>
+  <Constant>MPI_ERR_PENDING</Constant> 
+  <Constant>MPI_ERR_IN_STATUS</Constant> 
+  <Constant>MPI_ERR_LASTCODE</Constant> 
 
-MPI_BOTTOM
-MPI_PROC_NULL
-MPI_ANY_SOURCE
-MPI_ANY_TAG
-MPI_UNDEFINED
-MPI_BSEND_OVERHEAD
-MPI_KEYVAL_INVALID
+  <Constant>MPI_BOTTOM</Constant>
+  <Constant>MPI_PROC_NULL</Constant>
+  <Constant>MPI_ANY_SOURCE</Constant>
+  <Constant>MPI_ANY_TAG</Constant>
+  <Constant>MPI_UNDEFINED</Constant>
+  <Constant>MPI_BSEND_OVERHEAD</Constant>
+  <Constant>MPI_KEYVAL_INVALID</Constant>
 
-MPI_STATUS_SIZE
-MPI_SOURCE 
-MPI_TAG 
-MPI_ERROR 
+  <Constant>MPI_STATUS_SIZE</Constant>
+  <Constant>MPI_SOURCE</Constant> 
+  <Constant>MPI_TAG</Constant> 
+  <Constant>MPI_ERROR</Constant> 
 
-MPI_MAX_PROCESSOR_NAME
+  <Constant>MPI_MAX_PROCESSOR_NAME</Constant>
 
-MPI_CHARACTER
-MPI_INTEGER
-MPI_REAL
-MPI_DOUBLE_PRECISION
-MPI_BYTE
-MPI_PACKED
-MPI_COMPLEX
-MPI_DOUBLE_COMPLEX
-MPI_LOGICAL
+  <Constant>MPI_CHARACTER</Constant>
+  <Constant>MPI_INTEGER</Constant>
+  <Constant>MPI_REAL</Constant>
+  <Constant>MPI_DOUBLE_PRECISION</Constant>
+  <Constant>MPI_BYTE</Constant>
+  <Constant>MPI_PACKED</Constant>
+  <Constant>MPI_COMPLEX</Constant>
+  <Constant>MPI_DOUBLE_COMPLEX</Constant>
+  <Constant>MPI_LOGICAL</Constant>
 
-MPI_2REAL 
-MPI_2DOUBLE_PRECISION 
-MPI_2INTEGER
+  <Constant>MPI_2REAL</Constant> 
+  <Constant>MPI_2DOUBLE_PRECISION</Constant>
+  <Constant>MPI_2INTEGER</Constant>
 
-MPI_INTEGER1
-MPI_INTEGER2 
-MPI_INTEGER4 
-MPI_INTEGER8
-MPI_REAL4
-MPI_REAL8 
+  <Constant>MPI_INTEGER1</Constant>
+  <Constant>MPI_INTEGER2</Constant>
+  <Constant>MPI_INTEGER4</Constant>
+  <Constant>MPI_INTEGER8</Constant>
+  <Constant>MPI_REAL4</Constant>
+  <Constant>MPI_REAL8</Constant>
 
-MPI_COMM_WORLD
-MPI_COMM_SELF
+  <Constant>MPI_COMM_WORLD</Constant>
+  <Constant>MPI_COMM_SELF</Constant>
 
-MPI_IDENT
-MPI_CONGRUENT
-MPI_SIMILAR
-MPI_UNEQUAL
+  <Constant>MPI_IDENT</Constant>
+  <Constant>MPI_CONGRUENT</Constant>
+  <Constant>MPI_SIMILAR</Constant>
+  <Constant>MPI_UNEQUAL</Constant>
 
-MPI_TAG_UB
-MPI_IO
-MPI_HOST
-MPI_WTIME_IS_GLOBAL
+  <Constant>MPI_TAG_UB</Constant>
+  <Constant>MPI_IO</Constant>
+  <Constant>MPI_HOST</Constant>
+  <Constant>MPI_WTIME_IS_GLOBAL</Constant>
 
-MPI_MAX
-MPI_MIN 
-MPI_SUM
-MPI_PROD
-MPI_MAXLOC
-MPI_MINLOC
-MPI_BAND
-MPI_BOR
-MPI_BXOR
-MPI_LAND
-MPI_LOR
-MPI_LXOR
+  <Constant>MPI_MAX</Constant>
+  <Constant>MPI_MIN</Constant>
+  <Constant>MPI_SUM</Constant>
+  <Constant>MPI_PROD</Constant>
+  <Constant>MPI_MAXLOC</Constant>
+  <Constant>MPI_MINLOC</Constant>
+  <Constant>MPI_BAND</Constant>
+  <Constant>MPI_BOR</Constant>
+  <Constant>MPI_BXOR</Constant>
+  <Constant>MPI_LAND</Constant>
+  <Constant>MPI_LOR</Constant>
+  <Constant>MPI_LXOR</Constant>
 
-MPI_GROUP_NULL
-MPI_COMM_NULL
-MPI_REQUEST_NULL
-MPI_DATATYPE_NULL
-MPI_INFO_NULL
-MPI_FILE_NULL
+  <Constant>MPI_GROUP_NULL</Constant>
+  <Constant>MPI_COMM_NULL</Constant>
+  <Constant>MPI_REQUEST_NULL</Constant>
+  <Constant>MPI_DATATYPE_NULL</Constant>
+  <Constant>MPI_INFO_NULL</Constant>
+  <Constant>MPI_FILE_NULL</Constant>
 
-MPI_GROUP_EMPTY
+  <Constant>MPI_GROUP_EMPTY</Constant>
 
-MPI_MODE_RDONLY
-MPI_MODE_RDWR
-MPI_MODE_WRONLY
-MPI_MODE_CREATE
-MPI_MODE_EXCL
-MPI_MODE_DELETE_ON_CLOSE
-MPI_MODE_UNIQUE_OPEN
-MPI_MODE_SEQUENTIAL
-MPI_MODE_APPEND
+  <Constant>MPI_MODE_RDONLY</Constant>
+  <Constant>MPI_MODE_RDWR</Constant>
+  <Constant>MPI_MODE_WRONLY</Constant>
+  <Constant>MPI_MODE_CREATE</Constant>
+  <Constant>MPI_MODE_EXCL</Constant>
+  <Constant>MPI_MODE_DELETE_ON_CLOSE</Constant>
+  <Constant>MPI_MODE_UNIQUE_OPEN</Constant>
+  <Constant>MPI_MODE_SEQUENTIAL</Constant>
+  <Constant>MPI_MODE_APPEND</Constant>
 
   <Constant>MPI_STATUS_IGNORE</Constant>
   <Constant>MPI_STATUSES_IGNORE</Constant>
 
-MPI_SEND
-MPI_RECV
-MPI_GET_COUNT
-MPI_SSEND
-MPI_ISEND
-MPI_ISSEND
-MPI_IRECV
-MPI_WAIT
-MPI_REQUEST_FREE
-MPI_WAITALL
-MPI_SEND_INIT
-MPI_TYPE_SIZE
-MPI_TYPE_CONTIGUOUS
-MPI_TYPE_VECTOR
-MPI_TYPE_INDEXED
-MPI_TYPE_COMMIT
-MPI_TYPE_FREE
-MPI_BARRIER
-MPI_BCAST
-MPI_GATHER
-MPI_GATHERV
-MPI_SCATTERV
-MPI_ALLGATHER
-MPI_ALLGATHERV
-MPI_REDUCE
-MPI_ALLREDUCE
-MPI_COMM_SIZE
-MPI_COMM_RANK
-MPI_COMM_DUP
-MPI_COMM_SPLIT
-MPI_COMM_FREE
-MPI_GET_PROCESSOR_NAME
-MPI_WTIME
-MPI_INIT
-MPI_FINALIZE
-MPI_TYPE_CREATE_INDEXED_BLOCK
-MPI_COMM_F2C
-MPI_RECV_INIT
-MPI_SCAN
-MPI_STARTALL
-MPI_ALLTOALL
-MPI_ALLTOALLV
-MPI_FILE_CLOSE
-MPI_FILE_GET_INFO
-MPI_FILE_OPEN
-MPI_FILE_SET_VIEW
+  <Function>MPI_SEND</Function>
+  <Function>MPI_RECV</Function>
+  <Function>MPI_GET_COUNT</Function>
+  <Function>MPI_SSEND</Function>
+  <Function>MPI_ISEND</Function>
+  <Function>MPI_ISSEND</Function>
+  <Function>MPI_IRECV</Function>
+  <Function>MPI_WAIT</Function>
+  <Function>MPI_REQUEST_FREE</Function>
+  <Function>MPI_WAITALL</Function>
+  <Function>MPI_SEND_INIT</Function>
+  <Function>MPI_TYPE_SIZE</Function>
+  <Function>MPI_TYPE_CONTIGUOUS</Function>
+  <Function>MPI_TYPE_VECTOR</Function>
+  <Function>MPI_TYPE_INDEXED</Function>
+  <Function>MPI_TYPE_COMMIT</Function>
+  <Function>MPI_TYPE_FREE</Function>
+  <Function>MPI_BARRIER</Function>
+  <Function>MPI_BCAST</Function>
+  <Function>MPI_GATHER</Function>
+  <Function>MPI_GATHERV</Function>
+  <Function>MPI_SCATTERV</Function>
+  <Function>MPI_ALLGATHER</Function>
+  <Function>MPI_ALLGATHERV</Function>
+  <Function>MPI_REDUCE</Function>
+  <Function>MPI_ALLREDUCE</Function>
+  <Function>MPI_COMM_SIZE</Function>
+  <Function>MPI_COMM_RANK</Function>
+  <Function>MPI_COMM_DUP</Function>
+  <Function>MPI_COMM_SPLIT</Function>
+  <Function>MPI_COMM_FREE</Function>
+  <Function>MPI_GET_PROCESSOR_NAME</Function>
+  <Function>MPI_WTIME</Function>
+  <Function>MPI_INIT</Function>
+  <Function>MPI_FINALIZE</Function>
+  <Function>MPI_TYPE_CREATE_INDEXED_BLOCK</Function>
+  <Function>MPI_COMM_F2C</Function>
+  <Function>MPI_RECV_INIT</Function>
+  <Function>MPI_SCAN</Function>
+  <Function>MPI_STARTALL</Function>
+  <Function>MPI_ALLTOALL</Function>
+  <Function>MPI_ALLTOALLV</Function>
+  <Function>MPI_FILE_CLOSE</Function>
+  <Function>MPI_FILE_GET_INFO</Function>
+  <Function>MPI_FILE_OPEN</Function>
+  <Function>MPI_FILE_SET_VIEW</Function>
   <Function>MPI_FILE_WRITE_ALL</Function>
   <Function>MPI_FILE_WRITE_AT</Function>
   <Function>MPI_INFO_CREATE</Function>
