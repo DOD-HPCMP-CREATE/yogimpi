@@ -104,6 +104,7 @@
 
   <Constant>MPI_STATUS_IGNORE</Constant>
   <Constant>MPI_STATUSES_IGNORE</Constant>
+  <Constant>MPI_OFFSET_KIND</Constant>
 
   <Function>MPI_SEND</Function>
   <Function>MPI_RECV</Function>

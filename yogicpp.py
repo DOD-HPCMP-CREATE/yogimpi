@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 
 class yogicpp(object):
 
-    supportFile = 'preprocessor.xml'
+    supportFile = os.path.dirname(__file__) + '/preprocessor.xml'
 
     # Initialize preprocessor object with appropriate input and output modes.
     # @arg inputMode The input mode to be used (file, list, directory)
@@ -48,11 +48,12 @@ class yogicpp(object):
             ihandle.close()
             for aPattern in self.definitions:
                 for i in range(len(rawFile)):
-                    mpiString = re.compile("(^|[\s,()]+)(" + aPattern +\
-                                           ")([\s,)(]+)", re.IGNORECASE)
+                    mpiString = re.compile(r"(^|_|=|\s+|\(|\)|,|\*|\+)(" +\
+                                           aPattern +\
+                                           r")(\s|,|\)|\()", re.IGNORECASE)
                     rawFile[i] = mpiString.sub("\g<1>Yogi\g<2>\g<3>", 
                                                rawFile[i], re.IGNORECASE)
-                    rawFile[i] = re.sub("(\"|')mpif.h(\"|')", "'yogimpif.h'", 
+                    rawFile[i] = re.sub(r"(\"|')mpif.h(\"|')", "'yogimpif.h'", 
                                         rawFile[i])
         
             ohandle = open(outputFile, 'w')
