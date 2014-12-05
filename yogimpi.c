@@ -528,7 +528,7 @@ static void bind_mpi_err_constants() {
 
 static void initialize_datatype_pool() {
     
-	int i;
+    int i;
     assert(!datatype_pool);
     assert(num_datatypes > YogiMPI_PACKED);
   
@@ -602,8 +602,8 @@ static void initialize_group_pool() {
 
 static void initialize_comm_pool() {
     
-	int i;
-	assert(!comm_pool);
+    int i;
+    assert(!comm_pool);
     comm_pool = (MPI_Comm *)malloc(sizeof(MPI_Comm)*num_comms);
     
     for(i = 0; i < num_comms; ++i) comm_pool[i] = MPI_COMM_NULL;
@@ -665,10 +665,8 @@ static void initialize_op_pool() {
     op_pool[YogiMPI_LXOR]   = MPI_LXOR;	
 }
 
-int YogiMPI_Init(int* argc, char ***argv)
-{ 
-    int mpi_err = MPI_Init(argc,argv); 
-  
+void allocate_yogimpi_storage() {
+
     /* mpich2/test/mpi/pt2pt/bottom.c fails otherwise so there is soth. fishy */
     assert(0 == MPI_BOTTOM);
     assert(YogiMPI_BSEND_OVERHEAD >= MPI_BSEND_OVERHEAD);
@@ -677,14 +675,22 @@ int YogiMPI_Init(int* argc, char ***argv)
 
     /* Initialize the back-end arrays for opaque objects and references */
     bind_mpi_err_constants();
-    initialize_datatype_pool();
-    initialize_group_pool();
-    initialize_comm_pool();
-    initialize_request_pool();
-    initialize_op_pool();
-    initialize_info_pool();
-    initialize_file_pool();
-    initialize_status_pool();
+    if (!datatype_pool) initialize_datatype_pool();
+    if (!group_pool) initialize_group_pool();
+    if (!comm_pool) initialize_comm_pool();
+    if (!request_pool) initialize_request_pool();
+    if (!op_pool) initialize_op_pool();
+    if (!info_pool) initialize_info_pool();
+    if (!file_pool) initialize_file_pool();
+    if (!status_pool) initialize_status_pool();
+
+}
+
+int YogiMPI_Init(int* argc, char ***argv)
+{ 
+    int mpi_err = MPI_Init(argc,argv); 
+ 
+    allocate_yogimpi_storage(); 
 
     return error_to_yogi(mpi_err);
 }
