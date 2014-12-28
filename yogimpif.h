@@ -34,7 +34,7 @@
 
 
 ! status size and reserved index values (Fortran)
-    integer, parameter :: YogiMPI_STATUS_SIZE = 4
+    integer, parameter :: YogiMPI_STATUS_SIZE = 12
     integer, parameter :: YogiMPI_SOURCE = 1 
     integer, parameter :: YogiMPI_TAG = 2 
     integer, parameter :: YogiMPI_ERROR = 3 

@@ -24,7 +24,7 @@ CC=icc
 F90=ifort
 endif
 
-.PHONY: default clean test
+.PHONY: default clean test ctest ftest
 
 default: yogimpi.c yogimpi_f90bridge.c yogimpi.h
 	$(MPICC) $(CFLAGS) -c yogimpi.c
@@ -37,14 +37,18 @@ clean:
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall fnonblock_waitall
 
-test: default 
+test: ctest ftest 
+
+ctest: default
 	$(CC) $(CFLAGS) test/simple.c -L. -lyogimpi -o simple
 	$(CC) $(CFLAGS) test/nonBlocking.c -L. -lyogimpi -o nonblock
 	$(CC) $(CFLAGS) test/sendrecv.c -L. -lyogimpi -o sendrecv
 	$(CC) $(CFLAGS) test/matt.c -L. -lyogimpi -o matt 
 	$(CC) $(CFLAGS) test/writeFile1.c -L. -lyogimpi -o writeFile1 
-	$(CC) $(CFLAGS) test/nonblock_waitall.c -L. -lyogimpi \
+#	$(CC) $(CFLAGS) test/nonblock_waitall.c -L. -lyogimpi \
               -o nonblock_waitall
+
+ftest: default
 	$(F90) $(FFLAGS) test/writeFile1.f90 -L. -lyogimpi -o fwriteFile1
 	$(F90) $(FFLAGS) test/f_gatherscatter.f90 -L. -lyogimpi \
                -o f_gatherscatter
