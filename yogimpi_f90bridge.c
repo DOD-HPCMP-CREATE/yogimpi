@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 
 /* What the Fortran value is for ignoring status. */
 #define FYOGIMPI_STATUS_IGNORE -1
@@ -74,7 +75,6 @@ static int get_fignore_status() {
     return 0;
 }
 
-/* From a Fortran integer array, produce a YogiMPI_Status object. */
 static void yogi_fstatus_to_c(int *source, YogiMPI_Status *dest)
 {
 	memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
@@ -84,24 +84,23 @@ static void yogi_cstatus_to_f(YogiMPI_Status *source, int *dest) {
 	memcpy((void *)dest, (void *)source->realStatus, sizeof(MPI_Status));
 }
 
-/* Given a Fortran array of YogiMPI_Status objects, which is a two-dimensional
- * integer array, copy it into a one-dimensional C array of YogiMPI_Status 
- * objects.  Use free_cstatus_array to destroy the copy when done.
- */
-static YogiMPI_Status* fstatus_array_to_c(int *status, int count) {
+static YogiMPI_Status * yogi_fstatus_array_to_c(int *status, int count) {
+	YogiMPI_Status *list = (YogiMPI_Status*)malloc(count*sizeof(YogiMPI_Status));
+	int i;
+	for (i = 0; i < count; i++) {
+		int offset = i * MAX_STATUS_SIZE;
+        yogi_fstatus_to_c(&status[offset], &list[i]);
+	}
+	return list;
 }
 
-/* Given a one-dimensional C array of YogiMPI_Status objects, update the values
- * of a separate two-dimensional array of integers.
- */
-static void cstatus_array_to_f(YogiMPI_Status *list, int *status, int count) {
-}
-
-/* Given a one-dimensional C array fo YogiMPI_Status objects, free all objects
- * within and then set the pointer to NULL.
- */
-static void free_cstatus_array(YogiMPI_Status *list) {
-
+static void yogi_cstatus_array_to_f(YogiMPI_Status *list, int *status,
+		                            int count) {
+	int i;
+	for (i = 0; i < count; i++) {
+		int offset = i * MAX_STATUS_SIZE;
+        yogi_cstatus_to_f(&list[i], &status[offset]);
+	}
 }
 
 static char * null_terminate(char *fString, size_t slen) {
@@ -385,19 +384,20 @@ void YOGIMPI_INFO_SET(int *info, char *key, char *value, int *ierror,
     		                   null_terminate(value, value_len));
 }
 
-/*void YOGIMPI_WAITALL(int *count, int *array_of_requests, int *array_of_statuses,
+void YOGIMPI_WAITALL(int *count, int *array_of_requests, int *array_of_statuses,
 		             int *ierror) {
 	if (*array_of_statuses == FYOGIMPI_STATUSES_IGNORE) {
 	    *ierror = YogiMPI_Waitall(*count, array_of_requests, 
 	    		                  YogiMPI_STATUSES_IGNORE);
 	}
 	else {
-	    YogiMPI_Status *list = fstatus_array_to_c(array_of_statuses, *count);
+	    YogiMPI_Status *list = yogi_fstatus_array_to_c(array_of_statuses, 
+	    		                                       *count);
 	    *ierror = YogiMPI_Waitall(*count, array_of_requests, list);
-	    free_cstatus_array(list);
+	    yogi_cstatus_array_to_f(list, array_of_statuses, *count);
+	    free(list);
 	}
 }
-*/
 
 void YOGIMPI_SEND_INIT(void *buf, int *count, int *datatype, int *dest,
 		               int *tag, int *comm, int *request, int *ierror) {

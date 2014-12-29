@@ -2,10 +2,7 @@
 #include <string.h>
 #include "mpitoyogi.h"
 
-main(argc, argv)
-int argc;
-char *argv[];
-{
+int main(int argc, char* argv[]) {
   
   int pool_size, my_rank;
 

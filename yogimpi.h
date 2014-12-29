@@ -14,7 +14,7 @@
  * MPI_Status byte size.
  */
 
-#define MAX_STATUS_SIZE 48
+#define MAX_STATUS_SIZE 12
 
 /*
  * Typedefs for opaque MPI data structures.
@@ -158,16 +158,13 @@ static const YogiMPI_File YogiMPI_FILE_NULL = 0;
 static const YogiMPI_Group YogiMPI_GROUP_EMPTY = 1;
 
 /* Define structure for MPI_Status - hide real object inside as int array */
-#pragma pack(push)
-#pragma pack(1)
 struct YogiMPI_Status
 {
-  int MPI_SOURCE;
   int MPI_TAG;
+  int MPI_SOURCE;
   int MPI_ERROR;
-  char realStatus[MAX_STATUS_SIZE];
+  int realStatus[MAX_STATUS_SIZE];
 };
-#pragma pack(pop)
 
 typedef struct YogiMPI_Status YogiMPI_Status;
 static YogiMPI_Status * const YogiMPI_STATUS_IGNORE = 0;

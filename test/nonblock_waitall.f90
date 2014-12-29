@@ -15,9 +15,9 @@ program nonblock_waitall
 include "yogimpif.h"
 
     integer, parameter :: MAXPROC=8
-    integer :: i, x, np, me, y(MAXPROC), ierr
+    integer :: i, x, np, me, y(MAXPROC), ierr, count
     integer :: tag
-    integer :: status(YogiMPI_STATUS_SIZE, MAXPROC) 
+    integer :: status(YogiMPI_STATUS_SIZE, MAXPROC)
     integer :: send_req(MAXPROC)
     integer :: recv_req(MAXPROC)
     tag = 42;
@@ -39,26 +39,29 @@ include "yogimpif.h"
 
     if (me == 0) then 
         print *, "Process 0 sending to all other processes:"
-        do i = 1, np - 1
+        do i = 1,np-1
             print *, "0: Sending to ", i
-            call YogiMPI_Isend(x, 1, YogiMPI_INTEGER, i, tag, YogiMPI_COMM_WORLD, &
-                           send_req(i + 1), ierr)
+            call YogiMPI_Isend(x, 1, YogiMPI_INTEGER, i, tag, &
+                               YogiMPI_COMM_WORLD, send_req(i + 1), ierr)
         enddo 
 
         ! Note that we use requests and statuses starting from index 2 
         ! since process zero does not send to it self
-        call YogiMPI_Waitall(np-1, send_req(2), status(2,:), ierr)
+        call YogiMPI_Waitall(np-1, send_req(2), status(:,2), ierr)
 
         print *, "Process 0 receiving from all other processes"
-        do i = 1, np - 1
-            call YogiMPI_Irecv(y(i + 1), 1, YogiMPI_INTEGER, &
+        do i = 2, np
+            call YogiMPI_Irecv(y(i), 1, YogiMPI_INTEGER, &
                                YogiMPI_ANY_SOURCE, tag, &
-                               YogiMPI_COMM_WORLD, recv_req(i + 1), ierr)
+                               YogiMPI_COMM_WORLD, recv_req(i), ierr)
         end do 
-        call YogiMPI_Waitall(np - 1, recv_req(2), status(2,:), ierr)
+        call YogiMPI_Waitall(np - 1, recv_req(2), status(:,2), ierr)
 
-        do i = 1, np - 1
-            print *, "Process 0 received a message from process ", y(i)
+        do i = 2, np
+            call YogiMPI_Get_count(status(:,i), &
+                                   YogiMPI_INTEGER, count, ierr)
+            print *, "Process 0 received a message from process ", y(i), &
+                     ", size ", count 
         end do
 
         print *, "Process 0 complete."

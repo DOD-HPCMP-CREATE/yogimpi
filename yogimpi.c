@@ -441,29 +441,23 @@ static YogiMPI_Info alloc_new_info(MPI_Info mpi_info)
  * @arg dest The YogiMPI_Status memory address into which copy is placed.
  */
 static void mpi_status_to_yogi(MPI_Status *source, YogiMPI_Status *dest) {
-	/*
 	dest->MPI_TAG = source->MPI_TAG;
 	dest->MPI_SOURCE = source->MPI_SOURCE;
 	dest->MPI_ERROR = source->MPI_ERROR;
-	*/
 	/* If this isn't the same address, force a memcpy */
     if ((void *)dest->realStatus != (void *)source) {
-    	printf("Copying back into real status.\n");
 	    memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
-    }
-    else {
-    	printf("No need to copy, it's the same.\n");
     }
 }
 
 /* Retrieve the real MPI_Status pointer from a YogiMPI_Status object */
-static void yogi_status_to_mpi(YogiMPI_Status *source, MPI_Status *dest)
+static MPI_Status * yogi_status_to_mpi(YogiMPI_Status *source)
 {
 	/* This will grab the number of bytes needed.  We don't care about
 	 * structure padding since this area is never directly accessed by us.
 	 * It is ensured to be larger than we need.
 	 */
-    dest = (MPI_Status *)source->realStatus;
+     return (MPI_Status *)&source->realStatus[0];
 }
 
 static void bind_mpi_err_constants() {
@@ -672,8 +666,7 @@ int YogiMPI_Recv(void* buf, int count, YogiMPI_Datatype datatype, int source,
     if (YogiMPI_ANY_TAG == tag) tag = MPI_ANY_TAG;
     int mpi_error;
     if (YogiMPI_STATUS_IGNORE != status) {
-        MPI_Status *mpi_status;
-        yogi_status_to_mpi(status, mpi_status);
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
         mpi_error = MPI_Recv(buf, count, mpi_datatype, source, tag, mpi_comm, 
         		             mpi_status);
         mpi_status_to_yogi(mpi_status, status); 
@@ -689,8 +682,7 @@ int YogiMPI_Recv(void* buf, int count, YogiMPI_Datatype datatype, int source,
 int YogiMPI_Get_count(YogiMPI_Status *status, YogiMPI_Datatype datatype, 
 		              int *count) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
-    MPI_Status *mpi_status;
-    yogi_status_to_mpi(status, mpi_status);
+    MPI_Status *mpi_status = yogi_status_to_mpi(status);
     int mpi_err = MPI_Get_count(mpi_status, mpi_datatype, count);
     return error_to_yogi(mpi_err);
 }
@@ -751,8 +743,7 @@ int YogiMPI_Wait(YogiMPI_Request* request, YogiMPI_Status *status) {
     MPI_Request* mpi_request = request_to_mpi(*request);
     int mpi_err;
     if (YogiMPI_STATUS_IGNORE != status) {
-        MPI_Status *mpi_status;
-        yogi_status_to_mpi(status, mpi_status);
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
         mpi_err = MPI_Wait(mpi_request, mpi_status);
         mpi_status_to_yogi(mpi_status, status);
     }
@@ -775,7 +766,6 @@ int YogiMPI_Request_free(YogiMPI_Request *request) {
     return error_to_yogi(mpi_err);
 }
 
-/*
 int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests, 
 		            YogiMPI_Status *array_of_statuses) {
     int i;
@@ -788,10 +778,10 @@ int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests,
     if (YogiMPI_STATUSES_IGNORE != array_of_statuses) {
         MPI_Status* mpi_statuses = (MPI_Status*)malloc(count*sizeof(MPI_Status));
         for (i = 0; i < count; i++) {
-        	yogi_status_to_mpi(&array_of_statuses[i],&mpi_statuses[i]);
+        	mpi_statuses[i] = *(yogi_status_to_mpi(&array_of_statuses[i]));
         }
         mpi_err = MPI_Waitall(count, mpi_requests, mpi_statuses);
-        for(i = 0; i < count; ++i) {
+        for(i = 0; i < count; i++) {
         	mpi_status_to_yogi(&mpi_statuses[i], &array_of_statuses[i]);
         }
         free(mpi_statuses);
@@ -801,7 +791,6 @@ int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests,
     }
  
     /* reset requests */
-/*
     for(i = 0; i < count; ++i) {
         if(mpi_requests[i] == MPI_REQUEST_NULL) {
             *request_to_mpi(array_of_requests[i]) = MPI_REQUEST_NULL; 
@@ -813,7 +802,7 @@ int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests,
 
     return error_to_yogi(mpi_err);
 }
-*/
+
 
 int YogiMPI_Send_init(void *buf, int count, YogiMPI_Datatype datatype, int dest,
 		              int tag, YogiMPI_Comm comm, YogiMPI_Request* request) {
@@ -1317,8 +1306,7 @@ int YogiMPI_File_write_all(YogiMPI_File fh, const void *buf, int count,
 	MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
 	int mpi_error;
     if (YogiMPI_STATUS_IGNORE != status) {
-        MPI_Status *mpi_status;
-        yogi_status_to_mpi(status, mpi_status);
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
         mpi_error = MPI_File_write_all(mpi_file, buf, count, mpi_datatype,
     		                           mpi_status);
         mpi_status_to_yogi(mpi_status, status);
@@ -1341,8 +1329,7 @@ int YogiMPI_File_write_at(YogiMPI_File fh, YogiMPI_Offset offset,
 	int mpi_error;
 	MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     if (YogiMPI_STATUS_IGNORE != status) {
-        MPI_Status *mpi_status;
-        yogi_status_to_mpi(status, mpi_status);
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
         mpi_error = MPI_File_write_at(mpi_file, mpi_offset, buf, count,
     		                          mpi_datatype, mpi_status);
         mpi_status_to_yogi(mpi_status, status);

@@ -45,7 +45,7 @@ ctest: default
 	$(CC) $(CFLAGS) test/sendrecv.c -L. -lyogimpi -o sendrecv
 	$(CC) $(CFLAGS) test/matt.c -L. -lyogimpi -o matt 
 	$(CC) $(CFLAGS) test/writeFile1.c -L. -lyogimpi -o writeFile1 
-#	$(CC) $(CFLAGS) test/nonblock_waitall.c -L. -lyogimpi \
+	$(CC) $(CFLAGS) test/nonblock_waitall.c -L. -lyogimpi \
               -o nonblock_waitall
 
 ftest: default
