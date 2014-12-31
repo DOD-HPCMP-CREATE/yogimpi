@@ -72,7 +72,7 @@ class yogicpp(object):
     def _isFortranSource(self, fileName):
         fExtensions = ['f90', 'for', 'f', 'f77']
         for fe in fExtensions:
-            if fileName.endswith('.' + fe.lower()):
+            if fileName.endswith(('.' + fe.lower(), '.' + fe.upper())):
                 return True
         return False
 
