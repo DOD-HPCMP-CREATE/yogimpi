@@ -1356,3 +1356,47 @@ int YogiMPI_Info_set(YogiMPI_Info info, char *key, char *value) {
     
     return error_to_yogi(mpi_error);
 }
+
+int YogiMPI_Test(YogiMPI_Request *request, int *flag, YogiMPI_Status *status) {
+    int mpi_error;
+    MPI_Request* mpi_request = request_to_mpi(*request);
+    if (YogiMPI_STATUS_IGNORE != status) {
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
+        mpi_error = MPI_Test(mpi_request, flag, mpi_status);
+        mpi_status_to_yogi(mpi_status, status);
+    }
+    else {
+        mpi_error = MPI_Test(mpi_request, flag, MPI_STATUS_IGNORE);
+    }
+
+    if (MPI_REQUEST_NULL == *mpi_request) {
+        assert(MPI_REQUEST_NULL == request_pool[*request]);
+        *request = YogiMPI_REQUEST_NULL;
+    }
+
+    return error_to_yogi(mpi_error); 
+}
+
+int YogiMPI_Iprobe(int source, int tag, YogiMPI_Comm comm, int *flag,
+                   YogiMPI_Status *status) {
+    int mpi_error;
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    if (YogiMPI_ANY_SOURCE == source) source = MPI_ANY_SOURCE;
+    if (YogiMPI_ANY_TAG == tag) tag = MPI_ANY_TAG;
+    if (YogiMPI_STATUS_IGNORE != status) {
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
+        mpi_error = MPI_Iprobe(source, tag, mpi_comm, flag, mpi_status);
+        mpi_status_to_yogi(mpi_status, status);
+    }
+    else {
+        mpi_error = MPI_Iprobe(source, tag, mpi_comm, flag, MPI_STATUS_IGNORE);
+    }
+
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Abort(YogiMPI_Comm comm, int errorcode) {
+    MPI_Comm mpi_comm = comm_to_mpi(comm);    
+    int mpi_error = MPI_Abort(mpi_comm, errorcode);
+    return error_to_yogi(mpi_error);
+}

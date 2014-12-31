@@ -174,5 +174,8 @@
 #define MPI_File_write_at YogiMPI_File_write_at
 #define MPI_Info_create YogiMPI_Info_create
 #define MPI_Info_set YogiMPI_Info_set
+#define MPI_Test YogiMPI_Test
+#define MPI_Iprobe YogiMPI_Iprobe
+#define MPI_Abort YogiMPI_Abort
 
 #endif /* MPITOYOGI_H */

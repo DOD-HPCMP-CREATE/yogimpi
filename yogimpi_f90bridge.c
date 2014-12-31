@@ -65,6 +65,9 @@
 #define YOGIMPI_SCATTERV yogimpi_Scatterv_
 #define YOGIMPI_ALLGATHER yogimpi_allgather_
 #define YOGIMPI_ALLGATHERV yogimpi_allgatherv_
+#define YOGIMPI_ABORT yogimpi_abort_
+#define YOGIMPI_IPROBE yogimpi_iprobe_
+#define YOGIMPI_TEST yogimpi_test_
 
 /* Returns whether YogiMPI's Fortran layer should place MPI_STATUS_IGNORE and
  * MPI_STATUSES_IGNORE as arguments when MPI_Status(es) are expected.  This
@@ -435,7 +438,39 @@ void YOGIMPI_ALLGATHER(void *sendbuf, int *sendcount, int *sendtype,
 
 void YOGIMPI_ALLGATHERV(void *sendbuf, int *sendcount, int *sendtype, 
                         void *recvbuf, int *recvcounts, int *displs, 
-		                int *recvtype, int *comm, int *ierror) {
-	*ierror = YogiMPI_Allgatherv(sendbuf, *sendcount, *sendtype, recvbuf, 
-			                     recvcounts, displs, *recvtype, *comm);
+                        int *recvtype, int *comm, int *ierror) {
+    *ierror = YogiMPI_Allgatherv(sendbuf, *sendcount, *sendtype, recvbuf, 
+                                 recvcounts, displs, *recvtype, *comm);
+
+}
+
+void YOGIMPI_TEST(int *request, int *flag, int *status, int *ierror) {
+    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+        *ierror = YogiMPI_Test(request, flag, YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        YogiMPI_Status cStatus;
+        yogi_fstatus_to_c(status, &cStatus);
+        *ierror = YogiMPI_Test(request, flag, &cStatus);
+        yogi_cstatus_to_f(&cStatus, status);
+    }
+
+}
+
+void YOGIMPI_IPROBE(int *source, int *tag, int *comm, int *flag, int *status,
+                    int *ierror) {
+    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+        *ierror = YogiMPI_Iprobe(*source, *tag, *comm, flag, 
+                                 YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        YogiMPI_Status cStatus;
+        yogi_fstatus_to_c(status, &cStatus);
+        *ierror = YogiMPI_Iprobe(*source, *tag, *comm, flag, &cStatus);
+        yogi_cstatus_to_f(&cStatus, status);
+    }
+}
+
+void YOGIMPI_ABORT(int *comm, int *errorcode, int *ierror) {
+    *ierror = YogiMPI_Abort(*comm, *errorcode);
 }

@@ -35,7 +35,7 @@ default: yogimpi.c yogimpi_f90bridge.c yogimpi.h
 clean:
 	$(RM) *.o *.so nonblock sendrecv matt fsendrecv fmatt simple \
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
-              nonblock_waitall fnonblock_waitall
+              nonblock_waitall fnonblock_waitall sendRecvErrC
 
 test: ctest ftest 
 
@@ -47,6 +47,7 @@ ctest: default
 	$(CC) $(CFLAGS) test/writeFile1.c -L. -lyogimpi -o writeFile1 
 	$(CC) $(CFLAGS) test/nonblock_waitall.c -L. -lyogimpi \
               -o nonblock_waitall
+	$(CC) $(CFLAGS) test/sendRecvErrC.c -L. -lyogimpi -o sendRecvErrC
 
 ftest: default
 	$(F90) $(FFLAGS) test/writeFile1.f90 -L. -lyogimpi -o fwriteFile1

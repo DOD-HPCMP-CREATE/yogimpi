@@ -156,4 +156,7 @@
   <Function>MPI_FILE_WRITE_AT</Function>
   <Function>MPI_INFO_CREATE</Function>
   <Function>MPI_INFO_SET</Function>
+  <Function>MPI_ABORT</Function>
+  <Function>MPI_IPROBE</Function>
+  <Function>MPI_TEST</Function>
 </SupportedMPI>

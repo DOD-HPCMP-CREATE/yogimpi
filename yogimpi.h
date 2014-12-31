@@ -337,4 +337,11 @@ int YogiMPI_Info_create(YogiMPI_Info *info);
 
 int YogiMPI_Info_set(YogiMPI_Info info, char *key, char *value);
 
+int YogiMPI_Test(YogiMPI_Request *request, int *flag, YogiMPI_Status *status);
+
+int YogiMPI_Iprobe(int source, int tag, YogiMPI_Comm comm, int *flag,
+                   YogiMPI_Status *status);
+
+int YogiMPI_Abort(YogiMPI_Comm comm, int errorcode);
+
 #endif /* YOGIMPI_H */
