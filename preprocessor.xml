@@ -36,6 +36,28 @@
 
   <Constant>MPI_MAX_PROCESSOR_NAME</Constant>
 
+  <Constant>MPI_CHAR</Constant>
+  <Constant>MPI_SHORT</Constant>
+  <Constant>MPI_INT</Constant>
+  <Constant>MPI_LONG</Constant>
+  <Constant>MPI_UNSIGNED_CHAR</Constant>
+  <Constant>MPI_UNSIGNED_SHORT</Constant>
+  <Constant>MPI_UNSIGNED</Constant>
+  <Constant>MPI_UNSIGNED_LONG</Constant>
+  <Constant>MPI_FLOAT</Constant>
+  <Constant>MPI_DOUBLE</Constant>
+  <Constant>MPI_LONG_DOUBLE</Constant>
+
+  <Constant>MPI_FLOAT_INT</Constant>
+  <Constant>MPI_DOUBLE_INT</Constant>
+  <Constant>MPI_LONG_INT</Constant>
+  <Constant>MPI_2INT</Constant>
+  <Constant>MPI_SHORT_INT</Constant>
+  <Constant>MPI_LONG_DOUBLE_INT</Constant>
+  <Constant>MPI_LONG_LONG_INT</Constant>
+  <Constant>MPI_INT32_T</Constant>
+  <Constant>MPI_INT64_T</Constant>
+
   <Constant>MPI_CHARACTER</Constant>
   <Constant>MPI_INTEGER</Constant>
   <Constant>MPI_REAL</Constant>
@@ -106,57 +128,65 @@
   <Constant>MPI_STATUSES_IGNORE</Constant>
   <Constant>MPI_OFFSET_KIND</Constant>
 
-  <Function>MPI_SEND</Function>
-  <Function>MPI_RECV</Function>
-  <Function>MPI_GET_COUNT</Function>
-  <Function>MPI_SSEND</Function>
-  <Function>MPI_ISEND</Function>
-  <Function>MPI_ISSEND</Function>
-  <Function>MPI_IRECV</Function>
-  <Function>MPI_WAIT</Function>
-  <Function>MPI_REQUEST_FREE</Function>
-  <Function>MPI_WAITALL</Function>
-  <Function>MPI_SEND_INIT</Function>
-  <Function>MPI_TYPE_SIZE</Function>
-  <Function>MPI_TYPE_CONTIGUOUS</Function>
-  <Function>MPI_TYPE_VECTOR</Function>
-  <Function>MPI_TYPE_INDEXED</Function>
-  <Function>MPI_TYPE_COMMIT</Function>
-  <Function>MPI_TYPE_FREE</Function>
-  <Function>MPI_BARRIER</Function>
-  <Function>MPI_BCAST</Function>
-  <Function>MPI_GATHER</Function>
-  <Function>MPI_GATHERV</Function>
-  <Function>MPI_SCATTERV</Function>
-  <Function>MPI_ALLGATHER</Function>
-  <Function>MPI_ALLGATHERV</Function>
-  <Function>MPI_REDUCE</Function>
-  <Function>MPI_ALLREDUCE</Function>
-  <Function>MPI_COMM_SIZE</Function>
-  <Function>MPI_COMM_RANK</Function>
-  <Function>MPI_COMM_DUP</Function>
-  <Function>MPI_COMM_SPLIT</Function>
-  <Function>MPI_COMM_FREE</Function>
-  <Function>MPI_GET_PROCESSOR_NAME</Function>
-  <Function>MPI_WTIME</Function>
-  <Function>MPI_INIT</Function>
-  <Function>MPI_FINALIZE</Function>
-  <Function>MPI_TYPE_CREATE_INDEXED_BLOCK</Function>
-  <Function>MPI_COMM_F2C</Function>
-  <Function>MPI_RECV_INIT</Function>
-  <Function>MPI_SCAN</Function>
-  <Function>MPI_STARTALL</Function>
-  <Function>MPI_ALLTOALL</Function>
-  <Function>MPI_ALLTOALLV</Function>
-  <Function>MPI_FILE_CLOSE</Function>
-  <Function>MPI_FILE_GET_INFO</Function>
-  <Function>MPI_FILE_OPEN</Function>
-  <Function>MPI_FILE_SET_VIEW</Function>
-  <Function>MPI_FILE_WRITE_ALL</Function>
-  <Function>MPI_FILE_WRITE_AT</Function>
-  <Function>MPI_INFO_CREATE</Function>
-  <Function>MPI_INFO_SET</Function>
-  <Function>MPI_ABORT</Function>
-  <Function>MPI_IPROBE</Function>
-  <Function>MPI_TEST</Function>
+  <Object>MPI_Comm</Object>
+  <Object>MPI_Request</Object>
+  <Object>MPI_Op</Object>
+  <Object>MPI_Info</Object>
+  <Object>MPI_Datatype</Object>
+  <Object>MPI_Group</Object>
+  <Object>MPI_Status</Object>
+
+  <Function>MPI_Send</Function>
+  <Function>MPI_Recv</Function>
+  <Function>MPI_Get_count</Function>
+  <Function>MPI_Ssend</Function>
+  <Function>MPI_Isend</Function>
+  <Function>MPI_Issend</Function>
+  <Function>MPI_Irecv</Function>
+  <Function>MPI_Wait</Function>
+  <Function>MPI_Request_free</Function>
+  <Function>MPI_Waitall</Function>
+  <Function>MPI_Send_init</Function>
+  <Function>MPI_Type_size</Function>
+  <Function>MPI_Type_contiguous</Function>
+  <Function>MPI_Type_vector</Function>
+  <Function>MPI_Type_indexed</Function>
+  <Function>MPI_Type_commit</Function>
+  <Function>MPI_Type_free</Function>
+  <Function>MPI_Barrier</Function>
+  <Function>MPI_Bcast</Function>
+  <Function>MPI_Gather</Function>
+  <Function>MPI_Gatherv</Function>
+  <Function>MPI_Scatterv</Function>
+  <Function>MPI_Allgather</Function>
+  <Function>MPI_Allgatherv</Function>
+  <Function>MPI_Reduce</Function>
+  <Function>MPI_Allreduce</Function>
+  <Function>MPI_Comm_size</Function>
+  <Function>MPI_Comm_rank</Function>
+  <Function>MPI_Comm_dup</Function>
+  <Function>MPI_Comm_split</Function>
+  <Function>MPI_Comm_free</Function>
+  <Function>MPI_Get_processor_name</Function>
+  <Function>MPI_Wtime</Function>
+  <Function>MPI_Init</Function>
+  <Function>MPI_Finalize</Function>
+  <Function>MPI_Type_create_indexed_block</Function>
+  <Function>MPI_Comm_f2c</Function>
+  <Function>MPI_Recv_init</Function>
+  <Function>MPI_Scan</Function>
+  <Function>MPI_Startall</Function>
+  <Function>MPI_Alltoall</Function>
+  <Function>MPI_Alltoallv</Function>
+  <Function>MPI_File_close</Function>
+  <Function>MPI_File_get_info</Function>
+  <Function>MPI_File_open</Function>
+  <Function>MPI_File_set_view</Function>
+  <Function>MPI_File_write_all</Function>
+  <Function>MPI_File_write_at</Function>
+  <Function>MPI_Info_create</Function>
+  <Function>MPI_Info_set</Function>
+  <Function>MPI_Abort</Function>
+  <Function>MPI_Iprobe</Function>
+  <Function>MPI_Test</Function>
 </SupportedMPI>

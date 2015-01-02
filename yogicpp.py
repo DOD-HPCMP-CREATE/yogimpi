@@ -10,33 +10,96 @@ import xml.etree.ElementTree as ET
 
 class yogicpp(object):
 
-    supportFile = os.path.dirname(__file__) + '/preprocessor.xml'
-
     # Initialize preprocessor object with appropriate input and output modes.
-    # @arg inputMode The input mode to be used (file, list, directory)
+    # @arg inputMode The input mode to be used (file or directory)
     # @arg inputPath The input path to be used, dependent on the mode.
-    # @arg outputPath Where to place the preprocessed file. 
-    def __init__(self, inputMode, inputPath, outputPath):
+    # @arg outputPath Where to place the preprocessed file(s). 
+    # @arg actionType What to do.  Options are to check source to see if any
+    #                 unsupported MPI constants or functions will be an issue,
+    #                 to report what will be changed in the source, or to
+    #                 actually alter the source.  Default is to alter.
+    def __init__(self, inputMode, inputPath, outputPath, actionType):
+        self.supportFile = 'preprocessor.xml'
+        if not os.path.isfile(self.supportFile):
+            self.supportFile = os.path.dirname(__file__) + '/' +\
+                               self.supportFile
+            if not os.path.isfile(self.supportFile):
+                raise ValueError("Cannot locate preproceessor XML file.") 
+            
         self.inputMode = inputMode
         self.inputPath = inputPath
         self.outputPath = outputPath 
-        if (self.inputPath == self.outputPath):
-            raise ValueError("Input path cannot be the same as output path.")
-        self.report = ''
+        self.actionType = actionType
+        self.logFile = open('yogicpp.out', 'w')
         self.definitions = [] 
-        self.findSupported()
+        self.loadSupported()
         self.outputPath = os.path.abspath(self.outputPath)
-        if self.inputMode == 'file':
-            self.preprocessFile(self.inputPath, self.outputPath)
-        else:
-            self.preprocessDirectory(self.inputPath, self.outputPath)
-    
-    def findSupported(self):
-        fileTree = ET.parse(yogicpp.supportFile).getroot()
+        if self.actionType == 'preprocess':
+            if self.inputMode == 'file':
+                self.preprocessFile(self.inputPath, self.outputPath)
+            else:
+                self.preprocessDirectory(self.inputPath, self.outputPath)
+        elif self.actionType == 'checkwrap':
+            if self.inputMode == 'file':
+                self.checkFileWrap(self.inputPath)
+            else:
+                self.checkDirectoryWrap(self.inputPath) 
+        self.logFile.close()
+
+    # Loads from XML MPI functions and constants supported by YogiMPI.
+    def loadSupported(self):
+        fileTree = ET.parse(self.supportFile).getroot()
         for entry in fileTree.iterfind('Constant'):
+            self.definitions.append(AU._getValidText(entry, True))
+        for entry in fileTree.iterfind('Object'):
             self.definitions.append(AU._getValidText(entry, True))
         for entry in fileTree.iterfind('Function'):
             self.definitions.append(AU._getValidText(entry, True))
+
+    def _findMPI(self, searchLine, mpiPattern=None, caseSensitive=False):
+        if mpiPattern is None:
+            mpiPattern = 'MPI_[a-zA-Z0-9_]+'
+        if caseSensitive:
+            flags = 0
+        else:
+            flags = re.IGNORECASE 
+
+        mpiString = re.compile(r"(^|_|=|\s|\(|\)|,|\*|\+)(" + mpiPattern +\
+                               r')(\s|,|\)|\()', flags)
+        matchInfo = mpiString.finditer(searchLine)
+        mpiMatches = []
+        if matchInfo: 
+            for match in matchInfo:
+                mpiMatches.append(match.group(2))
+        return mpiMatches
+
+    def writeLog(self, *args):
+        for a in args:
+            self.logFile.write(a + '\n')
+
+    def checkFileWrap(self, inputFile):
+        noMPI = set() 
+        ihandle = open(inputFile, 'r')
+        rawFile = ihandle.readlines()
+        ihandle.close()
+        caseSensitive=False
+        if not self._isFortranSource(inputFile):
+            caseSensitive=True
+        for line in rawFile:
+            matchMPI = self._findMPI(line, caseSensitive=caseSensitive)
+            for item in matchMPI: 
+                if not item in self.definitions: 
+                    noMPI.add(item)
+        if noMPI:
+            self.writeLog(os.path.abspath(inputFile))
+            self.writeLog(*noMPI)
+          
+
+    def checkDirectoryWrap(self, inputDir):
+        for dirpath, dnames, fnames in os.walk(inputDir):
+            for f in fnames:
+                if self._isSourceFile(f):
+                    self.checkFileWrap(os.path.join(dirpath, f))
 
     def preprocessDirectory(self, inputDir, outputDir):
         pass
@@ -68,7 +131,16 @@ class yogicpp(object):
         
             ohandle = open(outputFile, 'w')
             ohandle.writelines(rawFile)            
-    
+   
+    def _isSourceFile(self, fileName):
+        if self._isFortranSource(fileName):
+            return True
+        elif self._isCSource(fileName):
+            return True
+        elif self._isCXXSource(fileName):
+            return True
+        return False
+ 
     def _isFortranSource(self, fileName):
         fExtensions = ['f90', 'for', 'f', 'f77']
         for fe in fExtensions:
@@ -77,9 +149,16 @@ class yogicpp(object):
         return False
 
     def _isCSource(self, fileName):
-        fExtensions = ['c', 'h']
-        for fe in fExtensions:
-            if fileName.endswith('.' + fe.lower()):
+        cExtensions = ['c', 'h']
+        for ce in cExtensions:
+            if fileName.endswith('.' + ce):
+                return True
+        return False
+
+    def _isCXXSource(self, fileName):
+        cxxExtensions = ['C', 'cpp', 'cxx', 'hpp', 'H', 'I']
+        for cxxe in cxxExtensions:
+            if fileName.endswith('.' + cxxe):
                 return True
         return False
 
@@ -94,6 +173,10 @@ if __name__ == "__main__":
                         action="store",
                         required=True,
                         help="Input path for preprocessing")
+    parser.add_argument('--action',
+                        choices=['checkwrap', 'logchanges', 'preprocess'],
+                        default='preprocess',
+                        help="Action to take") 
     parser.add_argument('--output', '-o',
                         action="store",
                         required=True,
@@ -102,4 +185,4 @@ if __name__ == "__main__":
     configArguments = parser.parse_args()
 
     preproc = yogicpp(configArguments.mode, configArguments.input,
-                      configArguments.output)
+                      configArguments.output, configArguments.action)
