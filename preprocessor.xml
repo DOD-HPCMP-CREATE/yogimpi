@@ -169,6 +169,7 @@
   <Function>MPI_Comm_dup</Function>
   <Function>MPI_Comm_split</Function>
   <Function>MPI_Comm_free</Function>
+  <Function>MPI_Group_free</Function>
   <Function>MPI_Get_processor_name</Function>
   <Function>MPI_Wtime</Function>
   <Function>MPI_Init</Function>
@@ -189,6 +190,7 @@
   <Function>MPI_Info_create</Function>
   <Function>MPI_Info_set</Function>
   <Function>MPI_Abort</Function>
+  <Function>MPI_Probe</Function>
   <Function>MPI_Iprobe</Function>
   <Function>MPI_Test</Function>
   <Function>MPI_Attr_get</Function>

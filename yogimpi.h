@@ -287,6 +287,8 @@ int YogiMPI_Comm_split(YogiMPI_Comm comm, int color, int key,
 
 int YogiMPI_Comm_free(YogiMPI_Comm *comm);
 
+int YogiMPI_Group_free(YogiMPI_Group *group);
+
 int YogiMPI_Get_processor_name(char *name, int *resultlen);
 
 double YogiMPI_Wtime();
@@ -343,6 +345,9 @@ int YogiMPI_Info_create(YogiMPI_Info *info);
 int YogiMPI_Info_set(YogiMPI_Info info, char *key, char *value);
 
 int YogiMPI_Test(YogiMPI_Request *request, int *flag, YogiMPI_Status *status);
+
+int YogiMPI_Probe(int source, int tag, YogiMPI_Comm comm, 
+                  YogiMPI_Status* status);
 
 int YogiMPI_Iprobe(int source, int tag, YogiMPI_Comm comm, int *flag,
                    YogiMPI_Status *status);

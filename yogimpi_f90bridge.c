@@ -43,6 +43,7 @@
 #define YOGIMPI_COMM_DUP yogimpi_comm_dup_
 #define YOGIMPI_COMM_SPLIT yogimpi_comm_split_
 #define YOGIMPI_COMM_FREE yogimpi_comm_free_
+#define YOGIMPI_GROUP_FREE yogimpi_group_free_
 #define YOGIMPI_GET_PROCESSOR_NAME yogimpi_get_processor_name_
 #define YOGIMPI_WTIME yogimpi_wtime_
 #define YOGIMPI_INIT yogimpi_init_
@@ -68,6 +69,7 @@
 #define YOGIMPI_ALLGATHER yogimpi_allgather_
 #define YOGIMPI_ALLGATHERV yogimpi_allgatherv_
 #define YOGIMPI_ABORT yogimpi_abort_
+#define YOGIMPI_PROBE yogimpi_probe_
 #define YOGIMPI_IPROBE yogimpi_iprobe_
 #define YOGIMPI_TEST yogimpi_test_
 #define YOGIMPI_ATTR_GET yogimpi_attr_get_
@@ -242,6 +244,10 @@ void YOGIMPI_COMM_SPLIT(int *comm, int *color, int *key, int *newcomm,
 
 void YOGIMPI_COMM_FREE(int *comm, int *ierror) {
     *ierror = YogiMPI_Comm_free(comm);
+}
+
+void YOGIMPI_GROUP_FREE(int *group, int *ierror) {
+    *ierror = YogiMPI_Group_free(group);
 }
 
 void YOGIMPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
@@ -465,6 +471,19 @@ void YOGIMPI_TEST(int *request, int *flag, int *status, int *ierror) {
         YogiMPI_Status cStatus;
         yogi_fstatus_to_c(status, &cStatus);
         *ierror = YogiMPI_Test(request, flag, &cStatus);
+        yogi_cstatus_to_f(&cStatus, status);
+    }
+
+}
+
+void YOGIMPI_PROBE(int *source, int *tag, int *comm, int *status, int *ierror) {
+    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+        *ierror = YogiMPI_Probe(*source, *tag, *comm, YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        YogiMPI_Status cStatus;
+        yogi_fstatus_to_c(status, &cStatus);
+        *ierror = YogiMPI_Probe(*source, *tag, *comm, &cStatus);
         yogi_cstatus_to_f(&cStatus, status);
     }
 

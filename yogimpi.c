@@ -1134,6 +1134,30 @@ int YogiMPI_Comm_free(YogiMPI_Comm *comm) {
     return MPI_SUCCESS;
 }
 
+int YogiMPI_Group_free(YogiMPI_Group *group) {
+    if (YogiMPI_GROUP_EMPTY == *group) {
+        assert(group_ref_counts[*group] > 1);
+        --group_ref_counts[*group];
+        return YogiMPI_SUCCESS;
+    }
+    else { /* group_world, group_self or volatile group */
+        assert(YogiMPI_GROUP_WORLD == *group
+               || YogiMPI_GROUP_SELF == *group
+               || *group >= YogiMPI_GROUP_VOLATILE_OFFSET);
+        MPI_Group mpi_group = group_pool[*group];
+        int mpi_err = MPI_Group_free(&mpi_group);
+        --(group_ref_counts[*group]);
+        if (0 == group_ref_counts[*group]) {
+            assert((YogiMPI_GROUP_WORLD != *group) 
+                   && (YogiMPI_GROUP_SELF != *group));
+            group_pool[*group] = MPI_GROUP_NULL;
+        }
+
+        *group = YogiMPI_GROUP_NULL;
+        return error_to_yogi(mpi_err);
+    }
+}
+
 int YogiMPI_Get_processor_name(char *name, int *resultlen) {
     int mpi_err;
     if (MPI_MAX_PROCESSOR_NAME > YogiMPI_MAX_PROCESSOR_NAME) {
@@ -1400,6 +1424,28 @@ int YogiMPI_Test(YogiMPI_Request *request, int *flag, YogiMPI_Status *status) {
     }
 
     return error_to_yogi(mpi_error); 
+}
+
+int YogiMPI_Probe(int source, int tag, YogiMPI_Comm comm, 
+                  YogiMPI_Status* status) {
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    int mpi_err;
+
+    /* treat MPI_ANY_SOURCE */
+    if (YogiMPI_ANY_SOURCE == source) source = MPI_ANY_SOURCE;
+
+    /* treat MPI_ANY_TAG */
+    if (YogiMPI_ANY_TAG == tag) tag = MPI_ANY_TAG;
+
+    if (YogiMPI_STATUS_IGNORE != status) {
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
+        mpi_err = MPI_Probe(source, tag, mpi_comm, mpi_status);
+        mpi_status_to_yogi(mpi_status, status);
+    }
+    else {
+        mpi_err = MPI_Probe(source, tag, mpi_comm, MPI_STATUS_IGNORE);
+    }
+    return error_to_yogi(mpi_err);
 }
 
 int YogiMPI_Iprobe(int source, int tag, YogiMPI_Comm comm, int *flag,

@@ -157,6 +157,7 @@
 #define MPI_Comm_dup YogiMPI_Comm_dup
 #define MPI_Comm_split YogiMPI_Comm_split
 #define MPI_Comm_free YogiMPI_Comm_free
+#define MPI_Group_free YogiMPI_Group_free
 #define MPI_Get_processor_name YogiMPI_Get_processor_name
 #define MPI_Wtime YogiMPI_Wtime
 #define MPI_Init YogiMPI_Init
@@ -177,6 +178,7 @@
 #define MPI_Info_create YogiMPI_Info_create
 #define MPI_Info_set YogiMPI_Info_set
 #define MPI_Test YogiMPI_Test
+#define MPI_Probe YogiMPI_Probe
 #define MPI_Iprobe YogiMPI_Iprobe
 #define MPI_Abort YogiMPI_Abort
 #define MPI_Attr_get YogiMPI_Attr_get
