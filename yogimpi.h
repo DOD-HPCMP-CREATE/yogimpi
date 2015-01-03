@@ -271,6 +271,11 @@ int YogiMPI_Allreduce(void* sendbuf, void* recvbuf, int count,
                       YogiMPI_Datatype datatype, YogiMPI_Op op,
                       YogiMPI_Comm comm);
 
+int YogiMPI_Comm_create(YogiMPI_Comm comm, YogiMPI_Group group,
+                        YogiMPI_Comm *newcomm);
+
+int YogiMPI_Comm_group(YogiMPI_Comm comm, YogiMPI_Group* group);
+
 int YogiMPI_Comm_size(YogiMPI_Comm comm, int* size);
 
 int YogiMPI_Comm_rank(YogiMPI_Comm comm, int* rank);

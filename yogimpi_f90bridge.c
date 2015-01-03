@@ -36,6 +36,8 @@
 #define YOGIMPI_GATHER yogimpi_gather_
 #define YOGIMPI_REDUCE yogimpi_reduce_
 #define YOGIMPI_ALLREDUCE yogimpi_allreduce_
+#define YOGIMPI_COMM_CREATE yogimpi_comm_create_
+#define YOGIMPI_COMM_GROUP yogimpi_comm_group_
 #define YOGIMPI_COMM_SIZE yogimpi_comm_size_
 #define YOGIMPI_COMM_RANK yogimpi_comm_rank_
 #define YOGIMPI_COMM_DUP yogimpi_comm_dup_
@@ -211,6 +213,14 @@ void YOGIMPI_ALLREDUCE(void *sendbuf, void *recvbuf, int *count, int *datatype,
 		               int *op, int *comm, int *ierror) {
     *ierror = YogiMPI_Allreduce(sendbuf, recvbuf, *count, *datatype, *op,
     		                    *comm);
+}
+
+void YOGIMPI_COMM_CREATE(int *comm, int *group, int *newcomm, int *ierror) {
+    *ierror = YogiMPI_Comm_create(*comm, *group, newcomm);
+}
+
+void YOGIMPI_COMM_GROUP(int *comm, int *group, int *ierror) {
+    *ierror = YogiMPI_Comm_group(*comm, group); 
 }
 
 void YOGIMPI_COMM_SIZE(int *comm, int *size, int *ierror) {

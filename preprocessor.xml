@@ -162,6 +162,8 @@
   <Function>MPI_Allgatherv</Function>
   <Function>MPI_Reduce</Function>
   <Function>MPI_Allreduce</Function>
+  <Function>MPI_Comm_create</Function>
+  <Function>MPI_Comm_group</Function>
   <Function>MPI_Comm_size</Function>
   <Function>MPI_Comm_rank</Function>
   <Function>MPI_Comm_dup</Function>

@@ -150,6 +150,8 @@
 #define MPI_Allgatherv YogiMPI_Allgatherv
 #define MPI_Reduce YogiMPI_Reduce
 #define MPI_Allreduce YogiMPI_Allreduce
+#define MPI_Comm_create YogiMPI_Comm_create
+#define MPI_Comm_group YogiMPI_Comm_group
 #define MPI_Comm_size YogiMPI_Comm_size
 #define MPI_Comm_rank YogiMPI_Comm_rank
 #define MPI_Comm_dup YogiMPI_Comm_dup

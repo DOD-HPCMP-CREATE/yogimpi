@@ -278,8 +278,7 @@ static void register_preindexed_comm(YogiMPI_Comm comm, MPI_Comm mpi_comm,
     comm_groups_map[comm] = group;
 }
 
-static YogiMPI_Comm alloc_new_volatile_comm(MPI_Comm mpi_comm, YogiMPI_Group group, 
-		                                    int is_inter) {
+static YogiMPI_Comm alloc_new_volatile_comm(MPI_Comm mpi_comm, YogiMPI_Group group, int is_inter) {
 
     /* find new slot */
     YogiMPI_Comm new_slot = YogiMPI_COMM_VOLATILE_OFFSET;
@@ -1036,6 +1035,32 @@ int YogiMPI_Allreduce(void* sendbuf, void* recvbuf, int count,
         		                mpi_comm);
     }
     return error_to_yogi(mpi_err);
+}
+
+int YogiMPI_Comm_create(YogiMPI_Comm comm, YogiMPI_Group group,
+                        YogiMPI_Comm *newcomm) {
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    MPI_Group mpi_group = group_to_mpi(group);
+    MPI_Comm mpi_newcomm;
+
+    int mpi_err = MPI_Comm_create(mpi_comm, mpi_group, &mpi_newcomm);
+    if (mpi_newcomm == MPI_COMM_NULL) {
+        *newcomm = YogiMPI_COMM_NULL;
+    }
+    else {
+        *newcomm = alloc_new_volatile_comm(mpi_newcomm, group, 0);
+    }
+
+    return error_to_yogi(mpi_err);
+}
+
+int YogiMPI_Comm_group(YogiMPI_Comm comm, YogiMPI_Group *group) {
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    MPI_Group mpi_group = MPI_GROUP_NULL;
+    MPI_Comm_group(mpi_comm, &mpi_group);
+    *group = comm_groups_map[comm];
+    group_ref_counts[*group] += 1;
+    return YogiMPI_SUCCESS;
 }
 
 int YogiMPI_Comm_size(YogiMPI_Comm comm, int* size)
