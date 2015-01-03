@@ -145,6 +145,8 @@
   <Function>MPI_Irecv</Function>
   <Function>MPI_Wait</Function>
   <Function>MPI_Request_free</Function>
+  <Function>MPI_Waitsome</Function>
+  <Function>MPI_Waitany</Function>
   <Function>MPI_Waitall</Function>
   <Function>MPI_Send_init</Function>
   <Function>MPI_Type_size</Function>
@@ -170,6 +172,9 @@
   <Function>MPI_Comm_split</Function>
   <Function>MPI_Comm_free</Function>
   <Function>MPI_Group_free</Function>
+  <Function>MPI_Group_incl</Function>
+  <Function>MPI_Group_rank</Function>
+  <Function>MPI_Group_translate_ranks</Function>
   <Function>MPI_Get_processor_name</Function>
   <Function>MPI_Wtime</Function>
   <Function>MPI_Init</Function>

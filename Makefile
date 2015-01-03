@@ -36,7 +36,8 @@ clean:
 	$(RM) *.o *.so nonblock sendrecv matt fsendrecv fmatt simple \
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall fnonblock_waitall sendRecvErrC testComms \
-              ftestComms probe check_status
+              ftestComms probe check_status collective fcollective \
+              waitsome waitany
 
 test: ctest ftest 
 
@@ -52,6 +53,9 @@ ctest: default
 	$(CC) $(CFLAGS) test/testComms.c -L. -lyogimpi -o testComms
 	$(CC) $(CFLAGS) test/probe.c -L. -lyogimpi -o probe 
 	$(CC) $(CFLAGS) test/check_status.c -L. -lyogimpi -o check_status
+	$(CC) $(CFLAGS) test/collective.c -L. -lyogimpi -o collective 
+	$(CC) $(CFLAGS) test/waitsome.c -L. -lyogimpi -o waitsome
+	$(CC) $(CFLAGS) test/waitany.c -L. -lyogimpi -o waitany
 
 ftest: default
 	$(F90) $(FFLAGS) test/writeFile1.f90 -L. -lyogimpi -o fwriteFile1
@@ -63,3 +67,5 @@ ftest: default
 	$(F90) $(FFLAGS) test/nonblock_waitall.f90 -L. -lyogimpi \
                -o fnonblock_waitall
 	$(F90) $(FFLAGS) test/testComms.f90 -L. -lyogimpi -o ftestComms
+	$(F90) $(FFLAGS) test/collective.f90 -L. -lyogimpi -o fcollective
+

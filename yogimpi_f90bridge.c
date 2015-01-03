@@ -44,6 +44,9 @@
 #define YOGIMPI_COMM_SPLIT yogimpi_comm_split_
 #define YOGIMPI_COMM_FREE yogimpi_comm_free_
 #define YOGIMPI_GROUP_FREE yogimpi_group_free_
+#define YOGIMPI_GROUP_INCL yogimpi_group_incl_
+#define YOGIMPI_GROUP_RANK yogimpi_group_rank_
+#define YOGIMPI_GROUP_TRANSLATE_RANKS yogimpi_group_translate_ranks_
 #define YOGIMPI_GET_PROCESSOR_NAME yogimpi_get_processor_name_
 #define YOGIMPI_WTIME yogimpi_wtime_
 #define YOGIMPI_INIT yogimpi_init_
@@ -61,6 +64,8 @@
 #define YOGIMPI_FILE_WRITE_AT yogimpi_file_write_at_
 #define YOGIMPI_INFO_CREATE yogimpi_info_create_
 #define YOGIMPI_INFO_SET yogimpi_info_set_
+#define YOGIMPI_WAITANY yogimpi_waitany_
+#define YOGIMPI_WAITSOME yogimpi_waitsome_
 #define YOGIMPI_WAITALL yogimpi_waitall_
 #define YOGIMPI_SEND_INIT yogimpi_send_init_
 #define YOGIMPI_GATHERV yogimpi_gatherv_
@@ -250,6 +255,21 @@ void YOGIMPI_GROUP_FREE(int *group, int *ierror) {
     *ierror = YogiMPI_Group_free(group);
 }
 
+void YOGIMPI_GROUP_INCL(int *group, int *n, int *ranks, int *group_out,
+		                int *ierror) {
+	*ierror = YogiMPI_Group_incl(*group, *n, ranks, group_out);
+}
+
+void YOGIMPI_GROUP_TRANSLATE_RANKS(int *group1, int *n, int *ranks1,
+		                           int *group2, int *ranks2, int *ierror) {
+	*ierror = YogiMPI_Group_translate_ranks(*group1, *n, ranks1, *group2, 
+			                                ranks2);
+}
+
+void YOGIMPI_GROUP_RANK(int *group, int *rank, int *ierror) {
+    *ierror = YogiMPI_Group_rank(*group, rank);
+}
+
 void YOGIMPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
 		                        int name_len) {
 	char *interimName = null_terminate(name, name_len);
@@ -419,6 +439,19 @@ void YOGIMPI_WAITALL(int *count, int *array_of_requests, int *array_of_statuses,
 	    yogi_cstatus_array_to_f(list, array_of_statuses, *count);
 	    free(list);
 	}
+}
+
+void YOGIMPI_WAITANY(int *count, int *array_of_requests, int *index,
+                     int *status, int *ierror) {
+    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+        *ierror = YogiMPI_Waitany(*count, array_of_requests, index, YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        YogiMPI_Status cStatus;
+        yogi_fstatus_to_c(status, &cStatus);
+        *ierror = YogiMPI_Waitany(*count, array_of_requests, index, &cStatus);
+        yogi_cstatus_to_f(&cStatus, status);
+    }
 }
 
 void YOGIMPI_SEND_INIT(void *buf, int *count, int *datatype, int *dest,

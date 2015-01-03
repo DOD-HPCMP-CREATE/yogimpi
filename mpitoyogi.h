@@ -132,6 +132,8 @@
 #define MPI_Irecv YogiMPI_Irecv
 #define MPI_Wait YogiMPI_Wait
 #define MPI_Request_free YogiMPI_Request_free
+#define MPI_Waitsome YogiMPI_Waitsome
+#define MPI_Waitany YogiMPI_Waitany
 #define MPI_Waitall YogiMPI_Waitall
 #define MPI_Send_init YogiMPI_Send_init
 #define MPI_Type_size YogiMPI_Type_size
@@ -158,6 +160,9 @@
 #define MPI_Comm_split YogiMPI_Comm_split
 #define MPI_Comm_free YogiMPI_Comm_free
 #define MPI_Group_free YogiMPI_Group_free
+#define MPI_Group_incl YogiMPI_Group_incl
+#define MPI_Group_rank YogiMPI_Group_rank
+#define MPI_Group_translate_ranks YogiMPI_Group_translate_ranks
 #define MPI_Get_processor_name YogiMPI_Get_processor_name
 #define MPI_Wtime YogiMPI_Wtime
 #define MPI_Init YogiMPI_Init

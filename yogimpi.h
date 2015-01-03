@@ -197,7 +197,7 @@ int YogiMPI_Get_count(YogiMPI_Status *status, YogiMPI_Datatype datatype,
                       int *count);
 
 int YogiMPI_Ssend(void* buf, int count, YogiMPI_Datatype datatype, int dest,
-                  int tag, YogiMPI_Comm comm) ;
+                  int tag, YogiMPI_Comm comm);
 
 int YogiMPI_Isend(void *buf, int count, YogiMPI_Datatype datatype, int dest,
                   int tag, YogiMPI_Comm comm, YogiMPI_Request* request);
@@ -214,6 +214,13 @@ int YogiMPI_Request_free(YogiMPI_Request *request);
 
 int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests,
                     YogiMPI_Status *array_of_statuses);
+
+int YogiMPI_Waitsome(int incount, YogiMPI_Request *array_of_requests, 
+		             int *outcount, int *array_of_indices, 
+					 YogiMPI_Status *array_of_statuses);
+
+int YogiMPI_Waitany(int count, YogiMPI_Request *array_of_requests, int *index, 
+		            YogiMPI_Status *status);
 
 int YogiMPI_Send_init(void *buf, int count, YogiMPI_Datatype datatype, int dest,
                       int tag, YogiMPI_Comm comm, YogiMPI_Request* request);
@@ -288,6 +295,14 @@ int YogiMPI_Comm_split(YogiMPI_Comm comm, int color, int key,
 int YogiMPI_Comm_free(YogiMPI_Comm *comm);
 
 int YogiMPI_Group_free(YogiMPI_Group *group);
+
+int YogiMPI_Group_incl(YogiMPI_Group group, int n, int *ranks, 
+		               YogiMPI_Group* group_out);
+
+int YogiMPI_Group_rank(YogiMPI_Group group, int *rank);
+
+int YogiMPI_Group_translate_ranks(YogiMPI_Group group1, int n, int *ranks1, 
+		                          YogiMPI_Group group2, int *ranks2);
 
 int YogiMPI_Get_processor_name(char *name, int *resultlen);
 

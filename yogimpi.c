@@ -802,6 +802,81 @@ int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests,
     return error_to_yogi(mpi_err);
 }
 
+int YogiMPI_Waitsome(int incount, YogiMPI_Request *array_of_requests, 
+		             int *outcount, int *array_of_indices, 
+					 YogiMPI_Status *array_of_statuses) {
+    int i;
+    int mpi_err;
+    MPI_Request* mpi_requests = (MPI_Request*)malloc(incount*sizeof(MPI_Request));
+    for(i = 0; i < incount; ++i) {
+        mpi_requests[i] = * request_to_mpi(array_of_requests[i]);
+    }
+    
+    if (YogiMPI_STATUSES_IGNORE != array_of_statuses ) {
+        MPI_Status* mpi_statuses = (MPI_Status*)malloc(incount*sizeof(MPI_Status));
+        for (i = 0; i < incount; i++) {
+            mpi_statuses[i] = *(yogi_status_to_mpi(&array_of_statuses[i]));
+        }
+	    mpi_err = MPI_Waitsome(incount, mpi_requests, outcount, 
+	                           array_of_indices, mpi_statuses);
+        for(i = 0; i < *outcount; i++) {
+            mpi_status_to_yogi(&mpi_statuses[i], &array_of_statuses[i]);
+        }
+        free(mpi_statuses);
+    }
+    else {
+        mpi_err = MPI_Waitsome(incount, mpi_requests, outcount, 
+                               array_of_indices, MPI_STATUSES_IGNORE);
+    }
+    
+    /* reset requests */
+    if (*outcount == MPI_UNDEFINED) {
+        *outcount = YogiMPI_UNDEFINED;
+    }
+    else {
+        for(i = 0; i < *outcount; ++i) {
+            int requestIndex = array_of_indices[i];
+            if(mpi_requests[requestIndex] == MPI_REQUEST_NULL) {
+                *request_to_mpi(array_of_requests[requestIndex]) = MPI_REQUEST_NULL; 
+                array_of_requests[requestIndex] = YogiMPI_REQUEST_NULL;
+            }
+        }
+    }
+    free(mpi_requests);
+    return error_to_yogi(mpi_err);
+}
+
+int YogiMPI_Waitany(int count, YogiMPI_Request *array_of_requests, int *index, 
+		            YogiMPI_Status *status) {
+    int i;
+    int mpi_err;
+    MPI_Request* mpi_requests = (MPI_Request*)malloc(count*sizeof(MPI_Request));
+    for(i = 0; i < count; ++i) {
+        mpi_requests[i] = * request_to_mpi(array_of_requests[i]);
+    }
+    
+    if (YogiMPI_STATUS_IGNORE != status ) {
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
+        mpi_err = MPI_Waitany(count, mpi_requests, index, mpi_status);
+        mpi_status_to_yogi(mpi_status, status);
+    }
+    else {
+        mpi_err = MPI_Waitany(count, mpi_requests, index, MPI_STATUS_IGNORE);
+    }
+    
+    /* reset requests */
+    if (*index == MPI_UNDEFINED) {
+        *index = YogiMPI_UNDEFINED;
+    }
+    else {
+        if(mpi_requests[*index] == MPI_REQUEST_NULL) {
+            *request_to_mpi(array_of_requests[*index]) = MPI_REQUEST_NULL; 
+            array_of_requests[*index] = YogiMPI_REQUEST_NULL;
+        }
+    }
+    free(mpi_requests);
+    return error_to_yogi(mpi_err);
+}
 
 int YogiMPI_Send_init(void *buf, int count, YogiMPI_Datatype datatype, int dest,
 		              int tag, YogiMPI_Comm comm, YogiMPI_Request* request) {
@@ -1156,6 +1231,46 @@ int YogiMPI_Group_free(YogiMPI_Group *group) {
         *group = YogiMPI_GROUP_NULL;
         return error_to_yogi(mpi_err);
     }
+}
+int YogiMPI_Group_incl(YogiMPI_Group group, int n, int *ranks, 
+		               YogiMPI_Group *group_out) {
+	/* See definition of Group_incl in mpi-1.1 */
+    if (0 == n) { 
+	    *group_out = YogiMPI_GROUP_EMPTY;
+	    group_ref_counts[*group_out] += 1;
+	    return YogiMPI_SUCCESS;
+	}
+	else {
+	    MPI_Group mpi_group = group_to_mpi(group);
+	    MPI_Group mpi_group_out;
+	    int mpi_err = MPI_Group_incl(mpi_group, n, ranks, &mpi_group_out);
+	    *group_out = alloc_new_volatile_group(mpi_group_out);
+
+	    return error_to_yogi(mpi_err);
+    }
+
+}
+
+int YogiMPI_Group_translate_ranks(YogiMPI_Group group1, int n, int *ranks1, 
+		                          YogiMPI_Group group2, int *ranks2) {
+    MPI_Group mpi_group1 = group_to_mpi(group1);
+    MPI_Group mpi_group2 = group_to_mpi(group2);
+    int mpi_err = MPI_Group_translate_ranks(mpi_group1, n, ranks1, mpi_group2,
+    		                                ranks2);
+
+    /* convert MPI_UNDEFINED ranks into YogiMPI_UNDEFINED */
+    int i = 0;
+    for(i = 0; i < n ; ++i) {
+        if (MPI_UNDEFINED == ranks2[i]) ranks2[i] = YogiMPI_UNDEFINED;
+	}
+
+	return error_to_yogi(mpi_err);
+}
+
+int YogiMPI_Group_rank(YogiMPI_Group group, int *rank) {
+    MPI_Group mpi_group = group_to_mpi(group);
+    int mpi_err = MPI_Group_rank(mpi_group, rank);
+	return error_to_yogi(mpi_err);
 }
 
 int YogiMPI_Get_processor_name(char *name, int *resultlen) {
