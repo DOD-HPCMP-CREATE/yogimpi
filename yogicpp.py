@@ -88,8 +88,12 @@ class yogicpp(object):
         for line in rawFile:
             matchMPI = self._findMPI(line, caseSensitive=caseSensitive)
             for item in matchMPI: 
-                if not item in self.definitions: 
-                    noMPI.add(item)
+                if caseSensitive:
+                    if not item in self.definitions: 
+                        noMPI.add(item)
+                else:
+                    if not item.upper() in (md.upper() for md in self.definitions):
+                        noMPI.add(item) 
         if noMPI:
             self.writeLog(os.path.abspath(inputFile))
             self.writeLog(*noMPI)
