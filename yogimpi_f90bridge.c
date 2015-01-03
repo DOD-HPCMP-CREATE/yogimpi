@@ -68,6 +68,9 @@
 #define YOGIMPI_ABORT yogimpi_abort_
 #define YOGIMPI_IPROBE yogimpi_iprobe_
 #define YOGIMPI_TEST yogimpi_test_
+#define YOGIMPI_ATTR_GET yogimpi_attr_get_
+#define YOGIMPI_INITIALIZED yogimpi_initialized_
+#define YOGIMPI_FINALIZED yogimpi_finalized_
 
 /* Returns whether YogiMPI's Fortran layer should place MPI_STATUS_IGNORE and
  * MPI_STATUSES_IGNORE as arguments when MPI_Status(es) are expected.  This
@@ -474,3 +477,17 @@ void YOGIMPI_IPROBE(int *source, int *tag, int *comm, int *flag, int *status,
 void YOGIMPI_ABORT(int *comm, int *errorcode, int *ierror) {
     *ierror = YogiMPI_Abort(*comm, *errorcode);
 }
+
+void YOGIMPI_ATTR_GET(int *comm, int *keyval, int *attribute_val,
+                      int *flag, int *ierror) {
+    *ierror = YogiMPI_Attr_get(*comm, *keyval, attribute_val, flag);
+}
+
+void YOGIMPI_INITIALIZED(int *flag, int *ierror) {
+    *ierror = YogiMPI_Initialized(flag);
+}
+
+void YOGIMPI_FINALIZED(int *flag, int *ierror) {
+    *ierror = YogiMPI_Finalized(flag);
+}
+

@@ -189,4 +189,7 @@
   <Function>MPI_Abort</Function>
   <Function>MPI_Iprobe</Function>
   <Function>MPI_Test</Function>
+  <Function>MPI_Attr_get</Function>
+  <Function>MPI_Finalized</Function>
+  <Function>MPI_Initialized</Function>
 </SupportedMPI>

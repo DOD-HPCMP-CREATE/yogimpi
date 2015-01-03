@@ -1400,3 +1400,21 @@ int YogiMPI_Abort(YogiMPI_Comm comm, int errorcode) {
     int mpi_error = MPI_Abort(mpi_comm, errorcode);
     return error_to_yogi(mpi_error);
 }
+
+int YogiMPI_Attr_get(YogiMPI_Comm comm, int keyval, void *attribute_val, 
+                     int *flag) {
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    int mpi_error = MPI_Attr_get(mpi_comm, keyval, attribute_val, flag);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Initialized(int *flag) {
+    int mpi_error = MPI_Initialized(flag);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Finalized(int *flag) {
+    int mpi_error = MPI_Finalized(flag);
+    return error_to_yogi(mpi_error);
+}
+

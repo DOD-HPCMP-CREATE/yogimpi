@@ -177,5 +177,8 @@
 #define MPI_Test YogiMPI_Test
 #define MPI_Iprobe YogiMPI_Iprobe
 #define MPI_Abort YogiMPI_Abort
+#define MPI_Attr_get YogiMPI_Attr_get
+#define MPI_Finalized YogiMPI_Finalized
+#define MPI_Initialized YogiMPI_Initialized
 
 #endif /* MPITOYOGI_H */

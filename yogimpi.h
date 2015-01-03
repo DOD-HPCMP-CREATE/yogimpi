@@ -344,4 +344,11 @@ int YogiMPI_Iprobe(int source, int tag, YogiMPI_Comm comm, int *flag,
 
 int YogiMPI_Abort(YogiMPI_Comm comm, int errorcode);
 
+int YogiMPI_Attr_get(YogiMPI_Comm comm, int keyval, void *attribute_val,
+                     int *flag);
+
+int YogiMPI_Initialized(int *flag);
+
+int YogiMPI_Finalized(int *flag);
+
 #endif /* YOGIMPI_H */
