@@ -34,8 +34,9 @@ class yogicpp(object):
         self.definitions = [] 
         self.loadSupported()
         self.outputPath = os.path.abspath(self.outputPath)
-        if not os.path.exists(self.outputPath):
-            os.mkdir(self.outputPath)
+        if self.actionType == 'preprocess':
+            if not os.path.exists(self.outputPath):
+                os.mkdir(self.outputPath)
         if self.actionType == 'preprocess':
             if self.inputMode == 'file':
                 self.preprocessFile(self.inputPath, self.outputPath,
@@ -48,8 +49,8 @@ class yogicpp(object):
                 self.preprocessFile(self.inputPath, self.outputPath,
                                     makeChanges=False)
             else:
-                self.preprocessFile(self.inputPath, self.outputPath,
-                                    makeChanges=False)
+                self.preprocessDirectory(self.inputPath, self.outputPath,
+                                         makeChanges=False)
         elif self.actionType == 'checkwrap':
             if self.inputMode == 'file':
                 self.checkFileWrap(self.inputPath)
@@ -123,20 +124,20 @@ class yogicpp(object):
                     self.preprocessFile(os.path.join(dirpath, f), 
                                         outputDir + '/' + f)
  
-    def _writeChanges(self, fileName, originalFile, modFile, logFile):
+    def _showChanges(self, fileName, originalFile, modFile):
         isChanged = False
         changeList = []
         for i in range(len(originalFile)):
-            if originalFile[i] != rawFile[i]:
+            if originalFile[i] != modFile[i]:
                 changeList.append(i)
                 isChanged = True
         if isChanged:
             self.logFile.write("Changing " + fileName + "\n")
             for lineNum in changeList:
-                self.logFile.write("Line " + str(lineNum) + "\n")
-                self.logFile.write(originalFile[i])
-                self.logFile.write(rawFile[i])
-                         
+                self.logFile.write("Line " + str(lineNum + 1) + "\n")
+                self.logFile.write("- " + originalFile[lineNum])
+                self.logFile.write("+ " + modFile[lineNum])
+                self.logFile.flush()         
  
     def preprocessFile(self, inputFile, outputFile, makeChanges=False):
         ihandle = open(inputFile, 'r')
@@ -154,7 +155,7 @@ class yogicpp(object):
                                                rawFile[i])
                     rawFile[i] = re.sub(r"(\"|')mpif.h(\"|')", "'yogimpif.h'", 
                                         rawFile[i])
-        elif self._isCSource(inputFile):
+        elif self._isCSource(inputFile) or self._isCXXSource(inputFile):
             for i in range(len(rawFile)):
                 rawFile[i] = re.sub("(\"|<)mpi.h(\"|>)", "\"mpitoyogi.h\"", 
                                     rawFile[i])
@@ -163,7 +164,7 @@ class yogicpp(object):
             ohandle = open(outputFile, 'w')
             ohandle.writelines(rawFile)
         else:
-            self._writeChanges(fileName, originalFile, rawFile)
+            self._showChanges(inputFile, originalFile, rawFile)
  
     def _isSourceFile(self, fileName):
         if self._isFortranSource(fileName):
@@ -212,7 +213,7 @@ if __name__ == "__main__":
                         help="Action to take") 
     parser.add_argument('--output', '-o',
                         action="store",
-                        required=True,
+                        default='.',
                         help="Output path")
 
     configArguments = parser.parse_args()

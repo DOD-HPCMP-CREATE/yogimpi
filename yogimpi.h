@@ -7,7 +7,9 @@
 
 #ifndef YOGIMPI_H 
 #define YOGIMPI_H 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 /*
  * MPI_Status can be treated as a series of integers (as in Fortran).
  * YogiMPI stores an integer array larger than any known MPI distribution's
@@ -376,4 +378,7 @@ int YogiMPI_Initialized(int *flag);
 
 int YogiMPI_Finalized(int *flag);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* YOGIMPI_H */
