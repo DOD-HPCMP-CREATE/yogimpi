@@ -34,11 +34,22 @@ class yogicpp(object):
         self.definitions = [] 
         self.loadSupported()
         self.outputPath = os.path.abspath(self.outputPath)
+        if not os.path.exists(self.outputPath):
+            os.mkdir(self.outputPath)
         if self.actionType == 'preprocess':
             if self.inputMode == 'file':
-                self.preprocessFile(self.inputPath, self.outputPath)
+                self.preprocessFile(self.inputPath, self.outputPath,
+                                    makeChanges=True)
             else:
-                self.preprocessDirectory(self.inputPath, self.outputPath)
+                self.preprocessDirectory(self.inputPath, self.outputPath,
+                                         makeChanges=True)
+        elif self.actionType == 'simulate':
+            if self.inputMode == 'file':
+                self.preprocessFile(self.inputPath, self.outputPath,
+                                    makeChanges=False)
+            else:
+                self.preprocessFile(self.inputPath, self.outputPath,
+                                    makeChanges=False)
         elif self.actionType == 'checkwrap':
             if self.inputMode == 'file':
                 self.checkFileWrap(self.inputPath)
@@ -105,14 +116,35 @@ class yogicpp(object):
                 if self._isSourceFile(f):
                     self.checkFileWrap(os.path.join(dirpath, f))
 
-    def preprocessDirectory(self, inputDir, outputDir):
-        pass
-  
-    def preprocessFile(self, inputFile, outputFile):
+    def preprocessDirectory(self, inputDir, outputDir, makeChanges=False):
+        for dirpath, dnames, fnames in os.walk(inputDir):
+            for f in fnames:
+                if self._isSourceFile(f):
+                    self.preprocessFile(os.path.join(dirpath, f), 
+                                        outputDir + '/' + f)
+ 
+    def _writeChanges(self, fileName, originalFile, modFile, logFile):
+        isChanged = False
+        changeList = []
+        for i in range(len(originalFile)):
+            if originalFile[i] != rawFile[i]:
+                changeList.append(i)
+                isChanged = True
+        if isChanged:
+            self.logFile.write("Changing " + fileName + "\n")
+            for lineNum in changeList:
+                self.logFile.write("Line " + str(lineNum) + "\n")
+                self.logFile.write(originalFile[i])
+                self.logFile.write(rawFile[i])
+                         
+ 
+    def preprocessFile(self, inputFile, outputFile, makeChanges=False):
+        ihandle = open(inputFile, 'r')
+        rawFile = ihandle.readlines()
+        originalFile = list(rawFile)
+        ihandle.close()
+
         if self._isFortranSource(inputFile):
-            ihandle = open(inputFile, 'r')
-            rawFile = ihandle.readlines()
-            ihandle.close()
             for aPattern in self.definitions:
                 for i in range(len(rawFile)):
                     mpiString = re.compile(r"(^|_|=|\s|\(|\)|,|\*|\+)(" +\
@@ -122,20 +154,17 @@ class yogicpp(object):
                                                rawFile[i])
                     rawFile[i] = re.sub(r"(\"|')mpif.h(\"|')", "'yogimpif.h'", 
                                         rawFile[i])
-        
-            ohandle = open(outputFile, 'w')
-            ohandle.writelines(rawFile)
         elif self._isCSource(inputFile):
-            ihandle = open(inputFile, 'r')
-            rawFile = ihandle.readlines()
-            ihandle.close()
             for i in range(len(rawFile)):
                 rawFile[i] = re.sub("(\"|<)mpi.h(\"|>)", "\"mpitoyogi.h\"", 
                                     rawFile[i])
         
+        if makeChanges:
             ohandle = open(outputFile, 'w')
-            ohandle.writelines(rawFile)            
-   
+            ohandle.writelines(rawFile)
+        else:
+            self._writeChanges(fileName, originalFile, rawFile)
+ 
     def _isSourceFile(self, fileName):
         if self._isFortranSource(fileName):
             return True
@@ -178,8 +207,8 @@ if __name__ == "__main__":
                         required=True,
                         help="Input path for preprocessing")
     parser.add_argument('--action',
-                        choices=['checkwrap', 'logchanges', 'preprocess'],
-                        default='preprocess',
+                        choices=['checkwrap', 'simulate', 'preprocess'],
+                        default='simulate',
                         help="Action to take") 
     parser.add_argument('--output', '-o',
                         action="store",
