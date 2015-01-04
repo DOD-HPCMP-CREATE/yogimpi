@@ -444,13 +444,32 @@ void YOGIMPI_WAITALL(int *count, int *array_of_requests, int *array_of_statuses,
 void YOGIMPI_WAITANY(int *count, int *array_of_requests, int *index,
                      int *status, int *ierror) {
     if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
-        *ierror = YogiMPI_Waitany(*count, array_of_requests, index, YogiMPI_STATUS_IGNORE);
+        *ierror = YogiMPI_Waitany(*count, array_of_requests, index, 
+                                  YogiMPI_STATUS_IGNORE);
     }
     else {
         YogiMPI_Status cStatus;
         yogi_fstatus_to_c(status, &cStatus);
         *ierror = YogiMPI_Waitany(*count, array_of_requests, index, &cStatus);
         yogi_cstatus_to_f(&cStatus, status);
+    }
+}
+
+void YOGIMPI_WAITSOME(int *incount, int *array_of_requests, int *outcount,
+                      int *array_of_indices, int *array_of_statuses,
+                      int *ierror) {
+    if (*array_of_statuses == FYOGIMPI_STATUSES_IGNORE 
+        || get_fignore_status()) {
+        *ierror = YogiMPI_Waitsome(*incount, array_of_requests, outcount, 
+                                   array_of_indices, YogiMPI_STATUSES_IGNORE);
+    }
+    else {
+        YogiMPI_Status *list = yogi_fstatus_array_to_c(array_of_statuses, 
+                                                       *incount);
+        *ierror = YogiMPI_Waitsome(*incount, array_of_requests, outcount, 
+                                   array_of_indices, list);
+        yogi_cstatus_array_to_f(list, array_of_statuses, *outcount);
+        free(list);
     }
 }
 

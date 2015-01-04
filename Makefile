@@ -37,7 +37,7 @@ clean:
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall fnonblock_waitall sendRecvErrC testComms \
               ftestComms probe check_status collective fcollective \
-              waitsome waitany
+              waitsome waitany fwaitsome
 
 test: ctest ftest 
 
@@ -68,4 +68,6 @@ ftest: default
                -o fnonblock_waitall
 	$(F90) $(FFLAGS) test/testComms.f90 -L. -lyogimpi -o ftestComms
 	$(F90) $(FFLAGS) test/collective.f90 -L. -lyogimpi -o fcollective
+	$(F90) $(FFLAGS) test/waitsome.f90 -L. -lyogimpi -o fwaitsome
+
 
