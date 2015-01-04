@@ -30,11 +30,13 @@ class yogicpp(object):
         self.inputPath = inputPath
         self.outputPath = outputPath 
         self.actionType = actionType
-        self.logFile = open('yogicpp.out', 'w')
+        self.logFile = None
+        if not self.actionType == 'preprocess':
+            self.logFile = open('yogicpp.out', 'w')
         self.definitions = [] 
         self.loadSupported()
         self.outputPath = os.path.abspath(self.outputPath)
-        if self.actionType == 'preprocess':
+        if self.actionType == 'preprocess' and self.inputMode == 'directory':
             if not os.path.exists(self.outputPath):
                 os.mkdir(self.outputPath)
         if self.actionType == 'preprocess':
@@ -56,7 +58,8 @@ class yogicpp(object):
                 self.checkFileWrap(self.inputPath)
             else:
                 self.checkDirectoryWrap(self.inputPath) 
-        self.logFile.close()
+        if self.logFile:
+            self.logFile.close()
 
     # Loads from XML MPI functions and constants supported by YogiMPI.
     def loadSupported(self):
@@ -207,13 +210,13 @@ if __name__ == "__main__":
                         action="store",
                         required=True,
                         help="Input path for preprocessing")
-    parser.add_argument('--action',
+    parser.add_argument('--action', '-a',
                         choices=['checkwrap', 'simulate', 'preprocess'],
-                        default='simulate',
+                        default='preprocess',
                         help="Action to take") 
     parser.add_argument('--output', '-o',
                         action="store",
-                        default='.',
+                        default=None,
                         help="Output path")
 
     configArguments = parser.parse_args()
