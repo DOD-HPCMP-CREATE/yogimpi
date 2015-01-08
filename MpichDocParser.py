@@ -46,9 +46,9 @@ class MpichDocParser:
       #Here comes the squishy regexy bit.
       #First, scrape the first <PRE> block from the html. We assume this is the function synopsis.
       #FIXME: maybe also look for 'Synopsis' before the <PRE> tag
-      searchResult = re.search('<PRE>(.+?)</PRE>',docFileContents,re.MULTILINE | re.DOTALL)
+      searchResult = re.search('<H2>Synopsis</H2>\n<PRE>(.+?)</PRE>',docFileContents,re.MULTILINE | re.DOTALL)
       if searchResult is None or len(searchResult.groups()) < 1:
-         print("Error parsing html: couldn't isolate function description")
+         print("Error parsing html: couldn't isolate function synopsis")
          return
       apiString = searchResult.group(1)
 
