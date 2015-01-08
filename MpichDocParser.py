@@ -62,8 +62,11 @@ class MpichDocParser:
       #remove 'const' because we don't care about const correctness and it greatly simplifies parsing
       apiString = apiString.replace('const','')
 
-      #split the function description into a list of alphanumeric substrings
-      apiSubstrings = re.split('[^a-zA-Z0-9_\*]+',apiString)
+      #For consistency, transform 'type * varName' into 'type *varName'
+      apiString = apiString.replace(' * ',' *')
+
+      #split the function description into a list of alphanumeric (plus *, [, and ]) substrings
+      apiSubstrings = re.split('[^a-zA-Z0-9_\*\[\]]+',apiString)
 
       #remove any empty strings
       while '' in apiSubstrings: apiSubstrings.remove('')
@@ -84,7 +87,7 @@ class MpichDocParser:
          argName = apiSubstrings[i+1]
 
          #if the argument name starts with a *, it's a pointer type, so move the * appropriately
-         if argName.startswith('*'):
+         while argName.startswith('*'):
             argName = argName[1:]
             argType = argType + '*'
 
