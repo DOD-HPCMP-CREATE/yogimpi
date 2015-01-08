@@ -15,7 +15,9 @@ class MpichDocParser:
             <Arg type="float" name="argThree"/>
             <ReturnType>int</Returns>
          </Function>
-      </MpichAPI>"""
+      </MpichAPI>
+
+      TODO: flag each arg as output="true" and/or input="true" based on 'Output Parameters'/'Input Parameters"""
 
    def __init__(self, docRoot, outputFilename):
       #init the ElementTree stuff
@@ -35,7 +37,7 @@ class MpichDocParser:
    def parseHTML(self, filename):
       """Parse an mpich html documentation file and add the relevant bits as a child element of self.xmlRoot"""
       #print filename
-      if not filename.endswith(".html"):
+      if not (filename.endswith(".html") or filename.endswith(".htm")):
          print "Skipping non-html file:", filename
          return
 
@@ -57,8 +59,11 @@ class MpichDocParser:
       #remove newlines from the search result
       apiString = apiString.replace('\n','')
 
+      #remove 'const' because we don't care about const correctness and it greatly simplifies parsing
+      apiString = apiString.replace('const','')
+
       #split the function description into a list of alphanumeric substrings
-      apiSubstrings = re.split('\W+',apiString)
+      apiSubstrings = re.split('[^a-zA-Z0-9_\*]+',apiString)
 
       #remove any empty strings
       while '' in apiSubstrings: apiSubstrings.remove('')
@@ -67,25 +72,25 @@ class MpichDocParser:
       returnType = apiSubstrings[0]
       functionName = apiSubstrings[1]
 
-      if functionName == "MPI_Type_get_name":
-         print apiString
-
       functionElement = ET.SubElement(self.xmlRoot, 'Function')
       functionElement.set('name',functionName)
       returnTypeElement = ET.SubElement(functionElement,'ReturnType')
       returnTypeElement.text = returnType
 
-      #FIXME: pointers are getting lost in the regex.... blargle
-      #FIXME: probably would happen for returned pointers too, double check this as well
-
-      #FIXME: const is hosed
-
-      #add sub-elements for each argument to the function
+      #add xml sub-elements for each argument to the function
       i = 2
       while i + 1 < len(apiSubstrings):
+         argType = apiSubstrings[i]
+         argName = apiSubstrings[i+1]
+
+         #if the argument name starts with a *, it's a pointer type, so move the * appropriately
+         if argName.startswith('*'):
+            argName = argName[1:]
+            argType = argType + '*'
+
          argElement = ET.SubElement(functionElement,'Arg')
-         argElement.set('type',apiSubstrings[i])
-         argElement.set('name',apiSubstrings[i+1])
+         argElement.set('type',argType)
+         argElement.set('name',argName)
          i += 2
 
    def indentXML(self, elem, level=0):
