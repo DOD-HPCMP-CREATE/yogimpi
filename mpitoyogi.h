@@ -10,6 +10,7 @@
 #define MPI_Op YogiMPI_Op
 #define MPI_Info YogiMPI_Info
 #define MPI_File YogiMPI_File
+#define MPI_Offset YogiMPI_Offset
 
 #define MPI_SUCCESS YogiMPI_SUCCESS
 #define MPI_ERR_BUFFER YogiMPI_ERR_BUFFER

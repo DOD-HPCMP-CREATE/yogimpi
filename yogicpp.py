@@ -35,8 +35,8 @@ class yogicpp(object):
             self.logFile = open('yogicpp.out', 'w')
         self.definitions = [] 
         self.loadSupported()
-        self.outputPath = os.path.abspath(self.outputPath)
         if self.actionType == 'preprocess' and self.inputMode == 'directory':
+            self.outputPath = os.path.abspath(self.outputPath)
             if not os.path.exists(self.outputPath):
                 os.mkdir(self.outputPath)
         if self.actionType == 'preprocess':
@@ -47,6 +47,7 @@ class yogicpp(object):
                 self.preprocessDirectory(self.inputPath, self.outputPath,
                                          makeChanges=True)
         elif self.actionType == 'simulate':
+            self.outputPath = os.path.abspath(self.outputPath)
             if self.inputMode == 'file':
                 self.preprocessFile(self.inputPath, self.outputPath,
                                     makeChanges=False)
@@ -71,7 +72,8 @@ class yogicpp(object):
         for entry in fileTree.iterfind('Function'):
             self.definitions.append(AU._getValidText(entry, True))
 
-    def _findMPI(self, searchLine, mpiPattern=None, caseSensitive=False):
+    def _findMPI(self, searchLine, mpiPattern=None, caseSensitive=False,
+                 underScoreAllowed=False):
         if mpiPattern is None:
             mpiPattern = 'MPI_[a-zA-Z0-9_]+'
         if caseSensitive:
@@ -79,8 +81,11 @@ class yogicpp(object):
         else:
             flags = re.IGNORECASE 
 
-        mpiString = re.compile(r"(^|_|=|\s|\(|\)|,|\*|\+)(" + mpiPattern +\
-                               r')(\s|,|\)|\()', flags)
+        if not underScoreAllowed:
+            group1 = r"(^|=|\s|\(|\)|,|\*|\+)("
+        else:
+            group1 = r"(^|_|=|\s|\(|\)|,|\*|\+)("
+        mpiString = re.compile(group1 + mpiPattern + r')(\s|,|\)|\()', flags)
         matchInfo = mpiString.finditer(searchLine)
         mpiMatches = []
         if matchInfo: 
@@ -98,10 +103,14 @@ class yogicpp(object):
         rawFile = ihandle.readlines()
         ihandle.close()
         caseSensitive=False
+        underScoreAllowed=False
         if not self._isFortranSource(inputFile):
             caseSensitive=True
+        else:
+            underScoreAllowed=True
         for line in rawFile:
-            matchMPI = self._findMPI(line, caseSensitive=caseSensitive)
+            matchMPI = self._findMPI(line, caseSensitive=caseSensitive,
+                                     underScoreAllowed=underScoreAllowed)
             for item in matchMPI: 
                 if caseSensitive:
                     if not item in self.definitions: 
