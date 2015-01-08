@@ -10,14 +10,13 @@ class MpichDocParser:
       The resulting xml looks like:
       <MpichAPI>
          <Function name="MPI_Function">
-            <Arg type="int" name="argOne"/>
-            <Arg type="char*" name="argTwo"/>
-            <Arg type="float" name="argThree"/>
+            <Arg type="int" name="argOne" input="true" />
+            <Arg type="char*" name="argTwo" input="true" />
+            <Arg type="float" name="argThree" output="true" />
             <ReturnType>int</Returns>
          </Function>
-      </MpichAPI>
+      </MpichAPI>"""
 
-      TODO: flag each arg as output="true" and/or input="true" based on 'Output Parameters'/'Input Parameters"""
 
    def __init__(self, docRoot, outputFilename):
       #init the ElementTree
@@ -80,6 +79,8 @@ class MpichDocParser:
       returnTypeElement = ET.SubElement(functionElement,'ReturnType')
       returnTypeElement.text = returnType
 
+      inputArgs, outputArgs = self.findIOArgs(docFileContents)
+
       #add xml sub-elements for each argument to the function
       i = 2
       while i + 1 < len(splitSynopsis):
@@ -94,7 +95,49 @@ class MpichDocParser:
          argElement = ET.SubElement(functionElement,'Arg')
          argElement.set('type',argType)
          argElement.set('name',argName)
+
+         #this comparison doesn't work on args with [], so we also compare against a truncated name
+         shortArgName = argName[:argName.find('[')] if argName.find('[') > 0 else argName
+         if shortArgName in inputArgs:
+            argElement.set('input','true')
+         if shortArgName in outputArgs:
+            argElement.set('output','true')
+
          i += 2
+
+   def findIOArgs(self, html):
+      """Given an html string, return a list of arguments flagged as inputs, and a list of
+         arguments flagged as outputs."""
+
+      inputs = []
+      outputs = []
+
+      #another squishy regexy bit incoming...
+      #first, find the Input Parameters block of the html
+      searchResult = re.search('<H2>Input Parameters</H2>\n<DL>(.+?)</DL>', html, re.MULTILINE | re.DOTALL)
+      if searchResult and len(searchResult.groups()) >= 1:
+         inputArgs = searchResult.group(1)
+         #the bolded words within the Input Parameters block are our input args
+         inputs = self.findBoldWords(inputArgs)
+
+      #now do the same thing for the Output Parameters
+      searchResult = re.search('<H2>Output Parameters</H2>\n<DL>(.+?)</DL>', html, re.MULTILINE | re.DOTALL)
+      if searchResult and len(searchResult.groups()) >= 1:
+         outputArgs = searchResult.group(1)
+         #the bolded words within the Input Parameters block are our output args
+         outputs = self.findBoldWords(outputArgs)
+
+      return inputs, outputs
+
+   def findBoldWords(self, html):
+      """Given an html string, return a list of bolded words within that string"""
+
+      #Yet Another Squishy Regex Bit (YASRB)
+      boldWords = []
+      for match in re.finditer('<B>(.+?)</B>', html, re.MULTILINE | re.DOTALL):
+         if len(match.groups()) >= 1:
+            boldWords.append(str(match.group(1)).strip())
+      return boldWords
 
    def indentXML(self, elem, level=0):
       """Add some indentation to an ElementTree Element and its children for readability."""
