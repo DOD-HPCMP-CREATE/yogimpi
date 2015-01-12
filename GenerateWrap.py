@@ -68,7 +68,7 @@ class GenerateWrap:
          wrappedFunc = returnType + ' ' + functionName + '(' + typedArgList + ')'
          wrappedFunc = wrappedFunc.replace('MPI',prefix+'MPI')
          #whereas nativeCall is the native MPI call with converted arg names
-         nativeCall = returnType + ' ' + functionName + '(' + nativeCallArgList + ')'
+         nativeCall = functionName + '(' + nativeCallArgList + ')'
 
          if setupLines:
             setupLines += '\n'
