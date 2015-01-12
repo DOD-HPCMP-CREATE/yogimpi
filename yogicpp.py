@@ -223,6 +223,9 @@ if __name__ == "__main__":
                         choices=['checkwrap', 'simulate', 'preprocess'],
                         default='preprocess',
                         help="Action to take") 
+    parser.add_argument('--fixed-form',
+                        action=store_true,
+                        help="Generate fixed-form .f/.f77 files")
     parser.add_argument('--output', '-o',
                         action="store",
                         default=None,
