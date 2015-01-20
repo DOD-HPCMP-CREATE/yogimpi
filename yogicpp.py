@@ -10,26 +10,19 @@ import xml.etree.ElementTree as ET
 
 class yogicpp(object):
 
-    # Initialize preprocessor object with appropriate input and output modes.
-    # @arg inputMode The input mode to be used (file or directory)
-    # @arg inputPath The input path to be used, dependent on the mode.
-    # @arg outputPath Where to place the preprocessed file(s). 
-    # @arg actionType What to do.  Options are to check source to see if any
-    #                 unsupported MPI constants or functions will be an issue,
-    #                 to report what will be changed in the source, or to
-    #                 actually alter the source.  Default is to alter.
-    def __init__(self, inputMode, inputPath, outputPath, actionType):
+    def __init__(self):
         self.supportFile = 'preprocessor.xml'
         if not os.path.isfile(self.supportFile):
             self.supportFile = os.path.dirname(__file__) + '/' +\
                                self.supportFile
             if not os.path.isfile(self.supportFile):
-                raise ValueError("Cannot locate preproceessor XML file.") 
-            
-        self.inputMode = inputMode
-        self.inputPath = inputPath
-        self.outputPath = outputPath 
-        self.actionType = actionType
+                raise ValueError("Cannot locate preprocessor XML file.") 
+        self.inputMode = None 
+        self.inputPath = None 
+        self.outputPath = None 
+        self.actionType = None 
+        self.fixedform = False
+    def run(self):
         self.logFile = None
         if not self.actionType == 'preprocess':
             self.logFile = open('yogicpp.out', 'w')
@@ -150,7 +143,22 @@ class yogicpp(object):
                 self.logFile.write("- " + originalFile[lineNum])
                 self.logFile.write("+ " + modFile[lineNum])
                 self.logFile.flush()         
- 
+
+    def _ffshouldIgnore(self, line):
+        # Ignore comments
+        if (len(line.lstrip()) > 0):
+            if line.lstrip()[0] == '!':
+                return True 
+        lineBeginning = line[:6]
+        if len(lineBeginning.lstrip()) > 0:
+            if lineBeginning.lstrip()[0] == 'c' \
+            or lineBeginning.lstrip()[0] == 'C':
+                return True 
+        # Ignore preprocessor directives 
+        if line.startswith('#'):
+            return True           
+        return False
+    
     def preprocessFile(self, inputFile, outputFile, makeChanges=False):
         ihandle = open(inputFile, 'r')
         rawFile = ihandle.readlines()
@@ -162,11 +170,47 @@ class yogicpp(object):
                 for i in range(len(rawFile)):
                     mpiString = re.compile(r"(^|_|=|\s|\(|\)|,|\*|\+)(" +\
                                            aPattern +\
-                                           r')(\s|,|\)|\()', re.IGNORECASE)
+                                           r')(\s|,|\*|\)|\()', re.IGNORECASE)
                     rawFile[i] = mpiString.sub(r"\g<1>Yogi\g<2>\g<3>", 
                                                rawFile[i])
                     rawFile[i] = re.sub(r"(\"|')mpif.h(\"|')", "'yogimpif.h'", 
                                         rawFile[i])
+            # Handle the possibility of fixed-form Fortran, which means line
+            # length cannot exceed 72 characters.  Yuck.
+            if self._checkFixedForm(inputFile):
+                lineIndex = range(len(rawFile))
+                for i in lineIndex:
+                    # If this was not edited, don't bother.
+                    if not 'Yogi' in rawFile[i]:
+                        continue
+                    if self._ffshouldIgnore(rawFile[i]):
+                        continue 
+                    # Strip off comments coming after valid expression.
+                    commentStart = rawFile[i].find('!') 
+                    if commentStart > 0 \
+                    and rawFile[i][commentStart - 1] != "\\":
+                        rawFile[i] = rawFile[i][:commentStart] + '\n' 
+                    if len(rawFile[i].rstrip()) <= 72:
+                        continue 
+
+                    firstPart = rawFile[i][:72].rstrip('\n')
+                    continueLine = '     &' + rawFile[i][72:].rstrip('\n')
+                    rawFile[i] = firstPart + '\n'
+                    addLine = True
+                    if (i+1 < len(rawFile)):
+                        nextLine = rawFile[i+1]
+                        if len(nextLine) > 5:
+                            # This is a continuation line.  Merge the two
+                            if nextLine[5] != ' ' \
+                            and not self._ffshouldIgnore(nextLine):
+                                continueLine += nextLine[6:].rstrip('\n')
+                                rawFile[i+1] = continueLine + '\n'
+                                addLine = False
+                    # Next line unrelated, add extra continuation line.
+                    if addLine:
+                        rawFile.insert(i+1, continueLine + '\n')
+                        lineIndex.append(len(rawFile) - 1)
+
         elif self._isCSource(inputFile) or self._isCXXSource(inputFile):
             for i in range(len(rawFile)):
                 rawFile[i] = re.sub("(\"|<)mpi.h(\"|>)", "\"mpitoyogi.h\"", 
@@ -193,6 +237,15 @@ class yogicpp(object):
             if fileName.endswith(('.' + fe.lower(), '.' + fe.upper())):
                 return True
         return False
+
+    def _checkFixedForm(self, fileName):
+        if self.fixedform:
+            if self._isFortranSource(fileName):
+                fExtensions = ['f', 'f77']
+                for fe in fExtensions:
+                    if fileName.endswith(('.' + fe.lower(), '.' + fe.upper())):
+                        return True 
+        return False 
 
     def _isCSource(self, fileName):
         cExtensions = ['c', 'h']
@@ -223,8 +276,8 @@ if __name__ == "__main__":
                         choices=['checkwrap', 'simulate', 'preprocess'],
                         default='preprocess',
                         help="Action to take") 
-    parser.add_argument('--fixed-form',
-                        action=store_true,
+    parser.add_argument('--fixedform',
+                        action='store_true',
                         help="Generate fixed-form .f/.f77 files")
     parser.add_argument('--output', '-o',
                         action="store",
@@ -233,5 +286,10 @@ if __name__ == "__main__":
 
     configArguments = parser.parse_args()
 
-    preproc = yogicpp(configArguments.mode, configArguments.input,
-                      configArguments.output, configArguments.action)
+    preproc = yogicpp()
+    preproc.inputMode = configArguments.mode
+    preproc.inputPath = configArguments.input
+    preproc.outputPath = configArguments.output
+    preproc.actionType = configArguments.action
+    preproc.fixedform = configArguments.fixedform
+    preproc.run()
