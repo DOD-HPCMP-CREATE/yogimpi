@@ -22,6 +22,8 @@ class yogicpp(object):
         self.outputPath = None 
         self.actionType = None 
         self.fixedform = False
+        self.ccxxOnly = False
+        self.fortranOnly = False
     def run(self):
         self.logFile = None
         if not self.actionType == 'preprocess':
@@ -119,8 +121,15 @@ class yogicpp(object):
     def checkDirectoryWrap(self, inputDir):
         for dirpath, dnames, fnames in os.walk(inputDir):
             for f in fnames:
-                if self._isSourceFile(f):
-                    self.checkFileWrap(os.path.join(dirpath, f))
+                if self.ccxxOnly:
+                    if self._isCSource(f) or self._isCXXSource(f):
+                        self.checkFileWrap(os.path.join(dirpath, f)) 
+                elif self.fortranOnly:
+                    if self._isFortranSource(f):
+                        self.checkFileWrap(os.path.join(dirpath, f))
+                else:
+                    if self._isSourceFile(f):
+                        self.checkFileWrap(os.path.join(dirpath, f))
 
     def preprocessDirectory(self, inputDir, outputDir, makeChanges=False):
         for dirpath, dnames, fnames in os.walk(inputDir):
@@ -279,6 +288,12 @@ if __name__ == "__main__":
     parser.add_argument('--fixedform',
                         action='store_true',
                         help="Generate fixed-form .f/.f77 files")
+    parser.add_argument('--fortranonly',
+                        action='store_true',
+                        help="Consider only Fortran source files")
+    parser.add_argument('--ccxxonly',
+                        action='store_true',
+                        help="Consider only C/C++ source files")
     parser.add_argument('--output', '-o',
                         action="store",
                         default=None,
@@ -292,4 +307,6 @@ if __name__ == "__main__":
     preproc.outputPath = configArguments.output
     preproc.actionType = configArguments.action
     preproc.fixedform = configArguments.fixedform
+    preproc.fortranOnly = configArguments.fortranonly
+    preproc.ccxxOnly = configArguments.ccxxonly
     preproc.run()
