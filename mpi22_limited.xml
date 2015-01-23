@@ -21,8 +21,8 @@
   <Function name="MPI_Type_get_extent">
     <ReturnType>int</ReturnType>
     <Arg name="datatype" type="MPI_Datatype" />
-    <Arg output="true" name="lb" output="true" type="MPI_Aint*" />
-    <Arg output="true" name="extent" output="true" type="MPI_Aint*" />
+    <Arg name="lb" output="true" type="MPI_Aint*" />
+    <Arg name="extent" output="true" type="MPI_Aint*" />
   </Function>
   <Function name="MPI_Intercomm_merge">
     <ReturnType>int</ReturnType>

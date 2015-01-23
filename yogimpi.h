@@ -72,6 +72,11 @@ static const int YogiMPI_MODE_NOPUT = 4096;
 static const int YogiMPI_MODE_NOPRECEDE = 8192;
 static const int YogiMPI_MODE_NOSUCCEED = 16384;
 
+/* Seeking constants. */
+static const int YogiMPI_SEEK_SET = 50;
+static const int YogiMPI_SEEK_CUR = 55;
+static const int YogiMPI_SEEK_END = 60;
+
 /* MPI I/O permission modes.  Supports bitwise OR. 2*/
 
 static const int YogiMPI_MODE_RDONLY = 2;
@@ -83,6 +88,12 @@ static const int YogiMPI_MODE_DELETE_ON_CLOSE = 16;
 static const int YogiMPI_MODE_UNIQUE_OPEN = 32;
 static const int YogiMPI_MODE_SEQUENTIAL = 256;
 static const int YogiMPI_MODE_APPEND = 128;
+
+/* MPI_Info have key and value length constants.  Pick conservative values
+   that accommodate OpenMPI and MPICH derivatives. */
+
+#define YogiMPI_MAX_INFO_KEY 32
+#define YogiMPI_MAX_INFO_VAL 256
 
 /* The MPI-standard requires that the user provides an array of at least the
  * size equal to MAX_PROCESSOR_NAME.
