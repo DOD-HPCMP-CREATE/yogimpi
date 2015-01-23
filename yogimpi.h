@@ -65,7 +65,14 @@ static const int YogiMPI_UNDEFINED = -5;
 static const int YogiMPI_BSEND_OVERHEAD = 512;
 static const int YogiMPI_KEYVAL_INVALID = -7;
 
-/* MPI I/O permission modes, powers of 2*/
+/* MPI asserts for one-sided communication.  Supports bitwise OR. */
+static const int YogiMPI_MODE_NOCHECK = 1024;
+static const int YogiMPI_MODE_NOSTORE = 2048;
+static const int YogiMPI_MODE_NOPUT = 4096;
+static const int YogiMPI_MODE_NOPRECEDE = 8192;
+static const int YogiMPI_MODE_NOSUCCEED = 16384;
+
+/* MPI I/O permission modes.  Supports bitwise OR. 2*/
 
 static const int YogiMPI_MODE_RDONLY = 2;
 static const int YogiMPI_MODE_RDWR = 8;
