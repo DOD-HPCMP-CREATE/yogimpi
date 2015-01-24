@@ -10,6 +10,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /*
  * MPI_Status can be treated as a series of integers (as in Fortran).
  * YogiMPI stores an integer array larger than any known MPI distribution's
@@ -191,16 +192,22 @@ static YogiMPI_Status * const YogiMPI_STATUS_IGNORE = 0;
 static YogiMPI_Status * const YogiMPI_STATUSES_IGNORE = 0;
 
 /* 
- * Currently aligned with MPICH2 and OpenMPI - TODO ./configure to check 
+ * MPI_Aint is implementation dependent.  Pick a long long for it locally and
+ * then cast to the actual type within the function.  In some instances
+ * casting may not be necessary, which can be determined at runtime.
  */
-typedef long YogiMPI_Aint;
+typedef long long YogiMPI_Aint;
 
-/* MPI_Offset is implementation dependent.  Go ahead and pick a large type
- * for it locally and then cast to the actual type within the function.
+/* MPI_Offset is implementation dependent.  Pick a long long for it locally and
+ * then cast to the actual type within the function.  In some instances 
+ * casting may not be necessary, which can be determined at runtime.
  */
 typedef long long YogiMPI_Offset;
 
-/* MPI 2 definition * - TODO ./configure to check */
+/* MPI_Fint is implementation dependent.  Pick an int for it locally and
+ * then cast to the actual type within the function.  In some instances 
+ * casting may not be necessary, which can be determined at runtime.
+ */
 typedef int YogiMPI_Fint;
 
 static void * const YogiMPI_IN_PLACE = (void *)-1;

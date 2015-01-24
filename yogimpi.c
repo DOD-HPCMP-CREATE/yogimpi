@@ -26,10 +26,9 @@ static const YogiMPI_Datatype YogiMPI_REAL8 = 34;
 /* Total number of non-volatile datatypes.  Accounts for Fortran ones, too. */
 static const int YogiMPI_DATATYPE_VOLATILE_OFFSET = 35;
 
-/* Total number of datatypes, volatile and non-volatile.
- * Set the initial number of datatypes to the total non-volatile amount. 
+/* Total number of datatypes, volatile and non-volatile. 
  */
-static int num_datatypes = 35; 
+static int num_datatypes = 100; 
 
 /* Now have a pointer to a pool of MPI datatypes, handing references to
  * users without exposing the opaque MPI handle.
@@ -44,7 +43,7 @@ static int num_realloc_datatypes = 0;
  * @param mpi_datatype An actual MPI_Datatype to be archived and indexed.
  * @return YogiMPI_Datatype handle to the actual MPI_Datatype.
  */
-static YogiMPI_Datatype alloc_new_volatile_datatype(MPI_Datatype mpi_datatype)
+static YogiMPI_Datatype add_new_datatype(MPI_Datatype mpi_datatype)
 {
 
   /* Find the next available slot to store a new MPI_Datatype.
@@ -83,13 +82,11 @@ int my_rank = -1;
 /* Array maps YogiMPI error constants to actual MPI constants */
 static int mpi_error_codes[21];
 
-static int num_groups = 10; 
+static int num_groups = 100; 
 /* Pointer to pool of MPI_Group objects */
 static MPI_Group *group_pool = 0;
 /* Number of times group pool is reallocated for expansion. */
 static int num_realloc_groups = 0; 
-/* number of references to the group */
-static int *group_ref_counts = 0; 
 /* YogiMPI specific: group underneath YogiMPI_COMM_WORLD */
 static const YogiMPI_Group YogiMPI_GROUP_WORLD = 2;
 /* YogiMPI specific: group underneath YogiMPI_COMM_SELF */
@@ -99,18 +96,14 @@ static const YogiMPI_Group YogiMPI_GROUP_VOLATILE_OFFSET = 4;
 
 /* Pointer to pool of MPI_Comm objects */
 static MPI_Comm *comm_pool = 0;
-static int num_comms = 10; 
+static int num_comms = 100; 
 /* Number of times comm pool is reallocated for expansion. */
 static int num_realloc_comms = 0;
 /* From this offset onward up to num_comms the communicators in comm_pool are
    volatile */
-static const YogiMPI_Comm YogiMPI_COMM_VOLATILE_OFFSET = 3; 
-static char* is_inter_comms;
+static const YogiMPI_Comm YogiMPI_COMM_VOLATILE_OFFSET = 3;
 
-/* Mapping between YogiMPI comms and YogiMPI groups */
-static YogiMPI_Group *comm_groups_map; 
-
-static int num_requests = 10;
+static int num_requests = 100;
 /* Pointer to pool of MPI_Request objects */
 static MPI_Request *request_pool = 0;
 /* Number of times request pool is reallocated for expansion. */
@@ -124,8 +117,8 @@ static MPI_Op *op_pool = 0;
 static const YogiMPI_Op YogiMPI_OP_VOLATILE_OFFSET = 13;
 
 /* Do the same thing for MPI_Info and MPI_File pools. */
-static int num_files = 10;
-static int num_infos = 10;
+static int num_files = 100;
+static int num_infos = 100;
 /* Pointer to pool of MPI_File objects */
 static MPI_File *file_pool = 0;
 /* Pointer to pool of MPI_Info objects */
@@ -148,7 +141,7 @@ int error_to_yogi(int mpi_error)
   while(mpi_error_codes[current] != mpi_error) {
     ++current;
     if (current > YogiMPI_ERR_LASTCODE) {
-      return YogiMPI_ERR_INTERN ;
+      return YogiMPI_ERR_INTERN;
     }
   }
   return current;
@@ -209,10 +202,8 @@ int comparison_to_yogi(int mpi_comp)
 /* Register pre-indexed group */
 static void register_preindexed_group(YogiMPI_Group group, MPI_Group mpi_group) 
 {
-  assert(0 == group_ref_counts[group]);
   assert(group >= 0 && group < YogiMPI_GROUP_VOLATILE_OFFSET);
   group_pool[group] = mpi_group;
-  group_ref_counts[group] = 1;
 }
 
 /* Allocate a new YogiMPI_Group that corresponds to the given MPI_Group
@@ -224,11 +215,11 @@ static void register_preindexed_group(YogiMPI_Group group, MPI_Group mpi_group)
  * This routine is only used for volatile groups because the others have
  * a predefined index. Thus mpi_group must thus also be a volatile group.
  */
-static YogiMPI_Group alloc_new_volatile_group(MPI_Group mpi_group)
+static YogiMPI_Group add_new_group(MPI_Group mpi_group)
 {
 
     /* find new slot */
-    YogiMPI_Group new_slot = YogiMPI_GROUP_VOLATILE_OFFSET ;
+    YogiMPI_Group new_slot = YogiMPI_GROUP_VOLATILE_OFFSET;
     for(; group_pool[new_slot] != MPI_GROUP_NULL && 
           new_slot < num_groups; ++new_slot);
 
@@ -239,46 +230,32 @@ static YogiMPI_Group alloc_new_volatile_group(MPI_Group mpi_group)
 
         ++num_realloc_groups; /* update stats */
 
-        /* realloc group_pool and group_ref_counts */
+        /* realloc group_pool */
         MPI_Group* new_groups = (MPI_Group*)malloc(new_num_groups*sizeof(MPI_Group));
         memcpy(new_groups,group_pool,num_groups*sizeof(MPI_Group)) ;
         free(group_pool);
 
-        int *new_group_ref_counts = (int*)malloc(new_num_groups*sizeof(int));
-        memcpy(new_group_ref_counts,group_ref_counts,num_groups*sizeof(int));
-        free(group_ref_counts);
-
         for(i = num_groups; i < new_num_groups; ++i) {
             new_groups[i] = MPI_GROUP_NULL;
-            new_group_ref_counts[i] = 0;
         }
 
         group_pool = new_groups;
-        group_ref_counts = new_group_ref_counts;
         num_groups = new_num_groups;
     }
 
     assert(new_slot < num_groups);
-    assert(group_pool[new_slot] == MPI_GROUP_NULL &&
-		   group_ref_counts[new_slot] == 0);
+    assert(group_pool[new_slot] == MPI_GROUP_NULL);
     group_pool[new_slot] = mpi_group;
-    group_ref_counts[new_slot] = 1;
 
     return new_slot;
 }
 
-static void register_preindexed_comm(YogiMPI_Comm comm, MPI_Comm mpi_comm, 
-		                             YogiMPI_Group group) {
+static void register_preindexed_comm(YogiMPI_Comm comm, MPI_Comm mpi_comm) {
     assert(comm >= 0 && comm < num_comms);
-    assert(group >= 0 && group < num_groups);
-    assert(MPI_COMM_NULL == comm_pool[comm]);
-    assert(YogiMPI_GROUP_NULL == comm_groups_map[comm]) ;
-
     comm_pool[comm] = mpi_comm;
-    comm_groups_map[comm] = group;
 }
 
-static YogiMPI_Comm alloc_new_volatile_comm(MPI_Comm mpi_comm, YogiMPI_Group group, int is_inter) {
+static YogiMPI_Comm add_new_comm(MPI_Comm mpi_comm) {
 
     /* find new slot */
     YogiMPI_Comm new_slot = YogiMPI_COMM_VOLATILE_OFFSET;
@@ -297,35 +274,19 @@ static YogiMPI_Comm alloc_new_volatile_comm(MPI_Comm mpi_comm, YogiMPI_Group gro
         memcpy(new_comms,comm_pool,num_comms*sizeof(MPI_Comm));
         free(comm_pool);
 
-        YogiMPI_Group* new_comm_groups = (YogiMPI_Group*)malloc(new_num_comms*sizeof(YogiMPI_Group));
-        memcpy(new_comm_groups,comm_groups_map,num_comms*sizeof(YogiMPI_Group));
-        free(comm_groups_map);
-
-        char* new_is_inter_comms = (char*)malloc(new_num_comms*sizeof(char));
-        memcpy(new_is_inter_comms,is_inter_comms,num_comms*sizeof(char));
-        free(is_inter_comms);
-
         for(i = num_comms; i < new_num_comms; ++i) new_comms[i] = MPI_COMM_NULL;
-        for(i = num_comms; i < new_num_comms; ++i) new_comm_groups[i] = YogiMPI_GROUP_NULL;
-        for(i = num_comms; i < new_num_comms; ++i) new_is_inter_comms[i] = 'n';
 
         comm_pool = new_comms;
-        comm_groups_map = new_comm_groups;
-        is_inter_comms = new_is_inter_comms;
         num_comms = new_num_comms;
     }
 
-    assert(comm_pool[new_slot] == MPI_COMM_NULL && 
-    	   comm_groups_map[new_slot] == YogiMPI_GROUP_NULL);
+    assert(comm_pool[new_slot] == MPI_COMM_NULL);
     comm_pool[new_slot] = mpi_comm;
-    comm_groups_map[new_slot] = group;
-    is_inter_comms[new_slot] = is_inter ? 'y' : 'n';
-    group_ref_counts[group] += 1;
 
     return new_slot;
 }
 
-static YogiMPI_Request alloc_new_request(MPI_Request mpi_request)
+static YogiMPI_Request add_new_request(MPI_Request mpi_request)
 {
     /* Find a slot, start from 1 because 0 == YogiMPI_REQUEST_NULL */
     YogiMPI_Request request = 1; 
@@ -358,22 +319,7 @@ static YogiMPI_Request alloc_new_request(MPI_Request mpi_request)
     return request;
 }
 
-static YogiMPI_Comm alloc_new_comm_and_group(MPI_Comm mpi_comm, 
-		                                     MPI_Group mpi_group) {
-    YogiMPI_Group group = alloc_new_volatile_group(mpi_group);
-    YogiMPI_Comm new_comm = alloc_new_volatile_comm(mpi_comm, group, 0);
-
-    /* Both alloc's above will increase the ref-count of the group and thus set 
-     * it at 2 although the user has only one reference (through the 
-     * communicator).
-     */
-    assert(2 == group_ref_counts[group]);
-    --group_ref_counts[group];
-
-    return new_comm;
-}
-
-static YogiMPI_File alloc_new_file(MPI_File mpi_file)
+static YogiMPI_File add_new_file(MPI_File mpi_file)
 {
     /* Find a slot, start from 1 because 0 == YogiMPI_FILE_NULL */
     YogiMPI_File file = 1; 
@@ -404,7 +350,7 @@ static YogiMPI_File alloc_new_file(MPI_File mpi_file)
     return file;
 }
 
-static YogiMPI_Info alloc_new_info(MPI_Info mpi_info)
+static YogiMPI_Info add_new_info(MPI_Info mpi_info)
 {
     /* Find a slot, start from 1 because 0 == YogiMPI_INFO_NULL */
     YogiMPI_Info info = 1; 
@@ -543,9 +489,6 @@ static void initialize_group_pool() {
     assert(!group_pool);
     group_pool = (MPI_Group *)malloc(sizeof(MPI_Group)*num_groups);
     for(i = 0; i < num_groups; ++i) group_pool[i] = MPI_GROUP_NULL;
-    
-    group_ref_counts = (int *)malloc(num_groups*sizeof(int));
-    for(i = 0; i < num_groups; ++i) group_ref_counts[i] = 0;
 
     register_preindexed_group(YogiMPI_GROUP_NULL, MPI_GROUP_NULL);
     register_preindexed_group(YogiMPI_GROUP_EMPTY, MPI_GROUP_EMPTY);
@@ -565,20 +508,9 @@ static void initialize_comm_pool() {
     assert(!comm_pool);
     comm_pool = (MPI_Comm *)malloc(sizeof(MPI_Comm)*num_comms);
     
-    for(i = 0; i < num_comms; ++i) comm_pool[i] = MPI_COMM_NULL;
-    comm_groups_map = (YogiMPI_Group *)malloc(num_comms*sizeof(YogiMPI_Group));
-    
-    for(i = 0; i < num_comms; ++i) comm_groups_map[i] = YogiMPI_GROUP_NULL;
-    is_inter_comms = (char*)malloc(num_comms*sizeof(char));
-    
-    for(i = 0; i < num_comms; ++i) is_inter_comms[i] = 'n';
-
-    register_preindexed_comm(YogiMPI_COMM_NULL, MPI_COMM_NULL, 
-    		                 YogiMPI_GROUP_NULL);
-    register_preindexed_comm(YogiMPI_COMM_WORLD, MPI_COMM_WORLD,
-    		                 YogiMPI_GROUP_WORLD);
-    register_preindexed_comm(YogiMPI_COMM_SELF, MPI_COMM_SELF,
-    		                 YogiMPI_GROUP_SELF);	
+    register_preindexed_comm(YogiMPI_COMM_NULL, MPI_COMM_NULL);
+    register_preindexed_comm(YogiMPI_COMM_WORLD, MPI_COMM_WORLD);
+    register_preindexed_comm(YogiMPI_COMM_SELF, MPI_COMM_SELF);	
 }
 
 static void initialize_request_pool() {
@@ -704,7 +636,7 @@ int YogiMPI_Isend(void* buf, int count, YogiMPI_Datatype datatype, int dest,
 
     int mpi_error = MPI_Isend(buf, count, mpi_datatype, dest, tag, mpi_comm, 
 		                      &mpi_request);
-    *request = alloc_new_request(mpi_request);
+    *request = add_new_request(mpi_request);
 
     return error_to_yogi(mpi_error);
 }
@@ -717,7 +649,7 @@ int YogiMPI_Issend(void* buf, int count, YogiMPI_Datatype datatype, int dest,
 
     int mpi_error = MPI_Issend(buf, count, mpi_datatype, dest, tag, mpi_comm, 
     		                   &mpi_request);
-    *request = alloc_new_request(mpi_request);
+    *request = add_new_request(mpi_request);
 
     return error_to_yogi(mpi_error);
 }
@@ -732,7 +664,7 @@ int YogiMPI_Irecv(void* buf, int count, YogiMPI_Datatype datatype, int source,
     MPI_Request mpi_request;
     int mpi_error = MPI_Irecv(buf, count, mpi_datatype, source, tag, mpi_comm,
     		                  &mpi_request);
-    *request = alloc_new_request(mpi_request);
+    *request = add_new_request(mpi_request);
 
     return error_to_yogi(mpi_error);
 }
@@ -886,7 +818,7 @@ int YogiMPI_Send_init(void *buf, int count, YogiMPI_Datatype datatype, int dest,
 
     int mpi_error = MPI_Send_init(buf, count, mpi_datatype, dest, tag, mpi_comm,
     		                      &mpi_request);
-    *request = alloc_new_request(mpi_request);
+    *request = add_new_request(mpi_request);
 
     return error_to_yogi(mpi_error);
 }
@@ -904,7 +836,7 @@ int YogiMPI_Type_contiguous(int count, YogiMPI_Datatype oldtype,
 
     int mpi_err = MPI_Type_contiguous(count, mpi_oldtype, &mpi_newtype);
 
-    *newtype = alloc_new_volatile_datatype(mpi_newtype);
+    *newtype = add_new_datatype(mpi_newtype);
 
     return error_to_yogi(mpi_err);
 }
@@ -916,7 +848,7 @@ int YogiMPI_Type_vector(int count, int blocklength, int stride,
 
     int mpi_err = MPI_Type_vector(count, blocklength, stride, mpi_oldtype, 
     		                      &mpi_newtype);
-    *newtype = alloc_new_volatile_datatype(mpi_newtype);
+    *newtype = add_new_datatype(mpi_newtype);
     return error_to_yogi(mpi_err);
 }
 
@@ -929,7 +861,7 @@ int YogiMPI_Type_indexed(int count, int *array_of_blocklengths,
     int mpi_err = MPI_Type_indexed(count, array_of_blocklengths, 
     		                       array_of_displacements, mpi_oldtype, 
 								   &mpi_newtype);
-    *newtype = alloc_new_volatile_datatype(mpi_newtype);
+    *newtype = add_new_datatype(mpi_newtype);
     return error_to_yogi(mpi_err);
 }
 
@@ -1123,7 +1055,7 @@ int YogiMPI_Comm_create(YogiMPI_Comm comm, YogiMPI_Group group,
         *newcomm = YogiMPI_COMM_NULL;
     }
     else {
-        *newcomm = alloc_new_volatile_comm(mpi_newcomm, group, 0);
+        *newcomm = add_new_comm(mpi_newcomm);
     }
 
     return error_to_yogi(mpi_err);
@@ -1133,8 +1065,7 @@ int YogiMPI_Comm_group(YogiMPI_Comm comm, YogiMPI_Group *group) {
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     MPI_Group mpi_group = MPI_GROUP_NULL;
     MPI_Comm_group(mpi_comm, &mpi_group);
-    *group = comm_groups_map[comm];
-    group_ref_counts[*group] += 1;
+    *group = add_new_group(mpi_group);
     return YogiMPI_SUCCESS;
 }
 
@@ -1155,7 +1086,7 @@ int YogiMPI_Comm_dup(YogiMPI_Comm comm, YogiMPI_Comm* out) {
   MPI_Comm mpi_out;
   int mpi_err = MPI_Comm_dup(mpi_comm, &mpi_out);
 
-  *out = alloc_new_volatile_comm(mpi_out, comm_groups_map[comm], 0);
+  *out = add_new_comm(mpi_out);
 
   return error_to_yogi(mpi_err);
 }
@@ -1179,30 +1110,18 @@ int YogiMPI_Comm_split(YogiMPI_Comm comm, int color, int key,
     else {
         int mpi_err = MPI_Comm_split(mpi_comm, color, key, &mpi_newcomm);
 
-        /* The creation of the comm induces the creation of a new group 
-         * underneath */
-        MPI_Group mpi_newgroup = MPI_GROUP_NULL;
-        MPI_Comm_group(mpi_newcomm, &mpi_newgroup);
-        *newcomm = alloc_new_comm_and_group(mpi_newcomm, mpi_newgroup);
-        MPI_Group_free(&mpi_newgroup);
+        *newcomm = add_new_comm(mpi_newcomm);
         return error_to_yogi(mpi_err);
     }
 }
 
 int YogiMPI_Comm_free(YogiMPI_Comm *comm) {
-    assert(*comm < YogiMPI_COMM_VOLATILE_OFFSET || *comm <= num_comms);
     assert(comm_pool[*comm] != MPI_COMM_NULL);
 
     MPI_Comm* mpi_comm = &comm_pool[*comm];
     MPI_Comm_free(mpi_comm);
 
-    YogiMPI_Group group = comm_groups_map[*comm];
-    assert(group_ref_counts[group] > 0);
-    --group_ref_counts[group];
-    if (group_ref_counts[group] == 0) group_pool[group] = MPI_GROUP_NULL;
-    comm_groups_map[*comm] = YogiMPI_GROUP_NULL;
     comm_pool[*comm] = MPI_COMM_NULL;
-    is_inter_comms[*comm] = 'n';
 
     *comm = YogiMPI_COMM_NULL;
 
@@ -1211,40 +1130,30 @@ int YogiMPI_Comm_free(YogiMPI_Comm *comm) {
 
 int YogiMPI_Group_free(YogiMPI_Group *group) {
     if (YogiMPI_GROUP_EMPTY == *group) {
-        assert(group_ref_counts[*group] > 1);
-        --group_ref_counts[*group];
         return YogiMPI_SUCCESS;
     }
-    else { /* group_world, group_self or volatile group */
-        assert(YogiMPI_GROUP_WORLD == *group
-               || YogiMPI_GROUP_SELF == *group
-               || *group >= YogiMPI_GROUP_VOLATILE_OFFSET);
+    else {
         MPI_Group mpi_group = group_pool[*group];
         int mpi_err = MPI_Group_free(&mpi_group);
-        --(group_ref_counts[*group]);
-        if (0 == group_ref_counts[*group]) {
-            assert((YogiMPI_GROUP_WORLD != *group) 
-                   && (YogiMPI_GROUP_SELF != *group));
-            group_pool[*group] = MPI_GROUP_NULL;
-        }
-
+        assert(mpi_group == MPI_GROUP_NULL);
+        group_pool[*group] = MPI_GROUP_NULL;
         *group = YogiMPI_GROUP_NULL;
         return error_to_yogi(mpi_err);
     }
 }
+
 int YogiMPI_Group_incl(YogiMPI_Group group, int n, int *ranks, 
 		               YogiMPI_Group *group_out) {
 	/* See definition of Group_incl in mpi-1.1 */
     if (0 == n) { 
 	    *group_out = YogiMPI_GROUP_EMPTY;
-	    group_ref_counts[*group_out] += 1;
 	    return YogiMPI_SUCCESS;
 	}
 	else {
 	    MPI_Group mpi_group = group_to_mpi(group);
 	    MPI_Group mpi_group_out;
 	    int mpi_err = MPI_Group_incl(mpi_group, n, ranks, &mpi_group_out);
-	    *group_out = alloc_new_volatile_group(mpi_group_out);
+	    *group_out = add_new_group(mpi_group_out);
 
 	    return error_to_yogi(mpi_err);
     }
@@ -1297,17 +1206,9 @@ int YogiMPI_Finalize() {
         free(request_pool);
         request_pool = 0;
     }
-    if (comm_groups_map) {
-        free(comm_groups_map); 
-        comm_groups_map = 0;
-    }
     if (comm_pool) { 
     	free(comm_pool);
     	comm_pool = 0;
-    }
-    if (group_ref_counts) {
-        free(group_ref_counts);
-        group_ref_counts = 0;
     }
     if (group_pool) {
         free(group_pool);
@@ -1334,7 +1235,7 @@ int YogiMPI_Type_create_indexed_block(int count, int blocklength,
     int mpi_err = MPI_Type_create_indexed_block(count, blocklength, 
     		                                    array_of_displacements,
 												mpi_oldtype, &mpi_newtype);
-    *newtype = alloc_new_volatile_datatype(mpi_newtype);
+    *newtype = add_new_datatype(mpi_newtype);
     return error_to_yogi(mpi_err);
 }
 
@@ -1356,7 +1257,7 @@ int YogiMPI_Recv_init(void *buf, int count, YogiMPI_Datatype datatype,
 
     int mpi_error = MPI_Recv_init(buf, count, mpi_datatype, source, tag, 
     		                      mpi_comm, &mpi_request);
-    *request = alloc_new_request(mpi_request);
+    *request = add_new_request(mpi_request);
 
     return error_to_yogi(mpi_error);
 }
@@ -1427,7 +1328,7 @@ int YogiMPI_File_open(YogiMPI_Comm comm, char *filename, int amode,
     MPI_File mpi_file;
     int mpi_error = MPI_File_open(mpi_comm, filename, amode, mpi_info, 
     		                      &mpi_file);
-    *fh = alloc_new_file(mpi_file);
+    *fh = add_new_file(mpi_file);
     
     return error_to_yogi(mpi_error);
 }
@@ -1444,7 +1345,7 @@ int YogiMPI_File_get_info(YogiMPI_File fh, YogiMPI_Info *info_used) {
 	MPI_File mpi_file = file_to_mpi(fh);
 	MPI_Info mpi_info;
     int mpi_error = MPI_File_get_info(mpi_file, &mpi_info); 	
-    *info_used = alloc_new_info(mpi_info);
+    *info_used = add_new_info(mpi_info);
     
     return error_to_yogi(mpi_error);
 }
@@ -1509,7 +1410,7 @@ int YogiMPI_File_write_at(YogiMPI_File fh, YogiMPI_Offset offset,
 int YogiMPI_Info_create(YogiMPI_Info *info) {
 	MPI_Info mpi_info;
     int mpi_error = MPI_Info_create(&mpi_info);
-    *info = alloc_new_info(mpi_info);
+    *info = add_new_info(mpi_info);
     
     return error_to_yogi(mpi_error);	
 }
