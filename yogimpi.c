@@ -196,7 +196,6 @@ void free_datatype_array(MPI_Datatype array_of_types[]) {
     free(array_of_types);
 }
 
-
 /* Converts a YogiMPI_Request to MPI_Request pointer */
 MPI_Request* request_to_mpi(YogiMPI_Request request) 
 {

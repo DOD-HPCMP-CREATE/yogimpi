@@ -1,22 +1,52 @@
 import xml.etree.ElementTree as ET
 import sys
+from __builtin__ import False
 
 class MPIArgument(object):
     def __init__(self):
+        # Original name of the argument.
         self.name = None
+        # The way the argument is called in a function.
         self.callName = None
+        # Original type of the argument.
         self.type = None
+        # Whether the argument is a pointer.
         self.isPointer = False
+        # Whether the argument is an array.  Also makes isPointer True.
         self.isPlural = False
+        # Whether the argument is considered output.
         self.isOutput = False
+        # Whether the argument is considered input.
         self.isInput = False
+        # Values that, if matching Yogi equivalent of argument, cause a
+        # conversion to that value.  (Example: YogiMPI_UNDEFINED to 
+        # MPI_UNDEFINED).
         self.convertValues = []
+        # Whether this argument is an MPI typedef or MPI structure.
         self.isMPIType = False
-        self.hasTempOutputVar = False
-        self.tempOutputIsPtr = False
-        self.tempOutputType = None
-        self.tempOutputConverter = None
-        self.freeObject = False
+        # If the argument is an MPI type and is plural, the dimensions. Note
+        # that this is not set for primitive type arrays.
+        self.dims = None
+        
+        # The following variables are only used if isMPIType is True. Otherwise
+        # the values all remain set to False and None.
+        # The name of the temporary variable.
+        self.tempName = None
+        # The type of the temporary variable.
+        self.tempType = None
+        # Whether the temporary variable is a pointer.
+        self.tempIsPtr = False
+        # The function used to convert the argument to the input variable.
+        # If isMPIType is True and this is None, then it instantiates a 
+        # variable without a function call.
+        self.tempPreConverter = None
+        # In the case of an output variable, the function used to convert the
+        # input variable back to the argument.
+        self.tempPostConverter = None
+        # Whether a handle will be freed by the operation.
+        self.freeHandle = False
+        # If freeObject is True, what to set the freed value to for user.
+        self.freedValue = None
 
 class MPIFunction(object):
     def __init__(self):
@@ -26,8 +56,12 @@ class MPIFunction(object):
         self.statusIgnoreArg = 0
         self.returnType = 'int'
         self.args = []
-        self.preprocess = {}
-        self.postprocess = {}
+    
+    def getArg(self, name):
+        for anArg in self.args:
+            if anArg.name == name:
+                return anArg
+        return None
     
 class GenerateWrap(object):
 
@@ -58,6 +92,9 @@ class GenerateWrap(object):
                     thisArg.isPointer = True
                     thisArg.isPlural = True
                     thisArg.callName = thisArg.name.replace('[]', '')
+                elif thisArg.name.strip().startswith('array_of'):
+                    thisArg.isPointer = True
+                    thisArg.isPlural = True
                 if 'output' in argElement.attrib:
                     thisArg.isOutput = True
                     if 'input' in argElement.attrib:
@@ -70,8 +107,16 @@ class GenerateWrap(object):
                     thisArg.isPointer = True
                 if rawType.startswith('MPI_'):
                     thisArg.isMPIType = True
+                    if 'dims' in argElement.attrib:
+                        thisArg.isPlural = True
+                        thisArg.isPointer = True
+                        thisArg.dims = argElement.attrib['dims']
                 for convs in argElement.iterfind('Convert'):
                     thisArg.convertValues.append(convs.text)
+                freeHandle = argElement.find('PostFreeHandle')
+                if freeHandle is not None:
+                    thisArg.freeHandle = True
+                    thisArg.freedValue = freeHandle.text
                 thisFunction.args.append(thisArg)
             self.functions.append(thisFunction)
                 
@@ -98,54 +143,71 @@ class GenerateWrap(object):
             anArg = aFunc.args[i]                
             if i > 0:
                 callRealMPI += ", "
-            printName = anArg.callName
-            if anArg.hasTempOutputVar:
+            if anArg.isMPIType and not anArg.type.startswith('MPI_Status'):
+                printName = anArg.tempName
                 if anArg.isPointer:
-                    printName = '&' + printName
+                    if not anArg.tempIsPtr:
+                        printName = '&' + printName
+                else:
+                    if anArg.tempIsPtr:
+                        printName = '*' + printName
+            else:
+                printName = anArg.callName
             if doIgnore:
                 if aFunc.statusIgnore:
                     if i == aFunc.statusIgnoreArg:
                         printName = aFunc.statusIgnoreType
-                callRealMPI += printName
-            else:
-                callRealMPI += printName            
+            callRealMPI += printName            
         callRealMPI += ');'
         return callRealMPI
     
-    def _typeConversions(self, aFunc):
-        preFunc = {'MPI_Comm':'comm_to_mpi',
-                   'MPI_Info':'info_to_mpi',
-                   'MPI_File':'file_to_mpi',
-                   'MPI_Datatype':'datatype_to_mpi',
-                   'MPI_Request':'request_to_mpi',
-                   'MPI_Group':'group_to_mpi'}
-        postFunc = {'MPI_Comm':'add_new_mpi',
-                    'MPI_Info':'add_new_info',
-                    'MPI_File':'add_new_file',
-                    'MPI_Datatype':'add_new_datatype',
-                    'MPI_Request':'add_new_request',
-                    'MPI_Group':'add_new_group'}
+    def _mpiConversions(self, aFunc):
+        mpiTypes = ['MPI_Comm', 'MPI_Datatype', 'MPI_Info', 'MPI_File',
+                    'MPI_Request', 'MPI_Group', 'MPI_Offset', 'MPI_Aint']
+        scalarFunc = {'MPI_Comm':'comm_to_mpi',
+                      'MPI_Info':'info_to_mpi',
+                      'MPI_File':'file_to_mpi',
+                      'MPI_Datatype':'datatype_to_mpi',
+                      'MPI_Request':'request_to_mpi',
+                      'MPI_Group':'group_to_mpi',
+                      'MPI_Offset':'offset_to_mpi',
+                      'MPI_Aint':'aint_to_mpi'}
+        arrayFunc = { 'MPI_Comm':'comm_array_to_mpi',
+                      'MPI_Datatype':'datatype_array_to_mpi',
+                      'MPI_Offset':'offset_array_to_mpi',
+                      'MPI_Aint':'aint_array_to_mpi'}
+        pscalarFunc = {'MPI_Comm':'add_new_comm',
+                       'MPI_Info':'add_new_info',
+                       'MPI_File':'add_new_file',
+                       'MPI_Datatype':'add_new_datatype',
+                       'MPI_Request':'add_new_request',
+                       'MPI_Group':'add_new_group',
+                       'MPI_Aint':'aint_to_yogi',
+                       'MPI_Offset':'offset_to_yogi'}
+        parrayFunc = {'MPI_Offset':'offset_array_to_yogi',
+                      'MPI_Aint':'aint_array_to_yogi'}
         for i in range(len(aFunc.args)):
             anArg = aFunc.args[i]
-            if anArg.isInput:
-                if anArg.isMPIType:
-                    for key in preFunc.keys():
-                        if anArg.type.startswith(key):
-                            aFunc.preprocess[i] = {}
-                            anArg.callName = 'in_' + anArg.name
-                            aFunc.preprocess[i]['newtype'] = key
-                            aFunc.preprocess[i]['converter'] = preFunc[key]
-            if anArg.isOutput:
-                if anArg.isMPIType:
-                    for key in preFunc.keys():
-                        if anArg.type.startswith(key):
-                            anArg.callName = 'in_' + anArg.name
-                            anArg.hasTempOutputVar = True
-                            anArg.tempOutputIsPtr = False
-                            anArg.tempOutputType = key
-                    for key in postFunc.keys():
-                        if anArg.type.startswith(key):
-                            anArg.tempOutputConverter = postFunc[key]
+            # MPI_Status is handled specially; don't do it here.
+            if anArg.type.startswith('MPI_Status'):
+                continue
+            if anArg.isMPIType:
+                anArg.tempName = 'conv_' + anArg.callName
+                for mpiType in mpiTypes:
+                    if anArg.type.startswith(mpiType):
+                        anArg.tempType = mpiType
+                if anArg.isInput:
+                    if not anArg.isPlural:
+                        anArg.tempPreConverter = scalarFunc[anArg.tempType]
+                        anArg.tempIsPtr = False
+                    elif anArg.isPlural:
+                        anArg.tempIsPtr = True
+                        anArg.tempPreConverter = arrayFunc[anArg.tempType]
+                if anArg.isOutput:
+                    if not anArg.isPlural:
+                        anArg.tempPostConverter = pscalarFunc[anArg.tempType]
+                    elif anArg.isPlural:
+                        anArg.tempPostConverter = parrayFunc[anArg.tempType]
                                 
     def _statusConvLine(self, aFunc, phase):
         convLine = ''
@@ -161,36 +223,125 @@ class GenerateWrap(object):
                             ', ' + theArg.name + ');\n'
 
         return convLine
-                            
-    def _convLines(self, aFunc, phase):
+
+    def _cleanUpTmpArrays(self, aFunc):
+        cleanMap= { 'MPI_Comm':'free_comm_array',
+                    'MPI_Datatype':'free_datatype_array',
+                    'MPI_Offset':'free_offset_array',
+                    'MPI_Aint':'free_aint_array'}
+        cleanUpLines = ''
+        for i in range(len(aFunc.args)):
+            anArg = aFunc.args[i]
+            if anArg.type.startswith('MPI_Status'):
+                continue
+            if anArg.isMPIType:
+                if anArg.isPlural:
+                    cleanUpLines += '    ' + cleanMap[anArg.tempType] + '(' +\
+                                    anArg.tempName + ');\n'
+        return cleanUpLines
+    
+    def _mpiConvLines(self, aFunc, phase):
         convLine = ''
         if phase == 'input':
             for i in range(len(aFunc.args)):
                 anArg = aFunc.args[i]
-                if anArg.hasTempOutputVar:
-                    convLine += '    ' + anArg.tempOutputType + ' ' +\
-                               anArg.callName + ';\n'
-                elif i in aFunc.preprocess:
-                    argMap = aFunc.preprocess[i]
-                    if argMap['converter'] is not None:
-                        convLine += '    ' + argMap['newtype'] + ' ' +\
-                                   anArg.callName + ' = ' +\
-                                   argMap['converter'] +\
-                                   '(' + anArg.name + ');\n'
+                if anArg.type.startswith('MPI_Status'):
+                    continue
+                if anArg.isMPIType:
+                    convLine += '    ' + anArg.tempType + ' ' +\
+                                anArg.tempName
+                    if anArg.tempPreConverter:
+                        convName = anArg.callName
+                        if not anArg.isPlural:
+                            if anArg.isPointer:
+                                convName = "*" + convName
+                        convLine += ' = ' + anArg.tempPreConverter + '(' +\
+                                    convName
+                        if anArg.isPlural:
+                            convLine += ', '
+                            dimArg = aFunc.getArg(anArg.dims)
+                            if dimArg.isPointer:
+                                convLine += '*'
+                            convLine += anArg.dims
+                        convLine += ');\n'
+                    else:
+                        convLine += ';\n'
                                    
         elif phase == 'output':
             for i in range(len(aFunc.args)):
                 anArg = aFunc.args[i]
-                if anArg.hasTempOutputVar:
+                if anArg.type.startswith('MPI_Status'):
+                    continue
+                if anArg.tempPostConverter:
                     convLine += '    '
-                    if anArg.isPointer:
-                        convLine += '*'
+                    if not anArg.tempIsPtr:
+                        if anArg.isPointer:
+                            convLine += '*'
                     convLine += anArg.name + ' = ' +\
-                                anArg.tempOutputConverter + '(' +\
-                                anArg.callName + ');\n'           
+                                anArg.tempPostConverter + '('
+                    if anArg.tempIsPtr:
+                        if not anArg.isPointer:
+                            convLine += '*'
+                    convLine += anArg.tempName + ');\n'
                 
         return convLine
-            
+    
+    def _freeHandleLines(self, aFunc):
+        handleMap = {'MPI_Comm':'comm_pool',
+                     'MPI_Group':'group_pool',
+                     'MPI_Info':'info_pool',
+                     'MPI_File':'file_pool',
+                     'MPI_Datatype':'datatype_pool'}
+        handleLines = ''
+        for i in range(len(aFunc.args)):
+            anArg = aFunc.args[i]
+            if anArg.type.startswith('MPI_Status'):
+                continue
+            if anArg.freeHandle:
+                poolName = handleMap[anArg.tempType]
+                handleLines += '    ' + poolName + '['
+                if anArg.isPointer:
+                    handleLines += '*'
+                handleLines += anArg.name + "] = " + anArg.freedValue + ";\n"
+                handleLines += '    '
+                if anArg.isPointer:
+                    handleLines += '*'
+                handleLines += anArg.name + ' = Yogi' +\
+                               anArg.freedValue + ';\n'
+        return handleLines
+
+    def _constantConversions(self, aFunc, phase):
+        convLines = ''
+        for anArg in aFunc.args:
+            if not anArg.convertValues:
+                continue
+            if phase == 'input':
+                if not anArg.isInput:
+                    continue
+            elif phase == 'output':
+                if not anArg.isOutput:
+                    continue                    
+            for i in range(len(anArg.convertValues)):
+                val = anArg.convertValues[i]
+                if anArg.isInput:
+                    compareValue = self.prefix + val
+                    changeValue = val
+                elif anArg.isOutput:
+                    compareValue = val
+                    changeValue = self.prefix + val
+                refAssign = anArg.name
+                if anArg.isPointer:
+                    refAssign = '*' + refAssign
+                if i == 0:
+                    convLines += '    if ('
+                else:
+                    convLines += '    else if ('
+                convLines += refAssign + ' == ' + compareValue +\
+                            ') {\n' +\
+                            '        ' + refAssign + ' = ' + changeValue +\
+                            ';\n    }\n'
+        return convLines
+                                        
     def writeFiles(self):
         headerLines = []
         sourceLines = []
@@ -214,17 +365,17 @@ class GenerateWrap(object):
         headerFile.close()
 
         for aFunc in self.functions:
-            self._typeConversions(aFunc)
+            self._mpiConversions(aFunc)
             # There are a few things that must be checked.
             # - If there is an output MPI_Status (or MPI_Status plural), the 
             #   check for MPI_STATUSES_IGNORE or MPI_STATUS_IGNORE must offer
             #   a branch call (done).
-            # - Check for any manual comparison/converts on arguments.
+            # - Check for any manual comparison/converts on arguments (done).
             # - Convert scalar input arguments to proper format (done).
-            # - Convert array input arguments to proper format.
-            # - Convert scalar output arguments to proper format.
-            # - Convert array output arguments to proper format.
-            # - Free objects that are being freed.
+            # - Convert array input arguments to proper format (done).
+            # - Convert scalar output arguments to proper format (done).
+            # - Convert array output arguments to proper format (N/A).
+            # - Free objects that are being freed (done).
             for i in range(len(aFunc.args)):
                 anArg = aFunc.args[i]
                 if anArg.type.startswith('MPI_Status'):
@@ -250,19 +401,9 @@ class GenerateWrap(object):
             openLine += ') {\n\n'
             sourceLines.append(openLine)
             callLine = '    int mpi_error;\n'
-            sourceLines.append(self._convLines(aFunc, 'input'))
+            sourceLines.append(self._mpiConvLines(aFunc, 'input'))
+            sourceLines.append(self._constantConversions(aFunc, 'input'))
 
-            for anArg in aFunc.args:
-                if anArg.convertValues and anArg.isInput:
-                    for val in anArg.convertValues:
-                        refAssign = anArg.name
-                        convLine = '    if ('
-                        convLine += refAssign + ' == ' + self.prefix + val +\
-                                    ') {\n' +\
-                                    '        ' + refAssign + ' = ' + val +\
-                                    ';\n    }\n'
-                        sourceLines.append(convLine)
-            
             withoutIgnore = self._mpiCallString(aFunc, False)
             if aFunc.statusIgnore:
                 # Optional STATUS_IGNORE must be recognized.
@@ -281,7 +422,10 @@ class GenerateWrap(object):
                 callLine += '    ' + withoutIgnore + '\n'
                 
             sourceLines.append(callLine)
-            sourceLines.append(self._convLines(aFunc, 'output'))
+            sourceLines.append(self._constantConversions(aFunc, 'output'))
+            sourceLines.append(self._mpiConvLines(aFunc, 'output'))
+            sourceLines.append(self._freeHandleLines(aFunc))
+            sourceLines.append(self._cleanUpTmpArrays(aFunc))
             sourceLines.append('    return error_to_yogi(mpi_error);\n')
             sourceLines.append('}\n\n')        
         sourceFile.writelines(sourceLines)

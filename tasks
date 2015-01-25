@@ -1,4 +1,0 @@
-Issues:
-
-- Some MPI-1 functions not implemented.
-- MPI_Status runaway memory allocation.
