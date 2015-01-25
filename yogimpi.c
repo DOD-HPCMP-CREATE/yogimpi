@@ -165,6 +165,38 @@ MPI_Comm comm_to_mpi(YogiMPI_Comm comm)
   return comm_pool[comm];
 }
 
+/* Converts a YogiMPI_Comm array to an array of MPI_Comm objects */ 
+MPI_Comm * comm_array_to_mpi(YogiMPI_Comm array_of_comms[], int num) {
+    MPI_Comm* mpi_comms = (MPI_Comm*)malloc(num*sizeof(MPI_Comm));
+    int i;
+    for(i = 0; i < num; ++i) {
+        mpi_comms[i] = comm_to_mpi(array_of_comms[i]);
+    }
+    return mpi_comms;
+}
+
+/* Frees an array of MPI Comm objects */
+void free_comm_array(MPI_Comm array_of_comms[]) {
+    free(array_of_comms);
+}
+
+/* Converts a YogiMPI_Datatype array to an array of MPI_Datatype objects */
+MPI_Datatype * datatype_array_to_mpi(YogiMPI_Datatype array_of_types[],
+                                     int num) {
+    MPI_Datatype* mpi_types = (MPI_Datatype*)malloc(num*sizeof(MPI_Datatype));
+    int i;
+    for(i = 0; i < num; ++i) {
+        mpi_types[i] = datatype_to_mpi(array_of_types[i]);
+    }
+    return mpi_types;
+}
+
+/* Frees an array of MPI_Datatype objects */
+void free_datatype_array(MPI_Datatype array_of_types[]) {
+    free(array_of_types);
+}
+
+
 /* Converts a YogiMPI_Request to MPI_Request pointer */
 MPI_Request* request_to_mpi(YogiMPI_Request request) 
 {

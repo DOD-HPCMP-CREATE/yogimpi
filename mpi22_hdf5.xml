@@ -47,8 +47,8 @@
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int" />
     <Arg input="true" name="blocklens[]" type="int" />
-    <Arg input="true" name="indices[]" type="MPI_Aint" />
-    <Arg input="true" name="old_types[]" type="MPI_Datatype" />
+    <Arg input="true" name="indices[]" type="MPI_Aint" dims="count" />
+    <Arg input="true" name="old_types[]" type="MPI_Datatype" dims="count"/>
     <Arg output="true" name="newtype" type="MPI_Datatype*" />
   </Function>
   <Function name="MPI_File_read_at">
@@ -86,7 +86,7 @@
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int" />
     <Arg input="true" name="blocklens[]" type="int" />
-    <Arg input="true" name="indices[]" type="MPI_Aint" />
+    <Arg input="true" name="indices[]" type="MPI_Aint" dims="count"/>
     <Arg input="true" name="old_type" type="MPI_Datatype" />
     <Arg output="true" name="newtype" type="MPI_Datatype*" />
   </Function>
