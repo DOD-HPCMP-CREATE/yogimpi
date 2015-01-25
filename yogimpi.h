@@ -473,6 +473,14 @@ int YogiMPI_File_set_size(YogiMPI_File fh, YogiMPI_Offset size);
 
 int YogiMPI_Error_string(int errorcode, char* string, int* resultlen);
 
+YogiMPI_Comm YogiMPI_Comm_f2c(YogiMPI_Fint comm);
+
+YogiMPI_Fint YogiMPI_Comm_c2f(YogiMPI_Comm comm);
+
+YogiMPI_Info YogiMPI_Info_f2c(YogiMPI_Fint info);
+
+YogiMPI_Fint YogiMPI_Info_c2f(YogiMPI_Info info);
+
 #ifdef __cplusplus
 }
 #endif

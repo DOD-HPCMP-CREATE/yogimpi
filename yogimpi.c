@@ -1318,10 +1318,6 @@ int YogiMPI_Type_create_indexed_block(int count, int blocklength,
     return error_to_yogi(mpi_err);
 }
 
-YogiMPI_Comm YogiMPI_Comm_f2c(YogiMPI_Fint comm) {
-    return comm;	
-}
-
 double YogiMPI_Wtime() {
 	return MPI_Wtime();
 }
@@ -1871,3 +1867,20 @@ int YogiMPI_Error_string(int errorcode, char* string, int* resultlen) {
     mpi_error = MPI_Error_string(errorcode, string, resultlen);
     return error_to_yogi(mpi_error);
 }
+
+YogiMPI_Comm YogiMPI_Comm_f2c(YogiMPI_Fint comm) {
+	return comm;
+}
+
+YogiMPI_Fint YogiMPI_Comm_c2f(YogiMPI_Comm comm) {
+	return comm;
+}
+
+YogiMPI_Info YogiMPI_Info_f2c(YogiMPI_Fint info) {
+	return info;
+}
+
+YogiMPI_Fint YogiMPI_Info_c2f(YogiMPI_Info info) {
+	return info;
+}
+
