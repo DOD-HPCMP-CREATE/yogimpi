@@ -5,12 +5,6 @@
     <Arg input="true" name="n" type="int" />
     <Arg name="key" output="true" type="char*" />
   </Function>
-  <Function name="MPI_File_close">
-    <ReturnType>int</ReturnType>
-    <Arg name="mpi_fh" type="MPI_File*">
-      <PostFreeHandle>MPI_FILE_NULL</PostFreeHandle>
-    </Arg>
-  </Function>
   <Function name="MPI_File_write">
     <ReturnType>int</ReturnType>
     <Arg name="fh" type="MPI_File" />

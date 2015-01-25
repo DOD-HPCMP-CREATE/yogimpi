@@ -28,7 +28,8 @@ class yogicpp(object):
         self.logFile = None
         if not self.actionType == 'preprocess':
             self.logFile = open('yogicpp.out', 'w')
-        self.definitions = [] 
+        self.cDefinitions = [] 
+        self.fDefinitions = []
         self.loadSupported()
         if self.actionType == 'preprocess' and self.inputMode == 'directory':
             self.outputPath = os.path.abspath(self.outputPath)
@@ -60,12 +61,27 @@ class yogicpp(object):
     # Loads from XML MPI functions and constants supported by YogiMPI.
     def loadSupported(self):
         fileTree = ET.parse(self.supportFile).getroot()
-        for entry in fileTree.iterfind('Constant'):
-            self.definitions.append(AU._getValidText(entry, True))
-        for entry in fileTree.iterfind('Object'):
-            self.definitions.append(AU._getValidText(entry, True))
-        for entry in fileTree.iterfind('Function'):
-            self.definitions.append(AU._getValidText(entry, True))
+        cLangElement = None
+        fLangElement = None
+        for langElement in fileTree.iterfind('Language'):
+            if langElement.attrib['name'] == 'C':
+                cLangElement = langElement
+            elif langElement.attrib['name'] == 'Fortran':
+                fLangElement = langElement
+
+        for entry in cLangElement.iterfind('Constant'):
+            self.cDefinitions.append(AU._getValidText(entry, True))
+        for entry in cLangElement.iterfind('Object'):
+            self.cDefinitions.append(AU._getValidText(entry, True))
+        for entry in cLangElement.iterfind('Function'):
+            self.cDefinitions.append(AU._getValidText(entry, True))
+
+        for entry in fLangElement.iterfind('Constant'):
+            self.fDefinitions.append(AU._getValidText(entry, True))
+        for entry in fLangElement.iterfind('Object'):
+            self.fDefinitions.append(AU._getValidText(entry, True))
+        for entry in fLangElement.iterfind('Function'):
+            self.fDefinitions.append(AU._getValidText(entry, True))
 
     def _findMPI(self, searchLine, mpiPattern=None, caseSensitive=False,
                  underScoreAllowed=False):
@@ -92,7 +108,7 @@ class yogicpp(object):
         for a in args:
             self.logFile.write(a + '\n')
 
-    def checkFileWrap(self, inputFile):
+    def checkFileWrap(self, inputFile, definitions):
         noMPI = set() 
         ihandle = open(inputFile, 'r')
         rawFile = ihandle.readlines()
@@ -108,10 +124,10 @@ class yogicpp(object):
                                      underScoreAllowed=underScoreAllowed)
             for item in matchMPI: 
                 if caseSensitive:
-                    if not item in self.definitions: 
+                    if not item in definitions: 
                         noMPI.add(item)
                 else:
-                    if not item.upper() in (md.upper() for md in self.definitions):
+                    if not item.upper() in (md.upper() for md in definitions):
                         noMPI.add(item) 
         if noMPI:
             self.writeLog(os.path.abspath(inputFile))
@@ -123,19 +139,28 @@ class yogicpp(object):
             for f in fnames:
                 if self.ccxxOnly:
                     if self._isCSource(f) or self._isCXXSource(f):
-                        self.checkFileWrap(os.path.join(dirpath, f)) 
+                        self.checkFileWrap(os.path.join(dirpath, f),
+                                           self.cDefinitions) 
                 elif self.fortranOnly:
                     if self._isFortranSource(f):
-                        self.checkFileWrap(os.path.join(dirpath, f))
+                        self.checkFileWrap(os.path.join(dirpath, f),
+                                           self.fDefinitions)
                 else:
-                    if self._isSourceFile(f):
-                        self.checkFileWrap(os.path.join(dirpath, f))
+                    if self._isCSource(f) or self._isCXXSource(f):
+                        self.checkFileWrap(os.path.join(dirpath, f),
+                                           self.cDefinitions)
+                    elif self._isFortranSource(f):
+                        self.checkFileWrap(os.path.join(dirpath, f),
+                                           self.fDefinitions)
 
     def preprocessDirectory(self, inputDir, outputDir, makeChanges=False):
         for dirpath, dnames, fnames in os.walk(inputDir):
             for f in fnames:
-                if self._isSourceFile(f):
-                    self.preprocessFile(os.path.join(dirpath, f), 
+                if self._isCSource(f) or self._isCXXSource(f):
+                    self.preprocessFile(os.path.join(dirpath, f),
+                                        outputDir + '/' + f)
+                elif self._isFortranSource(f):
+                    self.preprocessFile(os.path.join(dirpath, f),
                                         outputDir + '/' + f)
  
     def _showChanges(self, fileName, originalFile, modFile):
@@ -175,7 +200,7 @@ class yogicpp(object):
         ihandle.close()
 
         if self._isFortranSource(inputFile):
-            for aPattern in self.definitions:
+            for aPattern in self.fDefinitions:
                 for i in range(len(rawFile)):
                     mpiString = re.compile(r"(^|_|=|\s|\(|\)|,|\*|\+)(" +\
                                            aPattern +\

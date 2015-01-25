@@ -344,9 +344,13 @@ class GenerateWrap(object):
                                         
     def writeFiles(self):
         headerLines = []
+        convHeaderLines = []
         sourceLines = []
+        ppLines = []
         headerFile = open(self.filePrefix + '.h', 'w')
         sourceFile = open(self.filePrefix + '.c', 'w')
+        convFile = open(self.filePrefix + 'toyogi.h', 'w')
+        ppFile = open(self.filePrefix + '_cpp.xml', 'w')
         for aFunc in self.functions:
             fProto = aFunc.returnType + ' Yogi' + aFunc.name + '('
             for i in range(len(aFunc.args)):
@@ -361,8 +365,15 @@ class GenerateWrap(object):
             fProto += ');\n'
             fProto += '\n'
             headerLines.append(fProto)
+            convHeaderLines.append('#define ' + aFunc.name + ' Yogi' +\
+                                   aFunc.name + '\n')
+            ppLines.append('    <Function>' + aFunc.name + '</Function>\n')
         headerFile.writelines(headerLines)
         headerFile.close()
+        convFile.writelines(convHeaderLines)
+        convFile.close()
+        ppFile.writelines(ppLines)
+        ppFile.close()
 
         for aFunc in self.functions:
             self._mpiConversions(aFunc)

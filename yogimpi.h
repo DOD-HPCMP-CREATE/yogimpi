@@ -403,6 +403,72 @@ int YogiMPI_Initialized(int *flag);
 
 int YogiMPI_Finalized(int *flag);
 
+int YogiMPI_Info_get_nthkey(YogiMPI_Info info, int n, char* key);
+
+int YogiMPI_File_write(YogiMPI_File fh, void* buf, int count, 
+		               YogiMPI_Datatype datatype, YogiMPI_Status* status);
+
+int YogiMPI_Info_dup(YogiMPI_Info info, YogiMPI_Info* newinfo);
+
+int YogiMPI_File_read_at_all(YogiMPI_File mpi_fh, YogiMPI_Offset offset, 
+		                     void* buf, int count, YogiMPI_Datatype datatype, 
+							 YogiMPI_Status* status);
+
+int YogiMPI_File_seek(YogiMPI_File mpi_fh, YogiMPI_Offset offset, int whence);
+
+int YogiMPI_Type_struct(int count, int blocklens[], YogiMPI_Aint indices[], 
+		                YogiMPI_Datatype old_types[], 
+						YogiMPI_Datatype* newtype);
+
+int YogiMPI_File_read_at(YogiMPI_File mpi_fh, YogiMPI_Offset offset, void* buf,
+		                 int count, YogiMPI_Datatype datatype, 
+						 YogiMPI_Status* status);
+
+int YogiMPI_File_write_at_all(YogiMPI_File mpi_fh, YogiMPI_Offset offset, 
+		                      void* buf, int count, YogiMPI_Datatype datatype, 
+							  YogiMPI_Status* status);
+
+int YogiMPI_Type_extent(YogiMPI_Datatype datatype, YogiMPI_Aint* extent);
+
+int YogiMPI_Get_elements(YogiMPI_Status* status, YogiMPI_Datatype datatype, 
+		                 int* elements);
+
+int YogiMPI_Type_hindexed(int count, int blocklens[], YogiMPI_Aint indices[],
+		                  YogiMPI_Datatype old_type,
+						  YogiMPI_Datatype* newtype);
+
+int YogiMPI_File_set_atomicity(YogiMPI_File mpi_fh, int flag);
+
+int YogiMPI_File_sync(YogiMPI_File mpi_fh);
+
+int YogiMPI_Type_hvector(int count, int blocklen, YogiMPI_Aint stride,
+		                 YogiMPI_Datatype old_type, YogiMPI_Datatype* newtype);
+
+int YogiMPI_File_delete(char* filename, YogiMPI_Info info);
+
+int YogiMPI_Address(void* location, YogiMPI_Aint* address);
+
+int YogiMPI_Info_free(YogiMPI_Info* info);
+
+int YogiMPI_Info_get(YogiMPI_Info info, char* key, int valuelen, char* value,
+		             int* flag);
+
+int YogiMPI_Group_excl(YogiMPI_Group group, int n, int* ranks,
+		               YogiMPI_Group* newgroup);
+
+int YogiMPI_File_get_atomicity(YogiMPI_File mpi_fh, int* flag);
+
+int YogiMPI_File_read(YogiMPI_File mpi_fh, void* buf, int count,
+		              YogiMPI_Datatype datatype, YogiMPI_Status* status);
+
+int YogiMPI_Info_get_nkeys(YogiMPI_Info info, int* nkeys);
+
+int YogiMPI_File_get_size(YogiMPI_File fh, YogiMPI_Offset* size);
+
+int YogiMPI_File_set_size(YogiMPI_File fh, YogiMPI_Offset size);
+
+int YogiMPI_Error_string(int errorcode, char* string, int* resultlen);
+
 #ifdef __cplusplus
 }
 #endif

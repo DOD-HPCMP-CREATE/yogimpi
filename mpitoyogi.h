@@ -190,5 +190,30 @@
 #define MPI_Attr_get YogiMPI_Attr_get
 #define MPI_Finalized YogiMPI_Finalized
 #define MPI_Initialized YogiMPI_Initialized
+#define MPI_Info_get_nthkey YogiMPI_Info_get_nthkey
+#define MPI_File_write YogiMPI_File_write
+#define MPI_Info_dup YogiMPI_Info_dup
+#define MPI_File_read_at_all YogiMPI_File_read_at_all
+#define MPI_File_seek YogiMPI_File_seek
+#define MPI_Type_struct YogiMPI_Type_struct
+#define MPI_File_read_at YogiMPI_File_read_at
+#define MPI_File_write_at_all YogiMPI_File_write_at_all
+#define MPI_Type_extent YogiMPI_Type_extent
+#define MPI_Get_elements YogiMPI_Get_elements
+#define MPI_Type_hindexed YogiMPI_Type_hindexed
+#define MPI_File_set_atomicity YogiMPI_File_set_atomicity
+#define MPI_File_sync YogiMPI_File_sync
+#define MPI_Type_hvector YogiMPI_Type_hvector
+#define MPI_File_delete YogiMPI_File_delete
+#define MPI_Address YogiMPI_Address
+#define MPI_Info_free YogiMPI_Info_free
+#define MPI_Info_get YogiMPI_Info_get
+#define MPI_Group_excl YogiMPI_Group_excl
+#define MPI_File_get_atomicity YogiMPI_File_get_atomicity
+#define MPI_File_read YogiMPI_File_read
+#define MPI_Info_get_nkeys YogiMPI_Info_get_nkeys
+#define MPI_File_get_size YogiMPI_File_get_size
+#define MPI_File_set_size YogiMPI_File_set_size
+#define MPI_Error_string YogiMPI_Error_string
 
 #endif /* MPITOYOGI_H */
