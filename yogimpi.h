@@ -136,6 +136,10 @@ static const YogiMPI_Datatype YogiMPI_LONG_LONG_INT = 20;
 static const YogiMPI_Datatype YogiMPI_INT32_T = 21;
 static const YogiMPI_Datatype YogiMPI_INT64_T = 22;
 
+/* Special datatypes for constructing derived datatypes */ 
+static const YogiMPI_Datatype YogiMPI_LB = 35; 
+static const YogiMPI_Datatype YogiMPI_UB = 36;
+
 /* reserved communicators (C and Fortran) */
 static const YogiMPI_Comm YogiMPI_COMM_WORLD = 1;
 static const YogiMPI_Comm YogiMPI_COMM_SELF = 2;
@@ -333,11 +337,11 @@ int YogiMPI_Group_translate_ranks(YogiMPI_Group group1, int n, int *ranks1,
 
 int YogiMPI_Get_processor_name(char *name, int *resultlen);
 
-double YogiMPI_Wtime();
+double YogiMPI_Wtime(void);
 
 int YogiMPI_Init(int* argc, char ***argv);
 
-int YogiMPI_Finalize();
+int YogiMPI_Finalize(void);
 
 int YogiMPI_Type_create_indexed_block(int count, int blocklength, 
                                       int array_of_displacements[],

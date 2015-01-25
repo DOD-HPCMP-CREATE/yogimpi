@@ -24,7 +24,7 @@ static const YogiMPI_Datatype YogiMPI_REAL4 = 33;
 static const YogiMPI_Datatype YogiMPI_REAL8 = 34;
 
 /* Total number of non-volatile datatypes.  Accounts for Fortran ones, too. */
-static const int YogiMPI_DATATYPE_VOLATILE_OFFSET = 35;
+static const int YogiMPI_DATATYPE_VOLATILE_OFFSET = 37;
 
 /* Total number of datatypes, volatile and non-volatile. 
  */
@@ -557,6 +557,8 @@ static void initialize_datatype_pool() {
 	datatype_pool[YogiMPI_INTEGER8]          = MPI_INTEGER8;
 	datatype_pool[YogiMPI_REAL4]             = MPI_REAL4;
 	datatype_pool[YogiMPI_REAL8]             = MPI_REAL8;
+        datatype_pool[YogiMPI_LB]                = MPI_LB;
+        datatype_pool[YogiMPI_UB]                = MPI_UB;
 	
 }
 
