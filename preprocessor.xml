@@ -227,6 +227,10 @@
     <Function>MPI_File_get_size</Function>
     <Function>MPI_File_set_size</Function>
     <Function>MPI_Error_string</Function>
+    <Function>MPI_Comm_f2c</Function>
+    <Function>MPI_Comm_c2f</Function>
+    <Function>MPI_Info_f2c</Function>
+    <Function>MPI_Info_c2f</Function>
   </Language>
   <Language name='Fortran'>
     <Constant>MPI_SUCCESS</Constant>

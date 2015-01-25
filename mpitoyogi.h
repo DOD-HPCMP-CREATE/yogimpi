@@ -215,5 +215,9 @@
 #define MPI_File_get_size YogiMPI_File_get_size
 #define MPI_File_set_size YogiMPI_File_set_size
 #define MPI_Error_string YogiMPI_Error_string
+#define MPI_Comm_f2c YogiMPI_Comm_f2c
+#define MPI_Comm_c2f YogiMPI_Comm_c2f
+#define MPI_Info_f2c YogiMPI_Info_f2c
+#define MPI_Info_c2f YogiMPI_Info_c2f
 
 #endif /* MPITOYOGI_H */
