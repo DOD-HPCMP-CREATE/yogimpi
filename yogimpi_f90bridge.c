@@ -70,7 +70,7 @@
 #define YOGIMPI_SEND_INIT yogimpi_send_init_
 #define YOGIMPI_GATHERV yogimpi_gatherv_
 #define YOGIMPI_SCATTER yogimpi_scatter_
-#define YOGIMPI_SCATTERV yogimpi_Scatterv_
+#define YOGIMPI_SCATTERV yogimpi_scatterv_
 #define YOGIMPI_ALLGATHER yogimpi_allgather_
 #define YOGIMPI_ALLGATHERV yogimpi_allgatherv_
 #define YOGIMPI_ABORT yogimpi_abort_

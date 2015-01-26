@@ -160,6 +160,7 @@
     <Function>MPI_Bcast</Function>
     <Function>MPI_Gather</Function>
     <Function>MPI_Gatherv</Function>
+    <Function>MPI_Scatter</Function>
     <Function>MPI_Scatterv</Function>
     <Function>MPI_Allgather</Function>
     <Function>MPI_Allgatherv</Function>
@@ -375,6 +376,7 @@
     <Function>MPI_Bcast</Function>
     <Function>MPI_Gather</Function>
     <Function>MPI_Gatherv</Function>
+    <Function>MPI_Scatter</Function>
     <Function>MPI_Scatterv</Function>
     <Function>MPI_Allgather</Function>
     <Function>MPI_Allgatherv</Function>
