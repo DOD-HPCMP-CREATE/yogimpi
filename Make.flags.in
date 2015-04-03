@@ -1,0 +1,7 @@
+INSTALLDIR=@INSTALLDIR@
+MPICC=@CCOMPILER@
+# Change these if you require different compiler flags.
+# These work for both Intel and GNU.
+FFLAGS=-I. -fPIC
+CFLAGS=-I. -fPIC
+LDFLAGS=-shared

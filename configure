@@ -1,0 +1,48 @@
+#!/bin/bash
+
+function showUsage {
+    echo "./configure -i <install prefix> -c <MPI compiler>"
+    exit 0
+}
+
+cCompiler=""
+installDir=""
+
+while getopts ":i:c:h" opt; do
+  case $opt in
+    i)
+      echo "Installation directory set to: $OPTARG"
+      installDir=$OPTARG
+      ;;
+    c)
+      echo "C compiler: $OPTARG"
+      cCompiler=$OPTARG
+      ;;
+    h)
+      showUsage
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [[ ${cCompiler} == "" ]]; then
+    echo "Error: C compiler unspecified." >&2
+    exit 1
+fi
+
+if [[ ${installDir} == "" ]]; then
+    echo "Error: install directory unspecified." >&2
+    exit 1
+fi
+
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@CCOMPILER@|${cCompiler}|g" \
+    Make.flags.in > Make.flags
+
+echo "Type make to build YogiMPI."
