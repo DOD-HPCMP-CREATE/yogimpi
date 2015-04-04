@@ -24,7 +24,24 @@ class YogiMPIWrapper(object):
         self.sourceFile = None
         self.sourceLocation = None
         self.isLinking = True
-        self.doWrap()
+        diagOptions = [ '-h', '-help', '-show', '--help', '--version' ]
+
+        if len(self.argArray) == 2 and self.argArray[1] in diagOptions:
+            self._showCompilerString()
+        else:
+            self.doWrap()
+
+    def _showCompilerString(self):
+        self.compString = YogiMPIWrapper.cxxCompiler 
+        self.compString += ' -I' + YogiMPIWrapper.prefixDir + '/include'
+        self.compString += ' -L' + YogiMPIWrapper.prefixDir + '/lib' +\
+                           ' -lyogimpi'
+        print self.compString
+
+    def _outputMsg(self, message):
+        if 'YMPI_COMPILER_DEBUG' in os.environ:
+            if int(os.environ['YMPI_COMPILER_DEBUG']) == 1:
+                print message
         
     def setFile(self, inputFile, argLocation):
         if self.sourceFile is not None:
@@ -64,6 +81,7 @@ class YogiMPIWrapper(object):
                 self.setFile(anOpt, i)
 
         self._changeArgs()
+        self._outputMsg("Final compile string: " + self._getCallString())
         subprocess.call(self._getCallString(), shell=True)
 
         

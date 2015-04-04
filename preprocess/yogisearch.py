@@ -8,7 +8,7 @@ from pprint import pprint
 from AVUtility import AVUtility as AU
 import xml.etree.ElementTree as ET
 
-class yogicpp(object):
+class yogisearch(object):
 
     def __init__(self):
         self.supportFile = 'preprocessor.xml'
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     configArguments = parser.parse_args()
 
-    preproc = yogicpp()
+    preproc = yogisearch()
     preproc.inputMode = configArguments.mode
     preproc.inputPath = configArguments.input
     preproc.outputPath = configArguments.output

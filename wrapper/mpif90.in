@@ -5,6 +5,8 @@ import sys
 import subprocess
 import tempfile
 import re
+from AVUtility import AVUtility as AU
+import xml.etree.ElementTree as ET
 
 class YogiMPIWrapper(object):
     prefixDir = "@INSTALLDIR@"
@@ -13,13 +15,8 @@ class YogiMPIWrapper(object):
     fExtensions = [ '.f', '.f90', '.for', '.f77', '.ftn', '.f95', '.f03' ]
     notLinkingOpts = [ '-c', '-S', '-E', '-M', '-MM' ]
     
-    def _isFortranSource(self, inputFile):
-        for fExt in YogiMPIWrapper.fExtensions:
-            if inputFile.lower().endswith(fExt):
-                return True
-        return False
-        
     def __init__(self):
+        self.supportFile = YogiMPIWrapper.prefixDir + '/bin/preprocessor.xml'
         self.argArray = list(sys.argv)
         self.sourceDir = ''
         self.sourceFile = None
@@ -28,7 +25,47 @@ class YogiMPIWrapper(object):
         self.newFile = None
         self.newPath = None
         self.namesOutput = False
-        self.doWrap()
+        self.fDefinitions = []
+
+        diagOptions = [ '-h', '-help', '-show', '--help', '--version' ]
+
+        if len(self.argArray) == 2 and self.argArray[1] in diagOptions:
+            self._showCompilerString()
+        else:
+            self.loadSupported()
+            self.doWrap()
+
+    def _showCompilerString(self):
+        self.compString = YogiMPIWrapper.f90Compiler 
+        self.compString += ' -I' + YogiMPIWrapper.prefixDir + '/include'
+        self.compString += ' -L' + YogiMPIWrapper.prefixDir + '/lib' +\
+                           ' -lyogimpi'
+        print self.compString
+
+    def _outputMsg(self, message):
+        if 'YMPI_COMPILER_DEBUG' in os.environ:
+            if int(os.environ['YMPI_COMPILER_DEBUG']) == 1:
+                print message
+
+    def _isFortranSource(self, inputFile):
+        for fExt in YogiMPIWrapper.fExtensions:
+            if inputFile.lower().endswith(fExt):
+                return True
+        return False
+
+    def loadSupported(self):
+        fileTree = ET.parse(self.supportFile).getroot()
+        fLangElement = None
+        for langElement in fileTree.iterfind('Language'):
+            if langElement.attrib['name'] == 'Fortran':
+                fLangElement = langElement
+
+        for entry in fLangElement.iterfind('Constant'):
+            self.fDefinitions.append(AU._getValidText(entry, True))
+        for entry in fLangElement.iterfind('Object'):
+            self.fDefinitions.append(AU._getValidText(entry, True))
+        for entry in fLangElement.iterfind('Function'):
+            self.fDefinitions.append(AU._getValidText(entry, True))
         
     def setFile(self, inputFile, argLocation):
         if self.sourceFile is not None:
@@ -59,8 +96,9 @@ class YogiMPIWrapper(object):
     def _changeArgs(self):
         self.argArray[0] = YogiMPIWrapper.f90Compiler
         if self.sourceFile:
-            self.preprocessFile()
-            self.argArray[self.sourceLocation] = self.newPath
+            changedFile = self.preprocessFile()
+            if changedFile:
+                self.argArray[self.sourceLocation] = self.newPath
             self.argArray.insert(self.sourceLocation,
                                  '-I' + YogiMPIWrapper.prefixDir + '/include')
             if not self.namesOutput and not self.isLinking:
@@ -79,7 +117,45 @@ class YogiMPIWrapper(object):
     def _printCommand(self):
         sys.stdout.write(self._getCallString() + '\n')
 
+    ## Preprocesses a Fortran file, changing MPI_ to YogiMPI_ wherever
+    #  used.  A temporary file is created with the new contents.
+    #  Returns True on False as to whether the file was ever changed.
     def preprocessFile(self):
+        changedFile = False
+        self._outputMsg("Preprocessing Fortran source " +\
+                        self._getFullSourcePath())
+        fileHandle = open(self._getFullSourcePath(), 'r')
+        rawFile = fileHandle.readlines()
+        fileHandle.close()
+
+        for aPattern in self.fDefinitions:
+            for i in range(len(rawFile)):
+                mpiString = re.compile(r"(^|_|=|\s|\(|\)|,|\*|\+)(" +\
+                                       aPattern +\
+                                       r')(\s|,|\*|\)|\()', re.IGNORECASE)
+                oldLine = rawFile[i]
+                rawFile[i] = mpiString.sub(r"\g<1>Yogi\g<2>\g<3>",
+                                               rawFile[i])
+                if oldLine != rawFile[i]:
+                    changedFile = True
+
+        if not changedFile:
+            self._outputMsg("File " + self._getFullSourcePath() +\
+                            " was unchanged.")
+        else:
+            fileExtension = self._getExtension(self.sourceFile)
+            self.newFile, self.newPath = tempfile.mkstemp(prefix='yogiF_',
+                                                      suffix=fileExtension)
+            os.close(self.newFile)
+            self.newFile = open(self.newPath, 'w')
+            self._outputMsg("File " + self._getFullSourcePath() +\
+                            " was changed, new file is " + self.newPath)                                                         
+            self.newFile.writelines(rawFile)
+            self.newFile.close()
+
+        return changedFile
+        
+    def preprocessFile_includeOnly(self):
         fileHandle = open(self._getFullSourcePath(), 'r')
         rawFile = fileHandle.readlines()
         fileExtension = self._getExtension(self.sourceFile)
@@ -107,6 +183,7 @@ class YogiMPIWrapper(object):
                 self.namesOutput = True
 
         self._changeArgs()
+        self._outputMsg("Final compile string: " + self._getCallString())
         subprocess.call(self._getCallString(), shell=True)
         os.remove(self.newPath)
  
