@@ -1,6 +1,6 @@
 include Make.flags
  
-.PHONY: default clean test
+.PHONY: default clean test realclean
 
 default:
 	$(MAKE) -C src
@@ -25,3 +25,9 @@ test: default
 clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C test clean
+
+realclean: clean
+	$(RM) wrapper/mpicc
+	$(RM) wrapper/mpif90
+	$(RM) wrapper/mpicxx
+	$(RM) Make.flags
