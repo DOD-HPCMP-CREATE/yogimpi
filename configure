@@ -1,11 +1,36 @@
 #!/bin/bash
 
+# Error if empty variable.
+# Argument 1 - variable to check
+# Argument 2 - description of variable for error message
+function errorIfEmpty {
+    if [[ ${1} == "" ]]; then
+        echo "Error: ${2} unspecified." >&2
+        exit 1
+    fi
+}
+
 function showUsage {
-    echo "./configure -i <install prefix> -c <MPI compiler>"
+    echo "./configure -i <install prefix>"
+    echo "Set the following environment variables to build YogiMPI: "
+    echo "CC - Serial C compiler to use"
+    echo "CXX - Serial C++ compiler to use"
+    echo "F90 - Serial Fortran compiler to use"
+    echo "MPICC - Parallel C compiler wrapper"
     exit 0
 }
 
-cCompiler=""
+
+cCompiler=$CC
+cxxCompiler=$CXX
+fortranCompiler=$F90
+mpiC=$MPICC
+
+errorIfEmpty $cCompiler "C compiler"
+errorIfEmpty $cxxCompiler "C++ compiler"
+errorIfEmpty $fortranCompiler "Fortran compiler"
+errorIfEmpty $mpiC "Parallel C compiler"
+
 installDir=""
 
 while getopts ":i:c:h" opt; do
@@ -13,10 +38,6 @@ while getopts ":i:c:h" opt; do
     i)
       echo "Installation directory set to: $OPTARG"
       installDir=$OPTARG
-      ;;
-    c)
-      echo "C compiler: $OPTARG"
-      cCompiler=$OPTARG
       ;;
     h)
       showUsage
@@ -42,7 +63,19 @@ if [[ ${installDir} == "" ]]; then
 fi
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
-    -e "s|@CCOMPILER@|${cCompiler}|g" \
+    -e "s|@MPICC@|${mpiC}|g" \
     Make.flags.in > Make.flags
+
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@SERIALCCOMPILER@|${cCompiler}|g" \
+    wrapper/mpicc.in > wrapper/mpicc
+
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@SERIALCXXCOMPILER@|${cxxCompiler}|g" \
+    wrapper/mpicxx.in > wrapper/mpicxx
+
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@SERIALF90COMPILER@|${fortranCompiler}|g" \
+    wrapper/mpif90.in > wrapper/mpif90
 
 echo "Type make to build YogiMPI."
