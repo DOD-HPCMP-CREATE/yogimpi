@@ -36,11 +36,10 @@ class YogiMPIWrapper(object):
 
     def _changeArgs(self):
         self.argArray[0] = YogiMPIWrapper.cCompiler
+        if self.isLinking:
+            self.argArray.append('-L' + YogiMPIWrapper.prefixDir + '/lib' +\
+                                 ' -lyogimpi')
         if self.sourceFile:
-            if self.isLinking:
-                self.argArray.insert(self.sourceLocation,
-                                     '-L' + YogiMPIWrapper.prefixDir + '/lib' +\
-                                     ' -lyogimpi')
             self.argArray.insert(self.sourceLocation,
                                  '-I' + YogiMPIWrapper.prefixDir + '/include')
         

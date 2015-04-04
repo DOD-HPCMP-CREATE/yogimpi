@@ -1,6 +1,6 @@
 program collective
 
-include 'yogimpif.h'
+include 'mpif.h'
 
     integer :: rank, new_rank, sendbuf, recvbuf, NPROCS
     integer :: ranks1(4), ranks2(4)
@@ -16,7 +16,7 @@ include 'yogimpif.h'
 
     ! Extract the original group handle
 
-    call YogiMPI_Comm_group(YogiMPI_COMM_WORLD, orig_group, ierr)
+    call MPI_COMM_GROUP(MPI_COMM_WORLD, orig_group, ierr)
       
     ! Divide tasks into two distinct groups based upon rank
 

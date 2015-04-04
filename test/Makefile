@@ -2,6 +2,7 @@ include ../Make.flags
 
 YCC=$(INSTALLDIR)/bin/mpicc
 YF90=$(INSTALLDIR)/bin/mpif90
+EXTRAFLAGS=-cpp
 
 .PHONY: clean test ctest ftest
 
@@ -23,15 +24,16 @@ ctest:
 	$(YCC) $(CFLAGS) waitany.c -o waitany
 
 ftest:
-	$(YF90) $(FFLAGS) writeFile1.f90 -o fwriteFile1
-	$(YF90) $(FFLAGS) f_gatherscatter.f90 -o f_gatherscatter
-	$(YF90) $(FFLAGS) fsendrecv.f90 -o fsendrecv 
-	$(YF90) $(FFLAGS) fmatt.f90 -o fmatt
-	$(YF90) $(FFLAGS) fnonBlocking.f90 -o fnonblock
-	$(YF90) $(FFLAGS) nonblock_waitall.f90 -o fnonblock_waitall
-	$(YF90) $(FFLAGS) testComms.f90 -o ftestComms
-	$(YF90) $(FFLAGS) collective.f90 -o fcollective
-	$(YF90) $(FFLAGS) waitsome.f90 -o fwaitsome
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) writeFile1.f90 -o fwriteFile1
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) f_gatherscatter.f90 -o f_gatherscatter
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) fsendrecv.f90 -o fsendrecv 
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) fmatt.f90 -o fmatt
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) fnonBlocking.f90 -o fnonblock
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) nonblock_waitall.f90 \
+                -o fnonblock_waitall
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) testComms.f90 -o ftestComms
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) collective.f90 -o fcollective
+	$(YF90) $(FFLAGS) $(EXTRAFLAGS) waitsome.f90 -o fwaitsome
 
 clean:
 	$(RM) *.o nonblock sendrecv matt fsendrecv fmatt simple \

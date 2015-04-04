@@ -4,6 +4,7 @@ import os
 import sys
 import subprocess
 import tempfile
+import re
 
 class YogiMPIWrapper(object):
     prefixDir = "@INSTALLDIR@"
@@ -24,6 +25,9 @@ class YogiMPIWrapper(object):
         self.sourceFile = None
         self.sourceLocation = None
         self.isLinking = True
+        self.newFile = None
+        self.newPath = None
+        self.namesOutput = False
         self.doWrap()
         
     def setFile(self, inputFile, argLocation):
@@ -34,16 +38,38 @@ class YogiMPIWrapper(object):
         self.sourceFile = os.path.basename(inputFile)
         self.sourceLocation = argLocation
 
+    def _getFullSourcePath(self):
+        if self.sourceDir:
+            return self.sourceDir + '/' + self.sourceFile
+        else:
+            return self.sourceFile
+
+    def _stripExtension(self, filename):
+        for fExt in YogiMPIWrapper.fExtensions:
+            if filename.lower().endswith(fExt):
+                return filename[:-(len(fExt))] 
+        return filename 
+
+    def _getExtension(self, filename):
+        for fExt in YogiMPIWrapper.fExtensions:
+            if filename.lower().endswith(fExt):
+                return filename[-(len(fExt)):]
+        return filename
+
     def _changeArgs(self):
         self.argArray[0] = YogiMPIWrapper.f90Compiler
         if self.sourceFile:
-            if self.isLinking:
-                self.argArray.insert(self.sourceLocation,
-                                     '-L' + YogiMPIWrapper.prefixDir + '/lib' +\
-                                     ' -lyogimpi')
+            self.preprocessFile()
+            self.argArray[self.sourceLocation] = self.newPath
             self.argArray.insert(self.sourceLocation,
                                  '-I' + YogiMPIWrapper.prefixDir + '/include')
-        
+            if not self.namesOutput and not self.isLinking:
+                objectName = self._stripExtension(self.sourceFile) + '.o'
+                self.argArray.append('-o ' + objectName)
+        if self.isLinking:
+             self.argArray.append('-L' + YogiMPIWrapper.prefixDir + '/lib' +\
+                                  ' -lyogimpi')
+
     def _getCallString(self):
         callString = ''
         for anArg in self.argArray:
@@ -52,7 +78,20 @@ class YogiMPIWrapper(object):
         
     def _printCommand(self):
         sys.stdout.write(self._getCallString() + '\n')
-                     
+
+    def preprocessFile(self):
+        fileHandle = open(self._getFullSourcePath(), 'r')
+        rawFile = fileHandle.readlines()
+        fileExtension = self._getExtension(self.sourceFile)
+        self.newFile, self.newPath = tempfile.mkstemp(prefix='yogiF_',
+                                                      suffix=fileExtension)
+        for i in range(len(rawFile)):
+            rawFile[i] = re.sub(r"^(\s)*include(\s)*(\"|')mpif.h(\"|')",
+                                '#include "mpif.h"', rawFile[i],
+                                flags=re.IGNORECASE)
+            os.write(self.newFile, rawFile[i])
+        os.close(self.newFile)
+ 
     def doWrap(self):
         for i in range(len(self.argArray)):
             anOpt = self.argArray[i]
@@ -63,10 +102,13 @@ class YogiMPIWrapper(object):
             elif self._isFortranSource(anOpt):
                 # Find the source file to preprocess, if any.
                 self.setFile(anOpt, i)
+            elif anOpt == '-o':
+                # If there was an output file name, use what was specified.
+                self.namesOutput = True
 
         self._changeArgs()
         subprocess.call(self._getCallString(), shell=True)
-
-        
+        os.remove(self.newPath)
+ 
 if __name__ == "__main__":
     thisWrapper = YogiMPIWrapper()
