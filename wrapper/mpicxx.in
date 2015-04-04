@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import subprocess
+import tempfile
+
+class YogiMPIWrapper(object):
+    prefixDir = "@INSTALLDIR@"
+    cxxCompiler = "@SERIALCXXCOMPILER@"
+
+    cppExtensions = [ '.c', '.cpp', '.hpp', '.cxx', '.i' ]
+    notLinkingOpts = [ '-c', '-S', '-E', '-M', '-MM' ]
+    
+    def _isCXXSource(self, inputFile):
+        for cExt in YogiMPIWrapper.cppExtensions:
+            if inputFile.lower().endswith(cExt):
+                return True
+        return False
+        
+    def __init__(self):
+        self.argArray = list(sys.argv)
+        self.sourceDir = ''
+        self.sourceFile = None
+        self.sourceLocation = None
+        self.isLinking = True
+        self.doWrap()
+        
+    def setFile(self, inputFile, argLocation):
+        if self.sourceFile is not None:
+            raise ValueError("Error: source file is already set to " +\
+                              self.sourceFile)
+        self.sourceDir = os.path.dirname(inputFile)
+        self.sourceFile = os.path.basename(inputFile)
+        self.sourceLocation = argLocation
+
+    def _changeArgs(self):
+        self.argArray[0] = YogiMPIWrapper.cxxCompiler
+        if self.sourceFile:
+            if self.isLinking:
+                self.argArray.insert(self.sourceLocation,
+                                     '-L' + YogiMPIWrapper.prefixDir + '/lib' +\
+                                     ' -lyogimpi')
+            self.argArray.insert(self.sourceLocation,
+                                 '-I' + YogiMPIWrapper.prefixDir + '/include')
+        
+    def _getCallString(self):
+        callString = ''
+        for anArg in self.argArray:
+            callString += anArg + ' '
+        return callString
+        
+    def _printCommand(self):
+        sys.stdout.write(self._getCallString() + '\n')
+                     
+    def doWrap(self):
+        for i in range(len(self.argArray)):
+            anOpt = self.argArray[i]
+            if anOpt in YogiMPIWrapper.notLinkingOpts:
+                # See if this command is linking, which means we have to add 
+                # library flags as well as extra include flags.
+                self.isLinking = False
+            elif self._isCXXSource(anOpt):
+                # Find the source file to preprocess, if any.
+                self.setFile(anOpt, i)
+
+        self._changeArgs()
+        self._printCommand()
+        #subprocess.call(fullCommand, shell=True)
+        
+if __name__ == "__main__":
+    thisWrapper = YogiMPIWrapper()
