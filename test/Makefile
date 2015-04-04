@@ -2,7 +2,6 @@ include ../Make.flags
 
 YCC=$(INSTALLDIR)/bin/mpicc
 YF90=$(INSTALLDIR)/bin/mpif90
-EXTRAFLAGS=-cpp
 
 .PHONY: clean test ctest ftest
 
