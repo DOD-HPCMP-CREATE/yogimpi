@@ -1,4 +1,4 @@
-#include "mpitoyogi.h" 
+#include "mpi.h" 
 #include <stdio.h>
 #define NPROCS 8
 

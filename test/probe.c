@@ -6,7 +6,7 @@
 //
 // Example of using MPI_Probe to dynamically allocated received messages
 //
-#include "mpitoyogi.h" 
+#include "mpi.h" 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

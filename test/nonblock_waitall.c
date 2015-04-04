@@ -13,7 +13,7 @@ Run the program with at least 2 processes.
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "mpitoyogi.h"
+#include "mpi.h"
 #define MAXPROC 8    /* Max number of procsses */
 
 int main(int argc, char* argv[]) {

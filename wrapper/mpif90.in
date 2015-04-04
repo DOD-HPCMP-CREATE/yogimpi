@@ -7,14 +7,14 @@ import tempfile
 
 class YogiMPIWrapper(object):
     prefixDir = "@INSTALLDIR@"
-    cCompiler = "@SERIALF90COMPILER@"
+    f90Compiler = "@SERIALF90COMPILER@"
 
-    cExtensions = [ '.c' ]
+    fExtensions = [ '.f', '.f90', '.for', '.f77', '.ftn', '.f95', '.f03' ]
     notLinkingOpts = [ '-c', '-S', '-E', '-M', '-MM' ]
     
-    def _isCSource(self, inputFile):
-        for cExt in YogiMPIWrapper.cExtensions:
-            if inputFile.endswith(cExt):
+    def _isFortranSource(self, inputFile):
+        for fExt in YogiMPIWrapper.fExtensions:
+            if inputFile.lower().endswith(fExt):
                 return True
         return False
         
@@ -35,9 +35,14 @@ class YogiMPIWrapper(object):
         self.sourceLocation = argLocation
 
     def _changeArgs(self):
-        self.argArray[0] = YogiMPIWrapper.cCompiler
-        self.argArray.insert(sourceLocation,
-                             '-I' + YogiMPIWrapper.prefixDir + '/include')
+        self.argArray[0] = YogiMPIWrapper.f90Compiler
+        if self.sourceFile:
+            if self.isLinking:
+                self.argArray.insert(self.sourceLocation,
+                                     '-L' + YogiMPIWrapper.prefixDir + '/lib' +\
+                                     ' -lyogimpi')
+            self.argArray.insert(self.sourceLocation,
+                                 '-I' + YogiMPIWrapper.prefixDir + '/include')
         
     def _getCallString(self):
         callString = ''
@@ -55,23 +60,13 @@ class YogiMPIWrapper(object):
                 # See if this command is linking, which means we have to add 
                 # library flags as well as extra include flags.
                 self.isLinking = False
-            elif self._isCSource(anOpt):
+            elif self._isFortranSource(anOpt):
                 # Find the source file to preprocess, if any.
                 self.setFile(anOpt, i)
-          
-        # Step 2: Preprocess this source file and make a new, temporary file.
-        outputFile, outputPath = tempfile.mkstemp(prefix='yogiC_', suffix='.c')
-        print "Temporary file is " + outputPath
-    
-        os.close(outputFile)
-        # Step 3: Change the arguments to reflect that we want to compile the
-        # temporary file, but otherwise all other options are unchanged.
-        self.argArray[self.sourceLocation] = outputPath
+
         self._changeArgs()
-        self._printCommand()
-        #subprocess.call(fullCommand, shell=True)
+        subprocess.call(self._getCallString(), shell=True)
+
         
-
-
 if __name__ == "__main__":
     thisWrapper = YogiMPIWrapper()

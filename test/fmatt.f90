@@ -1,7 +1,7 @@
 program testMatt
 
     implicit none
-include 'yogimpif.h'
+include 'mpif.h'
 
     integer :: np, me, ierr, flag, msglen, request, status
     integer :: buf(1)
@@ -9,9 +9,9 @@ include 'yogimpif.h'
     msglen = -1
     buf(1) = -1
 
-    call YogiMPI_Init(ierr)
-    call YogiMPI_Comm_size(YogiMPI_COMM_WORLD, np, ierr)
-    call YogiMPI_Comm_rank(YogiMPI_COMM_WORLD, me, ierr)
+    call MPI_INIT(ierr)
+    call MPI_COMM_SIZE(MPI_COMM_WORLD, np, ierr)
+    call MPI_COMM_RANK(MPI_COMM_WORLD, me, ierr)
 
     if(me > 0) then
         print *, "I am the useless processor ", me, " on ", np
@@ -19,21 +19,21 @@ include 'yogimpif.h'
         print *, "I am the working processor ", me, " on ", np
     endif
 
-    call YogiMPI_Barrier(YogiMPI_COMM_WORLD, ierr)
+    call MPI_BARRIER(MPI_COMM_WORLD, ierr)
 
     if (me == 0) then
         buf(1) = 69
-        call YogiMPI_Isend(buf, 1, YogiMPI_INTEGER, 1, 1, YogiMPI_COMM_WORLD, request, ierr)
-        call YogiMPI_Wait(request, status, ierr)
+        call MPI_ISEND(buf, 1, MPI_INTEGER, 1, 1, MPI_COMM_WORLD, request, ierr)
+        call MPI_WAIT(request, status, ierr)
     endif
 
-    call YogiMPI_Barrier(YogiMPI_COMM_WORLD, ierr)
+    call MPI_BARRIER(MPI_COMM_WORLD, ierr)
 
     if (me == 1) then
 
-        call YogiMPI_Irecv(buf, 1, YogiMPI_INTEGER, 0, 1, YogiMPI_COMM_WORLD, request, ierr)
-        call YogiMPI_Wait(request, status, ierr)
-        call YogiMPI_Get_count(status, YogiMPI_INTEGER, msglen, ierr)
+        call MPI_IRECV(buf, 1, MPI_INTEGER, 0, 1, MPI_COMM_WORLD, request, ierr)
+        call MPI_WAIT(request, status, ierr)
+        call MPI_GET_COUNT(status, MPI_INTEGER, msglen, ierr)
         if(msglen /= 1) then
             print *, "ERROR: The length of the message is not 1"
         else
@@ -42,6 +42,6 @@ include 'yogimpif.h'
  
     endif
 
-    call YogiMPI_Finalize(ierr)
+    call MPI_FINALIZE(ierr)
 
 end program testMatt

@@ -6,7 +6,7 @@
 //
 // Example of checking the MPI_Status object from an MPI_Recv call
 //
-#include "mpitoyogi.h"
+#include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

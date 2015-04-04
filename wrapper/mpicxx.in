@@ -65,8 +65,8 @@ class YogiMPIWrapper(object):
                 self.setFile(anOpt, i)
 
         self._changeArgs()
-        self._printCommand()
-        #subprocess.call(fullCommand, shell=True)
+        subprocess.call(self._getCallString(), shell=True)
+
         
 if __name__ == "__main__":
     thisWrapper = YogiMPIWrapper()
