@@ -12,24 +12,37 @@ function errorIfEmpty {
 
 function showUsage {
     echo "./configure -i <install prefix>"
-    echo "Set the following environment variables to build YogiMPI: "
-    echo "CC - Serial C compiler to use"
-    echo "CXX - Serial C++ compiler to use"
-    echo "F90 - Serial Fortran compiler to use"
-    echo "MPICC - Parallel C compiler wrapper"
+    echo "Required environment variables to build YogiMPI: "
+    echo "YCC - Serial C compiler to use"
+    echo "YCXX - Serial C++ compiler to use"
+    echo "YF90 - Serial Fortran compiler to use"
+    echo "YMPICC - Parallel C compiler wrapper"
+    echo
+    echo "Optional environment variables for extended Python support:"
+    echo "(End users of CREATE AV products do not need to do this.)"
+    echo "YPYTHON_INCLUDE - Python include flags needed to compile source"
+    echo "YPYTHON_LDFLAGS - Flags needed to link Python libraries"
     exit 0
 }
 
 
-cCompiler=$CC
-cxxCompiler=$CXX
-fortranCompiler=$F90
-mpiC=$MPICC
+cCompiler=$YCC
+cxxCompiler=$YCXX
+fortranCompiler=$YF90
+mpiC=$YMPICC
+pythonInclude="$YPYTHON_INCLUDE"
+pythonLDFlags="$YPYTHON_LDFLAGS"
 
 errorIfEmpty $cCompiler "C compiler"
 errorIfEmpty $cxxCompiler "C++ compiler"
 errorIfEmpty $fortranCompiler "Fortran compiler"
 errorIfEmpty $mpiC "Parallel C compiler"
+
+if [[ -z ${pythonLDFlags} || -z ${pythonInclude} ]]; then
+    enablePython="no"
+else
+    enablePython="yes"
+fi
 
 installDir=""
 
@@ -64,6 +77,10 @@ fi
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@MPICC@|${mpiC}|g" \
+    -e "s|@ENABLEPYTHON@|${enablePython}|g" \
+    -e "s|@SERIALC@|${cCompiler}|g" \
+    -e "s|@PYTHONINCLUDE@|${pythonInclude}|g" \
+    -e "s|@PYTHONLDFLAGS@|${pythonLDFlags}|g" \
     Make.flags.in > Make.flags
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \

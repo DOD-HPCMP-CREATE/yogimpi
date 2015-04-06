@@ -649,6 +649,38 @@ void allocate_yogimpi_storage() {
 
 }
 
+void deallocate_yogimpi_storage(void) {
+
+    if (request_pool) {
+        free(request_pool);
+        request_pool = 0;
+    }
+    if (comm_pool) {
+        free(comm_pool);
+        comm_pool = 0;
+    }
+    if (group_pool) {
+        free(group_pool);
+        group_pool = 0;
+    }
+    if (info_pool) {
+        free(info_pool);
+        info_pool = 0;
+    }
+    if (file_pool) {
+        free(file_pool);
+        file_pool = 0;
+    }
+    if (op_pool) {
+        free(op_pool);
+        op_pool = 0;
+    }
+    if (datatype_pool) {
+        free(datatype_pool);
+        datatype_pool = 0;
+    }
+}
+
 int YogiMPI_Init(int* argc, char ***argv)
 { 
     int mpi_err = MPI_Init(argc,argv); 
@@ -1281,26 +1313,8 @@ int YogiMPI_Get_processor_name(char *name, int *resultlen) {
 }
 
 int YogiMPI_Finalize() { 
-    if (request_pool) {
-        free(request_pool);
-        request_pool = 0;
-    }
-    if (comm_pool) { 
-    	free(comm_pool);
-    	comm_pool = 0;
-    }
-    if (group_pool) {
-        free(group_pool);
-        group_pool = 0;
-    }
-    if (info_pool) {
-        free(info_pool);
-        info_pool = 0;
-    }
-    if (file_pool) {
-        free(file_pool);
-        file_pool = 0;
-    }
+
+    deallocate_yogimpi_storage();
     int mpi_err = MPI_Finalize();
     return error_to_yogi(mpi_err);
 }

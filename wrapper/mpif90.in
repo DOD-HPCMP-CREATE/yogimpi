@@ -37,7 +37,8 @@ class YogiMPIWrapper(object):
 
     def _showCompilerString(self):
         self.compString = YogiMPIWrapper.f90Compiler 
-        self.compString += ' -I' + YogiMPIWrapper.prefixDir + '/include'
+        self.compString += ' -I' + YogiMPIWrapper.prefixDir + '/include' +\
+                           ' -DYOGIMPI_ENABLED'
         self.compString += ' -L' + YogiMPIWrapper.prefixDir + '/lib' +\
                            ' -lyogimpi'
         print self.compString
@@ -100,7 +101,8 @@ class YogiMPIWrapper(object):
             if changedFile:
                 self.argArray[self.sourceLocation] = self.newPath
             self.argArray.insert(self.sourceLocation,
-                                 '-I' + YogiMPIWrapper.prefixDir + '/include')
+                                 '-I' + YogiMPIWrapper.prefixDir +\
+                                 '/include -DYOGIMPI_ENABLED')
             if not self.namesOutput and not self.isLinking:
                 objectName = self._stripExtension(self.sourceFile) + '.o'
                 self.argArray.append('-o ' + objectName)
@@ -185,7 +187,8 @@ class YogiMPIWrapper(object):
         self._changeArgs()
         self._outputMsg("Final compile string: " + self._getCallString())
         subprocess.call(self._getCallString(), shell=True)
-        os.remove(self.newPath)
+        if self.newPath:
+            os.remove(self.newPath)
  
 if __name__ == "__main__":
     thisWrapper = YogiMPIWrapper()

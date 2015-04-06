@@ -33,7 +33,8 @@ class YogiMPIWrapper(object):
 
     def _showCompilerString(self):
         self.compString = YogiMPIWrapper.cCompiler
-        self.compString += ' -I' + YogiMPIWrapper.prefixDir + '/include'
+        self.compString += ' -I' + YogiMPIWrapper.prefixDir + '/include' +\
+                           ' -DYOGIMPI_ENABLED'
         self.compString += ' -L' + YogiMPIWrapper.prefixDir + '/lib' +\
                            ' -lyogimpi'
         print self.compString
