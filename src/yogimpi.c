@@ -635,8 +635,6 @@ void allocate_yogimpi_storage() {
     assert(0 == MPI_BOTTOM);
     assert(YogiMPI_BSEND_OVERHEAD >= MPI_BSEND_OVERHEAD);
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-
     /* Initialize the back-end arrays for opaque objects and references */
     bind_mpi_err_constants();
     if (!datatype_pool) initialize_datatype_pool();
@@ -683,10 +681,13 @@ void deallocate_yogimpi_storage(void) {
 
 int YogiMPI_Init(int* argc, char ***argv)
 { 
-    int mpi_err = MPI_Init(argc,argv); 
- 
-    allocate_yogimpi_storage(); 
 
+    int mpi_err = MPI_Init(argc,argv); 
+
+    allocate_yogimpi_storage();
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+ 
     return error_to_yogi(mpi_err);
 }
 

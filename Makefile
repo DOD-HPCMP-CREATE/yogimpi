@@ -38,7 +38,7 @@ realclean: clean
 	$(RM) wrapper/mpicc
 	$(RM) wrapper/mpif90
 	$(RM) wrapper/mpicxx
-	$(MAKE) -C python_clean
+	$(MAKE) python_clean
 	$(RM) Make.flags
 
 # Normally these are not required for end-users to run.  Mainly provided for
