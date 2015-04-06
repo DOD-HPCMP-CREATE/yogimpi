@@ -17,22 +17,43 @@ class yogisearch(object):
                                self.supportFile
             if not os.path.isfile(self.supportFile):
                 raise ValueError("Cannot locate preprocessor XML file.") 
-        self.inputMode = None 
         self.inputPath = None 
         self.outputPath = None 
         self.ccxxOnly = False
         self.fortranOnly = False
 
     def run(self):
-        self.logFile = open('yogisearch.out', 'w')
+        if self.outputPath is None:
+            self.outputPath = 'yogisearch.out'
+        self.logFile = open(self.outputPath, 'w')
         self.cDefinitions = [] 
         self.fDefinitions = []
         self.loadSupported()
-        if self.inputMode == 'file':
-            self.checkFileWrap(self.inputPath)
+        if os.path.isdir(self.inputPath):
+            self.checkDirectoryWrap(self.inputPath)
+        elif os.path.isfile(self.inputPath):
+            self.checkFileWrap(self.inputPath,
+                               self._getSearchDefs(self.inputPath))
         else:
-            self.checkDirectoryWrap(self.inputPath) 
+            raise ValueError("Error: " + self.inputPath + " is not a file" +\
+                             " or directory.")
         self.logFile.close()
+
+    def _getSearchDefs(self, filename):
+        if self.ccxxOnly:
+            if self._isCSource(filename) or self._isCXXSource(filename):
+                return self.cDefinitions
+        elif self.fortranOnly:
+            if self._isFortranSource(filename):
+                return self.fDefinitions
+        else:
+            if self._isCSource(filename) or self._isCXXSource(filename):
+                return self.cDefinitions 
+            elif self._isFortranSource(filename):
+                return self.fDefinitions
+        # If no conditions matched, return None to indicate file should not
+        # be searched.
+        return None 
 
     # Loads from XML MPI functions and constants supported by YogiMPI.
     def loadSupported(self):
@@ -85,6 +106,10 @@ class yogisearch(object):
             self.logFile.write(a + '\n')
 
     def checkFileWrap(self, inputFile, definitions):
+        # If definitions file is None, this isn't a source file to search.
+        # Skip the file.
+        if definitions is None:
+            return
         noMPI = set() 
         ihandle = open(inputFile, 'r')
         rawFile = ihandle.readlines()
@@ -113,21 +138,8 @@ class yogisearch(object):
     def checkDirectoryWrap(self, inputDir):
         for dirpath, dnames, fnames in os.walk(inputDir):
             for f in fnames:
-                if self.ccxxOnly:
-                    if self._isCSource(f) or self._isCXXSource(f):
-                        self.checkFileWrap(os.path.join(dirpath, f),
-                                           self.cDefinitions) 
-                elif self.fortranOnly:
-                    if self._isFortranSource(f):
-                        self.checkFileWrap(os.path.join(dirpath, f),
-                                           self.fDefinitions)
-                else:
-                    if self._isCSource(f) or self._isCXXSource(f):
-                        self.checkFileWrap(os.path.join(dirpath, f),
-                                           self.cDefinitions)
-                    elif self._isFortranSource(f):
-                        self.checkFileWrap(os.path.join(dirpath, f),
-                                           self.fDefinitions)
+                self.checkFileWrap(os.path.join(dirpath, f),
+                                   self._getSearchDefs(f))
 
     def _isSourceFile(self, fileName):
         if self._isFortranSource(fileName):
@@ -162,14 +174,10 @@ class yogisearch(object):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='YogiMPI Search Tool')
 
-    parser.add_argument('-m', '--mode',
-                        choices=['file', 'directory'],
-                        default="file", 
-                        help="Input mode (process file, or files in directory)")
     parser.add_argument('--input', '-i',
                         action="store",
                         required=True,
-                        help="Input path or file to examine")
+                        help="Input directory or file to examine")
     parser.add_argument('--fortranonly',
                         action='store_true',
                         help="Consider only Fortran source files")
@@ -184,7 +192,6 @@ if __name__ == "__main__":
     configArguments = parser.parse_args()
 
     preproc = yogisearch()
-    preproc.inputMode = configArguments.mode
     preproc.inputPath = configArguments.input
     preproc.outputPath = configArguments.output
     preproc.fortranOnly = configArguments.fortranonly
