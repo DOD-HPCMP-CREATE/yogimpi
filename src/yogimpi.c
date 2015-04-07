@@ -87,12 +87,8 @@ static int num_groups = 100;
 static MPI_Group *group_pool = 0;
 /* Number of times group pool is reallocated for expansion. */
 static int num_realloc_groups = 0; 
-/* YogiMPI specific: group underneath YogiMPI_COMM_WORLD */
-static const YogiMPI_Group YogiMPI_GROUP_WORLD = 2;
-/* YogiMPI specific: group underneath YogiMPI_COMM_SELF */
-static const YogiMPI_Group YogiMPI_GROUP_SELF = 3;
 /* from this offset onward up to num_groups are volatile in group_pool */
-static const YogiMPI_Group YogiMPI_GROUP_VOLATILE_OFFSET = 4; 
+static const YogiMPI_Group YogiMPI_GROUP_VOLATILE_OFFSET = 2; 
 
 /* Pointer to pool of MPI_Comm objects */
 static MPI_Comm *comm_pool = 0;
@@ -572,13 +568,6 @@ static void initialize_group_pool() {
     register_preindexed_group(YogiMPI_GROUP_NULL, MPI_GROUP_NULL);
     register_preindexed_group(YogiMPI_GROUP_EMPTY, MPI_GROUP_EMPTY);
 
-    MPI_Group group_world;
-    MPI_Comm_group(MPI_COMM_WORLD, &group_world);
-    register_preindexed_group(YogiMPI_GROUP_WORLD, group_world);
-
-    MPI_Group group_self;
-    MPI_Comm_group(MPI_COMM_SELF, &group_self);
-    register_preindexed_group(YogiMPI_GROUP_SELF, group_self);	
 }
 
 static void initialize_comm_pool() {
@@ -631,9 +620,10 @@ static void initialize_op_pool() {
 
 void allocate_yogimpi_storage() {
 
-    /* mpich2/test/mpi/pt2pt/bottom.c fails otherwise so there is soth. fishy */
+    /* mpich2/test/mpi/pt2pt/bottom.c fails otherwise so there is soth. fishy
     assert(0 == MPI_BOTTOM);
     assert(YogiMPI_BSEND_OVERHEAD >= MPI_BSEND_OVERHEAD);
+    */
 
     /* Initialize the back-end arrays for opaque objects and references */
     bind_mpi_err_constants();
