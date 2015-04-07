@@ -51,7 +51,27 @@ static const int YogiMPI_ERR_OTHER = 16;
 static const int YogiMPI_ERR_INTERN = 17; 
 static const int YogiMPI_ERR_PENDING = 18; 
 static const int YogiMPI_ERR_IN_STATUS = 19; 
-static const int YogiMPI_ERR_LASTCODE = 20; 
+
+/* Part 2 for MPI I/O error constants */
+
+static const int YogiMPI_ERR_FILE = 20;
+static const int YogiMPI_ERR_NOT_SAME = 21;
+static const int YogiMPI_ERR_AMODE = 22;
+static const int YogiMPI_ERR_UNSUPPORTED_DATAREP = 23;
+static const int YogiMPI_ERR_UNSUPPORTED_OPERATION = 24;
+static const int YogiMPI_ERR_NO_SUCH_FILE = 25;
+static const int YogiMPI_ERR_FILE_EXISTS = 26;
+static const int YogiMPI_ERR_BAD_FILE = 27;
+static const int YogiMPI_ERR_ACCESS = 28;
+static const int YogiMPI_ERR_NO_SPACE = 29;
+static const int YogiMPI_ERR_QUOTA = 30;
+static const int YogiMPI_ERR_READ_ONLY = 31;
+static const int YogiMPI_ERR_FILE_IN_USE = 32;
+static const int YogiMPI_ERR_DUP_DATAREP = 33;
+static const int YogiMPI_ERR_CONVERSION = 34;
+static const int YogiMPI_ERR_IO = 35;
+static const int YogiMPI_ERR_LASTCODE = 36;
+
 
 /* Assorted constants (both C and Fortran) */
 
@@ -136,9 +156,35 @@ static const YogiMPI_Datatype YogiMPI_LONG_LONG_INT = 20;
 static const YogiMPI_Datatype YogiMPI_INT32_T = 21;
 static const YogiMPI_Datatype YogiMPI_INT64_T = 22;
 
+/* Make LONG_LONG a LONG_LONG_INT */
+static const YogiMPI_Datatype YogiMPI_LONG_LONG = 20;
+
+/* Non-standard datatypes that are often in MPI implementations,
+   so include them here.  Some of these are normally Fortran-only, but
+   a few misbehaving (but required) C applications demand their presence. */
+static const YogiMPI_Datatype YogiMPI_COMPLEX = 23;
+static const YogiMPI_Datatype YogiMPI_DOUBLE_COMPLEX = 24;
+static const YogiMPI_Datatype YogiMPI_LOGICAL = 25;
+static const YogiMPI_Datatype YogiMPI_2REAL = 26;
+static const YogiMPI_Datatype YogiMPI_2DOUBLE_PRECISION = 27;
+static const YogiMPI_Datatype YogiMPI_2INTEGER = 28;
+static const YogiMPI_Datatype YogiMPI_INTEGER1 = 29;
+static const YogiMPI_Datatype YogiMPI_INTEGER2 = 30;
+static const YogiMPI_Datatype YogiMPI_INTEGER4 = 31;
+static const YogiMPI_Datatype YogiMPI_INTEGER8 = 32;
+static const YogiMPI_Datatype YogiMPI_REAL4 = 33;
+static const YogiMPI_Datatype YogiMPI_REAL8 = 34;
+static const YogiMPI_Datatype YogiMPI_UNSIGNED_LONG_LONG = 35;
+
+/* Some Fortran-only definitions that end up matching byte-sizes with standard
+   C types (at least on standard x86_64) */
+static const YogiMPI_Datatype YogiMPI_CHARACTER = 1;
+static const YogiMPI_Datatype YogiMPI_INTEGER = 3;
+static const YogiMPI_Datatype YogiMPI_DOUBLE_PRECISION = 10;
+
 /* Special datatypes for constructing derived datatypes */ 
-static const YogiMPI_Datatype YogiMPI_LB = 35; 
-static const YogiMPI_Datatype YogiMPI_UB = 36;
+static const YogiMPI_Datatype YogiMPI_LB = 36; 
+static const YogiMPI_Datatype YogiMPI_UB = 37;
 
 /* reserved communicators (C and Fortran) */
 static const YogiMPI_Comm YogiMPI_COMM_WORLD = 1;

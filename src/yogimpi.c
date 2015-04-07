@@ -6,25 +6,8 @@
 #include <string.h>
 #include <unistd.h> /* for hostname */
 
-/* Define some Fortran datatypes not used in C.
- * Don't declare these in the header since C MPI apps should not use them,
- * but YogiMPI must know about them internally to provide a translation array.
- */
-static const YogiMPI_Datatype YogiMPI_COMPLEX = 23;
-static const YogiMPI_Datatype YogiMPI_DOUBLE_COMPLEX = 24;
-static const YogiMPI_Datatype YogiMPI_LOGICAL = 25;
-static const YogiMPI_Datatype YogiMPI_2REAL = 26;
-static const YogiMPI_Datatype YogiMPI_2DOUBLE_PRECISION = 27;
-static const YogiMPI_Datatype YogiMPI_2INTEGER = 28;
-static const YogiMPI_Datatype YogiMPI_INTEGER1 = 29;
-static const YogiMPI_Datatype YogiMPI_INTEGER2 = 30;
-static const YogiMPI_Datatype YogiMPI_INTEGER4 = 31;
-static const YogiMPI_Datatype YogiMPI_INTEGER8 = 32;
-static const YogiMPI_Datatype YogiMPI_REAL4 = 33;
-static const YogiMPI_Datatype YogiMPI_REAL8 = 34;
-
 /* Total number of non-volatile datatypes.  Accounts for Fortran ones, too. */
-static const int YogiMPI_DATATYPE_VOLATILE_OFFSET = 37;
+static const int YogiMPI_DATATYPE_VOLATILE_OFFSET = 38;
 
 /* Total number of datatypes, volatile and non-volatile. 
  */
@@ -80,7 +63,7 @@ static YogiMPI_Datatype add_new_datatype(MPI_Datatype mpi_datatype)
 int my_rank = -1;
 
 /* Array maps YogiMPI error constants to actual MPI constants */
-static int mpi_error_codes[21];
+static int mpi_error_codes[37];
 
 static int num_groups = 100; 
 /* Pointer to pool of MPI_Group objects */
@@ -500,7 +483,25 @@ static void bind_mpi_err_constants() {
     mpi_error_codes[YogiMPI_ERR_INTERN]      = MPI_ERR_INTERN;
     mpi_error_codes[YogiMPI_ERR_PENDING]     = MPI_ERR_PENDING;
     mpi_error_codes[YogiMPI_ERR_IN_STATUS]   = MPI_ERR_IN_STATUS;
-    mpi_error_codes[YogiMPI_ERR_LASTCODE]    = MPI_ERR_LASTCODE;
+    mpi_error_codes[YogiMPI_ERR_FILE]        = MPI_ERR_FILE;
+    mpi_error_codes[YogiMPI_ERR_NOT_SAME]    = MPI_ERR_NOT_SAME;
+    mpi_error_codes[YogiMPI_ERR_AMODE]       = MPI_ERR_AMODE;
+    mpi_error_codes[YogiMPI_ERR_UNSUPPORTED_DATAREP] 
+                                              = MPI_ERR_UNSUPPORTED_DATAREP;
+    mpi_error_codes[YogiMPI_ERR_UNSUPPORTED_OPERATION] 
+                                              = MPI_ERR_UNSUPPORTED_OPERATION;
+    mpi_error_codes[YogiMPI_ERR_NO_SUCH_FILE] = MPI_ERR_NO_SUCH_FILE;
+    mpi_error_codes[YogiMPI_ERR_FILE_EXISTS]  = MPI_ERR_FILE_EXISTS;
+    mpi_error_codes[YogiMPI_ERR_BAD_FILE]     = MPI_ERR_BAD_FILE;
+    mpi_error_codes[YogiMPI_ERR_ACCESS]       = MPI_ERR_ACCESS; 
+    mpi_error_codes[YogiMPI_ERR_NO_SPACE]     = MPI_ERR_NO_SPACE; 
+    mpi_error_codes[YogiMPI_ERR_QUOTA]        = MPI_ERR_QUOTA; 
+    mpi_error_codes[YogiMPI_ERR_READ_ONLY]    = MPI_ERR_READ_ONLY; 
+    mpi_error_codes[YogiMPI_ERR_FILE_IN_USE]  = MPI_ERR_FILE_IN_USE; 
+    mpi_error_codes[YogiMPI_ERR_DUP_DATAREP]  = MPI_ERR_DUP_DATAREP; 
+    mpi_error_codes[YogiMPI_ERR_CONVERSION]   = MPI_ERR_CONVERSION; 
+    mpi_error_codes[YogiMPI_ERR_IO]           = MPI_ERR_IO;
+    mpi_error_codes[YogiMPI_ERR_LASTCODE]     = MPI_ERR_LASTCODE;
 
 }
 
@@ -538,11 +539,8 @@ static void initialize_datatype_pool() {
 	datatype_pool[YogiMPI_INT32_T]           = MPI_INT32_T;
 	datatype_pool[YogiMPI_INT64_T]           = MPI_INT64_T;
 
-	/* The following will only compile if the Fortran-specific symbols are also 
-	 * declared within this file.  These are NOT in the C header. 
-	 */
 	datatype_pool[YogiMPI_COMPLEX]           = MPI_COMPLEX;
-    datatype_pool[YogiMPI_DOUBLE_COMPLEX]    = MPI_DOUBLE_COMPLEX;
+        datatype_pool[YogiMPI_DOUBLE_COMPLEX]    = MPI_DOUBLE_COMPLEX;
 	datatype_pool[YogiMPI_LOGICAL]           = MPI_LOGICAL;
 	datatype_pool[YogiMPI_2REAL]             = MPI_2REAL;
 	datatype_pool[YogiMPI_2DOUBLE_PRECISION] = MPI_2DOUBLE_PRECISION; 
@@ -553,6 +551,7 @@ static void initialize_datatype_pool() {
 	datatype_pool[YogiMPI_INTEGER8]          = MPI_INTEGER8;
 	datatype_pool[YogiMPI_REAL4]             = MPI_REAL4;
 	datatype_pool[YogiMPI_REAL8]             = MPI_REAL8;
+        datatype_pool[YogiMPI_UNSIGNED_LONG_LONG] = MPI_UNSIGNED_LONG_LONG;
         datatype_pool[YogiMPI_LB]                = MPI_LB;
         datatype_pool[YogiMPI_UB]                = MPI_UB;
 	
