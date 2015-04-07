@@ -17,6 +17,10 @@
       <Convert>MPI_UNDEFINED</Convert>
     </Arg>
   </Function>
+  <Function name="MPI_Cancel">
+     <ReturnType>int</ReturnType>
+     <Arg name="request" type="MPI_Request*" />
+  </Function>
   <Function name="MPI_Attr_put">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm" />
@@ -28,22 +32,6 @@
     <ReturnType>int</ReturnType>
     <Arg input="true" name="buffer" type="void*" />
     <Arg input="true" name="size" type="int" />
-  </Function>
-  <Function name="MPI_Init_thread">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="argc" type="int*" />
-    <Arg input="true" name="argv" type="char***" />
-    <Arg input="true" name="required" type="int" />
-      <Convert>MPI_THREAD_SINGLE</Convert>
-      <Convert>MPI_THREAD_FUNNELED</Convert>
-      <Convert>MPI_THREAD_SERIALIZED</Convert>
-      <Convert>MPI_THREAD_MULTIPLE</Convert>
-    <Arg output="true" name="provided" type="int*">
-      <Convert>MPI_THREAD_SINGLE</Convert>
-      <Convert>MPI_THREAD_FUNNELED</Convert>
-      <Convert>MPI_THREAD_SERIALIZED</Convert>
-      <Convert>MPI_THREAD_MULTIPLE</Convert>
-    </Arg>
   </Function>
   <Function name="MPI_Rsend">
     <ReturnType>int</ReturnType>
@@ -171,10 +159,6 @@
     <Arg input="true" name="ranges[][3]" type="int" />
     <Arg output="true" name="newgroup" type="MPI_Group*" />
   </Function>
-  <Function name="MPI_Cancel">
-    <ReturnType>int</ReturnType>
-    <Arg name="request" type="MPI_Request*" />
-  </Function>
   <Function name="MPI_Type_get_envelope">
     <ReturnType>int</ReturnType>
     <Arg name="datatype" type="MPI_Datatype" />
@@ -222,11 +206,6 @@
     <Arg input="true" name="array_of_displacements[]" type="MPI_Aint" />
     <Arg input="true" name="array_of_types[]" type="MPI_Datatype" dims="count"/>
     <Arg output="true" name="newtype" type="MPI_Datatype*" />
-  </Function>
-  <Function name="MPI_Test_cancelled">
-    <ReturnType>int</ReturnType>
-    <Arg name="status" type="MPI_Status*" />
-    <Arg output="true" name="flag" type="int*" />
   </Function>
   <Function name="MPI_Reduce_scatter">
     <ReturnType>int</ReturnType>
@@ -316,17 +295,5 @@
     <Arg input="true" name="stride" type="MPI_Aint" />
     <Arg input="true" name="oldtype" type="MPI_Datatype" />
     <Arg output="true" name="newtype" type="MPI_Datatype*" />
-  </Function>
-  <Function name="MPI_Sendrecv_replace">
-    <ReturnType>int</ReturnType>
-    <Arg name="buf" output="true" type="void*" />
-    <Arg input="true" name="count" type="int" />
-    <Arg input="true" name="datatype" type="MPI_Datatype" />
-    <Arg input="true" name="dest" type="int" />
-    <Arg input="true" name="sendtag" type="int" />
-    <Arg input="true" name="source" type="int" />
-    <Arg input="true" name="recvtag" type="int" />
-    <Arg input="true" name="comm" type="MPI_Comm" />
-    <Arg name="status" output="true" type="MPI_Status*" />
   </Function>
 </MpichAPI>

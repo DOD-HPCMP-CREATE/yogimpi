@@ -25,7 +25,7 @@ class yogisearch(object):
     def run(self):
         if self.outputPath is None:
             self.outputPath = 'yogisearch.out'
-        self.logFile = open(self.outputPath, 'w')
+        self.logFile = open(self.outputPath, 'a')
         self.cDefinitions = [] 
         self.fDefinitions = []
         self.loadSupported()
