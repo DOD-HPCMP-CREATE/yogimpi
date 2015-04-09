@@ -270,32 +270,21 @@
     <Function>MPI_Comm_c2f</Function>
     <Function>MPI_Info_f2c</Function>
     <Function>MPI_Info_c2f</Function>
-
-    <!-- Let's pretend these are implemented to satisfy the search tool.
-         But remember that we have not actually added them to YogiMPI.
-      -->
+    <Function>MPI_Type_f2c</Function>
     <Function>MPI_File_read_all</Function>
     <Function>MPI_Type_get_extent</Function>
+    <Function>MPI_Cancel</Function>
     <Function>MPI_Attr_put</Function>
     <Function>MPI_Buffer_attach</Function>
     <Function>MPI_Rsend</Function>
-    <Function>MPI_Errhandler_create</Function>
-    <Function>MPI_Errhandler_free</Function>
     <Function>MPI_Unpack</Function>
     <Function>MPI_Buffer_detach</Function>
-    <Function>MPI_Comm_get_errhandler</Function>
     <Function>MPI_Bsend</Function>
-    <Function>MPI_Comm_set_errhandler</Function>
     <Function>MPI_Pack_size</Function>
     <Function>MPI_Intercomm_create</Function>
     <Function>MPI_Keyval_free</Function>
-    <Function>MPI_Errhandler_set</Function>
-    <Function>MPI_Type_get_contents</Function>
     <Function>MPI_Pack</Function>
-    <Function>MPI_Op_free</Function>
-    <Function>MPI_Keyval_create</Function>
     <Function>MPI_Group_range_excl</Function>
-    <Function>MPI_Type_get_envelope</Function>
     <Function>MPI_Type_create_hindexed</Function>
     <Function>MPI_Pcontrol</Function>
     <Function>MPI_Error_class</Function>
@@ -305,15 +294,13 @@
     <Function>MPI_Reduce_scatter</Function>
     <Function>MPI_Comm_compare</Function>
     <Function>MPI_Sendrecv</Function>
-    <Function>MPI_Comm_create_errhandler</Function>
     <Function>MPI_Group_size</Function>
     <Function>MPI_Type_create_subarray</Function>
     <Function>MPI_Attr_delete</Function>
-    <Function>MPI_Op_create</Function>
     <Function>MPI_Comm_remote_size</Function>
     <Function>MPI_Get_address</Function>
     <Function>MPI_Type_create_hvector</Function>
-    <!-- End pretend functions -->
+    
   </Language>
   <Language name='Fortran'>
     <Constant>MPI_SUCCESS</Constant>

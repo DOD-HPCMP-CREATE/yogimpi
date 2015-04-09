@@ -22,6 +22,9 @@ class MPIArgument(object):
         # conversion to that value.  (Example: YogiMPI_UNDEFINED to 
         # MPI_UNDEFINED).
         self.convertValues = []
+        # Values that, if matching Yogi equivalent of argument, cause a
+        # conversion to the value, except it happens AFTER the MPI call.
+        self.postconvertValues = []
         # Whether this argument is an MPI typedef or MPI structure.
         self.isMPIType = False
         # If the argument is an MPI type and is plural, the dimensions. Note
@@ -112,7 +115,14 @@ class GenerateWrap(object):
                         thisArg.isPointer = True
                         thisArg.dims = argElement.attrib['dims']
                 for convs in argElement.iterfind('Convert'):
-                    thisArg.convertValues.append(convs.text)
+                    isPre = True
+                    if 'trigger' in convs.attrib:
+                        if convs.attrib['trigger'] == 'post':
+                            isPre = False
+                    if isPre:
+                        thisArg.convertValues.append(convs.text)
+                    else:
+                        thisArg.postconvertValues.append(convs.text)
                 freeHandle = argElement.find('PostFreeHandle')
                 if freeHandle is not None:
                     thisArg.freeHandle = True
@@ -163,7 +173,8 @@ class GenerateWrap(object):
     
     def _mpiConversions(self, aFunc):
         mpiTypes = ['MPI_Comm', 'MPI_Datatype', 'MPI_Info', 'MPI_File',
-                    'MPI_Request', 'MPI_Group', 'MPI_Offset', 'MPI_Aint']
+                    'MPI_Request', 'MPI_Group', 'MPI_Offset', 'MPI_Aint',
+                    'MPI_Op']
         scalarFunc = {'MPI_Comm':'comm_to_mpi',
                       'MPI_Info':'info_to_mpi',
                       'MPI_File':'file_to_mpi',
@@ -171,7 +182,8 @@ class GenerateWrap(object):
                       'MPI_Request':'request_to_mpi',
                       'MPI_Group':'group_to_mpi',
                       'MPI_Offset':'offset_to_mpi',
-                      'MPI_Aint':'aint_to_mpi'}
+                      'MPI_Aint':'aint_to_mpi',
+                      'MPI_Op':'op_to_mpi'}
         arrayFunc = { 'MPI_Comm':'comm_array_to_mpi',
                       'MPI_Datatype':'datatype_array_to_mpi',
                       'MPI_Offset':'offset_array_to_mpi',
@@ -185,6 +197,7 @@ class GenerateWrap(object):
                        'MPI_Aint':'aint_to_yogi',
                        'MPI_Offset':'offset_to_yogi'}
         parrayFunc = {'MPI_Offset':'offset_array_to_yogi',
+                      'MPI_Datatype':'datatype_array_to_yogi',
                       'MPI_Aint':'aint_array_to_yogi'}
         for i in range(len(aFunc.args)):
             anArg = aFunc.args[i]
@@ -310,28 +323,19 @@ class GenerateWrap(object):
                                anArg.freedValue + ';\n'
         return handleLines
 
-    def _constantConversions(self, aFunc, phase):
+    def _makeConversionLines(self, anArg, convValues, isInput):
         convLines = ''
-        for anArg in aFunc.args:
-            if not anArg.convertValues:
-                continue
-            if phase == 'input':
-                if not anArg.isInput:
-                    continue
-            elif phase == 'output':
-                if not anArg.isOutput:
-                    continue                    
-            for i in range(len(anArg.convertValues)):
-                val = anArg.convertValues[i]
+        for i in range(len(convValues)):
                 if anArg.isInput:
                     compareValue = self.prefix + val
                     changeValue = val
                 elif anArg.isOutput:
                     compareValue = val
                     changeValue = self.prefix + val
-                refAssign = anArg.name
-                if anArg.isPointer:
-                    refAssign = '*' + refAssign
+            val = convValues[i]
+            refAssign = anArg.name
+            if anArg.isPointer:
+                refAssign = '*' + refAssign
                 if i == 0:
                     convLines += '    if ('
                 else:
@@ -340,6 +344,25 @@ class GenerateWrap(object):
                             ') {\n' +\
                             '        ' + refAssign + ' = ' + changeValue +\
                             ';\n    }\n'
+        return convLines
+    
+    def _constantConversions(self, aFunc, phase):
+        convLines = '' 
+        for anArg in aFunc.args:
+            if not anArg.convertValues:
+                continue
+            if phase == 'input':
+                if not anArg.isInput:
+                    continue
+                else:
+                    self._makeConversionLines(self, anArg, anArg.convertValues)                    
+            elif phase == 'output':
+                if not anArg.isOutput:
+                    continue
+            self._makeConversionLines(self, anArg, )                    
+            for i in range(len(anArg.convertValues)):
+
+
         return convLines
                                         
     def writeFiles(self):

@@ -262,5 +262,35 @@
 #define MPI_Comm_c2f YogiMPI_Comm_c2f
 #define MPI_Info_f2c YogiMPI_Info_f2c
 #define MPI_Info_c2f YogiMPI_Info_c2f
+#define MPI_Type_f2c YogiMPI_Type_f2c
+#define MPI_File_read_all YogiMPI_File_read_all
+#define MPI_Type_get_extent YogiMPI_Type_get_extent
+#define MPI_Cancel YogiMPI_Cancel
+#define MPI_Attr_put YogiMPI_Attr_put
+#define MPI_Buffer_attach YogiMPI_Buffer_attach
+#define MPI_Rsend YogiMPI_Rsend
+#define MPI_Unpack YogiMPI_Unpack
+#define MPI_Buffer_detach YogiMPI_Buffer_detach
+#define MPI_Bsend YogiMPI_Bsend
+#define MPI_Pack_size YogiMPI_Pack_size
+#define MPI_Intercomm_create YogiMPI_Intercomm_create
+#define MPI_Keyval_free YogiMPI_Keyval_free
+#define MPI_Pack YogiMPI_Pack
+#define MPI_Group_range_excl YogiMPI_Group_range_excl
+#define MPI_Type_create_hindexed YogiMPI_Type_create_hindexed
+#define MPI_Pcontrol YogiMPI_Pcontrol
+#define MPI_Error_class YogiMPI_Error_class
+#define MPI_Irsend YogiMPI_Irsend
+#define MPI_Wtick YogiMPI_Wtick
+#define MPI_Type_create_struct YogiMPI_Type_create_struct
+#define MPI_Reduce_scatter YogiMPI_Reduce_scatter
+#define MPI_Comm_compare YogiMPI_Comm_compare
+#define MPI_Sendrecv YogiMPI_Sendrecv
+#define MPI_Group_size YogiMPI_Group_size
+#define MPI_Type_create_subarray YogiMPI_Type_create_subarray
+#define MPI_Attr_delete YogiMPI_Attr_delete
+#define MPI_Comm_remote_size YogiMPI_Comm_remote_size
+#define MPI_Get_address YogiMPI_Get_address
+#define MPI_Type_create_hvector YogiMPI_Type_create_hvector
 
 #endif /* MPITOYOGI_H */

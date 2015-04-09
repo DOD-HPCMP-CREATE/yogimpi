@@ -527,6 +527,92 @@ YogiMPI_Info YogiMPI_Info_f2c(YogiMPI_Fint info);
 
 YogiMPI_Fint YogiMPI_Info_c2f(YogiMPI_Info info);
 
+YogiMPI_Datatype YogiMPI_Type_f2c(YogiMPI_Fint type);
+
+int YogiMPI_File_read_all(YogiMPI_File mpi_fh, void* buf, int count, 
+                          YogiMPI_Datatype datatype, YogiMPI_Status* status);
+
+int YogiMPI_Type_get_extent(YogiMPI_Datatype datatype, YogiMPI_Aint* lb,
+                            YogiMPI_Aint* extent);
+
+int YogiMPI_Cancel(YogiMPI_Request* request);
+
+int YogiMPI_Attr_put(YogiMPI_Comm comm, int keyval, void* attr_value);
+
+int YogiMPI_Buffer_attach(void* buffer, int size);
+
+int YogiMPI_Rsend(void* buf, int count, YogiMPI_Datatype datatype, int dest,
+                  int tag, YogiMPI_Comm comm);
+
+int YogiMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, 
+                   int outcount, YogiMPI_Datatype datatype, YogiMPI_Comm comm);
+
+int YogiMPI_Buffer_detach(void* buffer, int* size);
+
+int YogiMPI_Bsend(void* buf, int count, YogiMPI_Datatype datatype, int dest,
+                  int tag, YogiMPI_Comm comm);
+
+int YogiMPI_Pack_size(int incount, YogiMPI_Datatype datatype, YogiMPI_Comm comm,
+                      int* size);
+
+int YogiMPI_Intercomm_create(YogiMPI_Comm local_comm, int local_leader,
+                             YogiMPI_Comm peer_comm, int remote_leader,
+                             int tag, YogiMPI_Comm* newintercomm);
+
+int YogiMPI_Keyval_free(int* keyval);
+
+int YogiMPI_Pack(void* inbuf, int incount, YogiMPI_Datatype datatype,
+                 void* outbuf, int outcount, int* position, YogiMPI_Comm comm);
+
+int YogiMPI_Group_range_excl(YogiMPI_Group group, int n, int ranges[][3],
+                             YogiMPI_Group* newgroup);
+
+int YogiMPI_Type_create_hindexed(int count, int blocklengths[],
+                                 YogiMPI_Aint displacements[],
+                                 YogiMPI_Datatype oldtype,
+                                 YogiMPI_Datatype* newtype);
+
+int YogiMPI_Pcontrol(int level);
+
+int YogiMPI_Error_class(int errorcode, int* errorclass);
+
+int YogiMPI_Irsend(void* buf, int count, YogiMPI_Datatype datatype, int dest,
+                   int tag, YogiMPI_Comm comm, YogiMPI_Request* request);
+
+double YogiMPI_Wtick();
+
+int YogiMPI_Type_create_struct(int count, int array_of_blocklengths[],
+                               YogiMPI_Aint array_of_displacements[],
+                               YogiMPI_Datatype array_of_types[],
+                               YogiMPI_Datatype* newtype);
+
+int YogiMPI_Reduce_scatter(void* sendbuf, void* recvbuf, int* recvcnts, 
+                           YogiMPI_Datatype datatype, YogiMPI_Op op,
+                           YogiMPI_Comm comm);
+
+int YogiMPI_Comm_compare(YogiMPI_Comm comm1, YogiMPI_Comm comm2, int* result);
+
+int YogiMPI_Sendrecv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
+                     int dest, int sendtag, void* recvbuf, int recvcount,
+                     YogiMPI_Datatype recvtype, int source, int recvtag, 
+                     YogiMPI_Comm comm, YogiMPI_Status* status);
+
+int YogiMPI_Group_size(YogiMPI_Group group, int* size);
+
+int YogiMPI_Type_create_subarray(int ndims, int array_of_sizes[],
+                                 int array_of_subsizes[], int array_of_starts[],
+                                 int order, YogiMPI_Datatype oldtype,
+                                 YogiMPI_Datatype* newtype);
+
+int YogiMPI_Attr_delete(YogiMPI_Comm comm, int keyval);
+
+int YogiMPI_Comm_remote_size(YogiMPI_Comm comm, int* size);
+
+int YogiMPI_Get_address(void* location, YogiMPI_Aint* address);
+
+int YogiMPI_Type_create_hvector(int count, int blocklength, YogiMPI_Aint stride,                                YogiMPI_Datatype oldtype,
+                                YogiMPI_Datatype* newtype);
+
 #ifdef __cplusplus
 }
 #endif
