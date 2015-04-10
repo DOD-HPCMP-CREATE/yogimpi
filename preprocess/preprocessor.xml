@@ -3,7 +3,26 @@
   
     <Constant>MPI_VERSION</Constant>
     <Constant>MPI_SUBVERSION</Constant>
-    
+
+    <Constant>MPI_COMBINER_NAMED</Constant>
+    <Constant>MPI_COMBINER_DUP</Constant>
+    <Constant>MPI_COMBINER_CONTIGUOUS</Constant>
+    <Constant>MPI_COMBINER_VECTOR</Constant>
+    <Constant>MPI_COMBINER_HVECTOR_INTEGER</Constant>
+    <Constant>MPI_COMBINER_HVECTOR</Constant>
+    <Constant>MPI_COMBINER_INDEXED</Constant>
+    <Constant>MPI_COMBINER_HINDEXED_INTEGER</Constant>
+    <Constant>MPI_COMBINER_HINDEXED</Constant>
+    <Constant>MPI_COMBINER_INDEXED_BLOCK</Constant>
+    <Constant>MPI_COMBINER_STRUCT_INTEGER</Constant>
+    <Constant>MPI_COMBINER_STRUCT</Constant>
+    <Constant>MPI_COMBINER_SUBARRAY</Constant>
+    <Constant>MPI_COMBINER_DARRAY</Constant>
+    <Constant>MPI_COMBINER_F90_REAL</Constant>
+    <Constant>MPI_COMBINER_F90_COMPLEX</Constant>
+    <Constant>MPI_COMBINER_F90_INTEGER</Constant>
+    <Constant>MPI_COMBINER_RESIZED</Constant>
+   
     <Constant>MPI_SUCCESS</Constant>
     <Constant>MPI_ERR_BUFFER</Constant>
     <Constant>MPI_ERR_COUNT</Constant>
@@ -147,6 +166,10 @@
     <Constant>MPI_DATATYPE_NULL</Constant>
     <Constant>MPI_INFO_NULL</Constant>
     <Constant>MPI_FILE_NULL</Constant>
+    <Constant>MPI_ERRHANDLER_NULL</Constant>
+
+    <Constant>MPI_ERRORS_ARE_FATAL</Constant>
+    <Constant>MPI_ERRORS_RETURN</Constant>
 
     <Constant>MPI_GROUP_EMPTY</Constant>
 
@@ -181,6 +204,7 @@
     <Object>MPI_Group</Object>
     <Object>MPI_Status</Object>
     <Object>MPI_File</Object>
+    <Object>MPI_Errhandler</Object>
     <Object>MPI_Aint</Object>
     <Object>MPI_Offset</Object>
     <Object>MPI_Fint</Object>
@@ -413,10 +437,6 @@
     <Constant>MPI_DATATYPE_NULL</Constant>
     <Constant>MPI_INFO_NULL</Constant>
     <Constant>MPI_FILE_NULL</Constant>
-    <Constant>MPI_ERRHANDLER_NULL</Constant>
-
-    <Constant>MPI_ERRORS_ARE_FATAL</Constant>
-    <Constant>MPI_ERRORS_RETURN</Constant>
 
     <Constant>MPI_GROUP_EMPTY</Constant>
 
@@ -434,25 +454,6 @@
     
     <Constant>MPI_STATUS_IGNORE</Constant>
     <Constant>MPI_STATUSES_IGNORE</Constant>
-
-    <Constant>MPI_COMBINER_NAMED</Constant>
-    <Constant>MPI_COMBINER_DUP</Constant>
-    <Constant>MPI_COMBINER_CONTIGUOUS</Constant>
-    <Constant>MPI_COMBINER_VECTOR</Constant>
-    <Constant>MPI_COMBINER_HVECTOR_INTEGER</Constant>
-    <Constant>MPI_COMBINER_HVECTOR</Constant>
-    <Constant>MPI_COMBINER_INDEXED</Constant>
-    <Constant>MPI_COMBINER_HINDEXED_INTEGER</Constant>
-    <Constant>MPI_COMBINER_HINDEXED</Constant>
-    <Constant>MPI_COMBINER_INDEXED_BLOCK</Constant>
-    <Constant>MPI_COMBINER_STRUCT_INTEGER</Constant>
-    <Constant>MPI_COMBINER_STRUCT</Constant>
-    <Constant>MPI_COMBINER_SUBARRAY</Constant>
-    <Constant>MPI_COMBINER_DARRAY</Constant>
-    <Constant>MPI_COMBINER_F90_REAL</Constant>
-    <Constant>MPI_COMBINER_F90_COMPLEX</Constant>
-    <Constant>MPI_COMBINER_F90_INTEGER</Constant>
-    <Constant>MPI_COMBINER_RESIZED</Constant>
 
     <Object>MPI_Comm</Object>
     <Object>MPI_Request</Object>
