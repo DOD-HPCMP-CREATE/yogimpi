@@ -11,6 +11,9 @@
 extern "C" {
 #endif
 
+#define YogiMPI_VERSION    2
+#define YogiMPI_SUBVERSION 2
+
 /*
  * MPI_Status can be treated as a series of integers (as in Fortran).
  * YogiMPI stores an integer array larger than any known MPI distribution's
@@ -29,6 +32,7 @@ typedef int YogiMPI_Request;
 typedef int YogiMPI_Op;
 typedef int YogiMPI_Info;
 typedef int YogiMPI_File;
+typedef int YogiMPI_Errhandler;
 
 /* MPI constants for return codes (both C and Fortran) */
 static const int YogiMPI_SUCCESS = 0; 
@@ -115,6 +119,14 @@ static const int YogiMPI_MODE_APPEND = 128;
 
 #define YogiMPI_MAX_INFO_KEY 32
 #define YogiMPI_MAX_INFO_VAL 256
+
+/* Subarray and darray constructor constants.  Mimics the MPICH header file */
+#define YogiMPI_ORDER_C              56
+#define YogiMPI_ORDER_FORTRAN        57
+#define YogiMPI_DISTRIBUTE_BLOCK    121
+#define YogiMPI_DISTRIBUTE_CYCLIC   122
+#define YogiMPI_DISTRIBUTE_NONE     123
+#define YogiMPI_DISTRIBUTE_DFLT_DARG -49767
 
 /* The MPI-standard requires that the user provides an array of at least the
  * size equal to MAX_PROCESSOR_NAME.
@@ -224,9 +236,34 @@ static const YogiMPI_Request YogiMPI_REQUEST_NULL = 0;
 static const YogiMPI_Op YogiMPI_OP_NULL = 0;
 static const YogiMPI_Info YogiMPI_INFO_NULL = 0;
 static const YogiMPI_File YogiMPI_FILE_NULL = 0;
+static const YogiMPI_Errhandler YogiMPI_ERRHANDLER_NULL = 0;
+
+/* Predefined error handlers */
+static const YogiMPI_Errhandler YogiMPI_ERRORS_ARE_FATAL = 1;
+static const YogiMPI_Errhandler YogiMPI_ERRORS_RETURN = 2;
 
 /* Empty group */
 static const YogiMPI_Group YogiMPI_GROUP_EMPTY = 1;
+
+/* MPI Combiner state constants */
+static const int YogiMPI_COMBINER_NAMED            = 1;
+static const int YogiMPI_COMBINER_DUP              = 2;
+static const int YogiMPI_COMBINER_CONTIGUOUS       = 3;
+static const int YogiMPI_COMBINER_VECTOR           = 4;
+static const int YogiMPI_COMBINER_HVECTOR_INTEGER  = 5;
+static const int YogiMPI_COMBINER_HVECTOR          = 6;
+static const int YogiMPI_COMBINER_INDEXED          = 7;
+static const int YogiMPI_COMBINER_HINDEXED_INTEGER = 8;
+static const int YogiMPI_COMBINER_HINDEXED         = 9;
+static const int YogiMPI_COMBINER_INDEXED_BLOCK    = 10;
+static const int YogiMPI_COMBINER_STRUCT_INTEGER   = 12;
+static const int YogiMPI_COMBINER_STRUCT           = 13;
+static const int YogiMPI_COMBINER_SUBARRAY         = 14;
+static const int YogiMPI_COMBINER_DARRAY           = 15;
+static const int YogiMPI_COMBINER_F90_REAL         = 16;
+static const int YogiMPI_COMBINER_F90_COMPLEX      = 17;
+static const int YogiMPI_COMBINER_F90_INTEGER      = 18;
+static const int YogiMPI_COMBINER_RESIZED          = 19;
 
 /* Define structure for MPI_Status - hide real object inside as int array */
 struct YogiMPI_Status
@@ -610,8 +647,34 @@ int YogiMPI_Comm_remote_size(YogiMPI_Comm comm, int* size);
 
 int YogiMPI_Get_address(void* location, YogiMPI_Aint* address);
 
-int YogiMPI_Type_create_hvector(int count, int blocklength, YogiMPI_Aint stride,                                YogiMPI_Datatype oldtype,
+int YogiMPI_Type_create_hvector(int count, int blocklength, YogiMPI_Aint stride,
+		                        YogiMPI_Datatype oldtype,
                                 YogiMPI_Datatype* newtype);
+
+int YogiMPI_Errhandler_free(YogiMPI_Errhandler* errhandler);
+
+int YogiMPI_Comm_get_errhandler(YogiMPI_Comm comm, 
+		                        YogiMPI_Errhandler* errhandler);
+
+int YogiMPI_Comm_set_errhandler(YogiMPI_Comm comm, 
+		                        YogiMPI_Errhandler errhandler);
+
+int YogiMPI_Errhandler_set(YogiMPI_Comm comm, YogiMPI_Errhandler errhandler);
+
+
+int YogiMPI_Type_get_envelope(YogiMPI_Datatype datatype, int* num_integers, 
+		                      int* num_addresses, int* num_datatypes, 
+							  int* combiner);
+
+/*
+int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
+		                      int max_addresses, int max_datatypes, 
+							  int array_of_integers[], 
+							  YogiMPI_Aint array_of_addresses[], 
+							  YogiMPI_Datatype array_of_datatypes[]);
+*/
+
+int YogiMPI_Op_free(YogiMPI_Op* op);
 
 #ifdef __cplusplus
 }

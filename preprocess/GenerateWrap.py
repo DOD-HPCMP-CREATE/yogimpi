@@ -1,6 +1,5 @@
 import xml.etree.ElementTree as ET
 import sys
-from __builtin__ import False
 
 class MPIArgument(object):
     def __init__(self):
@@ -174,7 +173,7 @@ class GenerateWrap(object):
     def _mpiConversions(self, aFunc):
         mpiTypes = ['MPI_Comm', 'MPI_Datatype', 'MPI_Info', 'MPI_File',
                     'MPI_Request', 'MPI_Group', 'MPI_Offset', 'MPI_Aint',
-                    'MPI_Op']
+                    'MPI_Op', 'MPI_Errhandler']
         scalarFunc = {'MPI_Comm':'comm_to_mpi',
                       'MPI_Info':'info_to_mpi',
                       'MPI_File':'file_to_mpi',
@@ -183,7 +182,8 @@ class GenerateWrap(object):
                       'MPI_Group':'group_to_mpi',
                       'MPI_Offset':'offset_to_mpi',
                       'MPI_Aint':'aint_to_mpi',
-                      'MPI_Op':'op_to_mpi'}
+                      'MPI_Op':'op_to_mpi',
+                      'MPI_Errhandler':'errhandler_to_mpi'}
         arrayFunc = { 'MPI_Comm':'comm_array_to_mpi',
                       'MPI_Datatype':'datatype_array_to_mpi',
                       'MPI_Offset':'offset_array_to_mpi',
@@ -195,7 +195,8 @@ class GenerateWrap(object):
                        'MPI_Request':'add_new_request',
                        'MPI_Group':'add_new_group',
                        'MPI_Aint':'aint_to_yogi',
-                       'MPI_Offset':'offset_to_yogi'}
+                       'MPI_Offset':'offset_to_yogi',
+                       'MPI_Errhandler':'add_new_errhandler'}
         parrayFunc = {'MPI_Offset':'offset_array_to_yogi',
                       'MPI_Datatype':'datatype_array_to_yogi',
                       'MPI_Aint':'aint_array_to_yogi'}
@@ -304,6 +305,8 @@ class GenerateWrap(object):
                      'MPI_Group':'group_pool',
                      'MPI_Info':'info_pool',
                      'MPI_File':'file_pool',
+                     'MPI_Op':'op_pool',
+                     'MPI_Errhandler':'errhandler_pool',
                      'MPI_Datatype':'datatype_pool'}
         handleLines = ''
         for i in range(len(aFunc.args)):
@@ -323,29 +326,6 @@ class GenerateWrap(object):
                                anArg.freedValue + ';\n'
         return handleLines
 
-    def _makeConversionLines(self, anArg, convValues, isInput):
-        convLines = ''
-        for i in range(len(convValues)):
-                if anArg.isInput:
-                    compareValue = self.prefix + val
-                    changeValue = val
-                elif anArg.isOutput:
-                    compareValue = val
-                    changeValue = self.prefix + val
-            val = convValues[i]
-            refAssign = anArg.name
-            if anArg.isPointer:
-                refAssign = '*' + refAssign
-                if i == 0:
-                    convLines += '    if ('
-                else:
-                    convLines += '    else if ('
-                convLines += refAssign + ' == ' + compareValue +\
-                            ') {\n' +\
-                            '        ' + refAssign + ' = ' + changeValue +\
-                            ';\n    }\n'
-        return convLines
-    
     def _constantConversions(self, aFunc, phase):
         convLines = '' 
         for anArg in aFunc.args:
@@ -354,15 +334,28 @@ class GenerateWrap(object):
             if phase == 'input':
                 if not anArg.isInput:
                     continue
-                else:
-                    self._makeConversionLines(self, anArg, anArg.convertValues)                    
             elif phase == 'output':
                 if not anArg.isOutput:
                     continue
-            self._makeConversionLines(self, anArg, )                    
             for i in range(len(anArg.convertValues)):
-
-
+                val = anArg.convertValues[i]
+                if anArg.isInput:
+                    compareValue = self.prefix + val
+                    changeValue = val
+                elif anArg.isOutput:
+                    compareValue = val
+                    changeValue = self.prefix + val
+                refAssign = anArg.name
+                if anArg.isPointer:
+                    refAssign = '*' + refAssign
+                    if i == 0:
+                        convLines += '    if ('
+                    else:
+                        convLines += '    else if ('
+                    convLines += refAssign + ' == ' + compareValue +\
+                                 ') {\n' +\
+                                 '        ' + refAssign + ' = ' + changeValue +\
+                                 ';\n    }\n'
         return convLines
                                         
     def writeFiles(self):

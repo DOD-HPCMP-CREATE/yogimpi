@@ -1,5 +1,4 @@
 <MpichAPI>
-  <!--
   <Function name="MPI_Keyval_create">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="copy_fn" type="MPI_Copy_function*">
@@ -27,53 +26,5 @@
     <ReturnType>int</ReturnType>
     <Arg name="function" type="MPI_Handler_function*" />
     <Arg name="errhandler" type="MPI_Errhandler*" />
-  </Function>
-  -->
-  <Function name="MPI_Errhandler_free">
-    <ReturnType>int</ReturnType>
-    <Arg name="errhandler" type="MPI_Errhandler*">
-      <PostFreeHandle>MPI_ERRHANDLER_NULL</PostFreeHandle>
-    </Arg>
-  </Function>
-  <Function name="MPI_Comm_get_errhandler">
-    <ReturnType>int</ReturnType>
-    <Arg name="comm" type="MPI_Comm" />
-    <Arg output="true" name="errhandler" type="MPI_Errhandler*" />
-  </Function>
-  <Function name="MPI_Comm_set_errhandler">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm" />
-    <Arg input="true" name="errhandler" type="MPI_Errhandler" />
-  </Function>
-  <Function name="MPI_Errhandler_set">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm" />
-    <Arg input="true" name="errhandler" type="MPI_Errhandler" />
-  </Function> 
-  <Function name="MPI_Type_get_envelope">
-    <ReturnType>int</ReturnType>
-    <Arg name="datatype" type="MPI_Datatype" />
-    <Arg output="true" name="num_integers" type="int*" />
-    <Arg output="true" name="num_addresses" type="int*" />
-    <Arg output="true" name="num_datatypes" type="int*" />
-    <Arg output="true" name="combiner" type="int*">
-      <ConvertFunction>mpi_combiner_to_yogi</ConvertFunction>
-    </Arg>
-  </Function>
-  <Function name="MPI_Type_get_contents">
-    <ReturnType>int</ReturnType>
-    <Arg name="datatype" type="MPI_Datatype" />
-    <Arg name="max_integers" type="int" />
-    <Arg name="max_addresses" type="int" />
-    <Arg name="max_datatypes" type="int" />
-    <Arg output="true" name="array_of_integers[]" type="int" />
-    <Arg output="true" name="array_of_addresses[]" type="MPI_Aint" dims="max_addresses" />
-    <Arg output="true" name="array_of_datatypes[]" type="MPI_Datatype" dims="max_datatypes" />
-  </Function>
-  <Function name="MPI_Op_free">
-    <ReturnType>int</ReturnType>
-    <Arg name="op" type="MPI_Op*">
-      <PostFreeHandle>MPI_OP_NULL</PostFreeHandle>
-    </Arg>
   </Function>
 </MpichAPI>

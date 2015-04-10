@@ -109,6 +109,14 @@ static const YogiMPI_File YogiMPI_FILE_VOLATILE_OFFSET = 1;
    volatile */
 static const YogiMPI_Info YogiMPI_INFO_VOLATILE_OFFSET = 1;
 
+/* Internal definitions for MPI_Errhandler */
+static int num_errhandlers = 20;
+/* Pointer to pool of MPI_Errhandler objects */
+static MPI_Errhandler *errhandler_pool = 0;
+/* From this offset onward up to num_errhandlers MPI_Errhandlers are
+   volatile */
+static const YogiMPI_Errhandler YogiMPI_ERRHANDLER_VOLATILE_OFFSET = 3;
+
 /*
  * conversion functions YogiMPI <-> MPI
  */
@@ -178,25 +186,30 @@ void free_datatype_array(MPI_Datatype array_of_types[]) {
 /* Converts a YogiMPI_Request to MPI_Request pointer */
 MPI_Request* request_to_mpi(YogiMPI_Request request) 
 {
-  return &request_pool[request];
+    return &request_pool[request];
 }
 
 /* Converts a YogiMPI_Op to MPI_Op */
 MPI_Op op_to_mpi(YogiMPI_Op op)
 { 
-  return op_pool[op]; 
+    return op_pool[op]; 
 }
 
 /* Converts a YogiMPI_File to MPI_File */
 MPI_File file_to_mpi(YogiMPI_File file)
 { 
-  return file_pool[file]; 
+    return file_pool[file]; 
 }
 
 /* Converts a YogiMPI_Info to MPI_Info */
 MPI_Info info_to_mpi(YogiMPI_Info info)
 { 
-  return info_pool[info]; 
+    return info_pool[info]; 
+}
+
+/* Converts a YogiMPI_Errhandler to MPI_Errhandler */
+MPI_Errhandler errhandler_to_mpi(YogiMPI_Errhandler errhandler) {
+	return errhandler_pool[errhandler];
 }
 
 /* Convert MPI comparison constants to YogiMPI comparison constants */
@@ -391,6 +404,38 @@ static YogiMPI_Info add_new_info(MPI_Info mpi_info)
     return info;
 }
 
+static YogiMPI_Errhandler add_new_errhandler(MPI_Errhandler mpi_errhandler)
+{
+    int i; 
+    for(i = YogiMPI_ERRHANDLER_VOLATILE_OFFSET; i < num_errhandlers &&
+        errhandler_pool[i] != MPI_ERRHANDLER_NULL; ++i);
+
+    /* if not sufficient slots, increase number of slots */
+    if (i == num_errhandlers) {
+        int new_num_errhandlers = num_errhandlers * 2;
+
+        /* realloc */
+        MPI_Errhandler* new_errhandlers = (MPI_Errhandler*)malloc(new_num_errhandlers
+        		                          *sizeof(MPI_Errhandler));
+        memcpy(new_errhandlers,errhandler_pool,num_errhandlers*sizeof(MPI_Errhandler));
+        free(errhandler_pool);
+
+        int j;
+        for(j = num_errhandlers; j < new_num_errhandlers; ++j) {
+        	new_errhandlers[j] = MPI_ERRHANDLER_NULL;
+        }
+
+        errhandler_pool = new_errhandlers;
+        num_errhandlers = new_num_errhandlers;
+    }
+
+    assert(i < num_errhandlers);
+    assert(errhandler_pool[i] == MPI_ERRHANDLER_NULL);
+    errhandler_pool[i] = mpi_errhandler;
+
+    return i;
+}
+
 /* Copy an MPI_Status pointer into a YogiMPI_Status object.
  * @arg source The MPI_Status memory address from which to copy.
  * @arg dest The YogiMPI_Status memory address into which copy is placed.
@@ -515,6 +560,21 @@ static void bind_mpi_err_constants() {
 
 }
 
+static void initialize_errhandler_pool() {
+    int i;
+    assert(!errhandler_pool);
+  
+    errhandler_pool = (MPI_Errhandler *)malloc(sizeof(MPI_Errhandler)*num_errhandlers);
+    for(i = 0; i < num_errhandlers; ++i) {
+    	errhandler_pool[i] = MPI_ERRHANDLER_NULL;
+    }
+    
+	/* Predefined error handlers */
+	errhandler_pool[YogiMPI_ERRHANDLER_NULL]  = MPI_ERRHANDLER_NULL;
+	errhandler_pool[YogiMPI_ERRORS_ARE_FATAL] = MPI_ERRORS_ARE_FATAL;
+	errhandler_pool[YogiMPI_ERRORS_RETURN]    = MPI_ERRORS_RETURN;
+}
+
 static void initialize_datatype_pool() {
     
     int i;
@@ -629,14 +689,14 @@ static void initialize_op_pool() {
 
 void allocate_yogimpi_storage() {
 
-    /* mpich2/test/mpi/pt2pt/bottom.c fails otherwise so there is soth. fishy
+    /* mpich2/test/mpi/pt2pt/bottom.c fails otherwise so there is soth. fishy */
     assert(0 == MPI_BOTTOM);
     assert(YogiMPI_BSEND_OVERHEAD >= MPI_BSEND_OVERHEAD);
-    */
-
+    
     /* Initialize the back-end arrays for opaque objects and references */
     bind_mpi_err_constants();
     if (!datatype_pool) initialize_datatype_pool();
+    if (!errhandler_pool) initialize_errhandler_pool();
     if (!group_pool) initialize_group_pool();
     if (!comm_pool) initialize_comm_pool();
     if (!request_pool) initialize_request_pool();
@@ -675,6 +735,10 @@ void deallocate_yogimpi_storage(void) {
     if (datatype_pool) {
         free(datatype_pool);
         datatype_pool = 0;
+    }
+    if (errhandler_pool) {
+    	free(errhandler_pool);
+    	errhandler_pool = 0;
     }
 }
 
@@ -1943,9 +2007,9 @@ int YogiMPI_Type_get_extent(YogiMPI_Datatype datatype, YogiMPI_Aint* lb,
 
 int YogiMPI_Cancel(YogiMPI_Request* request) {
 
-    MPI_Request conv_request = request_to_mpi(*request);
+    MPI_Request *conv_request = request_to_mpi(*request);
     int mpi_error;
-    mpi_error = MPI_Cancel(&conv_request);
+    mpi_error = MPI_Cancel(conv_request);
     return error_to_yogi(mpi_error);
 }
 
@@ -2054,7 +2118,7 @@ int YogiMPI_Group_range_excl(YogiMPI_Group group, int n, int ranges[][3],
     MPI_Group conv_group = group_to_mpi(group);
     MPI_Group conv_newgroup;
     int mpi_error;
-    mpi_error = MPI_Group_range_excl(conv_group, n, ranges[][3],
+    mpi_error = MPI_Group_range_excl(conv_group, n, ranges,
     		                         &conv_newgroup);
     *newgroup = add_new_group(conv_newgroup);
     return error_to_yogi(mpi_error);
@@ -2065,7 +2129,7 @@ int YogiMPI_Type_create_hindexed(int count, int blocklengths[],
 								 YogiMPI_Datatype oldtype,
 								 YogiMPI_Datatype* newtype) {
 
-    MPI_Aint conv_displacements = aint_array_to_mpi(displacements, count);
+    MPI_Aint *conv_displacements = aint_array_to_mpi(displacements, count);
     MPI_Datatype conv_oldtype = datatype_to_mpi(oldtype);
     MPI_Datatype conv_newtype;
     int mpi_error;
@@ -2086,9 +2150,8 @@ int YogiMPI_Pcontrol(int level) {
 
 int YogiMPI_Error_class(int errorcode, int* errorclass) {
 
-    int mpi_error;
-    mpi_error = MPI_Error_class(errorcode, errorclass);
-    return error_to_yogi(mpi_error);
+    *errorclass = errorcode;
+    return error_to_yogi(MPI_SUCCESS);
 }
 
 int YogiMPI_Irsend(void* buf, int count, YogiMPI_Datatype datatype, int dest,
@@ -2113,9 +2176,9 @@ int YogiMPI_Type_create_struct(int count, int array_of_blocklengths[],
 							   YogiMPI_Datatype array_of_types[],
 							   YogiMPI_Datatype* newtype) {
 
-    MPI_Aint conv_array_of_displacements = 
+    MPI_Aint *conv_array_of_displacements = 
     		                   aint_array_to_mpi(array_of_displacements, count);
-    MPI_Datatype conv_array_of_types = datatype_array_to_mpi(array_of_types,
+    MPI_Datatype *conv_array_of_types = datatype_array_to_mpi(array_of_types,
     		                                                 count);
     MPI_Datatype conv_newtype;
     int mpi_error;
@@ -2135,8 +2198,8 @@ int YogiMPI_Reduce_scatter(void* sendbuf, void* recvbuf, int* recvcnts,
     MPI_Datatype conv_datatype = datatype_to_mpi(datatype);
     MPI_Op conv_op = op_to_mpi(op);
     MPI_Comm conv_comm = comm_to_mpi(comm);
-    if (*sendbuf == YogiMPI_IN_PLACE) {
-        *sendbuf = MPI_IN_PLACE;
+    if (sendbuf == YogiMPI_IN_PLACE) {
+        sendbuf = MPI_IN_PLACE;
     }
     int mpi_error;
     mpi_error = MPI_Reduce_scatter(sendbuf, recvbuf, recvcnts, conv_datatype,
@@ -2255,5 +2318,160 @@ int YogiMPI_Type_create_hvector(int count, int blocklength, YogiMPI_Aint stride,
     mpi_error = MPI_Type_create_hvector(count, blocklength, conv_stride,
                                         conv_oldtype, &conv_newtype);
     *newtype = add_new_datatype(conv_newtype);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Errhandler_free(YogiMPI_Errhandler* errhandler) {
+
+    MPI_Errhandler conv_errhandler = errhandler_to_mpi(*errhandler);
+    int mpi_error;
+    mpi_error = MPI_Errhandler_free(&conv_errhandler);
+    errhandler_pool[*errhandler] = MPI_ERRHANDLER_NULL;
+    *errhandler = YogiMPI_ERRHANDLER_NULL;
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Comm_get_errhandler(YogiMPI_Comm comm,
+		                        YogiMPI_Errhandler* errhandler) {
+
+    MPI_Comm conv_comm = comm_to_mpi(comm);
+    MPI_Errhandler conv_errhandler;
+    int mpi_error;
+    mpi_error = MPI_Comm_get_errhandler(conv_comm, &conv_errhandler);
+    
+	if (conv_errhandler == MPI_ERRHANDLER_NULL) {
+		*errhandler = YogiMPI_ERRHANDLER_NULL;
+	}
+	else if (conv_errhandler == MPI_ERRORS_ARE_FATAL) {
+		*errhandler = YogiMPI_ERRORS_ARE_FATAL;
+	}
+	else if (conv_errhandler == MPI_ERRORS_RETURN) {
+		*errhandler = YogiMPI_ERRORS_RETURN;
+	}
+	else {
+	    *errhandler = add_new_errhandler(conv_errhandler);		
+	}
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Comm_set_errhandler(YogiMPI_Comm comm,
+		                        YogiMPI_Errhandler errhandler) {
+
+    MPI_Comm conv_comm = comm_to_mpi(comm);
+    MPI_Errhandler conv_errhandler = errhandler_to_mpi(errhandler);
+    int mpi_error;
+    mpi_error = MPI_Comm_set_errhandler(conv_comm, conv_errhandler);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Errhandler_set(YogiMPI_Comm comm, YogiMPI_Errhandler errhandler) {
+
+    MPI_Comm conv_comm = comm_to_mpi(comm);
+    MPI_Errhandler conv_errhandler = errhandler_to_mpi(errhandler);
+    int mpi_error;
+    mpi_error = MPI_Errhandler_set(conv_comm, conv_errhandler);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Type_get_envelope(YogiMPI_Datatype datatype, int* num_integers,
+		                      int* num_addresses, int* num_datatypes,
+							  int* combiner) {
+
+    MPI_Datatype conv_datatype = datatype_to_mpi(datatype);
+    int mpi_error;
+    mpi_error = MPI_Type_get_envelope(conv_datatype, num_integers, 
+    		                          num_addresses, num_datatypes, combiner);
+    
+    switch (*combiner) {
+        case MPI_COMBINER_NAMED:
+        	*combiner = YogiMPI_COMBINER_NAMED;
+        	break;
+        case MPI_COMBINER_DUP:
+    	    *combiner = YogiMPI_COMBINER_DUP;        
+            break;
+        case MPI_COMBINER_CONTIGUOUS:
+    	    *combiner = YogiMPI_COMBINER_CONTIGUOUS;        
+        	break;
+        case MPI_COMBINER_VECTOR:
+    	    *combiner = YogiMPI_COMBINER_VECTOR;
+        	break;
+        case MPI_COMBINER_HVECTOR_INTEGER:
+    	    *combiner = YogiMPI_COMBINER_HVECTOR_INTEGER;
+        	break;
+        case MPI_COMBINER_HVECTOR:
+    	    *combiner = YogiMPI_COMBINER_HVECTOR;
+        	break;
+        case MPI_COMBINER_INDEXED:
+        	*combiner = YogiMPI_COMBINER_INDEXED;
+        	break;
+        case MPI_COMBINER_HINDEXED_INTEGER:
+        	*combiner = YogiMPI_COMBINER_HINDEXED_INTEGER;
+        	break;
+        case MPI_COMBINER_HINDEXED:
+        	*combiner = YogiMPI_COMBINER_HINDEXED;
+        	break;
+        case MPI_COMBINER_INDEXED_BLOCK:
+        	*combiner = YogiMPI_COMBINER_INDEXED_BLOCK;
+        	break;
+        case MPI_COMBINER_STRUCT_INTEGER:
+        	*combiner = YogiMPI_COMBINER_STRUCT_INTEGER;
+        	break;
+        case MPI_COMBINER_STRUCT:
+		    *combiner = YogiMPI_COMBINER_STRUCT;
+         	break;
+        case MPI_COMBINER_SUBARRAY:
+        	*combiner - YogiMPI_COMBINER_SUBARRAY;
+        	break;
+        case MPI_COMBINER_DARRAY:
+        	*combiner = YogiMPI_COMBINER_DARRAY;
+        	break;
+        case MPI_COMBINER_F90_REAL:
+        	*combiner = YogiMPI_COMBINER_F90_REAL;
+        	break;
+        case MPI_COMBINER_F90_COMPLEX:
+        	*combiner = YogiMPI_COMBINER_F90_COMPLEX;
+        	break;
+        case MPI_COMBINER_F90_INTEGER:
+        	*combiner = YogiMPI_COMBINER_F90_INTEGER;
+        	break;
+        case MPI_COMBINER_RESIZED:
+        	*combiner = YogiMPI_COMBINER_RESIZED;
+        	break;
+    }
+    return error_to_yogi(mpi_error);
+}
+
+/*
+
+int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
+		                      int max_addresses, int max_datatypes,
+							  int array_of_integers[],
+							  YogiMPI_Aint array_of_addresses[],
+							  YogiMPI_Datatype array_of_datatypes[]) {
+
+    MPI_Datatype conv_datatype = datatype_to_mpi(datatype);
+    MPI_Aint conv_array_of_addresses;
+    MPI_Datatype conv_array_of_datatypes;
+    int mpi_error;
+    mpi_error = MPI_Type_get_contents(conv_datatype, max_integers,
+    		                          max_addresses, max_datatypes,
+									  array_of_integers,
+									  conv_array_of_addresses,
+									  conv_array_of_datatypes);
+    *array_of_addresses[] = aint_array_to_yogi(conv_array_of_addresses);
+    *array_of_datatypes[] = datatype_array_to_yogi(conv_array_of_datatypes);
+    free_aint_array(conv_array_of_addresses);
+    free_datatype_array(conv_array_of_datatypes);
+    return error_to_yogi(mpi_error);
+}
+*/
+
+int YogiMPI_Op_free(YogiMPI_Op* op) {
+
+    MPI_Op conv_op = op_to_mpi(*op);
+    int mpi_error;
+    mpi_error = MPI_Op_free(&conv_op);
+    op_pool[*op] = MPI_OP_NULL;
+    *op = YogiMPI_OP_NULL;
     return error_to_yogi(mpi_error);
 }

@@ -1,5 +1,9 @@
 <SupportedMPI>
   <Language name='C'>
+  
+    <Constant>MPI_VERSION</Constant>
+    <Constant>MPI_SUBVERSION</Constant>
+    
     <Constant>MPI_SUCCESS</Constant>
     <Constant>MPI_ERR_BUFFER</Constant>
     <Constant>MPI_ERR_COUNT</Constant>
@@ -61,7 +65,8 @@
     <Constant>MPI_SOURCE</Constant> 
     <Constant>MPI_TAG</Constant> 
     <Constant>MPI_ERROR</Constant> 
-
+ 
+    <Constant>MPI_MAX_ERROR_STRING</Constant>
     <Constant>MPI_MAX_PROCESSOR_NAME</Constant>
 
     <Constant>MPI_CHAR</Constant>
@@ -157,6 +162,13 @@
 
     <Constant>MPI_MAX_INFO_KEY</Constant>
     <Constant>MPI_MAX_INFO_VAL</Constant>
+    
+    <Constant>MPI_ORDER_C</Constant>
+    <Constant>MPI_ORDER_FORTRAN</Constant>
+    <Constant>MPI_DISTRIBUTE_BLOCK</Constant>
+    <Constant>MPI_DISTRIBUTE_CYCLIC</Constant>
+    <Constant>MPI_DISTRIBUTE_NONE</Constant>
+    <Constant>MPI_DISTRIBUTE_DFLT_DARG</Constant>
     
     <Constant>MPI_STATUS_IGNORE</Constant>
     <Constant>MPI_STATUSES_IGNORE</Constant>
@@ -300,6 +312,13 @@
     <Function>MPI_Comm_remote_size</Function>
     <Function>MPI_Get_address</Function>
     <Function>MPI_Type_create_hvector</Function>
+    <Function>MPI_Errhandler_free</Function>
+    <Function>MPI_Comm_get_errhandler</Function>
+    <Function>MPI_Comm_set_errhandler</Function>
+    <Function>MPI_Errhandler_set</Function>
+    <Function>MPI_Type_get_envelope</Function>
+    <Function>MPI_Type_get_contents</Function>
+    <Function>MPI_Op_free</Function>
     
   </Language>
   <Language name='Fortran'>
@@ -394,6 +413,10 @@
     <Constant>MPI_DATATYPE_NULL</Constant>
     <Constant>MPI_INFO_NULL</Constant>
     <Constant>MPI_FILE_NULL</Constant>
+    <Constant>MPI_ERRHANDLER_NULL</Constant>
+
+    <Constant>MPI_ERRORS_ARE_FATAL</Constant>
+    <Constant>MPI_ERRORS_RETURN</Constant>
 
     <Constant>MPI_GROUP_EMPTY</Constant>
 
@@ -411,6 +434,25 @@
     
     <Constant>MPI_STATUS_IGNORE</Constant>
     <Constant>MPI_STATUSES_IGNORE</Constant>
+
+    <Constant>MPI_COMBINER_NAMED</Constant>
+    <Constant>MPI_COMBINER_DUP</Constant>
+    <Constant>MPI_COMBINER_CONTIGUOUS</Constant>
+    <Constant>MPI_COMBINER_VECTOR</Constant>
+    <Constant>MPI_COMBINER_HVECTOR_INTEGER</Constant>
+    <Constant>MPI_COMBINER_HVECTOR</Constant>
+    <Constant>MPI_COMBINER_INDEXED</Constant>
+    <Constant>MPI_COMBINER_HINDEXED_INTEGER</Constant>
+    <Constant>MPI_COMBINER_HINDEXED</Constant>
+    <Constant>MPI_COMBINER_INDEXED_BLOCK</Constant>
+    <Constant>MPI_COMBINER_STRUCT_INTEGER</Constant>
+    <Constant>MPI_COMBINER_STRUCT</Constant>
+    <Constant>MPI_COMBINER_SUBARRAY</Constant>
+    <Constant>MPI_COMBINER_DARRAY</Constant>
+    <Constant>MPI_COMBINER_F90_REAL</Constant>
+    <Constant>MPI_COMBINER_F90_COMPLEX</Constant>
+    <Constant>MPI_COMBINER_F90_INTEGER</Constant>
+    <Constant>MPI_COMBINER_RESIZED</Constant>
 
     <Object>MPI_Comm</Object>
     <Object>MPI_Request</Object>
