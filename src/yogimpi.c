@@ -498,6 +498,20 @@ static YogiMPI_Offset offset_to_yogi(MPI_Offset in) {
 	return (YogiMPI_Offset) in;
 }
 
+/* Checks if an MPI_Datatype is present in existing datatype pool.
+ * Returns index of location of datatype, or -1 if not found.
+ */
+static int check_datatype_presence(MPI_Datatype type_input) {
+	int current = 0;
+	while(current < num_datatypes) {
+	    if (datatype_pool[current] == type_input) {
+	        return current;
+	    }
+	    ++current;//
+    }
+    return -1;	
+}
+
 /* Convert an MPI_Datatype array to a YogiMPI_Datatype array. This adds new
  * handles to the datatype pool. */
 static void datatype_array_to_yogi(MPI_Datatype *inputArray,
@@ -505,7 +519,17 @@ static void datatype_array_to_yogi(MPI_Datatype *inputArray,
                                    int count) {
     int i;
     for (i = 0; i < count; i++) {
-        outputArray[i] = add_new_datatype(inputArray[i]);
+    	/* See if this datatype is already registered in the pool.  If so,
+    	 * just give the existing index.  If not, add it to the pool.
+    	 * This is needed to make MPI_Type_get_contents work properly.
+    	 */
+    	int location = check_datatype_presence(inputArray[i]);
+    	if (location >= 0) {
+    		outputArray[i] = location;
+    	}
+    	else {
+            outputArray[i] = add_new_datatype(inputArray[i]);
+    	}
     }
 } 
 
@@ -1081,12 +1105,8 @@ int YogiMPI_Type_commit(YogiMPI_Datatype *datatype) {
 int YogiMPI_Type_free(YogiMPI_Datatype *datatype) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(*datatype);
     int mpi_err = MPI_Type_free(&mpi_datatype);
-    /* For now, leave this intact.  Some of the derived type logic in
-     * querying derived types is altered by setting the original datatype
-     * to NULL.
     datatype_pool[*datatype] = MPI_DATATYPE_NULL;
     *datatype = YogiMPI_DATATYPE_NULL;
-    */
     return error_to_yogi(mpi_err);
 }
 
@@ -2511,7 +2531,7 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
     if (combiner != MPI_COMBINER_F90_COMPLEX &&
         combiner != MPI_COMBINER_F90_REAL && 
 		combiner != MPI_COMBINER_F90_INTEGER) {
-    	/* The types must be derived, so add them to the pool. */
+    	/* The array won't be empty, so convert them to Yogi versions. */
         datatype_array_to_yogi(conv_array_of_datatypes, array_of_datatypes,
     		                   max_datatypes);
     }
