@@ -95,4 +95,8 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@SERIALF90COMPILER@|${fortranCompiler}|g" \
     wrapper/mpif90.in > wrapper/mpif90
 
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@SERIALF90COMPILER@|${fortranCompiler}|g" \
+    wrapper/mpif77.in > wrapper/mpif77
+
 echo "Type make to build YogiMPI."
