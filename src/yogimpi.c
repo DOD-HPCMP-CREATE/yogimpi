@@ -1081,8 +1081,12 @@ int YogiMPI_Type_commit(YogiMPI_Datatype *datatype) {
 int YogiMPI_Type_free(YogiMPI_Datatype *datatype) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(*datatype);
     int mpi_err = MPI_Type_free(&mpi_datatype);
+    /* For now, leave this intact.  Some of the derived type logic in
+     * querying derived types is altered by setting the original datatype
+     * to NULL.
     datatype_pool[*datatype] = MPI_DATATYPE_NULL;
     *datatype = YogiMPI_DATATYPE_NULL;
+    */
     return error_to_yogi(mpi_err);
 }
 
