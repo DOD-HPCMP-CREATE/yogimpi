@@ -21,6 +21,7 @@ install: default
 	install -m 750 wrapper/mpicc $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpicxx $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpif90 $(INSTALLDIR)/bin
+	install -m 750 wrapper/mpif77 $(INSTALLDIR)/bin
 	install -m 640 Make.flags $(INSTALLDIR)
 
 ifeq ($(ENABLEPYTHON),yes)
