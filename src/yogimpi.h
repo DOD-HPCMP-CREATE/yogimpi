@@ -1,12 +1,25 @@
 /*
- *  * Copyright Toon Knapen 2006, 2007
- *   * Copyright Free Field Technologies S.A. 2006, 2007
- *    */
+YogiMPI Library - MPI ABI Translator
+Copyright (C) 2006, 2007 Toon Knapen Free Field Technologies S.A.
+Additions made by Stephen Adamec, University of Alabama at Birmingham
 
-/* Additions for MPI-2 by Stephen Adamec, CREATE Air Vehicles 2014 */
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 
 #ifndef YOGIMPI_H 
-#define YOGIMPI_H 
+#define YOGIMPI_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,88 +48,85 @@ typedef int YogiMPI_File;
 typedef int YogiMPI_Errhandler;
 
 /* MPI constants for return codes (both C and Fortran) */
-static const int YogiMPI_SUCCESS = 0; 
-static const int YogiMPI_ERR_BUFFER = 1; 
-static const int YogiMPI_ERR_COUNT = 2; 
-static const int YogiMPI_ERR_TYPE = 3; 
-static const int YogiMPI_ERR_TAG = 4; 
-static const int YogiMPI_ERR_COMM = 5; 
-static const int YogiMPI_ERR_RANK = 6; 
-static const int YogiMPI_ERR_REQUEST = 7; 
-static const int YogiMPI_ERR_ROOT = 8; 
-static const int YogiMPI_ERR_GROUP = 9; 
-static const int YogiMPI_ERR_OP = 10; 
-static const int YogiMPI_ERR_TOPOLOGY = 11; 
-static const int YogiMPI_ERR_DIMS = 12; 
-static const int YogiMPI_ERR_ARG = 13; 
-static const int YogiMPI_ERR_UNKNOWN = 14; 
-static const int YogiMPI_ERR_TRUNCATE = 15; 
-static const int YogiMPI_ERR_OTHER = 16; 
-static const int YogiMPI_ERR_INTERN = 17; 
-static const int YogiMPI_ERR_PENDING = 18; 
-static const int YogiMPI_ERR_IN_STATUS = 19; 
+#define YogiMPI_SUCCESS 0 
+#define YogiMPI_ERR_BUFFER 1 
+#define YogiMPI_ERR_COUNT 2 
+#define YogiMPI_ERR_TYPE 3 
+#define YogiMPI_ERR_TAG 4 
+#define YogiMPI_ERR_COMM 5 
+#define YogiMPI_ERR_RANK 6 
+#define YogiMPI_ERR_REQUEST 7 
+#define YogiMPI_ERR_ROOT 8 
+#define YogiMPI_ERR_GROUP 9 
+#define YogiMPI_ERR_OP 10 
+#define YogiMPI_ERR_TOPOLOGY 11 
+#define YogiMPI_ERR_DIMS 12 
+#define YogiMPI_ERR_ARG 13 
+#define YogiMPI_ERR_UNKNOWN 14 
+#define YogiMPI_ERR_TRUNCATE 15 
+#define YogiMPI_ERR_OTHER 16 
+#define YogiMPI_ERR_INTERN 17 
+#define YogiMPI_ERR_PENDING 18 
+#define YogiMPI_ERR_IN_STATUS 19 
 
 /* Part 2 for MPI I/O error constants */
 
-static const int YogiMPI_ERR_FILE = 20;
-static const int YogiMPI_ERR_NOT_SAME = 21;
-static const int YogiMPI_ERR_AMODE = 22;
-static const int YogiMPI_ERR_UNSUPPORTED_DATAREP = 23;
-static const int YogiMPI_ERR_UNSUPPORTED_OPERATION = 24;
-static const int YogiMPI_ERR_NO_SUCH_FILE = 25;
-static const int YogiMPI_ERR_FILE_EXISTS = 26;
-static const int YogiMPI_ERR_BAD_FILE = 27;
-static const int YogiMPI_ERR_ACCESS = 28;
-static const int YogiMPI_ERR_NO_SPACE = 29;
-static const int YogiMPI_ERR_QUOTA = 30;
-static const int YogiMPI_ERR_READ_ONLY = 31;
-static const int YogiMPI_ERR_FILE_IN_USE = 32;
-static const int YogiMPI_ERR_DUP_DATAREP = 33;
-static const int YogiMPI_ERR_CONVERSION = 34;
-static const int YogiMPI_ERR_IO = 35;
-static const int YogiMPI_ERR_LASTCODE = 36;
-
+#define YogiMPI_ERR_FILE 20
+#define YogiMPI_ERR_NOT_SAME 21
+#define YogiMPI_ERR_AMODE 22
+#define YogiMPI_ERR_UNSUPPORTED_DATAREP 23
+#define YogiMPI_ERR_UNSUPPORTED_OPERATION 24
+#define YogiMPI_ERR_NO_SUCH_FILE 25
+#define YogiMPI_ERR_FILE_EXISTS 26
+#define YogiMPI_ERR_BAD_FILE 27
+#define YogiMPI_ERR_ACCESS 28
+#define YogiMPI_ERR_NO_SPACE 29
+#define YogiMPI_ERR_QUOTA 30
+#define YogiMPI_ERR_READ_ONLY 31
+#define YogiMPI_ERR_FILE_IN_USE 32
+#define YogiMPI_ERR_DUP_DATAREP 33
+#define YogiMPI_ERR_CONVERSION 34
+#define YogiMPI_ERR_IO 35
+#define YogiMPI_ERR_LASTCODE 36
 
 /* Assorted constants (both C and Fortran) */
 
 /* Recommended that MPI_BOTTOM be zero address */
-static void * const  YogiMPI_BOTTOM = (void*)0 ;
-static const int YogiMPI_PROC_NULL = -2;
-static const int YogiMPI_ANY_SOURCE = -3;
+static void * const  YogiMPI_BOTTOM = (void*)0;
+#define YogiMPI_PROC_NULL -2
+#define YogiMPI_ANY_SOURCE -3
 /* ANY_TAG should not overlap with any valid tag */
-static const int YogiMPI_ANY_TAG = -4;
+#define YogiMPI_ANY_TAG -4
 /* UNDEFINED should not overlap with any valid rank */
-static const int YogiMPI_UNDEFINED = -5;
-static const int YogiMPI_BSEND_OVERHEAD = 512;
-static const int YogiMPI_KEYVAL_INVALID = -7;
+#define YogiMPI_UNDEFINED -5
+#define YogiMPI_BSEND_OVERHEAD 512
+#define YogiMPI_KEYVAL_INVALID -7
 
 /* MPI asserts for one-sided communication.  Supports bitwise OR. */
-static const int YogiMPI_MODE_NOCHECK = 1024;
-static const int YogiMPI_MODE_NOSTORE = 2048;
-static const int YogiMPI_MODE_NOPUT = 4096;
-static const int YogiMPI_MODE_NOPRECEDE = 8192;
-static const int YogiMPI_MODE_NOSUCCEED = 16384;
+#define YogiMPI_MODE_NOCHECK 1024
+#define YogiMPI_MODE_NOSTORE 2048
+#define YogiMPI_MODE_NOPUT 4096
+#define YogiMPI_MODE_NOPRECEDE 8192
+#define YogiMPI_MODE_NOSUCCEED 16384
 
 /* Seeking constants. */
-static const int YogiMPI_SEEK_SET = 50;
-static const int YogiMPI_SEEK_CUR = 55;
-static const int YogiMPI_SEEK_END = 60;
+#define YogiMPI_SEEK_SET 50
+#define YogiMPI_SEEK_CUR 55
+#define YogiMPI_SEEK_END 60
 
 /* MPI I/O permission modes.  Supports bitwise OR. 2*/
-
-static const int YogiMPI_MODE_RDONLY = 2;
-static const int YogiMPI_MODE_RDWR = 8;
-static const int YogiMPI_MODE_WRONLY = 4;
-static const int YogiMPI_MODE_CREATE = 1;
-static const int YogiMPI_MODE_EXCL = 64;
-static const int YogiMPI_MODE_DELETE_ON_CLOSE = 16;
-static const int YogiMPI_MODE_UNIQUE_OPEN = 32;
-static const int YogiMPI_MODE_SEQUENTIAL = 256;
-static const int YogiMPI_MODE_APPEND = 128;
+#define YogiMPI_MODE_RDONLY 2
+#define YogiMPI_MODE_RDWR 8
+#define YogiMPI_MODE_WRONLY 4
+#define YogiMPI_MODE_CREATE 1
+#define YogiMPI_MODE_EXCL 64
+#define YogiMPI_MODE_DELETE_ON_CLOSE 16
+#define YogiMPI_MODE_UNIQUE_OPEN 32
+#define YogiMPI_MODE_SEQUENTIAL 256
+#define YogiMPI_MODE_APPEND 128
 
 /* MPI_Info have key and value length constants.  Pick conservative values
    that accommodate OpenMPI and MPICH derivatives. */
-
 #define YogiMPI_MAX_INFO_KEY 32
 #define YogiMPI_MAX_INFO_VAL 256
 
@@ -136,134 +146,134 @@ static const int YogiMPI_MODE_APPEND = 128;
  * If the underlying MPI implementation returns strings that are longer than
  * YogiMPI_MAX_PROCESSOR_NAME-1, the string will be truncated.
  */
-static const int YogiMPI_MAX_PROCESSOR_NAME = 32;
+#define YogiMPI_MAX_PROCESSOR_NAME 32
 #define YogiMPI_MAX_ERROR_STRING 32 
 
 /* Elementary datatypes (C) */ 
-static const YogiMPI_Datatype YogiMPI_CHAR = 1;
-static const YogiMPI_Datatype YogiMPI_SHORT = 2;
-static const YogiMPI_Datatype YogiMPI_INT = 3;
-static const YogiMPI_Datatype YogiMPI_LONG = 4;
-static const YogiMPI_Datatype YogiMPI_UNSIGNED_CHAR = 5;
-static const YogiMPI_Datatype YogiMPI_UNSIGNED_SHORT = 6;
-static const YogiMPI_Datatype YogiMPI_UNSIGNED = 7;
-static const YogiMPI_Datatype YogiMPI_UNSIGNED_LONG = 8;
-static const YogiMPI_Datatype YogiMPI_FLOAT = 9;
-static const YogiMPI_Datatype YogiMPI_DOUBLE = 10;
-static const YogiMPI_Datatype YogiMPI_LONG_DOUBLE = 11;
-static const YogiMPI_Datatype YogiMPI_BYTE = 12;
-static const YogiMPI_Datatype YogiMPI_PACKED = 13;
+#define YogiMPI_CHAR 1
+#define YogiMPI_SHORT 2
+#define YogiMPI_INT 3
+#define YogiMPI_LONG 4
+#define YogiMPI_UNSIGNED_CHAR 5
+#define YogiMPI_UNSIGNED_SHORT 6
+#define YogiMPI_UNSIGNED 7
+#define YogiMPI_UNSIGNED_LONG 8
+#define YogiMPI_FLOAT 9
+#define YogiMPI_DOUBLE 10
+#define YogiMPI_LONG_DOUBLE 11
+#define YogiMPI_BYTE 12
+#define YogiMPI_PACKED 13
 
 /* Datatypes for reduction functions (C) */
 
-static const YogiMPI_Datatype YogiMPI_FLOAT_INT = 14;
-static const YogiMPI_Datatype YogiMPI_DOUBLE_INT = 15;
-static const YogiMPI_Datatype YogiMPI_LONG_INT = 16;
-static const YogiMPI_Datatype YogiMPI_2INT = 17;
-static const YogiMPI_Datatype YogiMPI_SHORT_INT = 18;
-static const YogiMPI_Datatype YogiMPI_LONG_DOUBLE_INT = 19;
+#define YogiMPI_FLOAT_INT 14
+#define YogiMPI_DOUBLE_INT 15
+#define YogiMPI_LONG_INT 16
+#define YogiMPI_2INT 17
+#define YogiMPI_SHORT_INT 18
+#define YogiMPI_LONG_DOUBLE_INT 19
 
 /* Optional datatypes (C) */ 
-static const YogiMPI_Datatype YogiMPI_LONG_LONG_INT = 20;
-static const YogiMPI_Datatype YogiMPI_INT32_T = 21;
-static const YogiMPI_Datatype YogiMPI_INT64_T = 22;
+#define YogiMPI_LONG_LONG_INT 20
+#define YogiMPI_INT32_T 21
+#define YogiMPI_INT64_T 22
 
 /* Make LONG_LONG a LONG_LONG_INT */
-static const YogiMPI_Datatype YogiMPI_LONG_LONG = 20;
+#define YogiMPI_LONG_LONG 20
 
 /* Non-standard datatypes that are often in MPI implementations,
    so include them here.  Some of these are normally Fortran-only, but
    a few misbehaving (but required) C applications demand their presence. */
-static const YogiMPI_Datatype YogiMPI_COMPLEX = 23;
-static const YogiMPI_Datatype YogiMPI_DOUBLE_COMPLEX = 24;
-static const YogiMPI_Datatype YogiMPI_LOGICAL = 25;
-static const YogiMPI_Datatype YogiMPI_2REAL = 26;
-static const YogiMPI_Datatype YogiMPI_2DOUBLE_PRECISION = 27;
-static const YogiMPI_Datatype YogiMPI_2INTEGER = 28;
-static const YogiMPI_Datatype YogiMPI_INTEGER1 = 29;
-static const YogiMPI_Datatype YogiMPI_INTEGER2 = 30;
-static const YogiMPI_Datatype YogiMPI_INTEGER4 = 31;
-static const YogiMPI_Datatype YogiMPI_INTEGER8 = 32;
-static const YogiMPI_Datatype YogiMPI_REAL4 = 33;
-static const YogiMPI_Datatype YogiMPI_REAL8 = 34;
-static const YogiMPI_Datatype YogiMPI_UNSIGNED_LONG_LONG = 35;
+#define YogiMPI_COMPLEX 23
+#define YogiMPI_DOUBLE_COMPLEX 24
+#define YogiMPI_LOGICAL 25
+#define YogiMPI_2REAL 26
+#define YogiMPI_2DOUBLE_PRECISION 27
+#define YogiMPI_2INTEGER 28
+#define YogiMPI_INTEGER1 29
+#define YogiMPI_INTEGER2 30
+#define YogiMPI_INTEGER4 31
+#define YogiMPI_INTEGER8 32
+#define YogiMPI_REAL4 33
+#define YogiMPI_REAL8 34
+#define YogiMPI_UNSIGNED_LONG_LONG 35
 
 /* Some Fortran-only definitions that end up matching byte-sizes with standard
    C types (at least on standard x86_64) */
-static const YogiMPI_Datatype YogiMPI_CHARACTER = 1;
-static const YogiMPI_Datatype YogiMPI_INTEGER = 3;
-static const YogiMPI_Datatype YogiMPI_DOUBLE_PRECISION = 10;
+#define YogiMPI_CHARACTER 1
+#define YogiMPI_INTEGER 3
+#define YogiMPI_DOUBLE_PRECISION 10
 
 /* Special datatypes for constructing derived datatypes */ 
-static const YogiMPI_Datatype YogiMPI_LB = 36; 
-static const YogiMPI_Datatype YogiMPI_UB = 37;
+#define YogiMPI_LB 36 
+#define YogiMPI_UB 37
 
 /* reserved communicators (C and Fortran) */
-static const YogiMPI_Comm YogiMPI_COMM_WORLD = 1;
-static const YogiMPI_Comm YogiMPI_COMM_SELF = 2;
+#define YogiMPI_COMM_WORLD 1
+#define YogiMPI_COMM_SELF 2
 
 /* results of communicator and group comparisons */
-static const int YogiMPI_IDENT = 0;
-static const int YogiMPI_CONGRUENT = 1;
-static const int YogiMPI_SIMILAR = 2;
-static const int YogiMPI_UNEQUAL = 3;
+#define YogiMPI_IDENT 0
+#define YogiMPI_CONGRUENT 1
+#define YogiMPI_SIMILAR 2
+#define YogiMPI_UNEQUAL 3
 
 /* environmental inquiry keys (C and Fortran) */ 
-static const int YogiMPI_TAG_UB = -8;
-static const int YogiMPI_IO = -9;
-static const int YogiMPI_HOST = -10;
-static const int YogiMPI_WTIME_IS_GLOBAL = -11;
+#define YogiMPI_TAG_UB -8
+#define YogiMPI_IO -9
+#define YogiMPI_HOST -10
+#define YogiMPI_WTIME_IS_GLOBAL -11
 
 /* collective operations (C and Fortran) */ 
-static const YogiMPI_Op YogiMPI_MAX = 1;
-static const YogiMPI_Op YogiMPI_MIN = 2;
-static const YogiMPI_Op YogiMPI_SUM = 3;
-static const YogiMPI_Op YogiMPI_PROD = 4;
-static const YogiMPI_Op YogiMPI_MAXLOC = 5;
-static const YogiMPI_Op YogiMPI_MINLOC = 6;
-static const YogiMPI_Op YogiMPI_BAND = 7;
-static const YogiMPI_Op YogiMPI_BOR = 8;
-static const YogiMPI_Op YogiMPI_BXOR = 9;
-static const YogiMPI_Op YogiMPI_LAND = 10;
-static const YogiMPI_Op YogiMPI_LOR = 11;
-static const YogiMPI_Op YogiMPI_LXOR = 12;
+#define YogiMPI_MAX 1
+#define YogiMPI_MIN 2
+#define YogiMPI_SUM 3
+#define YogiMPI_PROD 4
+#define YogiMPI_MAXLOC 5
+#define YogiMPI_MINLOC 6
+#define YogiMPI_BAND 7
+#define YogiMPI_BOR 8
+#define YogiMPI_BXOR 9
+#define YogiMPI_LAND 10
+#define YogiMPI_LOR 11
+#define YogiMPI_LXOR 12
 
 /* Null handles */ 
-static const YogiMPI_Group YogiMPI_GROUP_NULL = 0; 
-static const YogiMPI_Comm YogiMPI_COMM_NULL = 0;
-static const YogiMPI_Datatype YogiMPI_DATATYPE_NULL = 0;
-static const YogiMPI_Request YogiMPI_REQUEST_NULL = 0;
-static const YogiMPI_Op YogiMPI_OP_NULL = 0;
-static const YogiMPI_Info YogiMPI_INFO_NULL = 0;
-static const YogiMPI_File YogiMPI_FILE_NULL = 0;
-static const YogiMPI_Errhandler YogiMPI_ERRHANDLER_NULL = 0;
+#define YogiMPI_GROUP_NULL 0
+#define YogiMPI_COMM_NULL 0
+#define YogiMPI_DATATYPE_NULL 0
+#define YogiMPI_REQUEST_NULL 0
+#define YogiMPI_OP_NULL 0
+#define YogiMPI_INFO_NULL 0
+#define YogiMPI_FILE_NULL 0
+#define YogiMPI_ERRHANDLER_NULL 0
 
 /* Predefined error handlers */
-static const YogiMPI_Errhandler YogiMPI_ERRORS_ARE_FATAL = 1;
-static const YogiMPI_Errhandler YogiMPI_ERRORS_RETURN = 2;
+#define YogiMPI_ERRORS_ARE_FATAL 1
+#define YogiMPI_ERRORS_RETURN 2
 
 /* Empty group */
-static const YogiMPI_Group YogiMPI_GROUP_EMPTY = 1;
+#define YogiMPI_GROUP_EMPTY 1
 
 /* MPI Combiner state constants */
-static const int YogiMPI_COMBINER_NAMED            = 1;
-static const int YogiMPI_COMBINER_DUP              = 2;
-static const int YogiMPI_COMBINER_CONTIGUOUS       = 3;
-static const int YogiMPI_COMBINER_VECTOR           = 4;
-static const int YogiMPI_COMBINER_HVECTOR_INTEGER  = 5;
-static const int YogiMPI_COMBINER_HVECTOR          = 6;
-static const int YogiMPI_COMBINER_INDEXED          = 7;
-static const int YogiMPI_COMBINER_HINDEXED_INTEGER = 8;
-static const int YogiMPI_COMBINER_HINDEXED         = 9;
-static const int YogiMPI_COMBINER_INDEXED_BLOCK    = 10;
-static const int YogiMPI_COMBINER_STRUCT_INTEGER   = 12;
-static const int YogiMPI_COMBINER_STRUCT           = 13;
-static const int YogiMPI_COMBINER_SUBARRAY         = 14;
-static const int YogiMPI_COMBINER_DARRAY           = 15;
-static const int YogiMPI_COMBINER_F90_REAL         = 16;
-static const int YogiMPI_COMBINER_F90_COMPLEX      = 17;
-static const int YogiMPI_COMBINER_F90_INTEGER      = 18;
-static const int YogiMPI_COMBINER_RESIZED          = 19;
+#define YogiMPI_COMBINER_NAMED 1
+#define YogiMPI_COMBINER_DUP 2
+#define YogiMPI_COMBINER_CONTIGUOUS 3
+#define YogiMPI_COMBINER_VECTOR 4
+#define YogiMPI_COMBINER_HVECTOR_INTEGER 5
+#define YogiMPI_COMBINER_HVECTOR 6
+#define YogiMPI_COMBINER_INDEXED 7
+#define YogiMPI_COMBINER_HINDEXED_INTEGER 8
+#define YogiMPI_COMBINER_HINDEXED 9
+#define YogiMPI_COMBINER_INDEXED_BLOCK 10
+#define YogiMPI_COMBINER_STRUCT_INTEGER 12
+#define YogiMPI_COMBINER_STRUCT 13
+#define YogiMPI_COMBINER_SUBARRAY 14
+#define YogiMPI_COMBINER_DARRAY 15
+#define YogiMPI_COMBINER_F90_REAL 16
+#define YogiMPI_COMBINER_F90_COMPLEX 17
+#define YogiMPI_COMBINER_F90_INTEGER 18
+#define YogiMPI_COMBINER_RESIZED 19
 
 /* Define structure for MPI_Status - hide real object inside as int array */
 struct YogiMPI_Status
