@@ -60,5 +60,5 @@ TPLs_src/Trilinos/packages/triutils \
 TPLs_src/Trilinos/packages/xpetra \
 TPLs_src/Trilinos/packages/zoltan/src \
 TPLs_src/Trilinos/packages/zoltan2/src; do
-    python yogisearch.py -i $sierraSource/$i 
+    python yogisearch.py -i $sierraSource/$i -e sierraExcludes 
 done

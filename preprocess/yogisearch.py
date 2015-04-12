@@ -28,7 +28,10 @@ class yogisearch(object):
         self.logFile = open(self.outputPath, 'a')
         self.cDefinitions = [] 
         self.fDefinitions = []
+        self.excludePatterns = []
         self.loadSupported()
+        if self.excludeFile:
+            self.loadExcluded() 
         if os.path.isdir(self.inputPath):
             self.checkDirectoryWrap(self.inputPath)
         elif os.path.isfile(self.inputPath):
@@ -54,6 +57,11 @@ class yogisearch(object):
         # If no conditions matched, return None to indicate file should not
         # be searched.
         return None 
+
+    def loadExcluded(self):
+        excludeHandle = open(self.excludeFile, 'r')
+        self.excludePatterns = [line.strip() for line in excludeHandle]
+        excludeHandle.close()
 
     # Loads from XML MPI functions and constants supported by YogiMPI.
     def loadSupported(self):
@@ -130,6 +138,9 @@ class yogisearch(object):
                 else:
                     if not item.upper() in (md.upper() for md in definitions):
                         noMPI.add(item) 
+        # Remove anything we were told to ignore.
+        for item in self.excludePatterns:
+            noMPI.discard(item)
         if noMPI:
             self.writeLog(os.path.abspath(inputFile))
             self.writeLog(*noMPI)
@@ -188,7 +199,10 @@ if __name__ == "__main__":
                         action="store",
                         default=None,
                         help="Output path")
-
+    parser.add_argument('--excludefile', '-e',
+                        action="store",
+                        default=None,
+                        help="MPI patterns to ignore")
     configArguments = parser.parse_args()
 
     preproc = yogisearch()
@@ -196,4 +210,5 @@ if __name__ == "__main__":
     preproc.outputPath = configArguments.output
     preproc.fortranOnly = configArguments.fortranonly
     preproc.ccxxOnly = configArguments.ccxxonly
+    preproc.excludeFile = configArguments.excludefile
     preproc.run()
