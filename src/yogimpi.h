@@ -299,6 +299,23 @@ typedef int YogiMPI_Fint;
 
 static void * const YogiMPI_IN_PLACE = (void *)-1;
 
+/* Prototype function pointers for MPI. */
+typedef void YogiMPI_User_function(void *invec, void *inoutvec,
+                               int *len, YogiMPI_Datatype *datatype);
+
+/* Note that we don't define extra stuff like other MPI implementations.
+ * This gets converted internally to the implementation's varargs function
+ * pointer version.
+ */
+typedef void YogiMPI_Comm_errhandler_fn(YogiMPI_Comm *, int *);
+
+typedef int YogiMPI_Copy_function(YogiMPI_Comm oldcomm, int keyval,
+                                  void *extra_state, void *attribute_val_in,
+                                  void *attribute_val_out, int *flag);
+
+typedef int YogiMPI_Delete_function(YogiMPI_Comm comm, int keyval,
+                                    void *attribute_val, void *extra_state);
+
 /* Now prototype functions. */
 
 int YogiMPI_Send(void* buf, int count, YogiMPI_Datatype datatype, int dest,
@@ -666,13 +683,11 @@ int YogiMPI_Type_get_envelope(YogiMPI_Datatype datatype, int* num_integers,
 		                      int* num_addresses, int* num_datatypes, 
 							  int* combiner);
 
-/*
 int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
 		                      int max_addresses, int max_datatypes, 
 							  int array_of_integers[], 
 							  YogiMPI_Aint array_of_addresses[], 
 							  YogiMPI_Datatype array_of_datatypes[]);
-*/
 
 int YogiMPI_Op_free(YogiMPI_Op* op);
 

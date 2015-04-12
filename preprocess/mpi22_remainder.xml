@@ -22,9 +22,4 @@
     <Arg input="true" name="commute" type="int" />
     <Arg output="true" name="op" type="MPI_Op*" />
   </Function>
-  <Function name="MPI_Errhandler_create">
-    <ReturnType>int</ReturnType>
-    <Arg name="function" type="MPI_Handler_function*" />
-    <Arg name="errhandler" type="MPI_Errhandler*" />
-  </Function>
 </MpichAPI>

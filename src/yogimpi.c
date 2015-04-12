@@ -179,8 +179,10 @@ MPI_Datatype * datatype_array_to_mpi(YogiMPI_Datatype array_of_types[],
 }
 
 /* Frees an array of MPI_Datatype objects */
-void free_datatype_array(MPI_Datatype array_of_types[]) {
-    free(array_of_types);
+void free_datatype_array(MPI_Datatype *array_of_types) {
+	if (array_of_types != NULL) {
+	    free(array_of_types);
+	}
 }
 
 /* Converts a YogiMPI_Request to MPI_Request pointer */
@@ -476,13 +478,14 @@ static YogiMPI_Offset offset_to_yogi(MPI_Offset in) {
 	return (YogiMPI_Offset) in;
 }
 
-/* Convert an MPI_Datatype array to a YogiMPI_Datatype array. */
+/* Convert an MPI_Datatype array to a YogiMPI_Datatype array. This adds new
+ * handles to the datatype pool. */
 static void datatype_array_to_yogi(MPI_Datatype *inputArray,
                                    YogiMPI_Datatype *outputArray,
                                    int count) {
     int i;
     for (i = 0; i < count; i++) {
-        outputArray[i] = datatype_to_mpi(inputArray[i]);
+        outputArray[i] = add_new_datatype(inputArray[i]);
     }
 } 
 
@@ -490,10 +493,19 @@ static MPI_Aint * aint_array_to_mpi(YogiMPI_Aint in[], int count) {
 	int i;
 	MPI_Aint * conv_aint = (MPI_Aint *)malloc(count*sizeof(MPI_Aint));
 	for (i = 0; i < count; i++) {
-		conv_aint[i] = aint_to_mpi(in[i]);
+		conv_aint[i] = aint_to_yogi(in[i]);
 	}
 	return conv_aint;	
 }
+
+/* Convert an MPI_Aint array to a YogiMPI_Aint array. */
+static void aint_array_to_yogi(MPI_Aint *inputArray, YogiMPI_Aint *outputArray,
+                               int count) {
+    int i;
+    for (i = 0; i < count; i++) {
+        outputArray[i] = aint_to_mpi(inputArray[i]);
+    }
+} 
 
 static MPI_Offset * offset_array_to_mpi(YogiMPI_Offset in[], int count) {
 	int i;
@@ -2441,8 +2453,6 @@ int YogiMPI_Type_get_envelope(YogiMPI_Datatype datatype, int* num_integers,
     return error_to_yogi(mpi_error);
 }
 
-/*
-
 int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
 		                      int max_addresses, int max_datatypes,
 							  int array_of_integers[],
@@ -2450,21 +2460,41 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
 							  YogiMPI_Datatype array_of_datatypes[]) {
 
     MPI_Datatype conv_datatype = datatype_to_mpi(datatype);
-    MPI_Aint conv_array_of_addresses;
-    MPI_Datatype conv_array_of_datatypes;
+
+    /* In order to appropriately handle this function, we must call 
+     * MPI_Type_get_envelope to figure out what the user will get. This helps
+     * determine if the type is derived and if new datatype handles are added
+     * to our translation pool.
+     */
+    int num_integers, num_addresses, num_datatypes, combiner;
+    MPI_Type_get_envelope(conv_datatype, &num_integers, &num_addresses, 
+    		              &num_datatypes, &combiner);
+    /* This should not ever be a named, predefined data type. Bad call. */
+    assert(combiner != MPI_COMBINER_NAMED);
+    
+    MPI_Aint * conv_array_of_addresses = 
+    		           (MPI_Aint*)malloc(max_addresses*sizeof(MPI_Aint));
+    MPI_Datatype * conv_array_of_datatypes =
+    		          (MPI_Datatype*)malloc(max_datatypes*sizeof(MPI_Datatype));
     int mpi_error;
     mpi_error = MPI_Type_get_contents(conv_datatype, max_integers,
     		                          max_addresses, max_datatypes,
 									  array_of_integers,
 									  conv_array_of_addresses,
 									  conv_array_of_datatypes);
-    *array_of_addresses[] = aint_array_to_yogi(conv_array_of_addresses);
-    *array_of_datatypes[] = datatype_array_to_yogi(conv_array_of_datatypes);
+    aint_array_to_yogi(conv_array_of_addresses, array_of_addresses,
+    		           max_addresses);
+    if (combiner != MPI_COMBINER_F90_COMPLEX &&
+        combiner != MPI_COMBINER_F90_REAL && 
+		combiner != MPI_COMBINER_F90_INTEGER) {
+    	/* The types must be derived, so add them to the pool. */
+        datatype_array_to_yogi(conv_array_of_datatypes, array_of_datatypes,
+    		                   max_datatypes);
+    }
     free_aint_array(conv_array_of_addresses);
     free_datatype_array(conv_array_of_datatypes);
     return error_to_yogi(mpi_error);
 }
-*/
 
 int YogiMPI_Op_free(YogiMPI_Op* op) {
 
