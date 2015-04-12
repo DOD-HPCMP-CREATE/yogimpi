@@ -1537,7 +1537,9 @@ int YogiMPI_File_open(YogiMPI_Comm comm, char *filename, int amode,
     MPI_File mpi_file;
     int mpi_error = MPI_File_open(mpi_comm, filename, amode, mpi_info, 
     		                      &mpi_file);
-    *fh = add_new_file(mpi_file);
+    if (mpi_error == MPI_SUCCESS) {
+        *fh = add_new_file(mpi_file);
+    }
     
     return error_to_yogi(mpi_error);
 }
