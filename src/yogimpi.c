@@ -498,6 +498,42 @@ static YogiMPI_Offset offset_to_yogi(MPI_Offset in) {
 	return (YogiMPI_Offset) in;
 }
 
+static int yogi_amode_to_mpi(int amode) {
+    switch(amode) {
+    case YogiMPI_MODE_RDONLY: 
+	    return MPI_MODE_RDONLY;
+	    break;
+    case YogiMPI_MODE_RDWR:
+	    return MPI_MODE_RDWR;
+	    break;
+    case YogiMPI_MODE_WRONLY:
+	    return MPI_MODE_WRONLY;
+      	break;
+    case YogiMPI_MODE_CREATE: 
+	    return MPI_MODE_CREATE;
+	    break;
+    case YogiMPI_MODE_EXCL: 
+	    return MPI_MODE_EXCL;
+        break;
+    case YogiMPI_MODE_DELETE_ON_CLOSE: 
+	    return MPI_MODE_DELETE_ON_CLOSE;
+	    break;
+    case YogiMPI_MODE_UNIQUE_OPEN: 
+	    return MPI_MODE_UNIQUE_OPEN;
+	    break;
+    case YogiMPI_MODE_SEQUENTIAL: 
+	    return MPI_MODE_SEQUENTIAL;
+	    break;
+    case YogiMPI_MODE_APPEND:
+	    return MPI_MODE_APPEND;
+	    break;
+    default:
+    	return amode;
+    }
+
+	
+}
+
 /* Checks if an MPI_Datatype is present in existing datatype pool.
  * Returns index of location of datatype, or -1 if not found.
  */
@@ -1535,8 +1571,8 @@ int YogiMPI_File_open(YogiMPI_Comm comm, char *filename, int amode,
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     MPI_Info mpi_info = info_to_mpi(info);
     MPI_File mpi_file;
-    int mpi_error = MPI_File_open(mpi_comm, filename, amode, mpi_info, 
-    		                      &mpi_file);
+    int mpi_error = MPI_File_open(mpi_comm, filename, yogi_amode_to_mpi(amode),
+    		                      mpi_info, &mpi_file);
     if (mpi_error == MPI_SUCCESS) {
         *fh = add_new_file(mpi_file);
     }
