@@ -211,6 +211,9 @@
     <Object>MPI_Fint</Object>
     
     <Constant>MPI_IN_PLACE</Constant>
+    <Constant>MPI_NULL_COPY_FN</Constant>
+    <Constant>MPI_DUP_FN</Constant>
+    <Constant>MPI_NULL_DELETE_FN</Constant>
     
     <Function>MPI_Send</Function>
     <Function>MPI_Recv</Function>
@@ -350,6 +353,10 @@
     <Function>MPI_Info_get_valuelen</Function>
     <Function>MPI_Type_create_darray</Function>
     <Function>MPI_Type_create_resized</Function>
+    <Function>MPI_Keyval_create</Function>
+    <Function>MPI_Comm_create_errhandler</Function>
+    <Function>MPI_Op_create</Function>
+    <Function>MPI_Comm_call_errhandler</Function>
   </Language>
   
   <Language name='Fortran'>

@@ -7,7 +7,17 @@ YF90=$(INSTALLDIR)/bin/mpif90
 
 test: ctest ftest 
 
-ctest: 
+errorHandler: errorHandler.c
+	$(YCC) $(CFLAGS) errorHandler.c -o errorHandler
+
+createOp: createOp.c
+	$(YCC) $(CFLAGS) createOp.c -o createOp 
+
+runtest: createOp errorHandler 
+	mpirun -np 4 ./createOp
+	mpirun -np 4 ./errorHandler
+
+ctest: errorHandler createOp 
 	$(YCC) $(CFLAGS) simple.c -o simple
 	$(YCC) $(CFLAGS) nonBlocking.c -o nonblock
 	$(YCC) $(CFLAGS) sendrecv.c -o sendrecv
@@ -39,4 +49,4 @@ clean:
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall fnonblock_waitall sendRecvErrC testComms \
               ftestComms probe check_status collective fcollective \
-              waitsome waitany fwaitsome
+              waitsome waitany fwaitsome createOp errorHandler

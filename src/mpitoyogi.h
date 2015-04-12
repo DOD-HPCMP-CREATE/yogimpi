@@ -222,6 +222,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_COMBINER_F90_INTEGER YogiMPI_COMBINER_F90_INTEGER
 #define MPI_COMBINER_RESIZED YogiMPI_COMBINER_RESIZED
 
+#define MPI_User_function YogiMPI_User_function
+#define MPI_Copy_function YogiMPI_Copy_function
+#define MPI_Delete_function YogiMPI_Delete_function
+
 #define MPI_Send YogiMPI_Send
 #define MPI_Recv YogiMPI_Recv
 #define MPI_Get_count YogiMPI_Get_count
@@ -360,5 +364,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_Info_get_valuelen YogiMPI_Info_get_valuelen
 #define MPI_Type_create_darray YogiMPI_Type_create_darray
 #define MPI_Type_create_resized YogiMPI_Type_create_resized
+#define MPI_Keyval_create YogiMPI_Keyval_create
+#define MPI_Comm_create_errhandler YogiMPI_Comm_create_errhandler
+#define MPI_Op_create YogiMPI_Op_create
+#define MPI_Comm_call_errhandler YogiMPI_Comm_call_errhandler
 
 #endif /* MPITOYOGI_H */

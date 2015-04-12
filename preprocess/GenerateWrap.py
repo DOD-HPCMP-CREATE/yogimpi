@@ -107,7 +107,7 @@ class GenerateWrap(object):
                 thisArg.type = rawType
                 if rawType.endswith('*'):
                     thisArg.isPointer = True
-                if rawType.startswith('MPI_'):
+                if rawType.startswith('MPI_') and not rawType.endswith('function*'):
                     thisArg.isMPIType = True
                     if 'dims' in argElement.attrib:
                         thisArg.isPlural = True
@@ -196,7 +196,8 @@ class GenerateWrap(object):
                        'MPI_Group':'add_new_group',
                        'MPI_Aint':'aint_to_yogi',
                        'MPI_Offset':'offset_to_yogi',
-                       'MPI_Errhandler':'add_new_errhandler'}
+                       'MPI_Errhandler':'add_new_errhandler',
+                       'MPI_Op':'add_new_op'}
         parrayFunc = {'MPI_Offset':'offset_array_to_yogi',
                       'MPI_Datatype':'datatype_array_to_yogi',
                       'MPI_Aint':'aint_array_to_yogi'}

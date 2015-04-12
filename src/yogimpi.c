@@ -146,12 +146,17 @@ int error_to_yogi(int mpi_error)
 { 
   int current = 0;
   while(mpi_error_codes[current] != mpi_error) {
-    ++current;
     if (current > YogiMPI_ERR_LASTCODE) {
       return YogiMPI_ERR_INTERN;
     }
+    ++current;
   }
   return current;
+}
+
+/* Convert a YogiMPI-error to MPI-error */
+int yogi_error_to_mpi(int yogi_error) {
+  return mpi_error_codes[yogi_error];
 }
 
 /* Converts a YogiMPI_Datatype to MPI_Datatype */
@@ -458,6 +463,37 @@ static YogiMPI_Errhandler add_new_errhandler(MPI_Errhandler mpi_errhandler)
     return i;
 }
 
+static YogiMPI_Op add_new_op(MPI_Op mpi_op)
+{
+    int i; 
+    for(i = YogiMPI_OP_VOLATILE_OFFSET; i < num_ops &&
+        op_pool[i] != MPI_OP_NULL; ++i);
+
+    /* if not sufficient slots, increase number of slots */
+    if (i == num_ops) {
+        int new_num_ops = num_ops * 2;
+
+        /* realloc */
+        MPI_Op* new_ops = (MPI_Op*)malloc(new_num_ops*sizeof(MPI_Op));
+        memcpy(new_ops, op_pool, num_ops*sizeof(MPI_Op));
+        free(op_pool);
+
+        int j;
+        for(j = num_ops; j < new_num_ops; ++j) {
+        	new_ops[j] = MPI_OP_NULL;
+        }
+
+        op_pool = new_ops;
+        num_ops = new_num_ops;
+    }
+
+    assert(i < num_ops);
+    assert(op_pool[i] == MPI_OP_NULL);
+    op_pool[i] = mpi_op;
+
+    return i;
+}
+
 /* Copy an MPI_Status pointer into a YogiMPI_Status object.
  * @arg source The MPI_Status memory address from which to copy.
  * @arg dest The YogiMPI_Status memory address into which copy is placed.
@@ -548,6 +584,21 @@ static int check_datatype_presence(MPI_Datatype type_input) {
     return -1;	
 }
 
+/* Checks if an MPI_Comm is present in existing comm pool.
+ * Returns index of location of comm, or -1 if not found.
+ */
+static int check_comm_presence(MPI_Comm comm_input) {
+	int current = 0;
+	while(current < num_comms) {
+	    if (comm_pool[current] == comm_input) {
+	        return current;
+	    }
+	    ++current;//
+    }
+    return -1;	
+}
+
+
 /* Convert an MPI_Datatype array to a YogiMPI_Datatype array. This adds new
  * handles to the datatype pool. */
 static void datatype_array_to_yogi(MPI_Datatype *inputArray,
@@ -606,6 +657,20 @@ static void free_offset_array(MPI_Offset * in) {
 	if (in != NULL) {
 	    free(in);
 	}
+}
+
+YogiMPI_Comm Yogi_ResolveComm(void *commObject) {
+	MPI_Comm *aComm = (MPI_Comm*)commObject;
+	return check_comm_presence(*aComm);
+}
+
+YogiMPI_Datatype Yogi_ResolveDatatype(void *datatypeObject) {
+	MPI_Datatype *aType = (MPI_Datatype*)datatypeObject;
+	return check_datatype_presence(*aType);
+}
+
+int Yogi_ResolveErrorcode(int errorcode) {
+	return error_to_yogi(errorcode);
 }
 
 static void bind_mpi_err_constants() {
@@ -2687,4 +2752,60 @@ int YogiMPI_Type_create_resized(YogiMPI_Datatype oldtype, YogiMPI_Aint lb,
     		                            &conv_newtype);
     *newtype = add_new_datatype(conv_newtype);
     return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Keyval_create(YogiMPI_Copy_function* copy_fn,
+		                  YogiMPI_Delete_function* delete_fn, int* keyval,
+						  void* extra_state) {
+
+	MPI_Copy_function* mpi_copy_fn;
+	MPI_Delete_function* mpi_delete_fn;
+    if (copy_fn == YogiMPI_NULL_COPY_FN) {
+        mpi_copy_fn = MPI_NULL_COPY_FN;
+    }
+    else if (copy_fn == YogiMPI_DUP_FN) {
+        mpi_copy_fn = MPI_DUP_FN;
+    }
+    else {
+    	mpi_copy_fn = (MPI_Copy_function*)copy_fn;
+    }
+    if (delete_fn == YogiMPI_NULL_DELETE_FN) {
+        mpi_delete_fn = MPI_NULL_DELETE_FN;
+    }
+    else {
+    	mpi_delete_fn = (MPI_Delete_function*)delete_fn;
+    }
+    int mpi_error;
+    mpi_error = MPI_Keyval_create(mpi_copy_fn, mpi_delete_fn, keyval,
+    		                      extra_state);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Comm_create_errhandler(YogiMPI_Comm_errhandler_function* function,
+		                           YogiMPI_Errhandler* errhandler) {
+
+    MPI_Errhandler conv_errhandler;
+    MPI_Comm_errhandler_function * mpi_function = 
+    		                            (MPI_Comm_errhandler_function*)function;
+    int mpi_error;
+    mpi_error = MPI_Comm_create_errhandler(mpi_function, &conv_errhandler);
+    *errhandler = add_new_errhandler(conv_errhandler);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Op_create(YogiMPI_User_function* function, int commute,
+		              YogiMPI_Op* op) {
+
+    MPI_Op conv_op;
+    MPI_User_function * mpi_function = (MPI_User_function*)function;
+    int mpi_error;
+    mpi_error = MPI_Op_create(mpi_function, commute, &conv_op);
+    *op = add_new_op(conv_op);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Comm_call_errhandler(YogiMPI_Comm comm, int errorcode) {
+	MPI_Comm comm_conv = comm_to_mpi(comm);
+	int mpi_error = MPI_Comm_call_errhandler(comm_conv, yogi_error_to_mpi(errorcode));
+	return error_to_yogi(mpi_error);
 }

@@ -318,7 +318,7 @@ typedef void YogiMPI_User_function(void *invec, void *inoutvec,
  * This gets converted internally to the implementation's varargs function
  * pointer version.
  */
-typedef void YogiMPI_Comm_errhandler_fn(YogiMPI_Comm *, int *);
+typedef void YogiMPI_Comm_errhandler_function(YogiMPI_Comm *, int *, ...);
 
 typedef int YogiMPI_Copy_function(YogiMPI_Comm oldcomm, int keyval,
                                   void *extra_state, void *attribute_val_in,
@@ -326,6 +326,19 @@ typedef int YogiMPI_Copy_function(YogiMPI_Comm oldcomm, int keyval,
 
 typedef int YogiMPI_Delete_function(YogiMPI_Comm comm, int keyval,
                                     void *attribute_val, void *extra_state);
+
+#define YogiMPI_NULL_COPY_FN   ((MPI_Copy_function *)0)
+#define YogiMPI_DUP_FN  ((MPI_Copy_function *)-1)
+#define YogiMPI_NULL_DELETE_FN ((MPI_Delete_function *)0)
+
+/* For MPI functions, occasionally they may need to resolve an MPI_Datatype
+ * or MPI_Comm sent.  It's difficult to do the conversion internally, so 
+ * users may have to modify source to make these calls in the function.  If the
+ * the MPI_Datatype or MPI_Comm is never used, this isn't required.
+ */
+YogiMPI_Comm Yogi_ResolveComm(void *commObject);
+YogiMPI_Datatype Yogi_ResolveDatatype(void *datatypeObject);
+int Yogi_ResolveErrorcode(int errorcode);
 
 /* Now prototype functions. */
 
@@ -720,6 +733,18 @@ int YogiMPI_Type_create_darray(int size, int rank, int ndims,
 
 int YogiMPI_Type_create_resized(YogiMPI_Datatype oldtype, YogiMPI_Aint lb,
 		                        YogiMPI_Aint extent, YogiMPI_Datatype* newtype);
+
+int YogiMPI_Keyval_create(YogiMPI_Copy_function* copy_fn, 
+		                  YogiMPI_Delete_function* delete_fn, int* keyval,
+						  void* extra_state);
+
+int YogiMPI_Comm_create_errhandler(YogiMPI_Comm_errhandler_function* function,
+		                           YogiMPI_Errhandler* errhandler);
+
+int YogiMPI_Op_create(YogiMPI_User_function* function, int commute, 
+		              YogiMPI_Op* op);
+
+int YogiMPI_Comm_call_errhandler(YogiMPI_Comm comm, int errorcode);
 
 #ifdef __cplusplus
 }
