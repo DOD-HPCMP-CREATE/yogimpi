@@ -202,6 +202,7 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
    C types (at least on standard x86_64) */
 #define YogiMPI_CHARACTER 1
 #define YogiMPI_INTEGER 3
+#define YogiMPI_REAL 33
 #define YogiMPI_DOUBLE_PRECISION 10
 
 /* Special datatypes for constructing derived datatypes */ 

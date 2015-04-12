@@ -123,6 +123,7 @@
     <Constant>MPI_INTEGER2</Constant>
     <Constant>MPI_INTEGER4</Constant>
     <Constant>MPI_INTEGER8</Constant>
+    <Constant>MPI_REAL</Constant>
     <Constant>MPI_REAL4</Constant>
     <Constant>MPI_REAL8</Constant>
     <Constant>MPI_UNSIGNED_LONG_LONG</Constant>
