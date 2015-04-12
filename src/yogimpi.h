@@ -691,6 +691,25 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
 
 int YogiMPI_Op_free(YogiMPI_Op* op);
 
+int YogiMPI_Cart_coords(YogiMPI_Comm comm, int rank, int maxdims, int coords[]);
+
+int YogiMPI_Cart_create(YogiMPI_Comm comm_old, int ndims, int dims[], 
+		                int periods[], int reorder, YogiMPI_Comm* comm_cart);
+
+int YogiMPI_Dims_create(int nnodes, int ndims, int dims[]);
+
+int YogiMPI_Info_get_valuelen(YogiMPI_Info info, char* key, int* valuelen,
+		                      int* flag);
+
+int YogiMPI_Type_create_darray(int size, int rank, int ndims,
+		                       int array_of_gsizes[], int array_of_distribs[],
+							   int array_of_dargs[], int array_of_psizes[],
+							   int order, YogiMPI_Datatype oldtype,
+							   YogiMPI_Datatype* newtype);
+
+int YogiMPI_Type_create_resized(YogiMPI_Datatype oldtype, YogiMPI_Aint lb,
+		                        YogiMPI_Aint extent, YogiMPI_Datatype* newtype);
+
 #ifdef __cplusplus
 }
 #endif

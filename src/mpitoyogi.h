@@ -333,5 +333,11 @@
 #define MPI_Type_get_envelope YogiMPI_Type_get_envelope
 #define MPI_Type_get_contents YogiMPI_Type_get_contents
 #define MPI_Op_free YogiMPI_Op_free
+#define MPI_Cart_coords YogiMPI_Cart_coords
+#define MPI_Cart_create YogiMPI_Cart_create
+#define MPI_Dims_create YogiMPI_Dims_create
+#define MPI_Info_get_valuelen YogiMPI_Info_get_valuelen
+#define MPI_Type_create_darray YogiMPI_Type_create_darray
+#define MPI_Type_create_resized YogiMPI_Type_create_resized
 
 #endif /* MPITOYOGI_H */

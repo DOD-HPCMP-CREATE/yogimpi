@@ -343,8 +343,14 @@
     <Function>MPI_Type_get_envelope</Function>
     <Function>MPI_Type_get_contents</Function>
     <Function>MPI_Op_free</Function>
-    
+    <Function>MPI_Cart_coords</Function>
+    <Function>MPI_Cart_create</Function>
+    <Function>MPI_Dims_create</Function>
+    <Function>MPI_Info_get_valuelen</Function>
+    <Function>MPI_Type_create_darray</Function>
+    <Function>MPI_Type_create_resized</Function>
   </Language>
+  
   <Language name='Fortran'>
     <Constant>MPI_SUCCESS</Constant>
     <Constant>MPI_ERR_BUFFER</Constant>

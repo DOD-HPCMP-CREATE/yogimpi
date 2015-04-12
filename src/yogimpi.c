@@ -2505,3 +2505,104 @@ int YogiMPI_Op_free(YogiMPI_Op* op) {
     *op = YogiMPI_OP_NULL;
     return error_to_yogi(mpi_error);
 }
+
+int YogiMPI_Cart_coords(YogiMPI_Comm comm, int rank, int maxdims, int coords[])
+{
+
+    MPI_Comm conv_comm = comm_to_mpi(comm);
+    int mpi_error;
+    mpi_error = MPI_Cart_coords(conv_comm, rank, maxdims, coords);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Cart_create(YogiMPI_Comm comm_old, int ndims, int dims[],
+		                int periods[], int reorder, YogiMPI_Comm* comm_cart) {
+
+    MPI_Comm conv_comm_old = comm_to_mpi(comm_old);
+    MPI_Comm conv_comm_cart;
+    int mpi_error;
+    mpi_error = MPI_Cart_create(conv_comm_old, ndims, dims, periods, reorder,
+    		                    &conv_comm_cart);
+    if (conv_comm_cart != MPI_COMM_NULL) {
+        *comm_cart = add_new_comm(conv_comm_cart);
+    }
+    else {
+    	*comm_cart = YogiMPI_COMM_NULL;
+    }
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Dims_create(int nnodes, int ndims, int dims[]) {
+
+    int mpi_error;
+    mpi_error = MPI_Dims_create(nnodes, ndims, dims);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Info_get_valuelen(YogiMPI_Info info, char* key, int* valuelen,
+		                      int* flag) {
+
+    MPI_Info conv_info = info_to_mpi(info);
+    int mpi_error;
+    mpi_error = MPI_Info_get_valuelen(conv_info, key, valuelen, flag);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Type_create_darray(int size, int rank, int ndims,
+		                       int array_of_gsizes[], int array_of_distribs[],
+							   int array_of_dargs[], int array_of_psizes[],
+							   int order, YogiMPI_Datatype oldtype,
+							   YogiMPI_Datatype* newtype) {
+
+    MPI_Datatype conv_oldtype = datatype_to_mpi(oldtype);
+    MPI_Datatype conv_newtype;
+    /* Constant conversion requires some temporary arrays to hold state
+     * and distribution values.
+     */
+    int distribs_conv[ndims];
+    int dargs_conv[ndims];
+    int i;
+    for (i = 0; i < ndims; i++) {
+    	switch(array_of_distribs[i]) {
+    	    case YogiMPI_DISTRIBUTE_BLOCK:
+    	    	distribs_conv[i] = MPI_DISTRIBUTE_BLOCK;
+                break;
+    	    case YogiMPI_DISTRIBUTE_CYCLIC:
+    	    	distribs_conv[i] = MPI_DISTRIBUTE_CYCLIC;
+    		    break;
+    	    case YogiMPI_DISTRIBUTE_NONE:
+    	    	distribs_conv[i] = MPI_DISTRIBUTE_NONE;
+    		    break;
+    	    default:
+    		    distribs_conv[i] = array_of_distribs[i];
+    	}
+    	if (array_of_dargs[i] == YogiMPI_DISTRIBUTE_DFLT_DARG) {
+    	    dargs_conv[i] = MPI_DISTRIBUTE_DFLT_DARG;
+    	}
+    	else {
+    		dargs_conv[i] = array_of_dargs[i];
+    	}
+    }
+    int mpi_error;
+    mpi_error = MPI_Type_create_darray(size, rank, ndims, array_of_gsizes,
+    		                           distribs_conv, dargs_conv,
+									   array_of_psizes, order, conv_oldtype,
+									   &conv_newtype);
+    *newtype = add_new_datatype(conv_newtype);
+    return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Type_create_resized(YogiMPI_Datatype oldtype, YogiMPI_Aint lb,
+		                        YogiMPI_Aint extent, YogiMPI_Datatype* newtype)
+{
+
+    MPI_Datatype conv_oldtype = datatype_to_mpi(oldtype);
+    MPI_Aint conv_lb = aint_to_mpi(lb);
+    MPI_Aint conv_extent = aint_to_mpi(extent);
+    MPI_Datatype conv_newtype;
+    int mpi_error;
+    mpi_error = MPI_Type_create_resized(conv_oldtype, conv_lb, conv_extent,
+    		                            &conv_newtype);
+    *newtype = add_new_datatype(conv_newtype);
+    return error_to_yogi(mpi_error);
+}
