@@ -209,7 +209,11 @@
     <Object>MPI_Aint</Object>
     <Object>MPI_Offset</Object>
     <Object>MPI_Fint</Object>
-    
+   
+    <Constant>MPI_User_function</Constant>
+    <Constant>MPI_Delete_function</Constant>
+    <Constant>MPI_Copy_function</Constant>
+
     <Constant>MPI_IN_PLACE</Constant>
     <Constant>MPI_NULL_COPY_FN</Constant>
     <Constant>MPI_DUP_FN</Constant>
@@ -478,7 +482,7 @@
     <Object>MPI_Status</Object>
     <Object>MPI_File</Object>
     <Object>MPI_Offset</Object>
-        
+
     <Function>MPI_Send</Function>
     <Function>MPI_Recv</Function>
     <Function>MPI_Get_count</Function>
