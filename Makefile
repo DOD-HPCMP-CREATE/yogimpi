@@ -21,6 +21,8 @@ install: default
 	install -m 750 wrapper/mpicc $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpicxx $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpif90 $(INSTALLDIR)/bin
+	install -m 640 Make.flags $(INSTALLDIR)
+
 ifeq ($(ENABLEPYTHON),yes)
 	install -d -m 750 $(INSTALLDIR)/python
 	install -m 640 src/python/_pyogimpi.so $(INSTALLDIR)/python
