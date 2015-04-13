@@ -40,6 +40,7 @@ clean:
 realclean: clean
 	$(RM) wrapper/mpicc
 	$(RM) wrapper/mpif90
+	$(RM) wrapper/mpif77
 	$(RM) wrapper/mpicxx
 	$(MAKE) python_clean
 	$(RM) Make.flags
