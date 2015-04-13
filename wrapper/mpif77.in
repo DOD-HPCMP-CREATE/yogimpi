@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 import subprocess
 import tempfile
 import re
@@ -25,15 +26,20 @@ class YogiMPIWrapper(object):
         self.newFile = None
         self.newPath = None
         self.namesOutput = False
+        self.preprocessOnly = False
         self.fDefinitions = []
         self.rc = 0
 
         diagOptions = [ '-h', '-help', '-show', '--help', '--version',
                         '-compile_info', '-link_info' ]
+        yogiOptions = [ '--yogi-preprocess-only' ]
+
         diagMode = False
         for anArg in self.argArray:
             if anArg in diagOptions:
                 diagMode = True
+            elif anArg in yogiOptions:
+                self.preprocessOnly = True
         if diagMode:
             self._showCompilerString()
         else:
@@ -127,7 +133,7 @@ class YogiMPIWrapper(object):
     ## Preprocesses a Fortran file, changing MPI_ to YogiMPI_ wherever
     #  used.  A temporary file is created with the new contents.
     #  Returns True on False as to whether the file was ever changed.
-    def preprocessFile(self):
+    def preprocessFile(self, inPlace=False):
         changedFile = False
         self._outputMsg("Preprocessing Fortran source " +\
                         self._getFullSourcePath())
@@ -151,14 +157,25 @@ class YogiMPIWrapper(object):
                             " was unchanged.")
         else:
             fileExtension = self._getExtension(self.sourceFile)
-            self.newFile, self.newPath = tempfile.mkstemp(prefix='yogiF_',
-                                                      suffix=fileExtension)
-            os.close(self.newFile)
-            self.newFile = open(self.newPath, 'w')
-            self._outputMsg("File " + self._getFullSourcePath() +\
-                            " was changed, new file is " + self.newPath)                                                         
-            self.newFile.writelines(rawFile)
-            self.newFile.close()
+            if inPlace: 
+                oldFile = self._getFullSourcePath()
+                timestr = time.strftime("%Y%m%d-%H%M%S")
+                backupPath = oldFile + '.yogi_orig_' + timestr
+                os.rename(oldFile, backupPath)
+                self._outputMsg("File " + oldFile + " was changed in place," +\
+                                " backup is " + backupPath)
+                newFile = open(oldFile, 'w')
+                newFile.writelines(rawFile)
+                newFile.close()
+            else:
+                self.newFile, self.newPath = tempfile.mkstemp(prefix='yogiF_',
+                                                          suffix=fileExtension)
+                os.close(self.newFile)
+                self.newFile = open(self.newPath, 'w')
+                self._outputMsg("File " + self._getFullSourcePath() +\
+                                " was changed, new file is " + self.newPath)                                                         
+                self.newFile.writelines(rawFile)
+                self.newFile.close()
 
         return changedFile
         
@@ -189,11 +206,14 @@ class YogiMPIWrapper(object):
                 # If there was an output file name, use what was specified.
                 self.namesOutput = True
 
-        self._changeArgs()
-        self._outputMsg("Final compile string: " + self._getCallString())
-        self.rc = subprocess.call(self._getCallString(), shell=True)
-        if self.newPath:
-            os.remove(self.newPath)
+        if self.preprocessOnly:
+            self.preprocessFile(inPlace=True)
+        else:
+            self._changeArgs()
+            self._outputMsg("Final compile string: " + self._getCallString())
+            self.rc = subprocess.call(self._getCallString(), shell=True)
+            if self.newPath:
+                os.remove(self.newPath)
  
 if __name__ == "__main__":
     thisWrapper = YogiMPIWrapper()
