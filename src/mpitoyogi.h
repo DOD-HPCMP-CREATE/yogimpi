@@ -226,6 +226,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_Copy_function YogiMPI_Copy_function
 #define MPI_Delete_function YogiMPI_Delete_function
 
+#define MPI_NULL_COPY_FN YogiMPI_NULL_COPY_FN
+#define MPI_DUP_FN YogiMPI_DUP_FN
+#define MPI_NULL_DELETE_FN YogiMPI_NULL_DELETE_FN
+
 #define MPI_Send YogiMPI_Send
 #define MPI_Recv YogiMPI_Recv
 #define MPI_Get_count YogiMPI_Get_count
