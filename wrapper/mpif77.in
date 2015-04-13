@@ -26,10 +26,15 @@ class YogiMPIWrapper(object):
         self.newPath = None
         self.namesOutput = False
         self.fDefinitions = []
+        self.rc = 0
 
-        diagOptions = [ '-h', '-help', '-show', '--help', '--version' ]
-
-        if len(self.argArray) == 2 and self.argArray[1] in diagOptions:
+        diagOptions = [ '-h', '-help', '-show', '--help', '--version',
+                        '-compile_info', '-link_info' ]
+        diagMode = False
+        for anArg in self.argArray:
+            if anArg in diagOptions:
+                diagMode = True
+        if diagMode:
             self._showCompilerString()
         else:
             self.loadSupported()
@@ -186,7 +191,7 @@ class YogiMPIWrapper(object):
 
         self._changeArgs()
         self._outputMsg("Final compile string: " + self._getCallString())
-        subprocess.call(self._getCallString(), shell=True)
+        self.rc = subprocess.call(self._getCallString(), shell=True)
         if self.newPath:
             os.remove(self.newPath)
  

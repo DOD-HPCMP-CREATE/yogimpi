@@ -24,12 +24,21 @@ class YogiMPIWrapper(object):
         self.sourceFile = None
         self.sourceLocation = None
         self.isLinking = True
-        diagOptions = [ '-h', '-help', '-show', '--help', '--version' ]
+        self.rc = 0
+        diagOptions = [ '-h', '-help', '-show', '--help', '--version',
+                        '-compile_info', '-link_info' ]
 
-        if len(self.argArray) == 2 and self.argArray[1] in diagOptions:
+        diagMode = False
+        for anArg in self.argArray:
+            if anArg in diagOptions:
+                diagMode = True
+        if diagMode:
             self._showCompilerString()
         else:
             self.doWrap()
+   
+    def getRC(self):
+        return self.rc
 
     def _showCompilerString(self):
         self.compString = YogiMPIWrapper.cxxCompiler 
@@ -83,8 +92,9 @@ class YogiMPIWrapper(object):
 
         self._changeArgs()
         self._outputMsg("Final compile string: " + self._getCallString())
-        subprocess.call(self._getCallString(), shell=True)
+        self.rc = subprocess.call(self._getCallString(), shell=True)
 
         
 if __name__ == "__main__":
     thisWrapper = YogiMPIWrapper()
+    exit(thisWrapper.getRC()) 
