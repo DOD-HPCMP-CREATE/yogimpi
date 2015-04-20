@@ -13,20 +13,28 @@ errorHandler: errorHandler.c
 createOp: createOp.c
 	$(YCC) $(CFLAGS) createOp.c -o createOp 
 
-runtest: createOp errorHandler 
+simple: simple.c
+	$(YCC) $(CFLAGS) simple.c -o simple
+
+nonBlocking: nonBlocking.c
+	$(YCC) $(CFLAGS) nonBlocking.c -o nonBlocking
+
+probe: probe.c
+	$(YCC) $(CFLAGS) probe.c -o probe 
+
+runtest: createOp errorHandler simple nonBlocking probe 
 	mpirun -np 4 ./createOp
 	mpirun -np 4 ./errorHandler
+	mpirun -np 4 ./simple
+	mpirun -np 2 ./nonBlocking
+	mpirun -np 2 ./probe	
 
-ctest: errorHandler createOp 
-	$(YCC) $(CFLAGS) simple.c -o simple
-	$(YCC) $(CFLAGS) nonBlocking.c -o nonblock
+ctest: errorHandler createOp simple nonBlocking probe 
 	$(YCC) $(CFLAGS) sendrecv.c -o sendrecv
-	$(YCC) $(CFLAGS) matt.c -o matt 
 	$(YCC) $(CFLAGS) writeFile1.c -o writeFile1 
 	$(YCC) $(CFLAGS) nonblock_waitall.c -o nonblock_waitall
 	$(YCC) $(CFLAGS) sendRecvErrC.c -o sendRecvErrC
 	$(YCC) $(CFLAGS) testComms.c -o testComms
-	$(YCC) $(CFLAGS) probe.c -o probe 
 	$(YCC) $(CFLAGS) check_status.c -o check_status
 	$(YCC) $(CFLAGS) collective.c -o collective 
 	$(YCC) $(CFLAGS) waitsome.c -o waitsome
@@ -36,7 +44,6 @@ ftest:
 	$(YF90) $(FFLAGS) $(EXTRAFLAGS) writeFile1.f90 -o fwriteFile1
 	$(YF90) $(FFLAGS) $(EXTRAFLAGS) f_gatherscatter.f90 -o f_gatherscatter
 	$(YF90) $(FFLAGS) $(EXTRAFLAGS) fsendrecv.f90 -o fsendrecv 
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) fmatt.f90 -o fmatt
 	$(YF90) $(FFLAGS) $(EXTRAFLAGS) fnonBlocking.f90 -o fnonblock
 	$(YF90) $(FFLAGS) $(EXTRAFLAGS) nonblock_waitall.f90 \
                 -o fnonblock_waitall
@@ -45,7 +52,7 @@ ftest:
 	$(YF90) $(FFLAGS) $(EXTRAFLAGS) waitsome.f90 -o fwaitsome
 
 clean:
-	$(RM) *.o nonblock sendrecv matt fsendrecv fmatt simple \
+	$(RM) *.o nonBlocking sendrecv fsendrecv simple \
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall fnonblock_waitall sendRecvErrC testComms \
               ftestComms probe check_status collective fcollective \
