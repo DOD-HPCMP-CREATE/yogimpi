@@ -327,9 +327,9 @@ typedef int YogiMPI_Copy_function(YogiMPI_Comm oldcomm, int keyval,
 typedef int YogiMPI_Delete_function(YogiMPI_Comm comm, int keyval,
                                     void *attribute_val, void *extra_state);
 
-#define YogiMPI_NULL_COPY_FN   ((MPI_Copy_function *)0)
-#define YogiMPI_DUP_FN  ((MPI_Copy_function *)-1)
-#define YogiMPI_NULL_DELETE_FN ((MPI_Delete_function *)0)
+#define YogiMPI_NULL_COPY_FN   ((YogiMPI_Copy_function *)0)
+#define YogiMPI_DUP_FN  ((YogiMPI_Copy_function *)-1)
+#define YogiMPI_NULL_DELETE_FN ((YogiMPI_Delete_function *)0)
 
 /* For MPI functions, occasionally they may need to resolve an MPI_Datatype
  * or MPI_Comm sent.  It's difficult to do the conversion internally, so 
