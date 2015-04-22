@@ -1799,6 +1799,9 @@ int YogiMPI_Abort(YogiMPI_Comm comm, int errorcode) {
 
 int YogiMPI_Attr_get(YogiMPI_Comm comm, int keyval, void *attribute_val, 
                      int *flag) {
+    if (keyval == YogiMPI_TAG_UB) {
+        keyval = MPI_TAG_UB;
+    }
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     int mpi_error = MPI_Attr_get(mpi_comm, keyval, attribute_val, flag);
     return error_to_yogi(mpi_error);
