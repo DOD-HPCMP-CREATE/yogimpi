@@ -3,6 +3,9 @@ include Make.flags
 .PHONY: default clean test realclean python
 
 default: src/libyogimpi.so
+ifeq ($(ENABLEPYTHON),yes)
+	$(MAKE) -C src/python
+endif
 
 src/libyogimpi.so:
 	$(MAKE) -C src
@@ -36,23 +39,16 @@ test: default
 clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C test clean
+ifeq ($(ENABLEPYTHON),yes)
+	$(MAKE) -C src/python clean
+endif
 
 realclean: clean
 	$(RM) wrapper/mpicc
 	$(RM) wrapper/mpif90
 	$(RM) wrapper/mpif77
 	$(RM) wrapper/mpicxx
-	$(MAKE) python_clean
-	$(RM) Make.flags
-
-# Normally these are not required for end-users to run.  Mainly provided for
-# buildmasters and developers.
-python: default
 ifeq ($(ENABLEPYTHON),yes)
-	$(MAKE) -C src/python
-else
-	@echo "Python support was not enabled by configure script."
-endif
-
-python_clean:
 	$(MAKE) -C src/python clean
+endif
+	$(RM) Make.flags

@@ -20,8 +20,8 @@ function showUsage {
     echo
     echo "Optional environment variables for extended Python support:"
     echo "(End users of CREATE AV products do not need to do this.)"
-    echo "YPYTHON_INCLUDE - Python include flags needed to compile source"
-    echo "YPYTHON_LDFLAGS - Flags needed to link Python libraries"
+    echo "YMPI_ENABLE_PYTHON - If set to 1, enable Python extension compile."
+    echo "PYTHONHOME must be set."
     exit 0
 }
 
@@ -30,18 +30,20 @@ cCompiler=$YCC
 cxxCompiler=$YCXX
 fortranCompiler=$YF90
 mpiC=$YMPICC
-pythonInclude="$YPYTHON_INCLUDE"
-pythonLDFlags="$YPYTHON_LDFLAGS"
 
-errorIfEmpty $cCompiler "C compiler"
-errorIfEmpty $cxxCompiler "C++ compiler"
-errorIfEmpty $fortranCompiler "Fortran compiler"
-errorIfEmpty $mpiC "Parallel C compiler"
+errorIfEmpty "$cCompiler" "C compiler"
+errorIfEmpty "$cxxCompiler" "C++ compiler"
+errorIfEmpty "$fortranCompiler" "Fortran compiler"
+errorIfEmpty "$mpiC" "Parallel C compiler"
 
-if [[ -z ${pythonLDFlags} || -z ${pythonInclude} ]]; then
+if [[ -z $PYTHONHOME || -z $YMPI_ENABLE_PYTHON ]]; then
     enablePython="no"
 else
+    echo "Enabling Python extension build."
     enablePython="yes"
+    pythonLDFlags="-L$PYTHONHOME/lib -lpython2.7"
+    pythonInclude="-I$PYTHONHOME/include/python2.7"
+
 fi
 
 installDir=""

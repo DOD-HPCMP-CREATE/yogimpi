@@ -361,6 +361,7 @@
     <Function>MPI_Comm_create_errhandler</Function>
     <Function>MPI_Op_create</Function>
     <Function>MPI_Comm_call_errhandler</Function>
+    <Function>MPI_Testall</Function>
   </Language>
   
   <Language name='Fortran'>

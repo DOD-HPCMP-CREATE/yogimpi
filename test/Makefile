@@ -22,14 +22,18 @@ nonBlocking: nonBlocking.c
 probe: probe.c
 	$(YCC) $(CFLAGS) probe.c -o probe 
 
-runtest: createOp errorHandler simple nonBlocking probe 
+testAll: testAll.c
+	$(YCC) $(CFLAGS) testAll.c -o testAll 
+
+runtest: createOp errorHandler simple nonBlocking probe testAll 
 	mpirun -np 4 ./createOp
 	mpirun -np 4 ./errorHandler
 	mpirun -np 4 ./simple
 	mpirun -np 2 ./nonBlocking
 	mpirun -np 2 ./probe	
+	mpirun -np 4 ./testAll
 
-ctest: errorHandler createOp simple nonBlocking probe 
+ctest: errorHandler createOp simple nonBlocking probe testAll 
 	$(YCC) $(CFLAGS) sendrecv.c -o sendrecv
 	$(YCC) $(CFLAGS) writeFile1.c -o writeFile1 
 	$(YCC) $(CFLAGS) nonblock_waitall.c -o nonblock_waitall
@@ -56,4 +60,4 @@ clean:
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall fnonblock_waitall sendRecvErrC testComms \
               ftestComms probe check_status collective fcollective \
-              waitsome waitany fwaitsome createOp errorHandler
+              waitsome waitany fwaitsome createOp errorHandler testAll

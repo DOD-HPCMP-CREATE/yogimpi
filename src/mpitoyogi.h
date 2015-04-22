@@ -372,5 +372,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_Comm_create_errhandler YogiMPI_Comm_create_errhandler
 #define MPI_Op_create YogiMPI_Op_create
 #define MPI_Comm_call_errhandler YogiMPI_Comm_call_errhandler
+#define MPI_Testall YogiMPI_Testall
 
 #endif /* MPITOYOGI_H */

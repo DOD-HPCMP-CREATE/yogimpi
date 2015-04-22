@@ -746,6 +746,9 @@ int YogiMPI_Op_create(YogiMPI_User_function* function, int commute,
 
 int YogiMPI_Comm_call_errhandler(YogiMPI_Comm comm, int errorcode);
 
+int YogiMPI_Testall(int count, YogiMPI_Request array_of_requests[],
+                    int *flag, YogiMPI_Status array_of_statuses[]);
+
 #ifdef __cplusplus
 }
 #endif

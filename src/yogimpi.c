@@ -1032,22 +1032,21 @@ int YogiMPI_Request_free(YogiMPI_Request *request) {
 int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests, 
 		            YogiMPI_Status *array_of_statuses) {
     int i;
-    MPI_Request* mpi_requests = (MPI_Request*)malloc(count*sizeof(MPI_Request));
+    MPI_Request mpi_requests[count];
     for(i = 0; i < count; ++i) {
     	mpi_requests[i] = * request_to_mpi(array_of_requests[i]);
     }
     int mpi_err;
 
     if (YogiMPI_STATUSES_IGNORE != array_of_statuses) {
-        MPI_Status* mpi_statuses = (MPI_Status*)malloc(count*sizeof(MPI_Status));
+        MPI_Status mpi_statuses[count];
         for (i = 0; i < count; i++) {
-        	mpi_statuses[i] = *(yogi_status_to_mpi(&array_of_statuses[i]));
+            mpi_statuses[i] = *(yogi_status_to_mpi(&array_of_statuses[i]));
         }
         mpi_err = MPI_Waitall(count, mpi_requests, mpi_statuses);
         for(i = 0; i < count; i++) {
-        	mpi_status_to_yogi(&mpi_statuses[i], &array_of_statuses[i]);
+            mpi_status_to_yogi(&mpi_statuses[i], &array_of_statuses[i]);
         }
-        free(mpi_statuses);
     }
     else {
         mpi_err = MPI_Waitall(count, mpi_requests, MPI_STATUSES_IGNORE);
@@ -1060,8 +1059,6 @@ int YogiMPI_Waitall(int count, YogiMPI_Request *array_of_requests,
             array_of_requests[i] = YogiMPI_REQUEST_NULL;
         }
     }
-
-    free(mpi_requests);
 
     return error_to_yogi(mpi_err);
 }
@@ -2808,4 +2805,36 @@ int YogiMPI_Comm_call_errhandler(YogiMPI_Comm comm, int errorcode) {
 	MPI_Comm comm_conv = comm_to_mpi(comm);
 	int mpi_error = MPI_Comm_call_errhandler(comm_conv, yogi_error_to_mpi(errorcode));
 	return error_to_yogi(mpi_error);
+}
+
+int YogiMPI_Testall(int count, YogiMPI_Request array_of_requests[],
+                    int *flag, YogiMPI_Status array_of_statuses[]) {
+
+    int i, mpi_error;
+    MPI_Request mpi_requests[count];
+    for(i = 0; i < count; ++i) {
+        mpi_requests[i] = *request_to_mpi(array_of_requests[i]);
+    }    
+    if (YogiMPI_STATUSES_IGNORE != array_of_statuses) {
+        MPI_Status mpi_statuses[count];
+        for (i = 0; i < count; i++) {
+            mpi_statuses[i] = *(yogi_status_to_mpi(&array_of_statuses[i]));
+        }
+        mpi_error = MPI_Testall(count, mpi_requests, flag, mpi_statuses);
+        for(i = 0; i < count; i++) {
+            mpi_status_to_yogi(&mpi_statuses[i], &array_of_statuses[i]);
+        }
+    }
+    else {
+        mpi_error = MPI_Testall(count, mpi_requests, flag, MPI_STATUSES_IGNORE);
+    }
+    /* reset requests */
+    for(i = 0; i < count; ++i) {
+        if(mpi_requests[i] == MPI_REQUEST_NULL) {
+            *request_to_mpi(array_of_requests[i]) = MPI_REQUEST_NULL;
+            array_of_requests[i] = YogiMPI_REQUEST_NULL;
+        }
+    }
+
+    return error_to_yogi(mpi_error);
 }
