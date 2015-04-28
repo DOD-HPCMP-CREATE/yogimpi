@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export @LIBPATHVAR@=@INSTALLDIR@/lib:$@LIBPATHVAR@
+@CALLMPI@ ${1} ${2}

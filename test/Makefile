@@ -29,13 +29,13 @@ testAll: testAll.c
 	$(YCC) $(CFLAGS) testAll.c -o testAll 
 
 runtest: createOp errorHandler simple nonBlocking probe testAll testCancelled 
-	mpirun -np 4 ./createOp
-	mpirun -np 4 ./errorHandler
-	mpirun -np 4 ./simple
-	mpirun -np 2 ./nonBlocking
-	mpirun -np 2 ./probe	
-	mpirun -np 4 ./testAll
-	mpirun -np 4 ./testCancelled
+	./testRunner.sh 4 ./createOp
+	./testRunner.sh 4 ./errorHandler
+	./testRunner.sh 4 ./simple
+	./testRunner.sh 2 ./nonBlocking
+	./testRunner.sh 2 ./probe	
+	./testRunner.sh 4 ./testAll
+	./testRunner.sh 4 ./testCancelled
 
 ctest: errorHandler createOp simple nonBlocking probe testAll testCancelled 
 	$(YCC) $(CFLAGS) sendrecv.c -o sendrecv

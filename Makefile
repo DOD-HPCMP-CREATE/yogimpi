@@ -48,6 +48,7 @@ realclean: clean
 	$(RM) wrapper/mpif90
 	$(RM) wrapper/mpif77
 	$(RM) wrapper/mpicxx
+	$(RM) test/testRunner.sh
 ifeq ($(ENABLEPYTHON),yes)
 	$(MAKE) -C src/python clean
 endif

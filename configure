@@ -43,6 +43,8 @@ cCompiler=$YCC
 cxxCompiler=$YCXX
 fortranCompiler=$YF90
 mpiC=$YMPICC
+# Hardcode this value for now.
+callMPI="mpirun -np"
 
 errorIfEmpty "$cCompiler" "C compiler"
 errorIfEmpty "$cxxCompiler" "C++ compiler"
@@ -98,6 +100,15 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@PYTHONLDFLAGS@|${pythonLDFlags}|g" \
     -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
     Make.flags.in > Make.flags
+
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@CALLMPI@|${callMPI}|g" \
+    -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
+    -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \
+    test/testRunner.sh.in > test/testRunner.sh 
+
+# This doesn't get installed, so keep it locally.
+chmod 750 test/testRunner.sh
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@SERIALCCOMPILER@|${cCompiler}|g" \
