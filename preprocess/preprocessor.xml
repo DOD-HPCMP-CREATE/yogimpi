@@ -552,5 +552,6 @@
     <Function>MPI_Attr_get</Function>
     <Function>MPI_Finalized</Function>
     <Function>MPI_Initialized</Function>
+    <Function>MPI_Bsend</Function>
   </Language>
 </SupportedMPI>

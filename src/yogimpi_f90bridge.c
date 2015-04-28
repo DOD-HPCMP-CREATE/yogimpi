@@ -100,6 +100,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define YOGIMPI_ATTR_GET yogimpi_attr_get_
 #define YOGIMPI_INITIALIZED yogimpi_initialized_
 #define YOGIMPI_FINALIZED yogimpi_finalized_
+#define YOGIMPI_BSEND yogimpi_bsend_
 
 /* Returns whether YogiMPI's Fortran layer should place MPI_STATUS_IGNORE and
  * MPI_STATUSES_IGNORE as arguments when MPI_Status(es) are expected.  This
@@ -592,3 +593,7 @@ void YOGIMPI_FINALIZED(int *flag, int *ierror) {
     *ierror = YogiMPI_Finalized(flag);
 }
 
+void YOGIMPI_BSEND(int *buf, int *count, int *datatype, int *dest,
+		           int *tag, int *comm, int *ierror) {
+    *ierror = YogiMPI_Bsend(buf, *count, *datatype, *dest, *tag, *comm);
+}
