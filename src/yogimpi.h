@@ -754,6 +754,8 @@ int YogiMPI_Test_cancelled(YogiMPI_Status *status, int *flag);
 int YogiMPI_Group_range_incl(YogiMPI_Group group, int n, int ranges[][3],
                              YogiMPI_Group *newgroup);
 
+int YogiMPI_Buffer_attach(void *buf, int size);
+
 #ifdef __cplusplus
 }
 #endif

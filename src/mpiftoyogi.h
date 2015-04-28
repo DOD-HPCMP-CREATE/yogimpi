@@ -210,6 +210,7 @@ include 'yogimpif.h'
 #define MPI_FINALIZED YOGIMPI_FINALIZED
 #define MPI_INITIALIZED YOGIMPI_INITIALIZED
 #define MPI_BSEND YOGIMPI_BSEND
+#define MPI_BUFFER_ATTACH YOGIMPI_BUFFER_ATTACH
 
 ! And now the lowercase version since there is no case sensitivity.
 ! I love you, Fortran.
@@ -404,6 +405,8 @@ include 'yogimpif.h'
 #define mpi_finalized yogimpi_finalized
 #define mpi_initialized yogimpi_initialized
 #define mpi_bsend yogimpi_bsend
+#define mpi_buffer_attach yogimpi_buffer_attach
+
 
 ! And finally handle the case of using C-like case for MPI
 		
@@ -474,4 +477,6 @@ include 'yogimpif.h'
 #define MPI_Finalized YogiMPI_Finalized
 #define MPI_Initialized YogiMPI_Initialized
 #define MPI_Bsend YogiMPI_Bsend
+#define MPI_Buffer_attach YogiMPI_Buffer_attach
+
 		

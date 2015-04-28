@@ -375,5 +375,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_Testall YogiMPI_Testall
 #define MPI_Test_cancelled YogiMPI_Test_cancelled
 #define MPI_Group_range_incl YogiMPI_Group_range_incl
+#define MPI_Buffer_attach YogiMPI_Buffer_attach
 
 #endif /* MPITOYOGI_H */
