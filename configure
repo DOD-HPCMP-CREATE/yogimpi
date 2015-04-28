@@ -25,6 +25,19 @@ function showUsage {
     exit 0
 }
 
+osType=`uname`
+
+if [[ $osType == "Darwin" ]]; then
+    echo "Configuring for Mac OS X."
+    libraryPathVar="DYLD_LIBRARY_PATH"
+    libraryExtension="dylib"
+elif [[ $osType == "Linux" ]]; then
+    echo "Configuring for Linux."
+    libraryPathVar="LD_LIBRARY_PATH"
+    libraryExtension="so"
+else
+    echo "Unknown operating system, verify Make.flags manually."
+fi
 
 cCompiler=$YCC
 cxxCompiler=$YCXX
@@ -83,6 +96,7 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@SERIALC@|${cCompiler}|g" \
     -e "s|@PYTHONINCLUDE@|${pythonInclude}|g" \
     -e "s|@PYTHONLDFLAGS@|${pythonLDFlags}|g" \
+    -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
     Make.flags.in > Make.flags
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \

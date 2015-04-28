@@ -2,12 +2,12 @@ include Make.flags
  
 .PHONY: default clean test realclean python
 
-default: src/libyogimpi.so
+default: src/libyogimpi.$(LIBEXTENSION)
 ifeq ($(ENABLEPYTHON),yes)
 	$(MAKE) -C src/python
 endif
 
-src/libyogimpi.so:
+src/libyogimpi.$(LIBEXTENSION):
 	$(MAKE) -C src
 
 install: default
@@ -15,7 +15,7 @@ install: default
 	install -d -m 750 $(INSTALLDIR)/bin
 	install -d -m 750 $(INSTALLDIR)/lib
 	install -d -m 750 $(INSTALLDIR)/include
-	install -m 640 src/libyogimpi.so $(INSTALLDIR)/lib
+	install -m 640 src/libyogimpi.$(LIBEXTENSION) $(INSTALLDIR)/lib
 	install -m 640 src/mpitoyogi.h $(INSTALLDIR)/include/mpi.h
 	install -m 640 src/yogimpi.h $(INSTALLDIR)/include
 	install -m 640 src/yogimpif.h $(INSTALLDIR)/include/mpif.h

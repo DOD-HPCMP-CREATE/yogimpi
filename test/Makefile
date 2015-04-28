@@ -7,6 +7,9 @@ YF90=$(INSTALLDIR)/bin/mpif90
 
 test: ctest ftest 
 
+testCancelled: testCancelled.c
+	$(YCC) $(CFLAGS) testCancelled.c -o testCancelled
+
 errorHandler: errorHandler.c
 	$(YCC) $(CFLAGS) errorHandler.c -o errorHandler
 
@@ -25,15 +28,16 @@ probe: probe.c
 testAll: testAll.c
 	$(YCC) $(CFLAGS) testAll.c -o testAll 
 
-runtest: createOp errorHandler simple nonBlocking probe testAll 
+runtest: createOp errorHandler simple nonBlocking probe testAll testCancelled 
 	mpirun -np 4 ./createOp
 	mpirun -np 4 ./errorHandler
 	mpirun -np 4 ./simple
 	mpirun -np 2 ./nonBlocking
 	mpirun -np 2 ./probe	
 	mpirun -np 4 ./testAll
+	mpirun -np 4 ./testCancelled
 
-ctest: errorHandler createOp simple nonBlocking probe testAll 
+ctest: errorHandler createOp simple nonBlocking probe testAll testCancelled 
 	$(YCC) $(CFLAGS) sendrecv.c -o sendrecv
 	$(YCC) $(CFLAGS) writeFile1.c -o writeFile1 
 	$(YCC) $(CFLAGS) nonblock_waitall.c -o nonblock_waitall
@@ -56,7 +60,7 @@ ftest:
 	$(YF90) $(FFLAGS) $(EXTRAFLAGS) waitsome.f90 -o fwaitsome
 
 clean:
-	$(RM) *.o nonBlocking sendrecv fsendrecv simple \
+	$(RM) *.o nonBlocking sendrecv fsendrecv simple testCancelled \
               writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall fnonblock_waitall sendRecvErrC testComms \
               ftestComms probe check_status collective fcollective \

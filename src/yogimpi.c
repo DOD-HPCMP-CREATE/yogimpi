@@ -2841,3 +2841,18 @@ int YogiMPI_Testall(int count, YogiMPI_Request array_of_requests[],
 
     return error_to_yogi(mpi_error);
 }
+
+int YogiMPI_Test_cancelled(YogiMPI_Status *status, int *flag) {
+    MPI_Status *mpi_status = yogi_status_to_mpi(status);
+    int mpi_err = MPI_Test_cancelled(mpi_status, flag);
+    return error_to_yogi(mpi_err);
+}
+
+int YogiMPI_Group_range_incl(YogiMPI_Group group, int n, int ranges[][3],
+                             YogiMPI_Group *newgroup) {
+    MPI_Group mpi_group = group_to_mpi(group);
+    MPI_Group mpi_newgroup;
+    int mpi_error = MPI_Group_range_incl(mpi_group, n, ranges, &mpi_newgroup);
+    *newgroup = add_new_group(mpi_newgroup);
+    return error_to_yogi(mpi_error);
+}

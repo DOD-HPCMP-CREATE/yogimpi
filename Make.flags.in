@@ -1,4 +1,5 @@
 INSTALLDIR=@INSTALLDIR@
+LIBEXTENSION=@LIBEXTENSION@
 MPICC=@MPICC@
 # Change these if you require different compiler flags.
 # These work for both Intel and GNU.

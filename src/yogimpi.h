@@ -749,6 +749,11 @@ int YogiMPI_Comm_call_errhandler(YogiMPI_Comm comm, int errorcode);
 int YogiMPI_Testall(int count, YogiMPI_Request array_of_requests[],
                     int *flag, YogiMPI_Status array_of_statuses[]);
 
+int YogiMPI_Test_cancelled(YogiMPI_Status *status, int *flag);
+
+int YogiMPI_Group_range_incl(YogiMPI_Group group, int n, int ranges[][3],
+                             YogiMPI_Group *newgroup);
+
 #ifdef __cplusplus
 }
 #endif
