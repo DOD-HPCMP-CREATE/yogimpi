@@ -18,6 +18,7 @@ YogiMPI Overview
   - Once set, run ./configure -i /path/to/install
   - To build, type "make," and then "make install" to copy files to the
     installation directory.
+  - Note that some MPI deprecation warnings may be given.  These may be ignored.
 
 * Testing *
   - A small set of C and Fortran tests ship with YogiMPI to ensure that basic
@@ -29,7 +30,7 @@ YogiMPI Overview
     will be printed.
 
 * Modules and Source Files *
-  - As part of the installation, module files and bash/csh scripts are provided
+  - As part of the installation, module files and a bash script are provided
     in /path/to/install/etc.  These can be used to add YogiMPI to the PATH and
     [DY]LD_LIBRARY_PATH.
 

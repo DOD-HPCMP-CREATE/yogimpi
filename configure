@@ -126,4 +126,21 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@SERIALF90COMPILER@|${fortranCompiler}|g" \
     wrapper/mpif77.in > wrapper/mpif77
 
+if [[ $enablePython == "yes" ]]; then
+    pythonModString="prepend-path PYTHONPATH \$prefix/python"
+    pythonBashString="export PYTHONPATH=${installDir}/python:\$PYTHONPATH"
+else
+    pythonModString="# Python support is disabled for this build."
+    pythonBashString="# Python support is disabled for this build."
+fi 
+
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@PYTHON_MODULE_MOD@|${pythonModString}|g" \
+    etc/modulefile.in > etc/modulefile
+
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \
+    -e "s|@PYTHON_BASHRC_MOD@|${pythonBashString}|g" \
+    etc/yogimpi.bashrc.in > etc/yogimpi.bashrc
+    
 echo "Type make to build YogiMPI."

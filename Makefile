@@ -15,12 +15,15 @@ install: default
 	install -d -m 750 $(INSTALLDIR)/bin
 	install -d -m 750 $(INSTALLDIR)/lib
 	install -d -m 750 $(INSTALLDIR)/include
+	install -d -m 750 $(INSTALLDIR)/etc
 	install -m 640 src/libyogimpi.$(LIBEXTENSION) $(INSTALLDIR)/lib
 	install -m 640 src/mpitoyogi.h $(INSTALLDIR)/include/mpi.h
 	install -m 640 src/yogimpi.h $(INSTALLDIR)/include
 	install -m 640 src/yogimpif.h $(INSTALLDIR)/include/mpif.h
 	install -m 640 preprocess/preprocessor.xml $(INSTALLDIR)/bin
 	install -m 640 preprocess/AVUtility.py $(INSTALLDIR)/bin
+	install -m 640 etc/yogimpi.bashrc $(INSTALLDIR)/etc
+	install -m 640 etc/modulefile $(INSTALLDIR)/etc
 	install -m 750 wrapper/mpicc $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpicxx $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpif90 $(INSTALLDIR)/bin
@@ -49,6 +52,8 @@ realclean: clean
 	$(RM) wrapper/mpif77
 	$(RM) wrapper/mpicxx
 	$(RM) test/testRunner.sh
+	$(RM) etc/modulefile
+	$(RM) etc/yogimpi.bashrc
 ifeq ($(ENABLEPYTHON),yes)
 	$(MAKE) -C src/python clean
 endif
