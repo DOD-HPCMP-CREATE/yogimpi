@@ -2856,8 +2856,3 @@ int YogiMPI_Group_range_incl(YogiMPI_Group group, int n, int ranges[][3],
     *newgroup = add_new_group(mpi_newgroup);
     return error_to_yogi(mpi_error);
 }
-
-int YogiMPI_Buffer_attach(void *buf, int size) {
-	int mpi_error = MPI_Buffer_attach(buf, size);
-	return error_to_yogi(mpi_error);
-}

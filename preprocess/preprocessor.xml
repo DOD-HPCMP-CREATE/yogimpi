@@ -364,7 +364,6 @@
     <Function>MPI_Testall</Function>
     <Function>MPI_Test_cancelled</Function>
     <Function>MPI_Group_range_incl</Function>
-    <Function>MPI_Buffer_attach</Function>
   </Language>
   
   <Language name='Fortran'>
