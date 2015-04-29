@@ -460,7 +460,11 @@
     <Constant>MPI_FILE_NULL</Constant>
 
     <Constant>MPI_GROUP_EMPTY</Constant>
-
+    
+    <Constant>MPI_SEEK_SET</Constant>
+    <Constant>MPI_SEEK_CUR</Constant>
+    <Constant>MPI_SEEK_END</Constant>
+    
     <Constant>MPI_MODE_RDONLY</Constant>
     <Constant>MPI_MODE_RDWR</Constant>
     <Constant>MPI_MODE_WRONLY</Constant>
@@ -554,5 +558,8 @@
     <Function>MPI_Initialized</Function>
     <Function>MPI_Bsend</Function>
     <Function>MPI_Buffer_attach</Function>
+    <Function>MPI_File_delete</Function>
+    <Function>MPI_File_write</Function>
+    <Function>MPI_File_seek</Function>
   </Language>
 </SupportedMPI>

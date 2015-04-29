@@ -102,6 +102,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define YOGIMPI_FINALIZED yogimpi_finalized_
 #define YOGIMPI_BSEND yogimpi_bsend_
 #define YOGIMPI_BUFFER_ATTACH yogimpi_buffer_attach_
+#define YOGIMPI_FILE_DELETE yogimpi_file_delete_
+#define YOGIMPI_FILE_WRITE yogimpi_file_write_
+#define YOGIMPI_FILE_SEEK yogimpi_file_seek_
 
 /* Returns whether YogiMPI's Fortran layer should place MPI_STATUS_IGNORE and
  * MPI_STATUSES_IGNORE as arguments when MPI_Status(es) are expected.  This
@@ -603,4 +606,31 @@ void YOGIMPI_BUFFER_ATTACH(int *buf, int *size, int *ierror) {
 	*ierror = YogiMPI_Buffer_attach(buf, *size);
 }
 
+void YOGIMPI_FILE_DELETE(char* filename, int *info, int *ierror,
+		                 int filename_len) {
+	char *interimName = null_terminate(filename, filename_len);
+	*ierror = YogiMPI_File_delete(interimName, *info);
+}
 
+void YOGIMPI_FILE_WRITE(int *fh, int *buf, int *count, int *datatype, 
+		                int *status, int *ierror) {
+	
+    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+        *ierror = YogiMPI_File_write(*fh, buf, *count, *datatype, 
+        		                     YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        YogiMPI_Status cStatus;
+        yogi_fstatus_to_c(status, &cStatus);
+        *ierror = YogiMPI_File_write(*fh, buf, *count, *datatype, &cStatus);
+        yogi_cstatus_to_f(&cStatus, status);
+    }
+}
+
+void YOGIMPI_FILE_SEEK(int *fh, YogiMPI_Offset *offset, int *whence, 
+                       int *ierror) {
+    *ierror = YogiMPI_File_seek(*fh, *offset, *whence);
+}
+
+
+		
