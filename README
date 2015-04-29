@@ -1,0 +1,35 @@
+YogiMPI Overview
+================
+
+* Prerequisites *
+  - Intel or GNU (4.8+) C, C++, and Fortran compiler
+  - MPI distribution with compiler wrappers (e.g. mpicc, mpicxx, mpif90)
+  - (Optional) ptoolsrte-0.5.1 and above for Python support
+
+* Installation *
+  - Load your compilers and MPI wrappers into the path and runtime library path.
+  - Set the environment variable YCC, YCXX, and YF90 to point to your serial
+    compilers.
+  - Set the environment variable YMPICC to point to your MPI's C compiler
+    wrapper. 
+  - Optionally load ptoolsrte-0.5.1 through a source file or module and set the
+    environment variable YMPI_ENABLE_PYTHON to 1.  This step is only required by
+    CREATE AV developers - end users don't have to do this. 
+  - Once set, run ./configure -i /path/to/install
+  - To build, type "make," and then "make install" to copy files to the
+    installation directory.
+
+* Testing *
+  - A small set of C and Fortran tests ship with YogiMPI to ensure that basic
+    functionality works as expected.  This is *not* a comprehensive test suite
+    but a small subset of commonly used MPI routines.
+  - After "make" and "make install" (the installation *must* run), change into
+    the test subdirectory.
+  - "make runtest" will build and execute all tests.  If successful, a message
+    will be printed.
+
+* Modules and Source Files *
+  - As part of the installation, module files and bash/csh scripts are provided
+    in /path/to/install/etc.  These can be used to add YogiMPI to the PATH and
+    [DY]LD_LIBRARY_PATH.
+
