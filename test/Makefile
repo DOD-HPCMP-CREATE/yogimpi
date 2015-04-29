@@ -56,7 +56,6 @@ runtest: ctest ftest
 	./testRunner.sh 2 ./nonBlocking
 	./testRunner.sh 2 ./probe	
 	./testRunner.sh 4 ./testAll
-	./testRunner.sh 4 ./testCancelled
 	./testRunner.sh 4 ./writeFile1
 	cmp cWriteFile.expected cWriteFile.result || exit 1
 	./testRunner.sh 4 ./waitany
@@ -75,7 +74,7 @@ runtest: ctest ftest
 	./testRunner.sh 4 ./fwaitsome
 	@echo "Tests passed."
 
-ctest: errorHandler createOp simple nonBlocking probe testAll testCancelled writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome
+ctest: errorHandler createOp simple nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome
 
 fwriteFile1: writeFile1.f90
 	$(YF90) $(FFLAGS) writeFile1.f90 -o fwriteFile1
