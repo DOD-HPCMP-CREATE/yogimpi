@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "mpi.h"
 
 int main(int argc, char **argv){
@@ -14,9 +13,8 @@ int main(int argc, char **argv){
         buf[i] = i ;
     }
     offset = rank*(N/size)*sizeof(int);
-    MPI_File_open(MPI_COMM_WORLD, "datafile", MPI_MODE_CREATE|MPI_MODE_WRONLY,
+    MPI_File_open(MPI_COMM_WORLD, "cWriteFile.result", MPI_MODE_CREATE|MPI_MODE_WRONLY,
                   MPI_INFO_NULL, &fhw);
-    printf("\nRank: %d, Offset: %d\n", rank, offset);
     MPI_File_write_at(fhw, offset, buf, (N/size), MPI_INT, &status);
     MPI_File_close(&fhw);
     MPI_Finalize();

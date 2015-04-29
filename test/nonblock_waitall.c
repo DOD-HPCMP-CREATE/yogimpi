@@ -13,26 +13,32 @@ Run the program with at least 2 processes.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include "mpi.h"
-#define MAXPROC 8    /* Max number of procsses */
 
 int main(int argc, char* argv[]) {
+
+  int MAXPROC = 4;
   int i, x, np, me;
   int tag = 42;
+  int expectReduceSum = 6;
+  int actualReduceSum = 0;
 
   MPI_Status status[MAXPROC];
   /* Request objects for non-blocking send and receive */
   MPI_Request send_req[MAXPROC], recv_req[MAXPROC];
   int y[MAXPROC];  /* Array to receive values in */
+  for (i = 0; i < MAXPROC; i++) {
+    y[i] = -1;
+  }
 
   MPI_Init(&argc, &argv);                /* Initialize */
   MPI_Comm_size(MPI_COMM_WORLD, &np);    /* Get nr of processes */
   MPI_Comm_rank(MPI_COMM_WORLD, &me);    /* Get own identifier */
 
-  /* First check that we have at least 2 and at most MAXPROC processes */
-  if (np<2 || np>MAXPROC) {
+  if (np != MAXPROC) {
     if (me == 0) {
-      printf("You have to use at least 2 and at most %d processes\n", MAXPROC);
+      printf("Please run with %d processes.\n", MAXPROC);
     }
     MPI_Finalize();
     exit(0);
@@ -42,10 +48,8 @@ int main(int argc, char* argv[]) {
 
   if (me == 0) {    /* Process 0 does this */
     
-    printf("Process %d sending to all other processes\n", me);
     /* Send a message containing the process id to all other processes */
     for (i=1; i<np; i++) {
-      printf("Process %d sending to %d\n", me, i);
       MPI_Isend(&x, 1, MPI_INT, i, tag, MPI_COMM_WORLD, &send_req[i]);
     }
     /* While the messages are delivered, we could do computations here */
@@ -55,10 +59,9 @@ int main(int argc, char* argv[]) {
        since process zero does not send to it self */ 
     MPI_Waitall(np-1, &send_req[1], &status[1]);
 
-    printf("Process %d receiving from all other processes\n", me);
     /* Receive a message from all other processes */
     for (i=1; i<np; i++) {
-      MPI_Irecv (&y[i], 1, MPI_INT, MPI_ANY_SOURCE, tag, MPI_COMM_WORLD, &recv_req[i]);
+      MPI_Irecv(&y[i], 1, MPI_INT, MPI_ANY_SOURCE, tag, MPI_COMM_WORLD, &recv_req[i]);
     }
     /* While the messages are delivered, we could do computations here */
 
@@ -68,16 +71,17 @@ int main(int argc, char* argv[]) {
 
     /* Print out one line for each message we received */
     for (i=1; i<np; i++) {
-      printf("Process %d received a message from process %d\n", me, y[i]);
+        actualReduceSum += y[i];
     }
-    printf("Process %d ready\n", me);
-    
+    assert(actualReduceSum == expectReduceSum); 
+
   } else { /* all other processes do this */
 
-    MPI_Irecv (&y, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &recv_req[0]);
+    MPI_Irecv(&y, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &recv_req[0]);
     MPI_Wait(&recv_req[0], &status[0]);
+    assert(y[0] == 0);
 
-    MPI_Isend (&x, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &send_req[0]);
+    MPI_Isend(&x, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &send_req[0]);
     /* We could do lots of computations here */
     MPI_Wait(&send_req[0], &status[0]);
 

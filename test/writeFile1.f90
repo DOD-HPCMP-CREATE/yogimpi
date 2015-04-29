@@ -18,11 +18,9 @@ include 'mpif.h'
     enddo
 
     offset = rank*(N/size)*4
-    call MPI_FILE_OPEN(MPI_COMM_WORLD, "datafile", &
+    call MPI_FILE_OPEN(MPI_COMM_WORLD, "fWriteFile.result", &
                            OR(MPI_MODE_CREATE, MPI_MODE_WRONLY), &
                            MPI_INFO_NULL, fhw, ierr)
-    print *, "here"
-    print *, "Rank: ", rank, " Offset: ", offset
     call MPI_FILE_WRITE_AT(fhw, offset, buf, (N/size), MPI_INTEGER, status, ierr)
     call MPI_FILE_CLOSE(fhw, ierr);
     call MPI_FINALIZE(ierr);

@@ -3,7 +3,7 @@ include ../Make.flags
 YCC=$(INSTALLDIR)/bin/mpicc
 YF90=$(INSTALLDIR)/bin/mpif90
 
-.PHONY: clean test ctest ftest
+.PHONY: clean test
 
 test: ctest ftest 
 
@@ -28,7 +28,28 @@ probe: probe.c
 testAll: testAll.c
 	$(YCC) $(CFLAGS) testAll.c -o testAll 
 
-runtest: createOp errorHandler simple nonBlocking probe testAll testCancelled 
+writeFile1: writeFile1.c
+	$(YCC) $(CFLAGS) writeFile1.c -o writeFile1
+
+waitany: waitany.c
+	$(YCC) $(CFLAGS) waitany.c -o waitany
+
+collective: collective.c
+	$(YCC) $(CFLAGS) collective.c -o collective
+
+sendrecv: sendrecv.c
+	$(YCC) $(CFLAGS) sendrecv.c -o sendrecv
+
+testComms: testComms.c
+	$(YCC) $(CFLAGS) testComms.c -o testComms
+
+nonblock_waitall: nonblock_waitall.c
+	$(YCC) $(CFLAGS) nonblock_waitall.c -o nonblock_waitall
+
+waitsome: waitsome.c
+	$(YCC) $(CFLAGS) waitsome.c -o waitsome
+
+runtest: ctest ftest 
 	./testRunner.sh 4 ./createOp
 	./testRunner.sh 4 ./errorHandler
 	./testRunner.sh 4 ./simple
@@ -36,32 +57,54 @@ runtest: createOp errorHandler simple nonBlocking probe testAll testCancelled
 	./testRunner.sh 2 ./probe	
 	./testRunner.sh 4 ./testAll
 	./testRunner.sh 4 ./testCancelled
+	./testRunner.sh 4 ./writeFile1
+	cmp cWriteFile.expected cWriteFile.result || exit 1
+	./testRunner.sh 4 ./waitany
+	./testRunner.sh 8 ./collective
+	./testRunner.sh 2 ./sendrecv
+	./testRunner.sh 4 ./testComms
+	./testRunner.sh 4 ./nonblock_waitall
+	./testRunner.sh 4 ./waitsome
+	./testRunner.sh 4 ./fwriteFile1
+	cmp fWriteFile.expected fWriteFile.result || exit 1
+	./testRunner.sh 2 ./fsendrecv
+	./testRunner.sh 8 ./fcollective
+	./testRunner.sh 4 ./ftestComms
+	./testRunner.sh 4 ./f_gatherscatter
+	./testRunner.sh 2 ./fnonblock
+	./testRunner.sh 4 ./fwaitsome
+	@echo "Tests passed."
 
-ctest: errorHandler createOp simple nonBlocking probe testAll testCancelled 
-	$(YCC) $(CFLAGS) sendrecv.c -o sendrecv
-	$(YCC) $(CFLAGS) writeFile1.c -o writeFile1 
-	$(YCC) $(CFLAGS) nonblock_waitall.c -o nonblock_waitall
-	$(YCC) $(CFLAGS) sendRecvErrC.c -o sendRecvErrC
-	$(YCC) $(CFLAGS) testComms.c -o testComms
-	$(YCC) $(CFLAGS) check_status.c -o check_status
-	$(YCC) $(CFLAGS) collective.c -o collective 
-	$(YCC) $(CFLAGS) waitsome.c -o waitsome
-	$(YCC) $(CFLAGS) waitany.c -o waitany
+ctest: errorHandler createOp simple nonBlocking probe testAll testCancelled writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome
 
-ftest:
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) writeFile1.f90 -o fwriteFile1
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) f_gatherscatter.f90 -o f_gatherscatter
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) fsendrecv.f90 -o fsendrecv 
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) fnonBlocking.f90 -o fnonblock
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) nonblock_waitall.f90 \
-                -o fnonblock_waitall
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) testComms.f90 -o ftestComms
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) collective.f90 -o fcollective
-	$(YF90) $(FFLAGS) $(EXTRAFLAGS) waitsome.f90 -o fwaitsome
+fwriteFile1: writeFile1.f90
+	$(YF90) $(FFLAGS) writeFile1.f90 -o fwriteFile1
+
+fsendrecv: fsendrecv.f90
+	$(YF90) $(FFLAGS) fsendrecv.f90 -o fsendrecv
+
+fcollective: collective.f90
+	$(YF90) $(FFLAGS) collective.f90 -o fcollective
+
+ftestComms: testComms.f90
+	$(YF90) $(FFLAGS) testComms.f90 -o ftestComms
+
+f_gatherscatter: f_gatherscatter.f90
+	$(YF90) $(FFLAGS) f_gatherscatter.f90 -o f_gatherscatter
+
+fnonblock: fnonBlocking.f90
+	$(YF90) $(FFLAGS) fnonBlocking.f90 -o fnonblock
+
+fwaitsome: waitsome.f90
+	$(YF90) $(FFLAGS) waitsome.f90 -o fwaitsome
+
+ftest: fwriteFile1 fsendrecv fcollective ftestComms f_gatherscatter \
+       fnonblock fwaitsome
 
 clean:
 	$(RM) *.o nonBlocking sendrecv fsendrecv simple testCancelled \
-              writeFile1 datafile fwriteFile1 f_gatherscatter fnonblock \
-              nonblock_waitall fnonblock_waitall sendRecvErrC testComms \
-              ftestComms probe check_status collective fcollective \
-              waitsome waitany fwaitsome createOp errorHandler testAll
+              writeFile1 fwriteFile1 f_gatherscatter fnonblock \
+              nonblock_waitall testComms \
+              ftestComms probe collective fcollective \
+              waitsome waitany fwaitsome createOp errorHandler testAll \
+              cWriteFile.result fWriteFile.result

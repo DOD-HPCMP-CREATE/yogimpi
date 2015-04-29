@@ -1,4 +1,4 @@
-program hello
+program fsendrecv 
 
     implicit none
 
@@ -17,16 +17,18 @@ include "mpif.h"
 
     if(myid .eq. source) then
         buffer=5678
-        Call MPI_Send(buffer, count, MPI_INTEGER,destination,&
-        tag, MPI_COMM_WORLD, ierr)
-        write(*,*)"processor ",myid," sent ",buffer
+        call MPI_Send(buffer, count, MPI_INTEGER, destination, tag, &
+                      MPI_COMM_WORLD, ierr)
     endif
 
     if(myid .eq. destination) then
-        Call MPI_Recv(buffer, count, MPI_INTEGER,source,&
-        tag, MPI_COMM_WORLD, status,ierr)
-        write(*,*)"processor ",myid," got ",buffer
+        call MPI_Recv(buffer, count, MPI_INTEGER, source, tag, MPI_COMM_WORLD,&
+                      status, ierr)
+        if(buffer /= 5678) then
+            call exit(1)
+        endif
     endif
 
     call MPI_FINALIZE(ierr)
+
 end program

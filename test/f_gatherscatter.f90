@@ -6,7 +6,7 @@
 program test1
     implicit none
     include 'mpif.h'
-    integer :: numnodes, myid, mpi_err
+    integer :: numnodes, myid, mpi_err, expected
     integer, parameter :: my_root=0
     integer, allocatable :: myray(:),send_ray(:),back_ray(:)
     integer count
@@ -21,7 +21,7 @@ program test1
     allocate(myray(count))
     ! create the data to be sent on the root
     if(myid == my_root)then
-        size=count*numnodes	
+        size=count*numnodes
         allocate(send_ray(0:size-1))
         allocate(back_ray(0:numnodes-1))
         do i=0,size-1
@@ -31,16 +31,19 @@ program test1
     ! send different data to each processor 
     call MPI_SCATTER(send_ray, count, MPI_INTEGER, myray, count, &
                       MPI_INTEGER, my_root, MPI_COMM_WORLD, mpi_err)
-	                
+                
     ! each processor does a local sum
     total=sum(myray)
-    write(*,*)"myid= ",myid," total= ",total
+
     ! send the local sums back to the root
     call MPI_GATHER(total, 1 ,MPI_INTEGER, back_ray, 1, MPI_INTEGER, &
                     my_root, MPI_COMM_WORLD, mpi_err)
-    ! the root prints the global sum
-    if(myid == my_root)then
-        write(*,*)"results from all processors= ",sum(back_ray)
+
+    if(myid == my_root) then
+        expected = sum(send_ray)
+        if (expected /= sum(back_ray)) then
+            call exit(2)
+        endif
     endif
 
     call MPI_FINALIZE(mpi_err)

@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <time.h>
 
 int main(int argc, char** argv) {
   MPI_Init(NULL, NULL);
@@ -24,13 +23,11 @@ int main(int argc, char** argv) {
   int world_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
-  srand(time(NULL));
-  const int MAX_NUMBERS = 100;
-  int numbers[MAX_NUMBERS];
-  int number_amount = (rand() / (float)RAND_MAX) * MAX_NUMBERS;
+  const int number_amount = 100;
+  int numbers[number_amount];
   int i;
   for (i = 0; i < number_amount; i++) {
-      numbers[i] = rand();
+      numbers[i] = (i * 11) + 42; 
   }
 
   if (world_rank == 0) {

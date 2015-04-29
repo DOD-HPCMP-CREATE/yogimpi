@@ -1,5 +1,5 @@
 #include "mpi.h" 
-#include <stdio.h>
+#include <assert.h>
 #define NPROCS 8
 
 int main(int argc, char *argv[]) { 
@@ -32,7 +32,12 @@ int main(int argc, char *argv[]) {
     MPI_Allreduce(&sendbuf, &recvbuf, 1, MPI_INT, MPI_SUM, new_comm); 
     MPI_Group_rank(new_group, &new_rank); 
 
-    printf("rank= %d newrank= %d recvbuf= %d\n",rank,new_rank,recvbuf); 
+    if(rank < NPROCS/2) {
+        assert(recvbuf == 6);
+    }
+    else {
+        assert(recvbuf == 22);
+    } 
 
     MPI_Finalize();
     return 0;

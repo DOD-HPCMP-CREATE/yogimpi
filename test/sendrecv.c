@@ -1,5 +1,6 @@
 #include "mpi.h"
 #include <stdio.h>
+#include <assert.h>
  
 int main(int argc, char *argv[])
 {
@@ -29,10 +30,8 @@ int main(int argc, char *argv[])
         MPI_Recv(buffer, 10, MPI_INT, 0, 123, MPI_COMM_WORLD, &status);
         for (i=0; i<10; i++)
         {
-            if (buffer[i] != i)
-                printf("Error: buffer[%d] = %d but is expected to be %d\n", i, buffer[i], i);
+            assert(buffer[i] == i);
         }
-        fflush(stdout);
     }
     MPI_Finalize();
     return 0;

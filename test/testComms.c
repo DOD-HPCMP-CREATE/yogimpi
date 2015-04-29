@@ -1,4 +1,5 @@
 #include "mpi.h" 
+#include <assert.h>
 #include <stdio.h>
 
 int main(int argc, char* argv[])
@@ -16,11 +17,7 @@ int main(int argc, char* argv[])
     MPI_Comm_group(dup_comm_world, &world_group);
     MPI_Comm_create(dup_comm_world, world_group, &world_comm);
     MPI_Comm_rank(world_comm, &rank);
-    if (rank != world_rank) {
-        printf("incorrect rank in world comm: %d\n", rank);
-        fflush(stdout);
-        MPI_Abort(MPI_COMM_WORLD, 3001);
-    }
+    assert(rank == world_rank);
     MPI_Finalize();
     return 0;
 }

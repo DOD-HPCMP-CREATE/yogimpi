@@ -1,4 +1,4 @@
-program testComms
+program ftestComms
 
 include 'mpif.h'
 
@@ -16,9 +16,8 @@ include 'mpif.h'
     call MPI_COMM_CREATE(dup_comm_world, world_group, world_comm, ierr)
     call MPI_COMM_RANK(world_comm, rank, ierr)
     if (rank /= world_rank) then
-        print *, "incorrect rank in world comm: ", rank
-        call MPI_ABORT(MPI_COMM_WORLD, 3001, ierr)
+        call exit(1)
     end if 
     call MPI_FINALIZE(ierr)
 
-end program testComms
+end program ftestComms

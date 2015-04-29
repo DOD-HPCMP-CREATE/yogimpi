@@ -1,4 +1,4 @@
-program collective
+program fcollective
 
 include 'mpif.h'
 
@@ -33,8 +33,16 @@ include 'mpif.h'
                            new_comm, ierr) 
     call MPI_GROUP_RANK(new_group, new_rank, ierr) 
 
-    print *, "rank= ", rank, " newrank= ", new_rank, " recvbuf= ", recvbuf
+    if (rank < NPROCS/2) then
+        if (recvbuf /= 6) then
+            call exit(1)
+        endif 
+    else
+       if (recvbuf /= 22) then
+            call exit(1)
+        endif
+    end if
 
     call MPI_FINALIZE(ierr)
 
-end program collective
+end program fcollective
