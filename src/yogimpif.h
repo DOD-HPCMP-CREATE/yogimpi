@@ -141,9 +141,9 @@
 
 ! MPI seeking constants
       integer, parameter :: YogiMPI_SEEK_SET = 50
-	  integer, parameter :: YogiMPI_SEEK_CUR = 55
-	  integer, parameter :: YogiMPI_SEEK_END = 60
-	  
+      integer, parameter :: YogiMPI_SEEK_CUR = 55
+      integer, parameter :: YogiMPI_SEEK_END = 60
+  
 ! MPI_Offset need an INTEGER*8 value.
       integer, parameter :: YogiMPI_OFFSET_KIND = 8
 
