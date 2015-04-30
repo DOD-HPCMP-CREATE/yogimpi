@@ -135,6 +135,7 @@ else
 fi 
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \
     -e "s|@PYTHON_MODULE_MOD@|${pythonModString}|g" \
     etc/modulefile.in > etc/modulefile
 

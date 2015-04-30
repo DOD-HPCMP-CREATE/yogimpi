@@ -7,5 +7,5 @@ set     prefix          @INSTALLDIR@
 module-whatis   "loads the [module-info name] environment"
 
 prepend-path PATH $prefix/bin
-prepend-path LD_LIBRARY_PATH $prefix/lib
+prepend-path @LIBPATHVAR@ $prefix/lib
 @PYTHON_MODULE_MOD@
