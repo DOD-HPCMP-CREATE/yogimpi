@@ -499,23 +499,23 @@ static YogiMPI_Op add_new_op(MPI_Op mpi_op)
  * @arg dest The YogiMPI_Status memory address into which copy is placed.
  */
 static void mpi_status_to_yogi(MPI_Status *source, YogiMPI_Status *dest) {
-	dest->MPI_TAG = source->MPI_TAG;
-	dest->MPI_SOURCE = source->MPI_SOURCE;
-	dest->MPI_ERROR = source->MPI_ERROR;
-	/* If this isn't the same address, force a memcpy */
+    dest->MPI_TAG = source->MPI_TAG;
+    dest->MPI_SOURCE = source->MPI_SOURCE;
+    dest->MPI_ERROR = source->MPI_ERROR;
+    /* If this isn't the same address, force a memcpy */
     if ((void *)dest->realStatus != (void *)source) {
-	    memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
+        memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
     }
 }
 
 /* Retrieve the real MPI_Status pointer from a YogiMPI_Status object */
 static MPI_Status * yogi_status_to_mpi(YogiMPI_Status *source)
 {
-	/* This will grab the number of bytes needed.  We don't care about
-	 * structure padding since this area is never directly accessed by us.
-	 * It is ensured to be larger than we need.
-	 */
-     return (MPI_Status *)&source->realStatus[0];
+    /* This will grab the number of bytes needed.  We don't care about
+     * structure padding since this area is never directly accessed by us.
+     * It is ensured to be larger than we need.
+    */
+    return (MPI_Status *)&source->realStatus[0];
 }
 
 static MPI_Offset offset_to_mpi(YogiMPI_Offset in) {
