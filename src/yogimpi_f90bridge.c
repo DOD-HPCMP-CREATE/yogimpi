@@ -106,43 +106,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define YOGIMPI_FILE_WRITE yogimpi_file_write_
 #define YOGIMPI_FILE_SEEK yogimpi_file_seek_
 
-/* Returns whether YogiMPI's Fortran layer should place MPI_STATUS_IGNORE and
- * MPI_STATUSES_IGNORE as arguments when MPI_Status(es) are expected.  This
- * overrides any choice the user makes.
- */
-static int get_fignore_status() {
-    if (getenv("YMPI_FSTATUS_IGNORE") != NULL) return 1;
-    return 0;
-}
-
-static void yogi_fstatus_to_c(int *source, YogiMPI_Status *dest)
-{
-	memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
-}
-
-static void yogi_cstatus_to_f(YogiMPI_Status *source, int *dest) {
-	memcpy((void *)dest, (void *)source->realStatus, sizeof(MPI_Status));
-}
-
-static YogiMPI_Status * yogi_fstatus_array_to_c(int *status, int count) {
-	YogiMPI_Status *list = (YogiMPI_Status*)malloc(count*sizeof(YogiMPI_Status));
-	int i;
-	for (i = 0; i < count; i++) {
-		int offset = i * MAX_STATUS_SIZE;
-        yogi_fstatus_to_c(&status[offset], &list[i]);
-	}
-	return list;
-}
-
-static void yogi_cstatus_array_to_f(YogiMPI_Status *list, int *status,
-		                            int count) {
-	int i;
-	for (i = 0; i < count; i++) {
-		int offset = i * MAX_STATUS_SIZE;
-        yogi_cstatus_to_f(&list[i], &status[offset]);
-	}
-}
-
 static char * null_terminate(char *fString, size_t slen) {
     char * returnString = (char *)malloc(slen + 1);
     strncpy(returnString, fString, slen);
@@ -157,26 +120,21 @@ void YOGIMPI_SEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
 
 void YOGIMPI_RECV(void *buffer, int *count, int *datatype, int *source, 
 		          int *tag, int *comm, int *status, int *ierror) {
-    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
         *ierror = YogiMPI_Recv(buffer, *count, *datatype, *source, *tag, *comm,
-        	                   YogiMPI_STATUS_IGNORE);	
+        	               YogiMPI_STATUS_IGNORE);	
     }
-	else {
-		YogiMPI_Status cStatus;
-		yogi_fstatus_to_c(status, &cStatus);
+    else {
         *ierror = YogiMPI_Recv(buffer, *count, *datatype, *source, *tag, *comm,
-    	                       &cStatus);
-        yogi_cstatus_to_f(&cStatus, status);
+    	                       status);
     }
 }
 
 void YOGIMPI_GET_COUNT(int *status, int *datatype, int *count, int *ierror)
 {
-	/* No overriding the MPI_Status argument - it cannot be ignored. */
-	assert(get_fignore_status() == 0);
-	YogiMPI_Status cStatus;
-	yogi_fstatus_to_c(status, &cStatus);
-    *ierror = YogiMPI_Get_count(&cStatus, *datatype, count);
+    /* MPI_Status argument can't be ignored. */
+    assert(*status != FYOGIMPI_STATUS_IGNORE);
+    *ierror = YogiMPI_Get_count(status, *datatype, count);
 }
 
 void YOGIMPI_SSEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
@@ -203,16 +161,12 @@ void YOGIMPI_IRECV(void *buffer, int *count, int *datatype, int *source,
 }
 
 void YOGIMPI_WAIT(int *request, int *status, int *ierror) {
-	if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
         *ierror = YogiMPI_Wait(request, YogiMPI_STATUS_IGNORE);
-	}
-	else {
-		YogiMPI_Status cStatus;
-		yogi_fstatus_to_c(status, &cStatus);
-        *ierror = YogiMPI_Wait(request, &cStatus);
-        yogi_cstatus_to_f(&cStatus, status);
-	}        
-
+    }
+    else {
+        *ierror = YogiMPI_Wait(request, status);
+    }        
 }
 
 void YOGIMPI_REQUEST_FREE(int *request, int *ierror) {
@@ -224,27 +178,27 @@ void YOGIMPI_BARRIER(int *comm, int *ierror) {
 }
 
 void YOGIMPI_BCAST(void *buffer, int *count, int *datatype, int *root, 
-		           int *comm, int *ierror) {
+                   int *comm, int *ierror) {
     *ierror = YogiMPI_Bcast(buffer, *count, *datatype, *root, *comm);
 }
 
 void YOGIMPI_GATHER(void *sendbuf, int *sendcount, int *sendtype, void *recvbuf,
-		            int *recvcount, int *recvtype, int *root, int *comm, 
-					int *ierror) {
+                    int *recvcount, int *recvtype, int *root, int *comm, 
+                    int *ierror) {
     *ierror = YogiMPI_Gather(sendbuf, *sendcount, *sendtype, recvbuf, 
-    		                 *recvcount, *recvtype, *root, *comm);
+                             *recvcount, *recvtype, *root, *comm);
 }
 
 void YOGIMPI_REDUCE(void *sendbuf, void *recvbuf, int *count, int *datatype, 
 		            int *op, int *root, int *comm, int *ierror) {
     *ierror = YogiMPI_Reduce(sendbuf, recvbuf, *count, *datatype, *op, *root, 
-    		                 *comm);
+                             *comm);
 }
 
 void YOGIMPI_ALLREDUCE(void *sendbuf, void *recvbuf, int *count, int *datatype, 
-		               int *op, int *comm, int *ierror) {
+                       int *op, int *comm, int *ierror) {
     *ierror = YogiMPI_Allreduce(sendbuf, recvbuf, *count, *datatype, *op,
-    		                    *comm);
+                                *comm);
 }
 
 void YOGIMPI_COMM_CREATE(int *comm, int *group, int *newcomm, int *ierror) {
@@ -282,13 +236,13 @@ void YOGIMPI_GROUP_FREE(int *group, int *ierror) {
 
 void YOGIMPI_GROUP_INCL(int *group, int *n, int *ranks, int *group_out,
 		                int *ierror) {
-	*ierror = YogiMPI_Group_incl(*group, *n, ranks, group_out);
+    *ierror = YogiMPI_Group_incl(*group, *n, ranks, group_out);
 }
 
 void YOGIMPI_GROUP_TRANSLATE_RANKS(int *group1, int *n, int *ranks1,
-		                           int *group2, int *ranks2, int *ierror) {
-	*ierror = YogiMPI_Group_translate_ranks(*group1, *n, ranks1, *group2, 
-			                                ranks2);
+                                   int *group2, int *ranks2, int *ierror) {
+    *ierror = YogiMPI_Group_translate_ranks(*group1, *n, ranks1, *group2,
+                                            ranks2);
 }
 
 void YOGIMPI_GROUP_RANK(int *group, int *rank, int *ierror) {
@@ -296,11 +250,11 @@ void YOGIMPI_GROUP_RANK(int *group, int *rank, int *ierror) {
 }
 
 void YOGIMPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
-		                        int name_len) {
-	char *interimName = null_terminate(name, name_len);
+                                int name_len) {
+    char *interimName = null_terminate(name, name_len);
     *ierror = YogiMPI_Get_processor_name(interimName, resultlen);
     if (*resultlen > name_len) *resultlen = name_len;
-	strncpy(name, interimName, name_len);
+    strncpy(name, interimName, name_len);
 }
 
 double YOGIMPI_WTIME() {
@@ -319,10 +273,9 @@ void YOGIMPI_FINALIZE(int *ierror)
 
 void YOGIMPI_TYPE_INDEXED(int *count, int *array_of_blocklengths, 
                           int *array_of_displacements, int *oldtype,
-		                  int *newtype, int *ierror) {
-		
-	*ierror = YogiMPI_Type_indexed(*count, array_of_blocklengths, 
-		                           array_of_displacements, *oldtype, newtype);						 
+                          int *newtype, int *ierror) {
+    *ierror = YogiMPI_Type_indexed(*count, array_of_blocklengths, 
+                                   array_of_displacements, *oldtype, newtype);
 }
 
 void YOGIMPI_TYPE_VECTOR(int *count, int *blocklength, int *stride, 
@@ -352,7 +305,7 @@ void YOGIMPI_TYPE_SIZE(int *datatype, int *size, int *ierror) {
 void YOGIMPI_TYPE_CREATE_INDEXED_BLOCK(int *count, int *blocklength, 
                                        int *array_of_displacements,
                                        int *oldtype, int *newtype,
-									   int *ierror) {
+                                       int *ierror) {
     *ierror = YogiMPI_Type_create_indexed_block(*count, *blocklength, 
                                                 array_of_displacements,
                                                 *oldtype, newtype);
@@ -410,39 +363,32 @@ void YOGIMPI_FILE_SET_VIEW(int *fh, long long int *disp, int *etype,
 }
 
 void YOGIMPI_FILE_WRITE_ALL(int *fh, void *buf, int *count, int *datatype, 
-		                    int *status, int *ierror) {
-	if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
-	    *ierror = YogiMPI_File_write_all(*fh, buf, *count, *datatype, 
-			                             YogiMPI_STATUS_IGNORE);		
-	}
-	else {
-		YogiMPI_Status cStatus;
-		yogi_fstatus_to_c(status, &cStatus);
-	    *ierror = YogiMPI_File_write_all(*fh, buf, *count, *datatype, 
-			                             &cStatus);
-	    yogi_cstatus_to_f(&cStatus, status);
-	}
+                            int *status, int *ierror) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
+        *ierror = YogiMPI_File_write_all(*fh, buf, *count, *datatype, 
+                                         YogiMPI_STATUS_IGNORE);		
+    }
+    else {
+        *ierror = YogiMPI_File_write_all(*fh, buf, *count, *datatype, status);
+    }
 }
 
 
 void YOGIMPI_FILE_WRITE_AT(int *fh, long long int *offset, void *buf, 
-		                   int *count, int *datatype, int *status,
-						   int *ierror) {
-	if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
-	    *ierror = YogiMPI_File_write_at(*fh, *offset, buf, *count, *datatype, 
-						                YogiMPI_STATUS_IGNORE);		
-	}
-	else {
-		YogiMPI_Status cStatus;
-		yogi_fstatus_to_c(status, &cStatus);
-	    *ierror = YogiMPI_File_write_at(*fh, *offset, buf, *count, *datatype, 
-						                &cStatus);
-	    yogi_cstatus_to_f(&cStatus, status);
-	}
+                           int *count, int *datatype, int *status,
+                           int *ierror) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
+        *ierror = YogiMPI_File_write_at(*fh, *offset, buf, *count, *datatype, 
+                                        YogiMPI_STATUS_IGNORE);		
+    }
+    else {
+        *ierror = YogiMPI_File_write_at(*fh, *offset, buf, *count, *datatype, 
+                                        status);
+    }
 }
 
 void YOGIMPI_INFO_CREATE(int *info, int *ierror) {
-	*ierror = YogiMPI_Info_create(info);
+    *ierror = YogiMPI_Info_create(info);
 }
 
 void YOGIMPI_INFO_SET(int *info, char *key, char *value, int *ierror, 
@@ -452,63 +398,51 @@ void YOGIMPI_INFO_SET(int *info, char *key, char *value, int *ierror,
 }
 
 void YOGIMPI_WAITALL(int *count, int *array_of_requests, int *array_of_statuses,
-		             int *ierror) {
-	if (*array_of_statuses == FYOGIMPI_STATUSES_IGNORE) {
-	    *ierror = YogiMPI_Waitall(*count, array_of_requests, 
-	    		                  YogiMPI_STATUSES_IGNORE);
+                     int *ierror) {
+    if (*array_of_statuses == FYOGIMPI_STATUSES_IGNORE) {
+        *ierror = YogiMPI_Waitall(*count, array_of_requests,
+                                  YogiMPI_STATUSES_IGNORE);
 	}
-	else {
-	    YogiMPI_Status *list = yogi_fstatus_array_to_c(array_of_statuses, 
-	    		                                       *count);
-	    *ierror = YogiMPI_Waitall(*count, array_of_requests, list);
-	    yogi_cstatus_array_to_f(list, array_of_statuses, *count);
-	    free(list);
-	}
+    else {
+        *ierror = YogiMPI_Waitall(*count, array_of_requests, array_of_statuses);
+    }
 }
 
 void YOGIMPI_WAITANY(int *count, int *array_of_requests, int *index,
                      int *status, int *ierror) {
-    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
         *ierror = YogiMPI_Waitany(*count, array_of_requests, index, 
                                   YogiMPI_STATUS_IGNORE);
     }
     else {
-        YogiMPI_Status cStatus;
-        yogi_fstatus_to_c(status, &cStatus);
-        *ierror = YogiMPI_Waitany(*count, array_of_requests, index, &cStatus);
-        yogi_cstatus_to_f(&cStatus, status);
+        *ierror = YogiMPI_Waitany(*count, array_of_requests, index, status);
     }
 }
 
 void YOGIMPI_WAITSOME(int *incount, int *array_of_requests, int *outcount,
                       int *array_of_indices, int *array_of_statuses,
                       int *ierror) {
-    if (*array_of_statuses == FYOGIMPI_STATUSES_IGNORE 
-        || get_fignore_status()) {
+    if (*array_of_statuses == FYOGIMPI_STATUSES_IGNORE) {
         *ierror = YogiMPI_Waitsome(*incount, array_of_requests, outcount, 
                                    array_of_indices, YogiMPI_STATUSES_IGNORE);
     }
     else {
-        YogiMPI_Status *list = yogi_fstatus_array_to_c(array_of_statuses, 
-                                                       *incount);
         *ierror = YogiMPI_Waitsome(*incount, array_of_requests, outcount, 
-                                   array_of_indices, list);
-        yogi_cstatus_array_to_f(list, array_of_statuses, *outcount);
-        free(list);
+                                   array_of_indices, array_of_statuses);
     }
 }
 
 void YOGIMPI_SEND_INIT(void *buf, int *count, int *datatype, int *dest,
-		               int *tag, int *comm, int *request, int *ierror) {
+                       int *tag, int *comm, int *request, int *ierror) {
     *ierror = YogiMPI_Send_init(buf, *count, *datatype, *dest, *tag, *comm,
-    		                    request);
+                                request);
 }
 
 void YOGIMPI_GATHERV(void *sendbuf, int *sendcount, int *sendtype, 
-		             void *recvbuf, int *recvcounts, int *displs,
-					 int *recvtype, int *root, int *comm, int *ierror) {
-	*ierror = YogiMPI_Gatherv(sendbuf, *sendcount, *sendtype, recvbuf, 
-			                  recvcounts, displs, *recvtype, *root, *comm);
+                     void *recvbuf, int *recvcounts, int *displs,
+                     int *recvtype, int *root, int *comm, int *ierror) {
+    *ierror = YogiMPI_Gatherv(sendbuf, *sendcount, *sendtype, recvbuf, 
+                              recvcounts, displs, *recvtype, *root, *comm);
 }
 
 void YOGIMPI_SCATTER(void *sendbuf, int *sendcount, int *sendtype,
@@ -541,42 +475,31 @@ void YOGIMPI_ALLGATHERV(void *sendbuf, int *sendcount, int *sendtype,
 }
 
 void YOGIMPI_TEST(int *request, int *flag, int *status, int *ierror) {
-    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
         *ierror = YogiMPI_Test(request, flag, YogiMPI_STATUS_IGNORE);
     }
     else {
-        YogiMPI_Status cStatus;
-        yogi_fstatus_to_c(status, &cStatus);
-        *ierror = YogiMPI_Test(request, flag, &cStatus);
-        yogi_cstatus_to_f(&cStatus, status);
+        *ierror = YogiMPI_Test(request, flag, status);
     }
-
 }
 
 void YOGIMPI_PROBE(int *source, int *tag, int *comm, int *status, int *ierror) {
-    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
         *ierror = YogiMPI_Probe(*source, *tag, *comm, YogiMPI_STATUS_IGNORE);
     }
     else {
-        YogiMPI_Status cStatus;
-        yogi_fstatus_to_c(status, &cStatus);
-        *ierror = YogiMPI_Probe(*source, *tag, *comm, &cStatus);
-        yogi_cstatus_to_f(&cStatus, status);
+        *ierror = YogiMPI_Probe(*source, *tag, *comm, status);
     }
-
 }
 
 void YOGIMPI_IPROBE(int *source, int *tag, int *comm, int *flag, int *status,
                     int *ierror) {
-    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
         *ierror = YogiMPI_Iprobe(*source, *tag, *comm, flag, 
                                  YogiMPI_STATUS_IGNORE);
     }
     else {
-        YogiMPI_Status cStatus;
-        yogi_fstatus_to_c(status, &cStatus);
-        *ierror = YogiMPI_Iprobe(*source, *tag, *comm, flag, &cStatus);
-        yogi_cstatus_to_f(&cStatus, status);
+        *ierror = YogiMPI_Iprobe(*source, *tag, *comm, flag, status);
     }
 }
 
@@ -613,17 +536,14 @@ void YOGIMPI_FILE_DELETE(char* filename, int *info, int *ierror,
 }
 
 void YOGIMPI_FILE_WRITE(int *fh, int *buf, int *count, int *datatype, 
-		                int *status, int *ierror) {
+                        int *status, int *ierror) {
 	
-    if (*status == FYOGIMPI_STATUS_IGNORE || get_fignore_status()) {
+    if (*status == FYOGIMPI_STATUS_IGNORE) {
         *ierror = YogiMPI_File_write(*fh, buf, *count, *datatype, 
-        		                     YogiMPI_STATUS_IGNORE);
+                                     YogiMPI_STATUS_IGNORE);
     }
     else {
-        YogiMPI_Status cStatus;
-        yogi_fstatus_to_c(status, &cStatus);
-        *ierror = YogiMPI_File_write(*fh, buf, *count, *datatype, &cStatus);
-        yogi_cstatus_to_f(&cStatus, status);
+        *ierror = YogiMPI_File_write(*fh, buf, *count, *datatype, status);
     }
 }
 
@@ -632,5 +552,3 @@ void YOGIMPI_FILE_SEEK(int *fh, YogiMPI_Offset *offset, int *whence,
     *ierror = YogiMPI_File_seek(*fh, *offset, *whence);
 }
 
-
-		
