@@ -54,6 +54,7 @@
 ! status size and reserved index values (Fortran)
 ! MPI_STATUS_SIZE is 15.  This is so the first three integers may
 ! be used to provide MPI_SOURCE, MPI_TAG, and MPI_ERROR to users.
+! The remaining 12 integer elements house the real MPI_Status object.
       integer, parameter :: YogiMPI_STATUS_SIZE = 15
       integer, parameter :: YogiMPI_SOURCE = 1 
       integer, parameter :: YogiMPI_TAG = 2 

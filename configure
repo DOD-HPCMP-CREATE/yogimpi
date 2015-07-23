@@ -25,13 +25,6 @@ function showUsage {
     exit 0
 }
 
-cCompiler=$YCC
-cxxCompiler=$YCXX
-fortranCompiler=$YF90
-mpiC=$YMPICC
-# Hardcode this value for now.
-callMPI="mpirun -np"
-
 installDir=""
 
 while getopts ":i:h" opt; do
@@ -52,6 +45,13 @@ while getopts ":i:h" opt; do
       ;;
   esac
 done
+
+cCompiler=$YCC
+cxxCompiler=$YCXX
+fortranCompiler=$YF90
+mpiC=$YMPICC
+# Hardcode this value for now.
+callMPI="mpirun -np"
 
 osType=`uname`
 

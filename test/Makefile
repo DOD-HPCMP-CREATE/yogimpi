@@ -64,6 +64,7 @@ runtest: ctest ftest
 	./testRunner.sh 4 ./testComms
 	./testRunner.sh 4 ./nonblock_waitall
 	./testRunner.sh 4 ./waitsome
+	./testRunner.sh 2 ./fsimple
 	./testRunner.sh 4 ./fwriteFile1
 	cmp fWriteFile.expected fWriteFile.result || exit 1
 	./testRunner.sh 2 ./fsendrecv
@@ -75,6 +76,9 @@ runtest: ctest ftest
 	@echo "Tests passed."
 
 ctest: errorHandler createOp simple nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome
+
+fsimple: fsimple.f90
+	$(YF90) $(FFLAGS) fsimple.f90 -o fsimple
 
 fwriteFile1: writeFile1.f90
 	$(YF90) $(FFLAGS) writeFile1.f90 -o fwriteFile1
@@ -98,12 +102,12 @@ fwaitsome: waitsome.f90
 	$(YF90) $(FFLAGS) waitsome.f90 -o fwaitsome
 
 ftest: fwriteFile1 fsendrecv fcollective ftestComms f_gatherscatter \
-       fnonblock fwaitsome
+       fnonblock fwaitsome fsimple
 
 clean:
 	$(RM) *.o nonBlocking sendrecv fsendrecv simple testCancelled \
               writeFile1 fwriteFile1 f_gatherscatter fnonblock \
-              nonblock_waitall testComms \
+              nonblock_waitall testComms fsimple \
               ftestComms probe collective fcollective \
               waitsome waitany fwaitsome createOp errorHandler testAll \
               cWriteFile.result fWriteFile.result

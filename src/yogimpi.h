@@ -279,8 +279,8 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
 /* Define structure for MPI_Status - hide real object inside as int array */
 struct YogiMPI_Status
 {
-  int MPI_TAG;
   int MPI_SOURCE;
+  int MPI_TAG;
   int MPI_ERROR;
   int realStatus[MAX_STATUS_SIZE];
 };
