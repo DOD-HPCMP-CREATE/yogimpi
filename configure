@@ -25,20 +25,6 @@ function showUsage {
     exit 0
 }
 
-osType=`uname`
-
-if [[ $osType == "Darwin" ]]; then
-    echo "Configuring for Mac OS X."
-    libraryPathVar="DYLD_LIBRARY_PATH"
-    libraryExtension="dylib"
-elif [[ $osType == "Linux" ]]; then
-    echo "Configuring for Linux."
-    libraryPathVar="LD_LIBRARY_PATH"
-    libraryExtension="so"
-else
-    echo "Unknown operating system, verify Make.flags manually."
-fi
-
 cCompiler=$YCC
 cxxCompiler=$YCXX
 fortranCompiler=$YF90
@@ -46,24 +32,9 @@ mpiC=$YMPICC
 # Hardcode this value for now.
 callMPI="mpirun -np"
 
-errorIfEmpty "$cCompiler" "C compiler"
-errorIfEmpty "$cxxCompiler" "C++ compiler"
-errorIfEmpty "$fortranCompiler" "Fortran compiler"
-errorIfEmpty "$mpiC" "Parallel C compiler"
-
-if [[ -z $PYTHONHOME || -z $YMPI_ENABLE_PYTHON ]]; then
-    enablePython="no"
-else
-    echo "Enabling Python extension build."
-    enablePython="yes"
-    pythonLDFlags="-L$PYTHONHOME/lib -lpython2.7"
-    pythonInclude="-I$PYTHONHOME/include/python2.7"
-
-fi
-
 installDir=""
 
-while getopts ":i:c:h" opt; do
+while getopts ":i:h" opt; do
   case $opt in
     i)
       echo "Installation directory set to: $OPTARG"
@@ -82,9 +53,33 @@ while getopts ":i:c:h" opt; do
   esac
 done
 
-if [[ ${cCompiler} == "" ]]; then
-    echo "Error: C compiler unspecified." >&2
-    exit 1
+osType=`uname`
+
+if [[ $osType == "Darwin" ]]; then
+    echo "Configuring for Mac OS X."
+    libraryPathVar="DYLD_LIBRARY_PATH"
+    libraryExtension="dylib"
+elif [[ $osType == "Linux" ]]; then
+    echo "Configuring for Linux."
+    libraryPathVar="LD_LIBRARY_PATH"
+    libraryExtension="so"
+else
+    echo "Unknown operating system, verify Make.flags manually."
+fi
+
+errorIfEmpty "$cCompiler" "C compiler"
+errorIfEmpty "$cxxCompiler" "C++ compiler"
+errorIfEmpty "$fortranCompiler" "Fortran compiler"
+errorIfEmpty "$mpiC" "Parallel C compiler"
+
+if [[ -z $PYTHONHOME || -z $YMPI_ENABLE_PYTHON ]]; then
+    enablePython="no"
+else
+    echo "Enabling Python extension build."
+    enablePython="yes"
+    pythonLDFlags="-L$PYTHONHOME/lib -lpython2.7"
+    pythonInclude="-I$PYTHONHOME/include/python2.7"
+
 fi
 
 if [[ ${installDir} == "" ]]; then
@@ -95,7 +90,9 @@ fi
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@MPICC@|${mpiC}|g" \
     -e "s|@ENABLEPYTHON@|${enablePython}|g" \
+    -e "s|@CC@|${cCompiler}|g" \
     -e "s|@SERIALC@|${cCompiler}|g" \
+    -e "s|@F90@|${fortranCompiler}|g" \
     -e "s|@PYTHONINCLUDE@|${pythonInclude}|g" \
     -e "s|@PYTHONLDFLAGS@|${pythonLDFlags}|g" \
     -e "s|@LIBEXTENSION@|${libraryExtension}|g" \

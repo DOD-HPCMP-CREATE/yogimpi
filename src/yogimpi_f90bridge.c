@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 /* File to bind YogiMPI C functions to Fortran. */
 
 #include "yogimpi.h"
-#include "mpi.h"
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -95,11 +94,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define YOGIMPI_ALLGATHERV yogimpi_allgatherv_
 #define YOGIMPI_ABORT yogimpi_abort_
 #define YOGIMPI_PROBE yogimpi_probe_
-#define YOGIMPI_IPROBE yogimpi_iprobe_
-#define YOGIMPI_TEST yogimpi_test_
-#define YOGIMPI_ATTR_GET yogimpi_attr_get_
-#define YOGIMPI_INITIALIZED yogimpi_initialized_
-#define YOGIMPI_FINALIZED yogimpi_finalized_
+#define YOGIMPI_IPROBE f90bridge_yogimpi_iprobe_
+#define YOGIMPI_TEST f90bridge_yogimpi_test_
+#define YOGIMPI_ATTR_GET f90bridge_yogimpi_attr_get_
+#define YOGIMPI_INITIALIZED f90bridge_yogimpi_initialized_
+#define YOGIMPI_FINALIZED f90bridge_yogimpi_finalized_
 #define YOGIMPI_BSEND yogimpi_bsend_
 #define YOGIMPI_BUFFER_ATTACH yogimpi_buffer_attach_
 #define YOGIMPI_FILE_DELETE yogimpi_file_delete_

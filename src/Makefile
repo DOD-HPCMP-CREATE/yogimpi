@@ -2,11 +2,13 @@ include ../Make.flags
  
 .PHONY: default clean
 
-default: yogimpi.c yogimpi_f90bridge.c yogimpi.h mpitoyogi.h yogimpif.h mpiftoyogi.h
+default: yogimpi.c yogimpi_f90bridge.c yogimpi.h mpitoyogi.h yogimpif.h mpiftoyogi.h yogimpi_fortran.f90
 	$(MPICC) $(CFLAGS) -c yogimpi.c
-	$(MPICC) $(CFLAGS) -c yogimpi_f90bridge.c
+	$(F90) $(FFLAGS) -c yogimpi_fortran.f90
+	$(CC) $(CFLAGS) -c yogimpi_f90bridge.c
 	$(MPICC) $(CFLAGS) $(LDFLAGS) yogimpi.o yogimpi_f90bridge.o \
-                 -o libyogimpi.$(LIBEXTENSION)
+                 yogimpi_fortran.o -o libyogimpi.$(LIBEXTENSION)
 
 clean:
-	$(RM) yogimpi.o yogimpi_f90bridge.o libyogimpi.$(LIBEXTENSION)
+	$(RM) yogimpi.o yogimpi_f90bridge.o yogimpi_fortran.o \
+              libyogimpi.$(LIBEXTENSION)

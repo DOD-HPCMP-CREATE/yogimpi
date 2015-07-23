@@ -1,6 +1,8 @@
 INSTALLDIR=@INSTALLDIR@
 LIBEXTENSION=@LIBEXTENSION@
 MPICC=@MPICC@
+CC=@CC@
+F90=@F90@
 # Change these if you require different compiler flags.
 # These work for both Intel and GNU.
 FFLAGS=-I. -fPIC
