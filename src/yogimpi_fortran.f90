@@ -22,7 +22,7 @@
 subroutine YogiMPI_Test(request, flag, status, ierror)
 
   implicit none
-  integer, parameter :: YogiMPI_STATUS_SIZE = 15
+  include 'yogimpif.h'
   logical, intent(out) :: flag 
   integer, intent(in) :: request
   integer, intent(out) :: status(YogiMPI_STATUS_SIZE), ierror 
@@ -42,7 +42,7 @@ end subroutine
 subroutine YogiMPI_IProbe(source, tag, comm, flag, status, ierror)
   
   implicit none
-  integer, parameter :: YogiMPI_STATUS_SIZE = 15
+  include 'yogimpif.h'
   logical, intent(out) :: flag
   integer, intent(in) :: source, tag, comm
   integer, intent(out) :: status(YogiMPI_STATUS_SIZE), ierror 

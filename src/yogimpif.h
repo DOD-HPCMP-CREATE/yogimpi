@@ -59,6 +59,11 @@
       integer, parameter :: YogiMPI_SOURCE = 1 
       integer, parameter :: YogiMPI_TAG = 2 
       integer, parameter :: YogiMPI_ERROR = 3 
+      integer :: YogiMPI_STATUS_IGNORE(YogiMPI_STATUS_SIZE)
+      integer :: YogiMPI_STATUSES_IGNORE(YogiMPI_STATUS_SIZE,1)
+! Declare common blocks to hold these special variables.
+      COMMON /ympiscalar/ YogiMPI_STATUS_IGNORE
+      COMMON /ympiarray/ YogiMPI_STATUSES_IGNORE
 
 ! Maximum sizes for strings
 ! This has to be one less than the value in C to account for null-terminated
@@ -149,10 +154,6 @@
   
 ! MPI_Offset need an INTEGER*8 value.
       integer, parameter :: YogiMPI_OFFSET_KIND = 8
-
-! YogiMPI-specific values for MPI_STATUS_IGNORE and MPI_STATUSES_IGNORE
-      integer, parameter :: YogiMPI_STATUS_IGNORE = -1
-      integer, parameter :: YogiMPI_STATUSES_IGNORE = -1
 
       real*8 :: YOGIMPI_WTIME
       external YogiMPI_WTIME
