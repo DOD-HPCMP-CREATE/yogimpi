@@ -2856,3 +2856,86 @@ int YogiMPI_Group_range_incl(YogiMPI_Group group, int n, int ranges[][3],
     *newgroup = add_new_group(mpi_newgroup);
     return error_to_yogi(mpi_error);
 }
+
+int YogiMPI_Testany(int count, YogiMPI_Request *array_of_requests,
+                    int *index, int *flag, YogiMPI_Status *status) {
+
+    int i;
+    int mpi_err;
+    MPI_Request* mpi_requests = (MPI_Request*)malloc(count*sizeof(MPI_Request));
+    for(i = 0; i < count; ++i) {
+        mpi_requests[i] = * request_to_mpi(array_of_requests[i]);
+    }
+
+    if (YogiMPI_STATUS_IGNORE != status ) {
+        MPI_Status *mpi_status = yogi_status_to_mpi(status);
+        mpi_err = MPI_Testany(count, mpi_requests, index, flag, mpi_status);
+        mpi_status_to_yogi(mpi_status, status);
+    }
+    else {
+        mpi_err = MPI_Testany(count, mpi_requests, index, flag,
+                              MPI_STATUS_IGNORE);
+    }
+
+    /* reset requests */
+    if (*index == MPI_UNDEFINED) {
+        *index = YogiMPI_UNDEFINED;
+    }
+    else {
+        if(mpi_requests[*index] == MPI_REQUEST_NULL) {
+            *request_to_mpi(array_of_requests[*index]) = MPI_REQUEST_NULL;
+            array_of_requests[*index] = YogiMPI_REQUEST_NULL;
+        }
+    }
+    free(mpi_requests);
+    return error_to_yogi(mpi_err);
+
+}
+
+int YogiMPI_Testsome(int incount, YogiMPI_Request *array_of_requests,
+                     int *outcount, int *array_of_indices, 
+                     YogiMPI_Status *array_of_statuses) {
+
+    int i;
+    int mpi_err;
+    MPI_Request* mpi_requests = (MPI_Request*)malloc(incount*sizeof(MPI_Request));
+    for(i = 0; i < incount; ++i) {
+        mpi_requests[i] = * request_to_mpi(array_of_requests[i]);
+    }
+
+    if (YogiMPI_STATUSES_IGNORE != array_of_statuses ) {
+        MPI_Status* mpi_statuses = (MPI_Status*)malloc(incount*sizeof(MPI_Status));
+        for (i = 0; i < incount; i++) {
+            mpi_statuses[i] = *(yogi_status_to_mpi(&array_of_statuses[i]));
+        }
+            mpi_err = MPI_Testsome(incount, mpi_requests, outcount,
+                                   array_of_indices, mpi_statuses);
+        for(i = 0; i < *outcount; i++) {
+            mpi_status_to_yogi(&mpi_statuses[i], &array_of_statuses[i]);
+        }
+        free(mpi_statuses);
+    }
+    else {
+        mpi_err = MPI_Testsome(incount, mpi_requests, outcount,
+                               array_of_indices, MPI_STATUSES_IGNORE);
+    }
+
+    /* reset requests */
+    if (*outcount == MPI_UNDEFINED) {
+        *outcount = YogiMPI_UNDEFINED;
+    }
+    else {
+        for(i = 0; i < *outcount; ++i) {
+            int requestIndex = array_of_indices[i];
+            if(mpi_requests[requestIndex] == MPI_REQUEST_NULL) {
+                *request_to_mpi(array_of_requests[requestIndex]) = MPI_REQUEST_NULL;
+                array_of_requests[requestIndex] = YogiMPI_REQUEST_NULL;
+            }
+        }
+    }
+    free(mpi_requests);
+    return error_to_yogi(mpi_err);
+
+}
+
+

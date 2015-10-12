@@ -754,6 +754,14 @@ int YogiMPI_Test_cancelled(YogiMPI_Status *status, int *flag);
 int YogiMPI_Group_range_incl(YogiMPI_Group group, int n, int ranges[][3],
                              YogiMPI_Group *newgroup);
 
+int YogiMPI_Testany(int count, YogiMPI_Request *array_of_requests,
+                    int *index, int *flag, YogiMPI_Status *status);
+
+int YogiMPI_Testsome(int incount, YogiMPI_Request *array_of_requests,
+                     int *outcount, int *array_of_indices, 
+                     YogiMPI_Status *array_of_statuses);
+
+
 #ifdef __cplusplus
 }
 #endif
