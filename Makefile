@@ -23,6 +23,7 @@ install: default
 	install -m 640 preprocess/preprocessor.xml $(INSTALLDIR)/bin
 	install -m 640 preprocess/AVUtility.py $(INSTALLDIR)/bin
 	install -m 640 etc/yogimpi.bashrc $(INSTALLDIR)/etc
+	install -m 640 etc/yogimpi.cshrc $(INSTALLDIR)/etc
 	install -m 640 etc/modulefile $(INSTALLDIR)/etc
 	install -m 750 wrapper/mpicc $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpicxx $(INSTALLDIR)/bin
@@ -54,6 +55,7 @@ realclean: clean
 	$(RM) test/testRunner.sh
 	$(RM) etc/modulefile
 	$(RM) etc/yogimpi.bashrc
+	$(RM) etc/yogimpi.cshrc
 ifeq ($(ENABLEPYTHON),yes)
 	$(MAKE) -C src/python clean
 endif

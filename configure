@@ -126,9 +126,11 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
 if [[ $enablePython == "yes" ]]; then
     pythonModString="prepend-path PYTHONPATH \$prefix/python"
     pythonBashString="export PYTHONPATH=${installDir}/python:\$PYTHONPATH"
+    pythonCshString="setenv PYTHONPATH ${installDir}/python:\$PYTHONPATH"
 else
     pythonModString="# Python support is disabled for this build."
     pythonBashString="# Python support is disabled for this build."
+    pythonCshString="# Python support is disabled for this build."
 fi 
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
@@ -141,4 +143,9 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@PYTHON_BASHRC_MOD@|${pythonBashString}|g" \
     etc/yogimpi.bashrc.in > etc/yogimpi.bashrc
     
+sed -e "s|@INSTALLDIR@|${installDir}|g" \
+    -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \
+    -e "s|@PYTHON_CSHRC_MOD@|${pythonCshString}|g" \
+    etc/yogimpi.cshrc.in > etc/yogimpi.cshrc
+
 echo "Type make to build YogiMPI."
