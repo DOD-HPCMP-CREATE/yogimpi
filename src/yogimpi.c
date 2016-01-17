@@ -2938,4 +2938,53 @@ int YogiMPI_Testsome(int incount, YogiMPI_Request *array_of_requests,
 
 }
 
+int YogiMPI_Comm_create_keyval(YogiMPI_Comm_copy_attr_function
+                               *comm_copy_attr_fn,
+                               YogiMPI_Comm_delete_attr_function
+                               *comm_delete_attr_fn, int *comm_keyval,
+                               void *extra_state) {
+    MPI_Comm_copy_attr_function * copy_function;
+    MPI_Comm_delete_attr_function * delete_function;
+    if (comm_copy_attr_fn == YogiMPI_COMM_NULL_COPY_FN) {
+        copy_function = MPI_COMM_NULL_COPY_FN;
+    }
+    else if (comm_copy_attr_fn == YogiMPI_COMM_DUP_FN) {
+        copy_function = MPI_COMM_DUP_FN;
+    }
+    else {
+        copy_function = (MPI_Comm_copy_attr_function*)comm_copy_attr_fn;
+    }
+    delete_function = (MPI_Comm_delete_attr_function*)comm_delete_attr_fn;
+    int mpi_err = MPI_Comm_create_keyval(copy_function, delete_function,
+                                         comm_keyval, extra_state);
+    return error_to_yogi(mpi_err);
+}
 
+int YogiMPI_Comm_free_keyval(int *comm_keyval) {
+    int mpi_err = MPI_Comm_free_keyval(comm_keyval);
+    if (*comm_keyval == MPI_KEYVAL_INVALID) {
+        *comm_keyval = YogiMPI_KEYVAL_INVALID;
+    }
+    return error_to_yogi(mpi_err);
+}
+
+int YogiMPI_Comm_set_attr(YogiMPI_Comm comm, int comm_keyval, 
+                          void *attribute_val) {
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    int mpi_err = MPI_Comm_set_attr(mpi_comm, comm_keyval, attribute_val);
+    return error_to_yogi(mpi_err);
+}
+
+int YogiMPI_Comm_delete_attr(YogiMPI_Comm comm, int comm_keyval) {
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    int mpi_err = MPI_Comm_delete_attr(mpi_comm, comm_keyval);
+    return error_to_yogi(mpi_err);
+}
+
+int YogiMPI_Comm_get_attr(YogiMPI_Comm comm, int comm_keyval, 
+                          void *attribute_val, int *flag) {
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    int mpi_err = MPI_Comm_get_attr(mpi_comm, comm_keyval, attribute_val, flag);
+    return error_to_yogi(mpi_err);
+
+}

@@ -331,6 +331,22 @@ typedef int YogiMPI_Delete_function(YogiMPI_Comm comm, int keyval,
 #define YogiMPI_DUP_FN  ((YogiMPI_Copy_function *)-1)
 #define YogiMPI_NULL_DELETE_FN ((YogiMPI_Delete_function *)0)
 
+/* Declare function pointer types associated with attribute keys. */
+
+typedef int YogiMPI_Comm_copy_attr_function(YogiMPI_Comm oldcomm,
+                                            int comm_keyval,
+                                            void *extra_state,
+                                            void *attribute_val_in,
+                                            void *attribute_val_out, int *flag);
+
+typedef int YogiMPI_Comm_delete_attr_function(YogiMPI_Comm comm,
+                                              int comm_keyval,
+                                              void *attribute_val,
+                                              void *extra_state);
+
+#define YogiMPI_COMM_NULL_COPY_FN   ((YogiMPI_Comm_copy_attr_function *)0)
+#define YogiMPI_COMM_DUP_FN  ((YogiMPI_Comm_copy_attr_function *)-1)
+
 /* For MPI functions, occasionally they may need to resolve an MPI_Datatype
  * or MPI_Comm sent.  It's difficult to do the conversion internally, so 
  * users may have to modify source to make these calls in the function.  If the
@@ -761,6 +777,21 @@ int YogiMPI_Testsome(int incount, YogiMPI_Request *array_of_requests,
                      int *outcount, int *array_of_indices, 
                      YogiMPI_Status *array_of_statuses);
 
+int YogiMPI_Comm_create_keyval(YogiMPI_Comm_copy_attr_function
+                               *comm_copy_attr_fn, 
+                               YogiMPI_Comm_delete_attr_function
+                               *comm_delete_attr_fn, int *comm_keyval,
+                               void *extra_state);
+
+int YogiMPI_Comm_free_keyval(int *comm_keyval);
+
+int YogiMPI_Comm_set_attr(YogiMPI_Comm comm, int comm_keyval,
+                          void *attribute_val);
+
+int YogiMPI_Comm_delete_attr(YogiMPI_Comm comm, int comm_keyval);
+
+int YogiMPI_Comm_get_attr(YogiMPI_Comm comm, int comm_keyval,
+                          void *attribute_val, int *flag);
 
 #ifdef __cplusplus
 }

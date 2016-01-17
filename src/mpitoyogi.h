@@ -225,7 +225,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_User_function YogiMPI_User_function
 #define MPI_Copy_function YogiMPI_Copy_function
 #define MPI_Delete_function YogiMPI_Delete_function
+#define MPI_Comm_copy_attr_function YogiMPI_Comm_copy_attr_function
+#define MPI_Comm_delete_attr_function YogiMPI_Comm_delete_attr_function
 
+#define MPI_COMM_NULL_COPY_FN YogiMPI_COMM_NULL_COPY_FN
+#define MPI_COMM_DUP_FN YogiMPI_COMM_DUP_FN
 #define MPI_NULL_COPY_FN YogiMPI_NULL_COPY_FN
 #define MPI_DUP_FN YogiMPI_DUP_FN
 #define MPI_NULL_DELETE_FN YogiMPI_NULL_DELETE_FN
@@ -377,5 +381,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_Group_range_incl YogiMPI_Group_range_incl
 #define MPI_Testany YogiMPI_Testany
 #define MPI_Testsome YogiMPI_Testsome
-
+#define MPI_Comm_set_attr YogiMPI_Comm_set_attr
+#define MPI_Comm_create_keyval YogiMPI_Comm_create_keyval
+#define MPI_Comm_free_keyval YogiMPI_Comm_free_keyval
+#define MPI_Comm_delete_attr YogiMPI_Comm_delete_attr
+#define MPI_Comm_get_attr YogiMPI_Comm_get_attr
 #endif /* MPITOYOGI_H */

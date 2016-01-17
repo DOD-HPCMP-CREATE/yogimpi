@@ -49,6 +49,9 @@ nonblock_waitall: nonblock_waitall.c
 waitsome: waitsome.c
 	$(YCC) $(CFLAGS) waitsome.c -o waitsome
 
+testAttr: testAttr.c
+	$(YCC) $(CFLAGS) testAttr.c -o testAttr
+
 runtest: ctest ftest 
 	./testRunner.sh 4 ./createOp
 	./testRunner.sh 4 ./errorHandler
@@ -64,6 +67,7 @@ runtest: ctest ftest
 	./testRunner.sh 4 ./testComms
 	./testRunner.sh 4 ./nonblock_waitall
 	./testRunner.sh 4 ./waitsome
+	./testRunner.sh 4 ./testAttr
 	./testRunner.sh 2 ./fsimple
 	./testRunner.sh 4 ./fwriteFile1
 	cmp fWriteFile.expected fWriteFile.result || exit 1
@@ -75,7 +79,7 @@ runtest: ctest ftest
 	./testRunner.sh 4 ./fwaitsome
 	@echo "Tests passed."
 
-ctest: errorHandler createOp simple nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome
+ctest: errorHandler createOp simple nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr
 
 fsimple: fsimple.f90
 	$(YF90) $(FFLAGS) fsimple.f90 -o fsimple
@@ -110,4 +114,4 @@ clean:
               nonblock_waitall testComms fsimple \
               ftestComms probe collective fcollective \
               waitsome waitany fwaitsome createOp errorHandler testAll \
-              cWriteFile.result fWriteFile.result
+              cWriteFile.result fWriteFile.result testAttr
