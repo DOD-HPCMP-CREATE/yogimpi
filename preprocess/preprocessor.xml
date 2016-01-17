@@ -213,11 +213,16 @@
     <Constant>MPI_User_function</Constant>
     <Constant>MPI_Delete_function</Constant>
     <Constant>MPI_Copy_function</Constant>
+    <Constant>MPI_Comm_copy_attr_function</Constant>
+    <Constant>MPI_Comm_delete_attr_function</Constant>
 
     <Constant>MPI_IN_PLACE</Constant>
     <Constant>MPI_NULL_COPY_FN</Constant>
     <Constant>MPI_DUP_FN</Constant>
     <Constant>MPI_NULL_DELETE_FN</Constant>
+    <Constant>MPI_COMM_NULL_COPY_FN</Constant>
+    <Constant>MPI_COMM_DUP_FN</Constant>
+    <Constant>MPI_COMM_NULL_DELETE_FN</Constant>
     
     <Function>MPI_Send</Function>
     <Function>MPI_Recv</Function>
@@ -366,6 +371,11 @@
     <Function>MPI_Group_range_incl</Function>
     <Function>MPI_Testany</Function>
     <Function>MPI_Testsome</Function>
+    <Function>MPI_Comm_set_attr</Function>
+    <Function>MPI_Comm_delete_attr</Function>
+    <Function>MPI_Comm_get_attr</Function>
+    <Function>MPI_Comm_create_keyval</Function>
+    <Function>MPI_Comm_free_keyval</Function>
   </Language>
   
   <Language name='Fortran'>
