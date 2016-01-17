@@ -346,6 +346,7 @@ typedef int YogiMPI_Comm_delete_attr_function(YogiMPI_Comm comm,
 
 #define YogiMPI_COMM_NULL_COPY_FN   ((YogiMPI_Comm_copy_attr_function *)0)
 #define YogiMPI_COMM_DUP_FN  ((YogiMPI_Comm_copy_attr_function *)-1)
+#define YogiMPI_COMM_NULL_DELETE_FN ((YogiMPI_Comm_delete_attr_function *)0)
 
 /* For MPI functions, occasionally they may need to resolve an MPI_Datatype
  * or MPI_Comm sent.  It's difficult to do the conversion internally, so 

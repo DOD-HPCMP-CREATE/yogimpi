@@ -2954,7 +2954,12 @@ int YogiMPI_Comm_create_keyval(YogiMPI_Comm_copy_attr_function
     else {
         copy_function = (MPI_Comm_copy_attr_function*)comm_copy_attr_fn;
     }
-    delete_function = (MPI_Comm_delete_attr_function*)comm_delete_attr_fn;
+    if (comm_delete_attr_fn == YogiMPI_COMM_NULL_DELETE_FN) {
+        delete_function = MPI_COMM_NULL_DELETE_FN;
+    }
+    else {
+        delete_function = (MPI_Comm_delete_attr_function*)comm_delete_attr_fn;
+    }
     int mpi_err = MPI_Comm_create_keyval(copy_function, delete_function,
                                          comm_keyval, extra_state);
     return error_to_yogi(mpi_err);
