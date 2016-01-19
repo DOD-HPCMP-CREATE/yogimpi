@@ -36,7 +36,7 @@ static int num_datatypes = 100;
 /* Now have a pointer to a pool of MPI datatypes, handing references to
  * users without exposing the opaque MPI handle.
  */
-static MPI_Datatype *datatype_pool;
+static MPI_Datatype *datatype_pool = NULL;
 
 /* Total number of times datatype pool was resized. Initially zero. */
 static int num_realloc_datatypes = 0;
@@ -87,14 +87,14 @@ static int mpi_error_codes[37];
 
 static int num_groups = 100; 
 /* Pointer to pool of MPI_Group objects */
-static MPI_Group *group_pool = 0;
+static MPI_Group *group_pool = NULL;
 /* Number of times group pool is reallocated for expansion. */
 static int num_realloc_groups = 0; 
 /* from this offset onward up to num_groups are volatile in group_pool */
 static const YogiMPI_Group YogiMPI_GROUP_VOLATILE_OFFSET = 2; 
 
 /* Pointer to pool of MPI_Comm objects */
-static MPI_Comm *comm_pool = 0;
+static MPI_Comm *comm_pool = NULL;
 static int num_comms = 100; 
 /* Number of times comm pool is reallocated for expansion. */
 static int num_realloc_comms = 0;
@@ -104,13 +104,13 @@ static const YogiMPI_Comm YogiMPI_COMM_VOLATILE_OFFSET = 3;
 
 static int num_requests = 100;
 /* Pointer to pool of MPI_Request objects */
-static MPI_Request *request_pool = 0;
+static MPI_Request *request_pool = NULL;
 /* Number of times request pool is reallocated for expansion. */
 static int num_realloc_requests = 0;
 
 static int num_ops = 20;
 /* Pointer to pool of MPI_Op objects */
-static MPI_Op *op_pool = 0;
+static MPI_Op *op_pool = NULL;
 /* From this offset onward up to num_ops the Op objects in op_pool are
    volatile */
 static const YogiMPI_Op YogiMPI_OP_VOLATILE_OFFSET = 13;
@@ -119,9 +119,9 @@ static const YogiMPI_Op YogiMPI_OP_VOLATILE_OFFSET = 13;
 static int num_files = 100;
 static int num_infos = 100;
 /* Pointer to pool of MPI_File objects */
-static MPI_File *file_pool = 0;
+static MPI_File *file_pool = NULL;
 /* Pointer to pool of MPI_Info objects */
-static MPI_Info *info_pool = 0;
+static MPI_Info *info_pool = NULL;
 /* From this offset onward up to num_files the File objects in file_pool are
    volatile */
 static const YogiMPI_File YogiMPI_FILE_VOLATILE_OFFSET = 1;
@@ -132,7 +132,7 @@ static const YogiMPI_Info YogiMPI_INFO_VOLATILE_OFFSET = 1;
 /* Internal definitions for MPI_Errhandler */
 static int num_errhandlers = 20;
 /* Pointer to pool of MPI_Errhandler objects */
-static MPI_Errhandler *errhandler_pool = 0;
+static MPI_Errhandler *errhandler_pool = NULL;
 /* From this offset onward up to num_errhandlers MPI_Errhandlers are
    volatile */
 static const YogiMPI_Errhandler YogiMPI_ERRHANDLER_VOLATILE_OFFSET = 3;
@@ -859,59 +859,59 @@ void allocate_yogimpi_storage() {
     
     /* Initialize the back-end arrays for opaque objects and references */
     bind_mpi_err_constants();
-    if (!datatype_pool) initialize_datatype_pool();
-    if (!errhandler_pool) initialize_errhandler_pool();
-    if (!group_pool) initialize_group_pool();
-    if (!comm_pool) initialize_comm_pool();
-    if (!request_pool) initialize_request_pool();
-    if (!op_pool) initialize_op_pool();
-    if (!info_pool) initialize_info_pool();
-    if (!file_pool) initialize_file_pool();
+    if (datatype_pool == NULL) initialize_datatype_pool();
+    if (errhandler_pool == NULL) initialize_errhandler_pool();
+    if (group_pool == NULL) initialize_group_pool();
+    if (comm_pool == NULL) initialize_comm_pool();
+    if (request_pool == NULL) initialize_request_pool();
+    if (op_pool == NULL) initialize_op_pool();
+    if (info_pool == NULL) initialize_info_pool();
+    if (file_pool == NULL) initialize_file_pool();
 
 }
 
 void deallocate_yogimpi_storage(void) {
 
-    if (request_pool) {
+    if (request_pool != NULL) {
         free(request_pool);
-        request_pool = 0;
+        request_pool = NULL;
     }
-    if (comm_pool) {
+    if (comm_pool != NULL) {
         free(comm_pool);
-        comm_pool = 0;
+        comm_pool = NULL;
     }
-    if (group_pool) {
+    if (group_pool != NULL) {
         free(group_pool);
-        group_pool = 0;
+        group_pool = NULL;
     }
-    if (info_pool) {
+    if (info_pool != NULL) {
         free(info_pool);
-        info_pool = 0;
+        info_pool = NULL;
     }
-    if (file_pool) {
+    if (file_pool != NULL) {
         free(file_pool);
-        file_pool = 0;
+        file_pool = NULL;
     }
-    if (op_pool) {
+    if (op_pool != NULL) {
         free(op_pool);
-        op_pool = 0;
+        op_pool = NULL;
     }
-    if (datatype_pool) {
+    if (datatype_pool != NULL) {
         free(datatype_pool);
-        datatype_pool = 0;
+        datatype_pool = NULL;
     }
-    if (errhandler_pool) {
-    	free(errhandler_pool);
-    	errhandler_pool = 0;
+    if (errhandler_pool != NULL) {
+        free(errhandler_pool);
+    	errhandler_pool = NULL;
     }
 }
 
 int YogiMPI_Init(int* argc, char ***argv)
 { 
 
-    int mpi_err = MPI_Init(argc,argv); 
-
     allocate_yogimpi_storage();
+
+    int mpi_err = MPI_Init(argc,argv); 
 
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
  
@@ -919,7 +919,7 @@ int YogiMPI_Init(int* argc, char ***argv)
 }
 
 int YogiMPI_Send(void* buf, int count, YogiMPI_Datatype datatype, int dest, 
-		         int tag, YogiMPI_Comm comm) {
+                 int tag, YogiMPI_Comm comm) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
 
@@ -929,7 +929,7 @@ int YogiMPI_Send(void* buf, int count, YogiMPI_Datatype datatype, int dest,
 }
 
 int YogiMPI_Recv(void* buf, int count, YogiMPI_Datatype datatype, int source,
-		         int tag, YogiMPI_Comm comm, YogiMPI_Status *status) {
+                 int tag, YogiMPI_Comm comm, YogiMPI_Status *status) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     if (YogiMPI_ANY_SOURCE == source) source = MPI_ANY_SOURCE;
@@ -938,12 +938,12 @@ int YogiMPI_Recv(void* buf, int count, YogiMPI_Datatype datatype, int source,
     if (YogiMPI_STATUS_IGNORE != status) {
         MPI_Status *mpi_status = yogi_status_to_mpi(status);
         mpi_error = MPI_Recv(buf, count, mpi_datatype, source, tag, mpi_comm, 
-        		             mpi_status);
+                             mpi_status);
         mpi_status_to_yogi(mpi_status, status); 
     }
     else {
         mpi_error = MPI_Recv(buf, count, mpi_datatype, source, tag, mpi_comm, 
-        		             MPI_STATUS_IGNORE);
+                             MPI_STATUS_IGNORE);
     }
 
     return error_to_yogi(mpi_error);
@@ -958,7 +958,7 @@ int YogiMPI_Get_count(YogiMPI_Status *status, YogiMPI_Datatype datatype,
 }
 
 int YogiMPI_Ssend(void* buf, int count, YogiMPI_Datatype datatype, int dest, 
-		          int tag, YogiMPI_Comm comm) {
+                  int tag, YogiMPI_Comm comm) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
 
@@ -968,33 +968,33 @@ int YogiMPI_Ssend(void* buf, int count, YogiMPI_Datatype datatype, int dest,
 }
 
 int YogiMPI_Isend(void* buf, int count, YogiMPI_Datatype datatype, int dest, 
-		          int tag, YogiMPI_Comm comm, YogiMPI_Request *request) {
+                  int tag, YogiMPI_Comm comm, YogiMPI_Request *request) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     MPI_Request mpi_request;
 
     int mpi_error = MPI_Isend(buf, count, mpi_datatype, dest, tag, mpi_comm, 
-		                      &mpi_request);
+                              &mpi_request);
     *request = add_new_request(mpi_request);
 
     return error_to_yogi(mpi_error);
 }
 
 int YogiMPI_Issend(void* buf, int count, YogiMPI_Datatype datatype, int dest, 
-		           int tag, YogiMPI_Comm comm, YogiMPI_Request *request) {
+                   int tag, YogiMPI_Comm comm, YogiMPI_Request *request) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     MPI_Request mpi_request;
 
     int mpi_error = MPI_Issend(buf, count, mpi_datatype, dest, tag, mpi_comm, 
-    		                   &mpi_request);
+                               &mpi_request);
     *request = add_new_request(mpi_request);
 
     return error_to_yogi(mpi_error);
 }
 
 int YogiMPI_Irecv(void* buf, int count, YogiMPI_Datatype datatype, int source, 
-		          int tag, YogiMPI_Comm comm, YogiMPI_Request *request) {
+                  int tag, YogiMPI_Comm comm, YogiMPI_Request *request) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     if (YogiMPI_ANY_SOURCE == source) source = MPI_ANY_SOURCE;
@@ -1002,7 +1002,7 @@ int YogiMPI_Irecv(void* buf, int count, YogiMPI_Datatype datatype, int source,
 
     MPI_Request mpi_request;
     int mpi_error = MPI_Irecv(buf, count, mpi_datatype, source, tag, mpi_comm,
-    		                  &mpi_request);
+                              &mpi_request);
     *request = add_new_request(mpi_request);
 
     return error_to_yogi(mpi_error);
@@ -1542,20 +1542,22 @@ int YogiMPI_Get_processor_name(char *name, int *resultlen) {
 
 int YogiMPI_Finalize() { 
 
-    deallocate_yogimpi_storage();
     int mpi_err = MPI_Finalize();
+
+    deallocate_yogimpi_storage();
+
     return error_to_yogi(mpi_err);
 }
 
 int YogiMPI_Type_create_indexed_block(int count, int blocklength, 
-		                              int array_of_displacements[], 
-									  YogiMPI_Datatype oldtype, 
-									  YogiMPI_Datatype *newtype) {
+                                      int array_of_displacements[], 
+                                      YogiMPI_Datatype oldtype, 
+                                      YogiMPI_Datatype *newtype) {
     MPI_Datatype mpi_oldtype = datatype_to_mpi(oldtype);
     MPI_Datatype mpi_newtype = MPI_DATATYPE_NULL;
     int mpi_err = MPI_Type_create_indexed_block(count, blocklength, 
-    		                                    array_of_displacements,
-												mpi_oldtype, &mpi_newtype);
+                                                array_of_displacements,
+                                                mpi_oldtype, &mpi_newtype);
     *newtype = add_new_datatype(mpi_newtype);
     return error_to_yogi(mpi_err);
 }
