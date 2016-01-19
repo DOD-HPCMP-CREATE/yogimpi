@@ -66,6 +66,7 @@
     <Constant>MPI_PROC_NULL</Constant>
     <Constant>MPI_ANY_SOURCE</Constant>
     <Constant>MPI_ANY_TAG</Constant>
+    <Constant>MPI_ROOT</Constant>
     <Constant>MPI_UNDEFINED</Constant>
     <Constant>MPI_BSEND_OVERHEAD</Constant>
     <Constant>MPI_KEYVAL_INVALID</Constant>
@@ -376,6 +377,8 @@
     <Function>MPI_Comm_get_attr</Function>
     <Function>MPI_Comm_create_keyval</Function>
     <Function>MPI_Comm_free_keyval</Function>
+    <Function>MPI_Type_get_true_extent</Function>
+    <Function>MPI_Type_dup</Function>
   </Language>
   
   <Language name='Fortran'>

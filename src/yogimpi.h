@@ -94,6 +94,7 @@ typedef int YogiMPI_Errhandler;
 /* Recommended that MPI_BOTTOM be zero address */
 static void * const  YogiMPI_BOTTOM = (void*)0;
 #define YogiMPI_PROC_NULL -2
+#define YogiMPI_ROOT -6
 #define YogiMPI_ANY_SOURCE -3
 /* ANY_TAG should not overlap with any valid tag */
 #define YogiMPI_ANY_TAG -4
@@ -793,6 +794,12 @@ int YogiMPI_Comm_delete_attr(YogiMPI_Comm comm, int comm_keyval);
 
 int YogiMPI_Comm_get_attr(YogiMPI_Comm comm, int comm_keyval,
                           void *attribute_val, int *flag);
+
+int YogiMPI_Type_dup(YogiMPI_Datatype type, YogiMPI_Datatype *newtype);
+
+int YogiMPI_Type_get_true_extent(YogiMPI_Datatype datatype,
+                                 YogiMPI_Aint *true_lb,
+                                 YogiMPI_Aint *true_extent);
 
 #ifdef __cplusplus
 }

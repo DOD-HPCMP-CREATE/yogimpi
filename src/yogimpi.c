@@ -570,6 +570,13 @@ static int yogi_amode_to_mpi(int amode) {
 	
 }
 
+/* Convert root constants in the case of an intercommunicator. */
+static int root_to_mpi(int root) {
+    if (root == YogiMPI_ROOT) return MPI_ROOT;
+    if (root == YogiMPI_PROC_NULL) return MPI_PROC_NULL;
+    return root;
+}
+
 /* Checks if an MPI_Datatype is present in existing datatype pool.
  * Returns index of location of datatype, or -1 if not found.
  */
@@ -1218,43 +1225,46 @@ int YogiMPI_Bcast(void* buffer, int count, YogiMPI_Datatype datatype, int root,
 		          YogiMPI_Comm comm) {
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
-    int mpi_err = MPI_Bcast(buffer, count, mpi_datatype, root, mpi_comm);
+    int mpi_err = MPI_Bcast(buffer, count, mpi_datatype, root_to_mpi(root),
+                            mpi_comm);
     return error_to_yogi(mpi_err);
 }
 
 int YogiMPI_Gather(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype, 
-		           void* recvbuf, int recvcount, YogiMPI_Datatype recvtype, 
-				   int root, YogiMPI_Comm comm) {
+                   void* recvbuf, int recvcount, YogiMPI_Datatype recvtype,
+                   int root, YogiMPI_Comm comm) {
 
-    int mpi_err = YogiMPI_SUCCESS ;
+    int mpi_err = YogiMPI_SUCCESS;
     MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     if (YogiMPI_IN_PLACE == sendbuf) {
         mpi_err = MPI_Gather(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, recvbuf,
-        		             recvcount, mpi_recvtype, root, mpi_comm);
+                             recvcount, mpi_recvtype, root, mpi_comm);
     } 
     else { 
         MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
         mpi_err = MPI_Gather(sendbuf, sendcount, mpi_sendtype, recvbuf,
-        		             recvcount, mpi_recvtype, root, mpi_comm);
+                             recvcount, mpi_recvtype, root_to_mpi(root),
+                             mpi_comm);
     }
     return error_to_yogi(mpi_err);
 }
 
 int YogiMPI_Gatherv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype, 
-		            void* recvbuf, int *recvcounts, int *displs, 
-					YogiMPI_Datatype recvtype, int root, YogiMPI_Comm comm) {
-    int mpi_err = YogiMPI_SUCCESS ;
+                    void* recvbuf, int *recvcounts, int *displs, 
+                    YogiMPI_Datatype recvtype, int root, YogiMPI_Comm comm) {
+    int mpi_err = YogiMPI_SUCCESS; 
     MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     if (YogiMPI_IN_PLACE == sendbuf) {
         mpi_err = MPI_Gatherv(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, recvbuf,
-        		              recvcounts, displs, mpi_recvtype, root, mpi_comm);
+                              recvcounts, displs, mpi_recvtype, root, mpi_comm);
     } 
     else { 
         MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
         mpi_err = MPI_Gatherv(sendbuf, sendcount, mpi_sendtype, recvbuf,
-        		              recvcounts, displs, mpi_recvtype, root, mpi_comm);
+                              recvcounts, displs, mpi_recvtype, 
+                              root_to_mpi(root), mpi_comm);
     }
 
     return error_to_yogi(mpi_err);
@@ -1262,45 +1272,48 @@ int YogiMPI_Gatherv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
 
 int YogiMPI_Scatter(void *sendbuf, int sendcount, YogiMPI_Datatype sendtype,
                     void *recvbuf, int recvcount, YogiMPI_Datatype recvtype, 
-					int root, YogiMPI_Comm comm) {
+                    int root, YogiMPI_Comm comm) {
 	int mpi_err = YogiMPI_SUCCESS;
 	MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
 	MPI_Comm mpi_comm = comm_to_mpi(comm);
 	if (YogiMPI_IN_PLACE == sendbuf) {
-	    mpi_err = MPI_Scatter(sendbuf, sendcount, mpi_sendtype, MPI_IN_PLACE,
-	    		              0, MPI_DATATYPE_NULL, root, mpi_comm);
+	    mpi_err = MPI_Scatter(sendbuf, sendcount, mpi_sendtype,
+                                  MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, root,
+                                  mpi_comm);
 	} 
 	else { 
 	    MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
 	    mpi_err = MPI_Scatter(sendbuf, sendcount, mpi_sendtype, recvbuf,
-	    		              recvcount, mpi_recvtype, root, mpi_comm);
+                                  recvcount, mpi_recvtype, root_to_mpi(root),
+                                  mpi_comm);
 	}
 	return error_to_yogi(mpi_err);
 	
 }
 
 int YogiMPI_Scatterv(void* sendbuf, int *sendcounts, int *displs, 
-		             YogiMPI_Datatype sendtype, void* recvbuf, int recvcount,
-					 YogiMPI_Datatype recvtype, int root, YogiMPI_Comm comm) {
-  int mpi_err = YogiMPI_SUCCESS;
-  MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
-  MPI_Comm mpi_comm = comm_to_mpi(comm);
-  if (YogiMPI_IN_PLACE == sendbuf) {
-      mpi_err = MPI_Scatterv(sendbuf, sendcounts, displs, mpi_sendtype,
-    		                 MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, root,
-							 mpi_comm);
-  } 
-  else { 
-      MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype) ;
-      mpi_err = MPI_Scatterv(sendbuf, sendcounts, displs, mpi_sendtype, recvbuf,
-    		                 recvcount, mpi_recvtype, root, mpi_comm);
-  }
-  return error_to_yogi(mpi_err);
+                     YogiMPI_Datatype sendtype, void* recvbuf, int recvcount,
+                     YogiMPI_Datatype recvtype, int root, YogiMPI_Comm comm) {
+    int mpi_err = YogiMPI_SUCCESS;
+    MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    if (YogiMPI_IN_PLACE == sendbuf) {
+        mpi_err = MPI_Scatterv(sendbuf, sendcounts, displs, mpi_sendtype,
+                               MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, root,
+                               mpi_comm);
+    } 
+    else { 
+        MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype) ;
+        mpi_err = MPI_Scatterv(sendbuf, sendcounts, displs, mpi_sendtype,
+                               recvbuf, recvcount, mpi_recvtype, 
+                               root_to_mpi(root), mpi_comm);
+    }
+    return error_to_yogi(mpi_err);
 }
 
 int YogiMPI_Allgather(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype, 
-		              void* recvbuf, int recvcount, YogiMPI_Datatype recvtype, 
-					  YogiMPI_Comm comm) {
+                      void* recvbuf, int recvcount, YogiMPI_Datatype recvtype, 
+                      YogiMPI_Comm comm) {
     int mpi_err = YogiMPI_SUCCESS;
     MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
@@ -1336,39 +1349,36 @@ int YogiMPI_Allgatherv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
 }
 
 int YogiMPI_Reduce(void* sendbuf, void* recvbuf, int count, 
-		           YogiMPI_Datatype datatype, YogiMPI_Op op, int root, 
-				   YogiMPI_Comm comm) {
-  int mpi_err = YogiMPI_SUCCESS;
-  MPI_Datatype mpi_datatype = datatype_to_mpi(datatype); 
-  MPI_Op mpi_op = op_to_mpi(op);
-  MPI_Comm mpi_comm = comm_to_mpi(comm);
-  if (YogiMPI_IN_PLACE == sendbuf) {
-      mpi_err = MPI_Reduce(MPI_IN_PLACE, recvbuf, count, mpi_datatype, mpi_op,
-    		               root, mpi_comm);
-  } 
-  else {
-      mpi_err = MPI_Reduce(sendbuf, recvbuf, count, mpi_datatype, mpi_op, root,
-    		               mpi_comm);
-  }
-
-  return error_to_yogi(mpi_err);
-  
+                   YogiMPI_Datatype datatype, YogiMPI_Op op, int root, 
+                   YogiMPI_Comm comm) {
+    int mpi_err = YogiMPI_SUCCESS;
+    MPI_Datatype mpi_datatype = datatype_to_mpi(datatype); 
+    MPI_Op mpi_op = op_to_mpi(op);
+    MPI_Comm mpi_comm = comm_to_mpi(comm);
+    if (YogiMPI_IN_PLACE == sendbuf) {
+        mpi_err = MPI_Reduce(MPI_IN_PLACE, recvbuf, count, mpi_datatype, mpi_op,                             root, mpi_comm);
+    } 
+    else {
+        mpi_err = MPI_Reduce(sendbuf, recvbuf, count, mpi_datatype, mpi_op,
+                             root_to_mpi(root), mpi_comm);
+    }
+    return error_to_yogi(mpi_err);
 }
 
 int YogiMPI_Allreduce(void* sendbuf, void* recvbuf, int count, 
-		              YogiMPI_Datatype datatype, YogiMPI_Op op, 
-					  YogiMPI_Comm comm) {
-    int mpi_err = YogiMPI_SUCCESS ;
+                      YogiMPI_Datatype datatype, YogiMPI_Op op, 
+                      YogiMPI_Comm comm) {
+    int mpi_err = YogiMPI_SUCCESS;
     MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
     MPI_Op mpi_op = op_to_mpi(op);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     if (YogiMPI_IN_PLACE == sendbuf) {
         mpi_err = MPI_Allreduce(MPI_IN_PLACE, recvbuf, count, mpi_datatype,
-        		                mpi_op, mpi_comm);
+                                mpi_op, mpi_comm);
     } 
     else {
         mpi_err = MPI_Allreduce(sendbuf, recvbuf, count, mpi_datatype, mpi_op,
-        		                mpi_comm);
+                                mpi_comm);
     }
     return error_to_yogi(mpi_err);
 }
@@ -2993,3 +3003,33 @@ int YogiMPI_Comm_get_attr(YogiMPI_Comm comm, int comm_keyval,
     return error_to_yogi(mpi_err);
 
 }
+
+int YogiMPI_Type_dup(YogiMPI_Datatype type, YogiMPI_Datatype *newtype) {
+
+    MPI_Datatype mpi_oldtype = datatype_to_mpi(type);
+    MPI_Datatype mpi_newtype;
+
+    int mpi_err = MPI_Type_dup(mpi_oldtype, &mpi_newtype);
+
+    *newtype = add_new_datatype(mpi_newtype);
+
+    return error_to_yogi(mpi_err);
+
+}
+
+int YogiMPI_Type_get_true_extent(YogiMPI_Datatype datatype, 
+                                 YogiMPI_Aint *true_lb,
+                                 YogiMPI_Aint *true_extent) {
+    MPI_Aint conv_lb;
+    MPI_Aint conv_extent;
+    MPI_Datatype mpi_datatype = datatype_to_mpi(datatype);
+
+    int mpi_err = MPI_Type_get_true_extent(mpi_datatype, &conv_lb,
+                                           &conv_extent);
+    if (conv_lb == MPI_UNDEFINED) *true_lb = YogiMPI_UNDEFINED; 
+    else *true_lb = aint_to_yogi(conv_lb);
+    if (conv_extent == MPI_UNDEFINED) *true_extent = YogiMPI_UNDEFINED; 
+    else *true_extent = aint_to_yogi(conv_extent);
+    return error_to_yogi(mpi_err);
+}
+
