@@ -90,6 +90,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_BOTTOM YogiMPI_BOTTOM
 #define MPI_PROC_NULL YogiMPI_PROC_NULL
 #define MPI_ANY_SOURCE YogiMPI_ANY_SOURCE
+#define MPI_ROOT YogiMPI_ROOT
 #define MPI_ANY_TAG YogiMPI_ANY_TAG
 #define MPI_UNDEFINED YogiMPI_UNDEFINED
 #define MPI_BSEND_OVERHEAD YogiMPI_BSEND_OVERHEAD
