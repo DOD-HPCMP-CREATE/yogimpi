@@ -9,7 +9,7 @@ class YogiMPIWrapper(object):
     prefixDir = "@INSTALLDIR@"
     cxxCompiler = "@SERIALCXXCOMPILER@"
 
-    cppExtensions = [ '.c', '.cpp', '.hpp', '.cxx', '.i' ]
+    cppExtensions = [ '.c', '.cpp', '.hpp', '.cxx', '.cc', '.i' ]
     notLinkingOpts = [ '-c', '-S', '-E', '-M', '-MM' ]
     
     def _isCXXSource(self, inputFile):
