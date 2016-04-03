@@ -11,12 +11,12 @@ import xml.etree.ElementTree as ET
 class yogisearch(object):
 
     def __init__(self):
-        self.supportFile = 'preprocessor.xml'
-        if not os.path.isfile(self.supportFile):
-            self.supportFile = os.path.dirname(__file__) + '/' +\
-                               self.supportFile
-            if not os.path.isfile(self.supportFile):
-                raise ValueError("Cannot locate preprocessor XML file.") 
+        self.unsupportedFile = 'UnsupportedMPI.xml'
+        checkFiles = [ self.unsupportedFile ]
+        for aFile in checkFiles:
+            if not os.path.isfile(aFile):
+                raise ValueError("Cannot locate needed file " + filePath)
+
         self.inputPath = None 
         self.outputPath = None 
         self.ccxxOnly = False
@@ -26,12 +26,10 @@ class yogisearch(object):
         if self.outputPath is None:
             self.outputPath = 'yogisearch.out'
         self.logFile = open(self.outputPath, 'a')
-        self.cDefinitions = [] 
-        self.fDefinitions = []
-        self.excludePatterns = []
-        self.loadSupported()
-        if self.excludeFile:
-            self.loadExcluded() 
+        self.cMissing = [] 
+        self.fMissing = []
+        missingLangMap = { 'C': self.cMissing, 'Fortran': self.fMissing }
+        self.loadLanguageLists(self.unsupportedFile, missingLangMap)
         if os.path.isdir(self.inputPath):
             self.checkDirectoryWrap(self.inputPath)
         elif os.path.isfile(self.inputPath):
@@ -45,69 +43,36 @@ class yogisearch(object):
     def _getSearchDefs(self, filename):
         if self.ccxxOnly:
             if self._isCSource(filename) or self._isCXXSource(filename):
-                return self.cDefinitions
+                return self.cMissing
         elif self.fortranOnly:
             if self._isFortranSource(filename):
-                return self.fDefinitions
+                return self.fMissing
         else:
             if self._isCSource(filename) or self._isCXXSource(filename):
-                return self.cDefinitions 
+                return self.cMissing
             elif self._isFortranSource(filename):
-                return self.fDefinitions
+                return self.fMissing
         # If no conditions matched, return None to indicate file should not
         # be searched.
         return None 
 
-    def loadExcluded(self):
-        excludeHandle = open(self.excludeFile, 'r')
-        self.excludePatterns = [line.strip() for line in excludeHandle]
-        excludeHandle.close()
-
-    # Loads from XML MPI functions and constants supported by YogiMPI.
-    def loadSupported(self):
-        fileTree = ET.parse(self.supportFile).getroot()
-        cLangElement = None
-        fLangElement = None
+    # Appends, for user-specified languages, to corresponding lists the 
+    # strings of MPI function names, constants, and objects from the input file.
+    # inputFile - Name of XML input file to use.
+    # langMap - A dictionary specifying the language and list to use.
+    #            Example: { 'C' : myList, 
+    #                       'Fortran' : myList2 } 
+    #           All information listed for C in the input file is placed into
+    #           myList, and all information listed for Fortran in the input
+    #           file is placed into myList2.
+    def loadLanguageLists(self, inputFile, langMap):
+        fileTree = ET.parse(inputFile).getroot()
         for langElement in fileTree.iterfind('Language'):
-            if langElement.attrib['name'] == 'C':
-                cLangElement = langElement
-            elif langElement.attrib['name'] == 'Fortran':
-                fLangElement = langElement
-
-        for entry in cLangElement.iterfind('Constant'):
-            self.cDefinitions.append(AU._getValidText(entry, True))
-        for entry in cLangElement.iterfind('Object'):
-            self.cDefinitions.append(AU._getValidText(entry, True))
-        for entry in cLangElement.iterfind('Function'):
-            self.cDefinitions.append(AU._getValidText(entry, True))
-
-        for entry in fLangElement.iterfind('Constant'):
-            self.fDefinitions.append(AU._getValidText(entry, True))
-        for entry in fLangElement.iterfind('Object'):
-            self.fDefinitions.append(AU._getValidText(entry, True))
-        for entry in fLangElement.iterfind('Function'):
-            self.fDefinitions.append(AU._getValidText(entry, True))
-
-    def _findMPI(self, searchLine, mpiPattern=None, caseSensitive=False,
-                 underScoreAllowed=False):
-        if mpiPattern is None:
-            mpiPattern = 'MPI_[a-zA-Z0-9_]+'
-        if caseSensitive:
-            flags = 0
-        else:
-            flags = re.IGNORECASE 
-
-        if not underScoreAllowed:
-            group1 = r"(^|=|\s|\(|\)|,|\*|\+)("
-        else:
-            group1 = r"(^|_|=|\s|\(|\)|,|\*|\+)("
-        mpiString = re.compile(group1 + mpiPattern + r')(\s|,|\)|\()', flags)
-        matchInfo = mpiString.finditer(searchLine)
-        mpiMatches = []
-        if matchInfo: 
-            for match in matchInfo:
-                mpiMatches.append(match.group(2))
-        return mpiMatches
+            targetList = langMap[langElement.get('name')]
+            entryTypeList = [ 'Constant', 'Object', 'Function' ]
+            for entryType in entryTypeList:
+                for entry in langElement.iterfind(entryType):
+                    targetList.append(AU._getValidText(entry, True))
 
     def writeLog(self, *args):
         for a in args:
@@ -122,25 +87,15 @@ class yogisearch(object):
         ihandle = open(inputFile, 'r')
         rawFile = ihandle.readlines()
         ihandle.close()
-        caseSensitive=False
-        underScoreAllowed=False
-        if not self._isFortranSource(inputFile):
-            caseSensitive=True
-        else:
-            underScoreAllowed=True
-        for line in rawFile:
-            matchMPI = self._findMPI(line, caseSensitive=caseSensitive,
-                                     underScoreAllowed=underScoreAllowed)
-            for item in matchMPI: 
-                if caseSensitive:
-                    if not item in definitions: 
-                        noMPI.add(item)
-                else:
-                    if not item.upper() in (md.upper() for md in definitions):
-                        noMPI.add(item) 
-        # Remove anything we were told to ignore.
-        for item in self.excludePatterns:
-            noMPI.discard(item)
+        flags = 0
+        if self._isFortranSource(inputFile):
+            flags = re.IGNORECASE 
+
+        for aLine in rawFile:
+            for aDef in definitions:
+                if aDef in aLine:
+                    noMPI.add(aDef)    
+
         if noMPI:
             self.writeLog(os.path.abspath(inputFile))
             self.writeLog(*noMPI)
@@ -176,7 +131,7 @@ class yogisearch(object):
         return False
 
     def _isCXXSource(self, fileName):
-        cxxExtensions = ['C', 'cpp', 'cxx', 'hpp', 'H', 'I']
+        cxxExtensions = ['C', 'cpp', 'cxx', 'hpp', 'H', 'I', 'cc']
         for cxxe in cxxExtensions:
             if fileName.endswith('.' + cxxe):
                 return True
@@ -199,10 +154,6 @@ if __name__ == "__main__":
                         action="store",
                         default=None,
                         help="Output path")
-    parser.add_argument('--excludefile', '-e',
-                        action="store",
-                        default=None,
-                        help="MPI patterns to ignore")
     configArguments = parser.parse_args()
 
     preproc = yogisearch()
@@ -210,5 +161,4 @@ if __name__ == "__main__":
     preproc.outputPath = configArguments.output
     preproc.fortranOnly = configArguments.fortranonly
     preproc.ccxxOnly = configArguments.ccxxonly
-    preproc.excludeFile = configArguments.excludefile
     preproc.run()
