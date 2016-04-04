@@ -17,7 +17,7 @@ class YogiMPIWrapper(object):
     notLinkingOpts = [ '-c', '-S', '-E', '-M', '-MM' ]
     
     def __init__(self):
-        self.supportFile = YogiMPIWrapper.prefixDir + '/bin/preprocessor.xml'
+        self.supportFile = YogiMPIWrapper.prefixDir + '/bin/YogiSupported.xml'
         self.argArray = list(sys.argv)
         self.sourceDir = ''
         self.sourceFile = None

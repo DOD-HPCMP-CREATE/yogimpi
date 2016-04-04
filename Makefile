@@ -20,7 +20,8 @@ install: default
 	install -m 640 src/mpitoyogi.h $(INSTALLDIR)/include/mpi.h
 	install -m 640 src/yogimpi.h $(INSTALLDIR)/include
 	install -m 640 src/yogimpif.h $(INSTALLDIR)/include/mpif.h
-	install -m 640 preprocess/preprocessor.xml $(INSTALLDIR)/bin
+	install -m 640 src/yogiconvutil.h $(INSTALLDIR)/include
+	install -m 640 preprocess/YogiSupported.xml $(INSTALLDIR)/bin
 	install -m 640 preprocess/AVUtility.py $(INSTALLDIR)/bin
 	install -m 640 etc/yogimpi.bashrc $(INSTALLDIR)/etc
 	install -m 640 etc/yogimpi.cshrc $(INSTALLDIR)/etc

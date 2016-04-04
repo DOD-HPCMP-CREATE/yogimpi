@@ -666,18 +666,28 @@ static void free_offset_array(MPI_Offset * in) {
 	}
 }
 
+YogiMPI_Comm fortran_comm_to_yogi(int fortran_comm) {
+    MPI_Comm c_comm = MPI_Comm_c2f(fortran_comm);
+    return add_new_comm(c_comm); 
+}
+
+YogiMPI_Group fortran_group_to_yogi(int fortran_group) {
+    MPI_Comm c_group = MPI_Group_c2f(fortran_group);
+    return add_new_group(c_group);
+}
+
 YogiMPI_Comm Yogi_ResolveComm(void *commObject) {
-	MPI_Comm *aComm = (MPI_Comm*)commObject;
-	return check_comm_presence(*aComm);
+    MPI_Comm *aComm = (MPI_Comm*)commObject;
+    return check_comm_presence(*aComm);
 }
 
 YogiMPI_Datatype Yogi_ResolveDatatype(void *datatypeObject) {
-	MPI_Datatype *aType = (MPI_Datatype*)datatypeObject;
-	return check_datatype_presence(*aType);
+    MPI_Datatype *aType = (MPI_Datatype*)datatypeObject;
+    return check_datatype_presence(*aType);
 }
 
 int Yogi_ResolveErrorcode(int errorcode) {
-	return error_to_yogi(errorcode);
+    return error_to_yogi(errorcode);
 }
 
 static void bind_mpi_err_constants() {
