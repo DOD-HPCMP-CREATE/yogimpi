@@ -411,7 +411,7 @@ void YOGIMPI_INFO_SET(int *info, char *key, char *value, int *ierror,
                                null_terminate(value, value_len));
 }
 
-void YOGIMPI_INFO_FREE(int *comm, int *ierror) {
+void YOGIMPI_INFO_FREE(int *info, int *ierror) {
     *ierror = YogiMPI_Info_free(info);
 }
 
