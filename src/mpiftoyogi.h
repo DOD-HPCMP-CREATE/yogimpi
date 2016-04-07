@@ -475,6 +475,7 @@ include 'yogimpif.h'
 #define MPI_File_write_at YogiMPI_File_write_at
 #define MPI_Info_create YogiMPI_Info_create
 #define MPI_Info_set YogiMPI_Info_set
+#define MPI_Info_free YogiMPI_Info_free
 #define MPI_Test YogiMPI_Test
 #define MPI_Probe YogiMPI_Probe
 #define MPI_Iprobe YogiMPI_Iprobe

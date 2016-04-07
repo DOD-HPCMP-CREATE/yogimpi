@@ -97,6 +97,7 @@ static int check_to_ignore(int *raw_status) {
 #define YOGIMPI_FILE_WRITE_AT yogimpi_file_write_at_
 #define YOGIMPI_INFO_CREATE yogimpi_info_create_
 #define YOGIMPI_INFO_SET yogimpi_info_set_
+#define YOGIMPI_INFO_FREE yogimpi_info_free_
 #define YOGIMPI_WAITANY yogimpi_waitany_
 #define YOGIMPI_WAITSOME yogimpi_waitsome_
 #define YOGIMPI_WAITALL yogimpi_waitall_
@@ -408,6 +409,10 @@ void YOGIMPI_INFO_SET(int *info, char *key, char *value, int *ierror,
                       int key_len, int value_len) {
     *ierror = YogiMPI_Info_set(*info, null_terminate(key, key_len),
                                null_terminate(value, value_len));
+}
+
+void YOGIMPI_INFO_FREE(int *comm, int *ierror) {
+    *ierror = YogiMPI_Info_free(info);
 }
 
 void YOGIMPI_WAITALL(int *count, int *array_of_requests, int *array_of_statuses,

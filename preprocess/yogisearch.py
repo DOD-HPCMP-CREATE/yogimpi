@@ -87,14 +87,18 @@ class yogisearch(object):
         ihandle = open(inputFile, 'r')
         rawFile = ihandle.readlines()
         ihandle.close()
-        flags = 0
+        caseSensitive = True 
         if self._isFortranSource(inputFile):
-            flags = re.IGNORECASE 
+            caseSensitive = False
 
         for aLine in rawFile:
             for aDef in definitions:
-                if aDef in aLine:
-                    noMPI.add(aDef)    
+                if caseSensitive:
+                    if aDef in aLine:
+                        noMPI.add(aDef)    
+                else:
+                    if aDef.lower() in aLine.lower():
+                        noMPI.add(aDef)
 
         if noMPI:
             self.writeLog(os.path.abspath(inputFile))

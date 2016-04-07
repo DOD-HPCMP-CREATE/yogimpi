@@ -564,6 +564,7 @@
     <Function>MPI_File_write_at</Function>
     <Function>MPI_Info_create</Function>
     <Function>MPI_Info_set</Function>
+    <Function>MPI_Info_free</Function>
     <Function>MPI_Abort</Function>
     <Function>MPI_Probe</Function>
     <Function>MPI_Iprobe</Function>
