@@ -215,6 +215,8 @@ include 'yogimpif.h'
 #define MPI_FILE_DELETE YOGIMPI_FILE_DELETE
 #define MPI_FILE_WRITE YOGIMPI_FILE_WRITE
 #define MPI_FILE_SEEK YOGIMPI_FILE_SEEK
+#define MPI_FILE_READ_AT YOGIMPI_FILE_READ_AT
+#define MPI_FILE_READ_ALL YOGIMPI_FILE_READ_ALL
 
 ! And now the lowercase version since there is no case sensitivity.
 ! I love you, Fortran.
@@ -413,6 +415,8 @@ include 'yogimpif.h'
 #define mpi_file_delete yogimpi_file_delete
 #define mpi_file_write yogimpi_file_write
 #define mpi_file_seek yogimpi_file_seek
+#define mpi_file_read_at yogimpi_file_read_at
+#define mpi_file_read_all yogimpi_file_read_all
 
 ! And finally handle the case of using C-like case for MPI
 		
@@ -488,4 +492,5 @@ include 'yogimpif.h'
 #define MPI_File_delete YogiMPI_File_delete
 #define MPI_File_write YogiMPI_File_write
 #define MPI_File_seek YogiMPI_File_seek
-
+#define MPI_File_read_at YogiMPI_File_read_at
+#define MPI_File_read_all YogiMPI_File_read_all

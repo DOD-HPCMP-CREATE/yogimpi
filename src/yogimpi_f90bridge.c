@@ -95,6 +95,8 @@ static int check_to_ignore(int *raw_status) {
 #define YOGIMPI_FILE_SET_VIEW yogimpi_file_set_view_
 #define YOGIMPI_FILE_WRITE_ALL yogimpi_file_write_all_
 #define YOGIMPI_FILE_WRITE_AT yogimpi_file_write_at_
+#define YOGIMPI_FILE_READ_AT yogimpi_file_read_at_
+#define YOGIMPI_FILE_READ_ALL yogimpi_file_read_all_
 #define YOGIMPI_INFO_CREATE yogimpi_info_create_
 #define YOGIMPI_INFO_SET yogimpi_info_set_
 #define YOGIMPI_INFO_FREE yogimpi_info_free_
@@ -397,6 +399,31 @@ void YOGIMPI_FILE_WRITE_AT(int *fh, long long int *offset, void *buf,
     }
     else {
         *ierror = YogiMPI_File_write_at(*fh, *offset, buf, *count, *datatype, 
+                                        (YogiMPI_Status *)status);
+    }
+}
+
+void YOGIMPI_FILE_READ_AT(int *fh, long long int *offset, void *buf,
+                          int *count, int *datatype, int *status,
+                          int *ierror) {
+    if (check_to_ignore(status)) {
+        *ierror = YogiMPI_File_read_at(*fh, *offset, buf, *count, *datatype,
+                                       YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        *ierror = YogiMPI_File_read_at(*fh, *offset, buf, *count, *datatype,
+                                       (YogiMPI_Status *)status);
+    }
+}
+
+void YOGIMPI_FILE_READ_ALL(int *fh, void *buf, int *count, int *datatype,
+                           int *status, int *ierror) {
+    if (check_to_ignore(status)) {
+        *ierror = YogiMPI_File_read_all(*fh, buf, *count, *datatype,
+                                        YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        *ierror = YogiMPI_File_read_all(*fh, buf, *count, *datatype,
                                         (YogiMPI_Status *)status);
     }
 }

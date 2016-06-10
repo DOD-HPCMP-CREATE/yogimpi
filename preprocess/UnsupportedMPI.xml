@@ -291,7 +291,6 @@
     <Function>MPI_File_get_position_shared</Function>
     <Function>MPI_Grequest_complete</Function>
     <Function>MPI_Win_create</Function>
-    <Function>MPI_File_read_all</Function>
     <Function>MPI_Status_set_elements_x</Function>
     <Function>MPI_Group_excl</Function>
     <Function>MPI_Cart_create</Function>
@@ -470,7 +469,6 @@
     <Function>MPI_Cart_coords</Function>
     <Function>MPI_Get_elements_x</Function>
     <Function>MPI_Win_flush_all</Function>
-    <Function>MPI_File_read_at</Function>
     <Function>MPI_Comm_idup</Function>
     <Function>MPI_Request_get_status</Function>
     <Function>MPI_Type_create_keyval</Function>

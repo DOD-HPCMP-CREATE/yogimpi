@@ -562,6 +562,8 @@
     <Function>MPI_File_set_view</Function>
     <Function>MPI_File_write_all</Function>
     <Function>MPI_File_write_at</Function>
+    <Function>MPI_File_read_at</Function>
+    <Function>MPI_File_read_at_all</Function>
     <Function>MPI_Info_create</Function>
     <Function>MPI_Info_set</Function>
     <Function>MPI_Info_free</Function>
