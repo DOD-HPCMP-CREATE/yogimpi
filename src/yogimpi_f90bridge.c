@@ -79,6 +79,7 @@ static int check_to_ignore(int *raw_status) {
 #define YOGIMPI_GROUP_FREE yogimpi_group_free_
 #define YOGIMPI_GROUP_INCL yogimpi_group_incl_
 #define YOGIMPI_GROUP_RANK yogimpi_group_rank_
+#define YOGIMPI_GROUP_SIZE yogimpi_group_size_
 #define YOGIMPI_GROUP_TRANSLATE_RANKS yogimpi_group_translate_ranks_
 #define YOGIMPI_GET_PROCESSOR_NAME yogimpi_get_processor_name_
 #define YOGIMPI_WTIME yogimpi_wtime_
@@ -95,6 +96,7 @@ static int check_to_ignore(int *raw_status) {
 #define YOGIMPI_FILE_SET_VIEW yogimpi_file_set_view_
 #define YOGIMPI_FILE_WRITE_ALL yogimpi_file_write_all_
 #define YOGIMPI_FILE_WRITE_AT yogimpi_file_write_at_
+#define YOGIMPI_FILE_READ yogimpi_file_read_
 #define YOGIMPI_FILE_READ_AT yogimpi_file_read_at_
 #define YOGIMPI_FILE_READ_ALL yogimpi_file_read_all_
 #define YOGIMPI_INFO_CREATE yogimpi_info_create_
@@ -265,6 +267,10 @@ void YOGIMPI_GROUP_RANK(int *group, int *rank, int *ierror) {
     *ierror = YogiMPI_Group_rank(*group, rank);
 }
 
+void YOGIMPI_GROUP_SIZE(int *group, int *size, int *ierror) {
+    *ierror = YogiMPI_Group_size(*group, size);
+}
+
 void YOGIMPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
                                 int name_len) {
     char *interimName = null_terminate(name, name_len);
@@ -425,6 +431,18 @@ void YOGIMPI_FILE_READ_ALL(int *fh, void *buf, int *count, int *datatype,
     else {
         *ierror = YogiMPI_File_read_all(*fh, buf, *count, *datatype,
                                         (YogiMPI_Status *)status);
+    }
+}
+
+void YOGIMPI_FILE_READ(int *fh, void *buf, int *count, int *datatype,
+                       int *status, int *ierror) {
+    if (check_to_ignore(status)) {
+        *ierror = YogiMPI_File_read(*fh, buf, *count, *datatype,
+                                    YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        *ierror = YogiMPI_File_read(*fh, buf, *count, *datatype,
+                                    (YogiMPI_Status *)status);
     }
 }
 

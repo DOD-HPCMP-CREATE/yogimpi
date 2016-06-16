@@ -183,6 +183,7 @@ include 'yogimpif.h'
 #define MPI_GROUP_FREE YOGIMPI_GROUP_FREE
 #define MPI_GROUP_INCL YOGIMPI_GROUP_INCL
 #define MPI_GROUP_RANK YOGIMPI_GROUP_RANK
+#define MPI_GROUP_SIZE YOGIMPI_GROUP_SIZE
 #define MPI_GROUP_TRANSLATE_RANKS YOGIMPI_GROUP_TRANSLATE_RANKS
 #define MPI_GET_PROCESSOR_NAME YOGIMPI_GET_PROCESSOR_NAME
 #define MPI_WTIME YOGIMPI_WTIME
@@ -217,6 +218,7 @@ include 'yogimpif.h'
 #define MPI_FILE_SEEK YOGIMPI_FILE_SEEK
 #define MPI_FILE_READ_AT YOGIMPI_FILE_READ_AT
 #define MPI_FILE_READ_ALL YOGIMPI_FILE_READ_ALL
+#define MPI_FILE_READ YOGIMPI_FILE_READ
 
 ! And now the lowercase version since there is no case sensitivity.
 ! I love you, Fortran.
@@ -383,6 +385,7 @@ include 'yogimpif.h'
 #define mpi_group_free yogimpi_group_free
 #define mpi_group_incl yogimpi_group_incl
 #define mpi_group_rank yogimpi_group_rank
+#define mpi_group_size yogimpi_group_size
 #define mpi_group_translate_ranks yogimpi_group_translate_ranks
 #define mpi_get_processor_name yogimpi_get_processor_name
 #define mpi_wtime yogimpi_wtime
@@ -417,6 +420,7 @@ include 'yogimpif.h'
 #define mpi_file_seek yogimpi_file_seek
 #define mpi_file_read_at yogimpi_file_read_at
 #define mpi_file_read_all yogimpi_file_read_all
+#define mpi_file_read yogimpi_file_read
 
 ! And finally handle the case of using C-like case for MPI
 		
@@ -459,6 +463,7 @@ include 'yogimpif.h'
 #define MPI_Group_free YogiMPI_Group_free
 #define MPI_Group_incl YogiMPI_Group_incl
 #define MPI_Group_rank YogiMPI_Group_rank
+#define MPI_Group_size YogiMPI_Group_size
 #define MPI_Group_translate_ranks YogiMPI_Group_translate_ranks
 #define MPI_Get_processor_name YogiMPI_Get_processor_name
 #define MPI_Wtime YogiMPI_Wtime
@@ -494,3 +499,4 @@ include 'yogimpif.h'
 #define MPI_File_seek YogiMPI_File_seek
 #define MPI_File_read_at YogiMPI_File_read_at
 #define MPI_File_read_all YogiMPI_File_read_all
+#define MPI_File_read YogiMPI_File_read

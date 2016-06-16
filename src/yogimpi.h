@@ -600,12 +600,12 @@ int YogiMPI_Info_get(YogiMPI_Info info, char* key, int valuelen, char* value,
 		             int* flag);
 
 int YogiMPI_Group_excl(YogiMPI_Group group, int n, int* ranks,
-		               YogiMPI_Group* newgroup);
+                       YogiMPI_Group* newgroup);
 
 int YogiMPI_File_get_atomicity(YogiMPI_File mpi_fh, int* flag);
 
 int YogiMPI_File_read(YogiMPI_File mpi_fh, void* buf, int count,
-		              YogiMPI_Datatype datatype, YogiMPI_Status* status);
+                      YogiMPI_Datatype datatype, YogiMPI_Status* status);
 
 int YogiMPI_Info_get_nkeys(YogiMPI_Info info, int* nkeys);
 

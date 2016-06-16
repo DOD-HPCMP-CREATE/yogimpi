@@ -78,32 +78,64 @@ class yogisearch(object):
         for a in args:
             self.logFile.write(a + '\n')
 
+    def _hasMPIInLine(self, aLine, term, caseSensitive):
+        if caseSensitive:
+            checkLine = aLine
+            checkTerm = term
+        else:
+            checkLine = aLine.lower()
+            checkTerm = term.lower()
+        
+        startIndex = 0
+        if checkTerm in checkLine:
+            while startIndex < len(checkLine):
+                searchResult = checkLine.find(checkTerm, startIndex)
+                if not searchResult == -1:
+                    endIndex = searchResult + len(term)
+                    if endIndex >= len(checkLine):
+                        return True
+                    elif not checkLine[endIndex] == '_' \
+                         and not checkLine[endIndex].isalnum():
+                        return True
+                    startIndex = endIndex
+                else:
+                    return False
+        return False
+
+    def _hasMPIInFile(self, aFile, term, caseSensitive):
+        with open(aFile, 'r') as f:
+            theFileString = f.read()
+
+        if not term.lower() in theFileString.lower():
+            return False
+
+        with open(aFile, 'r') as f:
+            theFile = f.readlines()
+        
+        for aLine in theFile:
+            if self._hasMPIInLine(aLine, term, caseSensitive):
+                return True 
+        return False 
+
     def checkFileWrap(self, inputFile, definitions):
         # If definitions file is None, this isn't a source file to search.
         # Skip the file.
         if definitions is None:
             return
         noMPI = set() 
-        ihandle = open(inputFile, 'r')
-        rawFile = ihandle.readlines()
-        ihandle.close()
         caseSensitive = True 
         if self._isFortranSource(inputFile):
             caseSensitive = False
 
-        for aLine in rawFile:
-            for aDef in definitions:
-                if caseSensitive:
-                    if aDef in aLine:
-                        noMPI.add(aDef)    
-                else:
-                    if aDef.lower() in aLine.lower():
-                        noMPI.add(aDef)
+        print "Checking file " + inputFile
+
+        for aDef in definitions:
+            if self._hasMPIInFile(inputFile, aDef, caseSensitive):
+                noMPI.add(aDef)    
 
         if noMPI:
             self.writeLog(os.path.abspath(inputFile))
             self.writeLog(*noMPI)
-          
 
     def checkDirectoryWrap(self, inputDir):
         for dirpath, dnames, fnames in os.walk(inputDir):

@@ -347,7 +347,6 @@
     <Function>MPI_Test_cancelled</Function>
     <Function>MPI_Keyval_create</Function>
     <Function>MPI_Cart_sub</Function>
-    <Function>MPI_File_read</Function>
     <Function>MPI_File_get_amode</Function>
     <Function>MPI_Op_free</Function>
     <Function>MPI_Errhandler_get</Function>
@@ -474,7 +473,6 @@
     <Function>MPI_Type_create_keyval</Function>
     <Function>MPI_Pcontrol</Function>
     <Function>MPI_Fetch_and_op</Function>
-    <Function>MPI_Info_free</Function>
     <Function>MPI_Iscatterv</Function>
     <Function>MPI_Add_error_class</Function>
     <Function>MPI_File_set_errhandler</Function>
@@ -485,7 +483,6 @@
     <Function>MPI_Iallgatherv</Function>
     <Function>MPI_Type_match_size</Function>
     <Function>MPI_Neighbor_alltoallv</Function>
-    <Function>MPI_Group_size</Function>
     <Function>MPI_File_write_shared</Function>
     <Function>MPI_Ineighbor_alltoall</Function>
     <Function>MPI_Cancel</Function>
