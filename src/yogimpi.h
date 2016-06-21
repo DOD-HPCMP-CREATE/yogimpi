@@ -525,8 +525,9 @@ int YogiMPI_File_write_all(YogiMPI_File fh, const void *buf, int count,
 		                   YogiMPI_Datatype datatype, YogiMPI_Status *status);
 
 int YogiMPI_File_write_at(YogiMPI_File fh, YogiMPI_Offset offset, 
-		                  const void *buf, int count, YogiMPI_Datatype datatype, 
-					      YogiMPI_Status *status);
+                          const void *buf, int count, YogiMPI_Datatype datatype,                          YogiMPI_Status *status);
+
+int YogiMPI_File_get_position(YogiMPI_File fh, YogiMPI_Offset *offset);
 
 int YogiMPI_Info_create(YogiMPI_Info *info);
 
@@ -800,6 +801,10 @@ int YogiMPI_Type_dup(YogiMPI_Datatype type, YogiMPI_Datatype *newtype);
 int YogiMPI_Type_get_true_extent(YogiMPI_Datatype datatype,
                                  YogiMPI_Aint *true_lb,
                                  YogiMPI_Aint *true_extent);
+
+int YogiMPI_Alloc_mem(YogiMPI_Aint size, YogiMPI_Info info, void *baseptr);
+
+int YogiMPI_Free_mem(void *base);
 
 #ifdef __cplusplus
 }

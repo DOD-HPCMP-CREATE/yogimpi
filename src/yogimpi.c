@@ -1738,8 +1738,15 @@ int YogiMPI_File_write_at(YogiMPI_File fh, YogiMPI_Offset offset,
     return error_to_yogi(mpi_error);
 }
 
+int YogiMPI_File_get_position(YogiMPI_File fh, YogiMPI_Offset *offset) {
+    MPI_Offset input_offset;
+    int mpi_error = MPI_File_get_position(file_to_mpi(fh), &input_offset);
+    *offset = offset_to_yogi(input_offset);
+    return error_to_yogi(mpi_error);
+}
+
 int YogiMPI_Info_create(YogiMPI_Info *info) {
-	MPI_Info mpi_info;
+    MPI_Info mpi_info;
     int mpi_error = MPI_Info_create(&mpi_info);
     *info = add_new_info(mpi_info);
     
@@ -3044,4 +3051,14 @@ int YogiMPI_Type_get_true_extent(YogiMPI_Datatype datatype,
     else *true_extent = aint_to_yogi(conv_extent);
     return error_to_yogi(mpi_err);
 }
+
+int YogiMPI_Alloc_mem(YogiMPI_Aint size, YogiMPI_Info info, void *baseptr) {
+    return error_to_yogi(MPI_Alloc_mem(aint_to_mpi(size), info_to_mpi(info),
+                         baseptr));
+}
+
+int YogiMPI_Free_mem(void *base) {
+    return error_to_yogi(MPI_Free_mem(base));
+}
+
 

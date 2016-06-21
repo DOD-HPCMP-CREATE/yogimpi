@@ -293,6 +293,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_File_set_view YogiMPI_File_set_view
 #define MPI_File_write_all YogiMPI_File_write_all
 #define MPI_File_write_at YogiMPI_File_write_at
+#define MPI_File_get_position YogiMPI_File_get_position
 #define MPI_Info_create YogiMPI_Info_create
 #define MPI_Info_set YogiMPI_Info_set
 #define MPI_Test YogiMPI_Test
@@ -390,4 +391,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_Comm_get_attr YogiMPI_Comm_get_attr
 #define MPI_Type_dup YogiMPI_Type_dup
 #define MPI_Type_get_true_extent YogiMPI_Type_get_true_extent
+#define MPI_Alloc_mem YogiMPI_Alloc_mem
+#define MPI_Free_mem YogiMPI_Free_mem
 #endif /* MPITOYOGI_H */

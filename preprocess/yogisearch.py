@@ -127,8 +127,6 @@ class yogisearch(object):
         if self._isFortranSource(inputFile):
             caseSensitive = False
 
-        print "Checking file " + inputFile
-
         for aDef in definitions:
             if self._hasMPIInFile(inputFile, aDef, caseSensitive):
                 noMPI.add(aDef)    
@@ -138,10 +136,16 @@ class yogisearch(object):
             self.writeLog(*noMPI)
 
     def checkDirectoryWrap(self, inputDir):
+        totalChecked = 0
         for dirpath, dnames, fnames in os.walk(inputDir):
             for f in fnames:
-                self.checkFileWrap(os.path.join(dirpath, f),
-                                   self._getSearchDefs(f))
+               defs = self._getSearchDefs(f)
+               if defs:
+                   self.checkFileWrap(os.path.join(dirpath, f), defs)
+                   totalChecked += 1 
+                   totalStr = str(totalChecked) + ' source files scanned'
+                   sys.stdout.write('%s\r' % totalStr) 
+                   sys.stdout.flush()
 
     def _isSourceFile(self, fileName):
         if self._isFortranSource(fileName):
