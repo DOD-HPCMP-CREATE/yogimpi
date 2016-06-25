@@ -77,6 +77,7 @@ runtest: ctest ftest
 	./testRunner.sh 4 ./f_gatherscatter
 	./testRunner.sh 2 ./fnonblock
 	./testRunner.sh 4 ./fwaitsome
+	./testRunner.sh 2 ./fwtick
 	@echo "Tests passed."
 
 ctest: errorHandler createOp simple nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr
@@ -105,13 +106,16 @@ fnonblock: fnonBlocking.f90
 fwaitsome: waitsome.f90
 	$(YF90) $(FFLAGS) waitsome.f90 -o fwaitsome
 
+fwtick: fwtick.f90
+	$(YF90) $(FFLAGS) fwtick.f90 -o fwtick
+
 ftest: fwriteFile1 fsendrecv fcollective ftestComms f_gatherscatter \
-       fnonblock fwaitsome fsimple
+       fnonblock fwaitsome fsimple fwtick
 
 clean:
 	$(RM) *.o nonBlocking sendrecv fsendrecv simple testCancelled \
               writeFile1 fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall testComms fsimple \
-              ftestComms probe collective fcollective \
+              ftestComms probe collective fcollective fwtick \
               waitsome waitany fwaitsome createOp errorHandler testAll \
               cWriteFile.result fWriteFile.result testAttr

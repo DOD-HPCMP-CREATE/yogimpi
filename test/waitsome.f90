@@ -1,6 +1,6 @@
 program waitsome
 
-include 'mpif.h'
+use mpi
 
     integer :: rank, size, i, count, remaining, ierr
     integer :: index(4)

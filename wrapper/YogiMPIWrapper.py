@@ -162,6 +162,8 @@ class YogiMPIWrapper(object):
                                        r')(\s|,|\*|\)|\()', re.IGNORECASE)
                 oldLine = rawFile[i]
                 rawFile[i] = mpiString.sub(r"\g<1>Yogi\g<2>\g<3>", rawFile[i])
+                useString = re.compile(r"([\s]*)use[\s]+mpi", re.IGNORECASE)
+                rawFile[i] = useString.sub(r"\g<1>use yogimpi", rawFile[i])
                 if oldLine != rawFile[i]:
                     changedFile = True
 
