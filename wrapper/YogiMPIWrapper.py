@@ -5,6 +5,7 @@ import sys
 import time
 import subprocess
 import tempfile
+import filecmp
 import re
 from AVUtility import AVUtility as AU
 import xml.etree.ElementTree as ET
@@ -18,12 +19,16 @@ class YogiMPIWrapper(object):
                                 '.f03' ]
                  }
 
+    fixedExts = [ '.f77', '.f', '.for' ]
+    f77Comment = [ 'c', 'C', '*' ]
+
     def __init__(self, prefixDir, compilerName, compilerLang):
         self.prefixDir = prefixDir
         self.compilerName = compilerName
         self.compilerLang = compilerLang
         self.supportFile = self.prefixDir + '/bin/YogiSupported.xml'
         self.argArray = list(sys.argv)
+        self.cppArgs = []
         self.sourceDir = ''
         self.sourceFile = None
         self.sourceLocation = None
@@ -47,6 +52,8 @@ class YogiMPIWrapper(object):
                 diagMode = True
             elif self.compilerLang == 'Fortran' and anArg in fortranOptions:
                 self.preprocessOnly = True
+            if anArg.startswith(('-D', '-I')):
+                self.cppArgs.append(anArg)
         if diagMode:
             self._showCompilerString()
         else:
@@ -126,11 +133,11 @@ class YogiMPIWrapper(object):
                 changedFile = self.preprocessFortran()
                 if changedFile:
                     self.argArray[self.sourceLocation] = self.newPath
+                if not self.namesOutput and not self.isLinking:
+                    objectName = self._stripExtension(self.sourceFile) + '.o'
+                    self.argArray.append('-o ' + objectName)
             self.argArray.insert(self.sourceLocation, '-I' + self.prefixDir +\
                                  '/include -DYOGIMPI_ENABLED')
-            if not self.namesOutput and not self.isLinking:
-                objectName = self._stripExtension(self.sourceFile) + '.o'
-                self.argArray.append('-o ' + objectName)
         if self.isLinking:
              self.argArray.append('-L' + self.prefixDir + '/lib -lyogimpi')
 
@@ -143,6 +150,95 @@ class YogiMPIWrapper(object):
     def _printCommand(self):
         sys.stdout.write(self._getCallString() + '\n')
 
+    def _isFixedForm(self, sourceFile):
+        # Automatically assume a .f or .f77 file is fixed-form.
+        if self._stripExtension(sourceFile).lower() in YogiMPIWrapper.fixedExts:
+            return True
+        return False 
+
+    ## Return whether this is a line to ignore (blank or comment). 
+    def _isFortranIgnoreLine(self, sourceLine, fixed=False):
+	if not sourceLine.strip():
+            # Ignore empty lines.
+	    return True 
+        if sourceLine.lstrip().startswith('!'):
+            # Ignore comment lines for free-form. Unfortunately some pseudo
+            # fixed-form codes also have lines that start with this, and it
+            # is expected they'll also be treated as comments.
+            return True 
+        elif fixed and sourceLine[0] in YogiMPIWrapper.f77Comments:
+            # Ignore comments for fixed-form.
+            return True 
+        if sourceLine.startswith('#'):
+            # Ignore preprocessor directives.
+            return True           
+        return False
+
+    ## Handle line-continuation in Fortran, which may require breaking a line
+    #  into pieces if we have made it too long.
+    #  @arg fileArray The Python list containing lines of the files.
+    #  @arg lineNumber The number of the line to check.
+    def _checkFixedLine(self, fileArray, lineNumber):
+        line = fileArray[lineNumber]
+        if len(line.rstrip()) <= 72:
+            # Nothing to do here.
+            return (lineNumber + 1)
+
+        # Strip off comments coming after valid expression.
+        commentStart = line.find('!') 
+        if commentStart > -1 and line[commentStart - 1] != "\\":
+            line = line[:commentStart]
+            if len(line.rstrip()) <= 72:
+                # If removing the comment fixed length problems, done.
+                fileArray[lineNumber] = line
+                return (lineNumber + 1) 
+
+        # Otherwise split the line into two pieces, the second with
+        # a continuation character.
+        firstPart = line[:72].rstrip()
+        secondPart = '     &' + line[72:].rstrip()
+        fileArray[lineNumber] = firstPart + '\n'
+        if (lineNumber + 1) < len(fileArray):
+            fileArray.insert(lineNumber + 1, secondPart + '\n')
+        else:
+            # This was the last line of the file.  Add one more line.
+            fileArray.append(secondPart)
+        # Return the bumped up line count.  In any case it's two lines.
+        return (lineNumber + 2)
+    
+    ## Calls the system preprocessor (cpp) to yield a fully expanded Fortran
+    #  source file.  Sometimes this is needed in tricky situations where 
+    #  Fortran source "includes" another source file that has MPI definitions.
+    def _callSystemPreprocessor(self):
+        cppString = ''
+        for i in range(len(self.cppArgs)):
+            anArg = self.cppArgs[i]
+            if i > 0:
+                cppString += ' ' 
+            cppString += anArg 
+        cppString += " " + self._getFullSourcePath()
+        try:   
+            fileExtension = self._getExtension(self.sourceFile)
+            newFile, newPath = tempfile.mkstemp(prefix='yogiF_',
+                                                suffix=fileExtension)
+            os.close(newFile)
+            cppString += " " + newPath
+            subprocess.check_call("cpp -P -traditional-cpp " + cppString,
+                                  shell=True)
+            if filecmp.cmp(self._getFullSourcePath(), newPath):
+                # The files are the same, no need to do anything.
+                os.remove(newPath) 
+                return False
+            else:
+                self._outputMsg("File " + self._getFullSourcePath() +\
+                                " changed when running system preprocessor," +\
+                                " new file is " + newPath) 
+                return newPath
+        except:
+            print "YogiMPI encountered an error preprocessing Fortran source."
+            raise
+        
+
     ## Preprocesses a Fortran file, changing MPI_ to YogiMPI_ wherever
     #  used.  A temporary file is created with the new contents.
     #  Returns True on False as to whether the file was ever changed.
@@ -150,22 +246,53 @@ class YogiMPIWrapper(object):
         changedFile = False
         self._outputMsg("Preprocessing Fortran source " +\
                         self._getFullSourcePath())
-        fileHandle = open(self._getFullSourcePath(), 'r')
-        rawFile = fileHandle.readlines()
-        fileHandle.close()
+        with open(self._getFullSourcePath(), 'r') as f:
+           firstRead = f.read()
+           f.seek(0)
+           origLines = f.readlines()
+           if '#include' in firstRead:
+               neededCPP = self._callSystemPreprocessor()
+           else:
+               neededCPP = False
+
+        if neededCPP:
+            startFile = neededCPP
+            fileHandle = open(startFile, 'r')
+            rawFile = fileHandle.readlines()
+            fileHandle.close()
+        else:
+            rawFile = origLines 
+            startFile = self._getFullSourcePath() 
+
+        fixedForm = self._isFixedForm(startFile) 
+        if neededCPP:
+            os.remove(neededCPP)
 
         searchTerms = self.mpi_constants + self.mpi_functions
         for aPattern in searchTerms: 
-            for i in range(len(rawFile)):
+            i = 0
+            while i < len(rawFile):
+                line = rawFile[i]
+                if self._isFortranIgnoreLine(line, fixedForm):
+                    i += 1
+                    continue
                 mpiString = re.compile(r"(^|_|=|\s|\(|\)|,|\*|\+)(" +\
                                        aPattern +\
                                        r')(\s|,|\*|\)|\()', re.IGNORECASE)
-                oldLine = rawFile[i]
-                rawFile[i] = mpiString.sub(r"\g<1>Yogi\g<2>\g<3>", rawFile[i])
+                oldLine = line
+                line = mpiString.sub(r"\g<1>Yogi\g<2>\g<3>", line)
                 useString = re.compile(r"([\s]*)use[\s]+mpi", re.IGNORECASE)
-                rawFile[i] = useString.sub(r"\g<1>use yogimpi", rawFile[i])
-                if oldLine != rawFile[i]:
+                line = useString.sub(r"\g<1>use yogimpi", line)
+                if oldLine != line:
+                    rawFile[i] = line
+                    if fixedForm:
+                        # i can be modified if added lines should be skipped.
+                        i = self._checkFixedLine(rawFile, i)
+                    else:
+                        i += 1
                     changedFile = True
+                else:
+                    i += 1
 
         if not changedFile:
             self._outputMsg("File " + self._getFullSourcePath() +\
