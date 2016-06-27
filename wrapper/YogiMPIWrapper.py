@@ -108,12 +108,15 @@ class YogiMPIWrapper(object):
         # Now create regular expressions from everything loaded.
         # This is currently only needed if using Fortran.
         if self.compilerLang == 'Fortran':
-            searchTerms = self.mpi_constants + self.mpi_functions
-            for aPattern in searchTerms:
+            for aPattern in self.mpi_constants:
                 regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
                               r')(\s|,|\*|\)|\()'
                 self.mpi_regexes.append(re.compile(regexString, re.IGNORECASE))
-
+            for aPattern in self.mpi_functions:
+                # Functions require an open parenthesis to follow.
+                regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+                              r')([\s]*\()'
+                self.mpi_regexes.append(re.compile(regexString, re.IGNORECASE))
         
     def setFile(self, inputFile, argLocation):
         self.sourceDir = os.path.dirname(inputFile)
