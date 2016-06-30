@@ -544,7 +544,7 @@
     <Function>MPI_Group_free</Function>
     <Function>MPI_Group_incl</Function>
     <Function>MPI_Group_rank</Function>
-    <Function>MPI_Grop_size</Function>
+    <Function>MPI_Group_size</Function>
     <Function>MPI_Group_translate_ranks</Function>
     <Function>MPI_Get_processor_name</Function>
     <Function>MPI_Wtime</Function>
