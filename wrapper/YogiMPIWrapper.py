@@ -109,12 +109,12 @@ class YogiMPIWrapper(object):
         # This is currently only needed if using Fortran.
         if self.compilerLang == 'Fortran':
             for aPattern in self.mpi_constants:
-                regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+                regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
                               r')(\s|,|\*|\)|\()'
                 self.mpi_regexes.append(re.compile(regexString, re.IGNORECASE))
             for aPattern in self.mpi_functions:
                 # Functions require an open parenthesis to follow.
-                regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+                regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
                               r')([\s]*\()'
                 self.mpi_regexes.append(re.compile(regexString, re.IGNORECASE))
         
