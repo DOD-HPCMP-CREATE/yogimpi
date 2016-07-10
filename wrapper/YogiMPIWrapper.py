@@ -113,9 +113,12 @@ class YogiMPIWrapper(object):
                               r')(\s|,|\*|\)|\()'
                 self.mpi_regexes.append(re.compile(regexString, re.IGNORECASE))
             for aPattern in self.mpi_functions:
-                # Functions require an open parenthesis to follow.
-                regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
-                              r')([\s]*\()'
+                # Functions require an open parenthesis to follow, or
+                # if there is a line continuation just trust that someone
+                # put one on the next line.
+                # ToDo: Actually do lookahead and find out for that last case.
+                regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+                              r')([\s]*\(|[\s]*&$)'
                 self.mpi_regexes.append(re.compile(regexString, re.IGNORECASE))
         
     def setFile(self, inputFile, argLocation):

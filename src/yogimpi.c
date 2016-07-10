@@ -672,7 +672,7 @@ YogiMPI_Comm fortran_comm_to_yogi(int fortran_comm) {
 }
 
 YogiMPI_Group fortran_group_to_yogi(int fortran_group) {
-    MPI_Comm c_group = MPI_Group_f2c(fortran_group);
+    MPI_Group c_group = MPI_Group_f2c(fortran_group);
     return add_new_group(c_group);
 }
 
