@@ -67,11 +67,11 @@ class yogisearch(object):
     #           file is placed into myList2.
     def loadLanguageLists(self, inputFile, langMap):
         fileTree = ET.parse(inputFile).getroot()
-        for langElement in fileTree.iterfind('Language'):
+        for langElement in fileTree.findall('Language'):
             targetList = langMap[langElement.get('name')]
             entryTypeList = [ 'Constant', 'Object', 'Function' ]
             for entryType in entryTypeList:
-                for entry in langElement.iterfind(entryType):
+                for entry in langElement.findall(entryType):
                     targetList.append(AU._getValidText(entry, True))
 
     def writeLog(self, *args):

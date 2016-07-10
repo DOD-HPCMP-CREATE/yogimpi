@@ -106,6 +106,7 @@ static int check_to_ignore(int *raw_status) {
 #define YOGIMPI_WAITSOME yogimpi_waitsome_
 #define YOGIMPI_WAITALL yogimpi_waitall_
 #define YOGIMPI_SEND_INIT yogimpi_send_init_
+#define YOGIMPI_SENDRECV yogimpi_sendrecv_
 #define YOGIMPI_GATHERV yogimpi_gatherv_
 #define YOGIMPI_SCATTER yogimpi_scatter_
 #define YOGIMPI_SCATTERV yogimpi_scatterv_
@@ -176,6 +177,25 @@ void YOGIMPI_IRECV(void *buffer, int *count, int *datatype, int *source,
                    int *tag, int *comm, int *request, int *ierror) {
     *ierror = YogiMPI_Irecv(buffer, *count, *datatype, *source, *tag, *comm,
                             request);
+}
+
+void YOGIMPI_SENDRECV(void *sendbuf, int *sendcount, int *sendtype,
+                      int *dest, int *sendtag, void *recvbuf, int *recvcount,
+                      int *recvtype, int *source, int *recvtag,
+                      int *comm, int *status, int *ierror) {
+    if (check_to_ignore(status)) {
+        *ierror = YogiMPI_Sendrecv(sendbuf, *sendcount, *sendtype, *dest,
+                                   *sendtag, recvbuf, *recvcount, *recvtype,
+                                   *source, *recvtag, *comm,
+                                   YogiMPI_STATUS_IGNORE);
+    }
+    else {
+        *ierror = YogiMPI_Sendrecv(sendbuf, *sendcount, *sendtype, *dest,
+                                   *sendtag, recvbuf, *recvcount, *recvtype,
+                                   *source, *recvtag, *comm,
+                                   (YogiMPI_Status *)status);
+    }
+
 }
 
 void YOGIMPI_WAIT(int *request, int *status, int *ierror) {

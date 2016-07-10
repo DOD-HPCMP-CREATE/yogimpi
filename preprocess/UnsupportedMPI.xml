@@ -494,7 +494,6 @@
     <Function>MPI_File_iread_shared</Function>
     <Function>MPI_Cart_shift</Function>
     <Function>MPI_Comm_get_name</Function>
-    <Function>MPI_Sendrecv</Function>
     <Function>MPIX_Comm_reenable_anysource</Function>
     <Function>MPI_Get_accumulate</Function>
     <Function>MPI_Error_class</Function>

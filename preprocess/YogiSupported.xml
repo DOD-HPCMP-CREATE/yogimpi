@@ -512,6 +512,7 @@
     <Function>MPI_Isend</Function>
     <Function>MPI_Issend</Function>
     <Function>MPI_Irecv</Function>
+    <Function>MPI_Sendrecv</Function>
     <Function>MPI_Wait</Function>
     <Function>MPI_Request_free</Function>
     <Function>MPI_Waitsome</Function>

@@ -2417,9 +2417,9 @@ int YogiMPI_Comm_compare(YogiMPI_Comm comm1, YogiMPI_Comm comm2, int* result) {
 }
 
 int YogiMPI_Sendrecv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
-		             int dest, int sendtag, void* recvbuf, int recvcount,
-					 YogiMPI_Datatype recvtype, int source, int recvtag,
-					 YogiMPI_Comm comm, YogiMPI_Status* status) {
+                     int dest, int sendtag, void* recvbuf, int recvcount,
+                     YogiMPI_Datatype recvtype, int source, int recvtag,
+                     YogiMPI_Comm comm, YogiMPI_Status* status) {
 
     MPI_Datatype conv_sendtype = datatype_to_mpi(sendtype);
     MPI_Datatype conv_recvtype = datatype_to_mpi(recvtype);
@@ -2427,16 +2427,15 @@ int YogiMPI_Sendrecv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
     int mpi_error;
     if (status == YogiMPI_STATUS_IGNORE) {
         mpi_error = MPI_Sendrecv(sendbuf, sendcount, conv_sendtype, dest, 
-        		                 sendtag, recvbuf, recvcount, conv_recvtype,
-								 source, recvtag, conv_comm, MPI_STATUS_IGNORE);
+                                 sendtag, recvbuf, recvcount, conv_recvtype,
+                                 source, recvtag, conv_comm, MPI_STATUS_IGNORE);
     }
     else {
         MPI_Status * in_status = yogi_status_to_mpi(status);
         mpi_error = MPI_Sendrecv(sendbuf, sendcount, conv_sendtype, dest,
-        		                 sendtag, recvbuf, recvcount, conv_recvtype,
-								 source, recvtag, conv_comm, in_status);
+                                 sendtag, recvbuf, recvcount, conv_recvtype,
+                                 source, recvtag, conv_comm, in_status);
         mpi_status_to_yogi(in_status, status);
-
     }
     return error_to_yogi(mpi_error);
 }

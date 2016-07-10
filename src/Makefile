@@ -2,7 +2,7 @@ include ../Make.flags
  
 .PHONY: default clean
 
-default: yogimpi.c yogimpi_f90bridge.c yogimpi.h mpitoyogi.h yogimpif.h mpiftoyogi.h yogimpi_fortran.f90
+default: yogimpi.c yogimpi_f90bridge.c yogimpi.h mpitoyogi.h yogimpif.h yogimpi_fortran.f90
 	$(MPICC) $(CFLAGS) -c yogimpi.c
 	$(F90) $(FFLAGS) -c yogimpi_fortran.f90
 	$(F90) $(FFLAGS) -c yogimpi_module.f90
