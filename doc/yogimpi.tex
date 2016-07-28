@@ -1,0 +1,175 @@
+\documentclass{article}
+\usepackage{hyperref}
+\usepackage[letterpaper]{geometry}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+
+\title{YogiMPI Installation, Usage, and HELIOS Integration}
+\author{Stephen Adamec}
+
+\maketitle
+
+\section{Background}
+
+YogiMPI allows developers to build a single MPI-based binary that will run on most systems with the same operating system and basic architecture (in all uses so far, x86\_64 Linux).  The following instructions detail how to build YogiMPI, how to work with any generic MPI application, and specific instructions to compile the HELIOS application.
+
+There are some other important things to consider in order to maximize the number of systems where you can use a YogiMPI-built binary.  Please see the last section, \hyperref[choosebuild]{Choosing a Build System}, for more information.
+
+\section{Setup and Using YogiMPI}
+
+\subsection{Choose A Compiler and MPI}
+YogiMPI requires an Intel or GNU compiler in order to build properly.  It also requires an MPI-2 distribution against which to compile.  Tested distributions include MPICH, OpenMPI, SGI MPT, CRAY MPICH, and Intel MPI.  
+
+The compiler choice is important.  If a compiler is used to build a binary with YogiMPI, that same compiler with an equal or greater version must be present on any system where the binary will run.
+
+Note that the application that is compiled with and linked against YogiMPI is not dependent on any specific MPI distribution, allowing more flexibility than traditional parallel applications.
+
+\subsection{Build YogiMPI}
+
+\begin{enumerate}
+\item Get the YogiMPI source: \texttt{git clone svn+ssh://svn.create.hpc.mil/usr/local/git/yogimpi.git}
+\item Check out the current tag (at the time of writing, v0.4): \texttt{git checkout v0.4}
+\item Load your chosen compiler, MPI distribution, and ptoolsrte into the shell.
+\item Set the following environment variables.  The examples use bash syntax, but [t]csh also works:
+\begin{enumerate}
+\item \texttt{YCC}: serial C compiler (e.g. \texttt{export YCC=icc} or \texttt{YCC=gcc})
+\item \texttt{YCXX}: serial C++ compiler (e.g. export \texttt{YCXX=icpc} or \texttt{YCXX=g++})
+\item \texttt{YF90}: serial Fortran compiler (e.g. \texttt{export YF90=ifort} or \texttt{YF90=gfortran})
+\item \texttt{YMPICC}: parallel C compiler (e.g. \texttt{export YMPICC=mpicc} or \texttt{YMPICC=cc}, the last being what you'd use on a CRAY)
+\item \texttt{export YMPI\_ENABLE\_PYTHON=1}
+\end{enumerate}
+\item \texttt{./configure -i /path/to/install/yogimpi}
+\item \texttt{make}
+\item \texttt{make install}
+\end{enumerate}
+
+\subsection{Compiling Any Generic Application with YogiMPI}
+\label{generic:compile}
+YogiMPI comes with pre-installed compiler wrappers named \texttt{mpicc}, \texttt{mpicxx}, \texttt{mpif77}, and \texttt{mpif90}.  These may be used just like any other compiler wrapper with your application.  This will allow you to build the application only once on your local \textit{build system}, after which it can be deployed to \textit{target systems}.
+
+In order to set up your build system environment so Yogi is ready to compile:
+
+\begin{enumerate}
+\item Load the compiler used to build YogiMPI.
+\item Load the MPI distribution used to build YogiMPI.
+\item Load ptoolsrte.
+\item Load YogiMPI.  This can be achieved by \texttt{source /path/to/install/yogimpi/etc/yogimpi.bashrc} or by loading the module \texttt{/path/to/install/yogimpi/etc/modulefile}.  It is \textbf{very important} that at the end of setting up your shell, \texttt{which mpicc} resolves to the YogiMPI wrapper version, not the MPI distribution version.
+\end{enumerate}
+
+Now \texttt{mpicc}, \texttt{mpif90}, and \texttt{mpicxx} can be used normally to build an application. If an application expects additional information about the MPI directory loation, such as \texttt{MPI\_ROOT}, this can be set to \texttt{/path/to/yogimpi-install}. You may notice that if your application contains many Fortran files with lots of MPI subroutine calls, a compile with YogiMPI may take longer.  This is because YogiMPI must preprocess Fortran source more heavily than C and C++.
+
+\subsection{Running Yogi-Built Applications on Another System}
+
+Once you have compiled your binary on the build system, you will want the ability to run it elsewhere.  As a reminder, if the build system was where the binary was originally compiled, the \textit{target system} is another system where the executable is expected to run.  In order to prepare a target system, you'll need to do the following:
+
+\begin{enumerate}
+\item Compile YogiMPI on the target system.  You can use any MPI distribution you want; but the compiler vendor must be the same, and the version must be \textbf{equal or greater than} the one you used on the build system.  For example, if you used Intel 12 on your build system, you must use Intel 12 or greater on the target system.
+\item Set up your shell or queue script with the compiler, MPI, and ptoolsrte configuration of your choice.  The build of YogiMPI on the target system will contain an \texttt{etc/yogimpi.bashrc} and \texttt{etc/modulefile}, one of which must be sourced or loaded, respectively.
+\item Run the application normally, as if it was built with the local MPI.
+\end{enumerate}
+
+\section{Building Helios with YogiMPI}
+
+\subsection{Compile helios-tools with YogiMPI}
+
+\textit{Note: A YogiMPI build of helios-tools is usually only required once. Versions of HELIOS that depend on the same version of helios-tools may continue to leverage the same build.} 
+
+Building helios-tools with YogiMPI is straightforward and requires very little change from a normal compile. There is, however, one major limitation:
+
+\begin{itemize}
+\item ParaView \textbf{cannot} yet be built in helios-tools with YogiMPI.  If you want to use ParaView, you must compile it on the \textit{build system} and \textit{each target system}. You \textbf{can}, however, compile coviz modules in a Yogi build, and that coviz module will run on any system that has ParaView. Make sure to build ParaView with the right MPI and compiler on each target system before starting. (These are already on the DSRCs.)
+\end{itemize}
+
+\begin{enumerate}
+\item Set up a helios-tools machine configuration for your build system.  Notes:
+\begin{enumerate}
+\item Name the configuration. I recommend using \texttt{yogi\_compilername\_version}.  The MPI distribution will vary from machine to machine.
+\item In your configuration, make sure to add the following tag: \texttt{<UseYogiMPI>true</UseYogiMPI>}
+\item Mirror the same setup of compiler, MPI, ptoolsrte, and YogiMPI sourcing mentioned in the Generic Application setup within the \texttt{<Environment>} tag section of your machine configuration.
+\item Make sure ParaView is in your \texttt{<ExcludePackages>} section of your machine configuration.
+\item I recommend removing \texttt{-xHost} and any architecture specific configuration from all compiler flag lines. Unless you are absolutely sure all systems will have at least the same chip generation or greater, you risk binary incompatibility. See \hyperref[choosebuild]{Choosing a Build System} for more information on other possibilities.
+\end{enumerate}
+\item Compile helios-tools normally: \texttt{./install.py -v -c config/my-config.xml}
+\item helios-tools is almost ready to use with YogiMPI, but it needs a couple of tweaks.  This is because you'll need to carry this helios-tools build with you to multiple target systems with potentially different file paths.
+\begin{enumerate}
+
+\item Alter the \texttt{etc/<config-name>/avtools.bashrc} file.  If the avtools install for this config is in \texttt{/path/to/avtools/install/<config-name>}:
+\begin{verbatim}
+sed -i "s|/path/to/avtools/install/<config-name>|\$AVTOOLSPKGSDIR|g" \
+    /path/to/avtools/etc/<config-name>/avtools.bashrc
+\end{verbatim}
+
+\item In \texttt{etc/<config-name>/avtools.bashrc}, change the third line beginning with \texttt{export AVTOOLSPKGSDIR=} to the right location.  As you move between target systems, you can change this one line to have the right paths in place.
+
+\item You'll need to symlink the location of \texttt{ParaView-v5.0.1} in \texttt{/path/to/avtools/install/<config-name>}:
+\begin{verbatim}
+cd /path/to/avtools/install/<config-name>
+ln -s /path/to/ParaView-v5.0.1 ParaView-v5.0.1
+\end{verbatim}
+\item Set the \texttt{ParaViewLocation} variable in \texttt{avtools.bashrc}:
+\begin{verbatim}
+export ParaViewLocation=$AVTOOLSPKGSDIR/ParaView-v5.0.1
+\end{verbatim}
+\end{enumerate}
+\end{enumerate}
+
+\subsection{Compile HELIOS}
+
+Set up your compiler, MPI, ptoolsrte, helios-tools, and YogiMPI in your environment as described \hyperref[generic:compile]{for any generic application}. \texttt{which mpicc} must resolve to the YogiMPI wrapper.
+\begin{enumerate}
+\item Configure HELIOS for a YogiMPI build.
+\begin{verbatim}
+mkdir buildDir
+cd buildDir
+../path/to/helios/configure -t ../template.xml -v --yogimpi --package -i /path/to/install
+\end{verbatim}
+
+\item \texttt{./quickBuild.sh} (this will take longer than a non-Yogi build)
+
+\item Once finished, you have a HELIOS Yogi build. You can create a tarball of \texttt{/path/to/install} on your build system and copy it to target systems. 
+\end{enumerate}
+
+\subsection{Running HELIOS On A Target System}
+\begin{enumerate}
+\item On the target system, ensure YogiMPI is built.
+\item Unpack your previously built helios-tools and HELIOS binary.
+\item Adjust the helios-tools \texttt{avtools.bashrc} so that \texttt{\$AVTOOLSPKGSDIR} points to the right location, as mentioned previously, and make sure the \texttt{ParaView-v5.0.1} symlink points to the on-system build.
+\item Create a \texttt{<system>.settings} file based on examples from the source repository. This file is used by a \texttt{configure} script in the top-level of the binary directory. Using the values you provide in your settings file, it adjusts HELIOS scripts to run with whatever modules and YogiMPI are on the system. See \texttt{helios-source/scripts/sles11.settings} for an example. Once this script has been created, it can be reused for many YogiMPI binaries.
+\item \texttt{cd /path/to/helios\_binary}
+\item \texttt{./configure <system>.settings}
+\item Run the application normally. 
+\end{enumerate}
+
+\section{Extra: Choosing a Build System}
+\label{choosebuild}
+Several factors are involved in choosing an ideal build system that maximizes compatibility of a YogiMPI binary. A \textit{build system} refers to a specific workstation or server where an application will be compiled with YogiMPI.  A \textit{target system} refers to any system where this application will be deployed for execution.
+\subsection{glibc Compatibility}
+One major issue in binary compatibility between Linux systems is the version of the GNU C Library (glibc) installed by the operating system. If a YogiMPI binary is created on a build system, the glibc version on the target system \textbf{must be equal to or greater than} the build system's glibc version.
+For example, SuSE Enterprise Linux 11 has a lower glibc version than CentOS 6 systems. We can verify this by checking the version on SLES 11:
+\begin{verbatim}
+sadamec@ozymandias:~> cat /etc/SuSE-release 
+SUSE Linux Enterprise Server 11 (x86_64)
+VERSION = 11
+PATCHLEVEL = 1
+sadamec@ozymandias:~> ls -al /lib64/libc.so*
+lrwxrwxrwx 1 root root 14 2014-02-27 14:10 /lib64/libc.so.6 -> libc-2.11.1.so
+\end{verbatim}
+And on CentOS 6:
+\begin{verbatim}
+sadamec@me-saala ~]$ cat /etc/redhat-release 
+CentOS release 6.8 (Final)
+[sadamec@me-saala ~]$ ls -al /lib64/libc.so*
+lrwxrwxrwx. 1 root root 12 Jun  2 10:38 /lib64/libc.so.6 -> libc-2.12.so
+\end{verbatim}
+Therefore if the build system were SLES11, the build would run on a target system that is CentOS 6; but the reverse is not true. In general, choosing the \textbf{lowest glibc version} will result in greater compatibility.
+\subsection{Compiler Optimizations}
+Another problem can occur when using chip-specific optimizations on a YogiMPI binary.  If the build system contains a newer chipset than a target system, using optimizations for that chipset may result in a binary that does not run on older hardware.  For instance, using the Intel compiler \texttt{-xHost} flag on a build system that is newer than a deployment target might result in code that cannot execute. 
+There are several solutions to this problem:
+\begin{itemize}
+\item Do not use chip-specific optimizations.  The default hardware optimization of the Intel compiler will likely target SSE3 instructions, which have been in hardware for the last decade. Non architecture-specific optimization flags such as \texttt{-O3} are still acceptable.
+\item Use older hardware for a build system that is guaranteed to meet the minimum hardware requirements. Then a flag like \texttt{-xHost} will provide some optimizations, but it will remain compatible with all systems.
+\item As a variation of the above, create a virtual machine that reports an older chipset than the actual hardware, which will again end with lower chip optimizations.
+\item If the compiler supports it, use multiple optimization pathways. Intel compilers offer options to compile for multiple architectures, and the highest supported is chosen at runtime.
+\end{itemize}
+\end{document}
