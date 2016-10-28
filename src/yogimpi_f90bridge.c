@@ -132,6 +132,15 @@ static char * null_terminate(char *fString, size_t slen) {
     return returnString;
 }		
 
+/* Fortran old-style API for comm resolution. Modifies a separate object to
+ * preserve the non-Yogi one. 
+   @param rawComm (input) Void pointer to non-Yogi communicator object. 
+   @param yogiComm (output) Yogified version of communicator object.
+ */
+void yogi_resolvecomm_(void *rawComm, int *yogiComm) {
+    *yogiComm = Yogi_ResolveComm(rawComm);
+}
+
 void YOGIMPI_SEND(void *buffer, int *count, int *datatype, int *dest, int *tag,
 		          int *comm, int *ierror) {
     *ierror = YogiMPI_Send(buffer, *count, *datatype, *dest, *tag, *comm);
