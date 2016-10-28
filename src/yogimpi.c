@@ -595,12 +595,12 @@ static int check_datatype_presence(MPI_Datatype type_input) {
  * Returns index of location of comm, or -1 if not found.
  */
 static int check_comm_presence(MPI_Comm comm_input) {
-	int current = 0;
-	while(current < num_comms) {
-	    if (comm_pool[current] == comm_input) {
-	        return current;
-	    }
-	    ++current;//
+    int current = 0;
+    while(current < num_comms) {
+        if (comm_pool[current] == comm_input) {
+	    return current;
+	}
+	++current;//
     }
     return -1;	
 }
@@ -679,6 +679,11 @@ YogiMPI_Group fortran_group_to_yogi(int fortran_group) {
 YogiMPI_Comm Yogi_ResolveComm(void *commObject) {
     MPI_Comm *aComm = (MPI_Comm*)commObject;
     return check_comm_presence(*aComm);
+}
+
+YogiMPI_Comm Yogi_ResolveComm_f2c(int *fCommObject) {
+    MPI_Comm cver = MPI_Comm_f2c(*fCommObject); 
+    return YogiMPI_ResolveComm(&cver);
 }
 
 YogiMPI_Datatype Yogi_ResolveDatatype(void *datatypeObject) {

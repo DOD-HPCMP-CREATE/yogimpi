@@ -137,8 +137,8 @@ static char * null_terminate(char *fString, size_t slen) {
    @param rawComm (input) Void pointer to non-Yogi communicator object. 
    @param yogiComm (output) Yogified version of communicator object.
  */
-void yogi_resolvecomm_(void *rawComm, int *yogiComm) {
-    *yogiComm = Yogi_ResolveComm(rawComm);
+void yogi_f90_resolvecomm_(void *rawComm, int *yogiComm) {
+    *yogiComm = Yogi_ResolveComm_f2c(rawComm);
 }
 
 void YOGIMPI_SEND(void *buffer, int *count, int *datatype, int *dest, int *tag,

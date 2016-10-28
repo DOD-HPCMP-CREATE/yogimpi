@@ -355,6 +355,8 @@ typedef int YogiMPI_Comm_delete_attr_function(YogiMPI_Comm comm,
  * the MPI_Datatype or MPI_Comm is never used, this isn't required.
  */
 YogiMPI_Comm Yogi_ResolveComm(void *commObject);
+/* Resolve a Fortran handle to an MPI communicator into a Yogi handle. */
+YogiMPI_Comm Yogi_ResolveComm_f2c(int *commObject);
 YogiMPI_Datatype Yogi_ResolveDatatype(void *datatypeObject);
 int Yogi_ResolveErrorcode(int errorcode);
 
