@@ -52,6 +52,10 @@ class YogiMPIWrapper(object):
         self.debug = int(os.environ.get('YMPI_COMPILER_DEBUG', 0))
 
         diagMode = False
+        if "--no-yogi" in self.argArray:
+            self.passThrough()
+            return
+
         for anArg in self.argArray:
             if anArg in diagOptions:
                 diagMode = True
@@ -341,7 +345,15 @@ class YogiMPIWrapper(object):
                 self.newFile.close()
 
         return changedFile
-        
+
+    ## Passes through doing any YogiMPI flags and acts only as the underlying
+    #  serial compiler.       
+    def passThrough(self):
+        self.argArray[0] = self.compilerName
+        self.argArray.remove('--no-yogi')
+        self._outputMsg("Final compile string: " + self._getCallString())
+        self.rc = subprocess.call(self._getCallString(), shell=True)
+ 
     def doWrap(self):
         for i in range(len(self.argArray)):
             anOpt = self.argArray[i]
