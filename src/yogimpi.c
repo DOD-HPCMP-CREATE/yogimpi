@@ -683,7 +683,7 @@ YogiMPI_Comm Yogi_ResolveComm(void *commObject) {
 
 YogiMPI_Comm Yogi_ResolveComm_f2c(int *fCommObject) {
     MPI_Comm cver = MPI_Comm_f2c(*fCommObject); 
-    return YogiMPI_ResolveComm(&cver);
+    return Yogi_ResolveComm(&cver);
 }
 
 YogiMPI_Datatype Yogi_ResolveDatatype(void *datatypeObject) {

@@ -46,10 +46,30 @@ while getopts ":i:h" opt; do
   esac
 done
 
-cCompiler=$YCC
-cxxCompiler=$YCXX
-fortranCompiler=$YF90
+if [[ ! -z $YFAMILY ]]; then
+    if [[ $YFAMILY == "intel" ]]; then 
+        echo "Using Intel compiler family defaults for Yogi."
+        cCompiler=icc
+        cxxCompiler=icpc
+        fortranCompiler=ifort
+    elif [[ $YFAMILY == "gnu" ]]; then
+        echo "Using GNU compiler family defaults for Yogi."
+        cCompiler=gcc
+        cxxCompiler=g++
+        fortranCompiler=gfortran
+    else
+        echo "I don't recognize the $YFAMILY compiler family."
+        exit 1
+    fi
+else
+    # If the user specified individually, use these.
+    cCompiler=$YCC
+    cxxCompiler=$YCXX
+    fortranCompiler=$YF90
+fi
+
 mpiC=$YMPICC
+
 # Hardcode this value for now.
 callMPI="mpirun -np"
 
@@ -72,14 +92,30 @@ errorIfEmpty "$cxxCompiler" "C++ compiler"
 errorIfEmpty "$fortranCompiler" "Fortran compiler"
 errorIfEmpty "$mpiC" "Parallel C compiler"
 
-if [[ -z $PYTHONHOME || -z $YMPI_ENABLE_PYTHON ]]; then
+# If YMPI_ENABLE_PYTHON is empty, enable Python support if ptoolsrte is found.
+# Otherwise don't build it.
+if [[ -z $YMPI_ENABLE_PYTHON ]]; then
+    if [[ ! -z $PTOOLSVER && ! -z $PYTHONHOME ]]; then
+        enablePython="yes"
+    else
+        enablePython="no"
+    fi
+elif [[ $YMPI_ENABLE_PYTHON == "0" ]]; then
     enablePython="no"
 else
-    echo "Enabling Python extension build."
+    if [[ -z $PYTHONHOME ]]; then
+        echo "Error: you enabled Python extensions, but PYTHONHOME not set."
+        exit 1
+    fi
     enablePython="yes"
+fi
+
+if [[ $enablePython == "yes" ]]; then
+    echo "Enabling Python extension build."
     pythonLDFlags="-L$PYTHONHOME/lib -lpython2.7"
     pythonInclude="-I$PYTHONHOME/include/python2.7"
-
+else
+    echo "Disabling Python extension build."
 fi
 
 if [[ ${installDir} == "" ]]; then
