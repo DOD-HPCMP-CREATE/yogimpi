@@ -362,7 +362,10 @@
     <Arg input="true" name="sources[]" type="int"/>
     <Arg input="true" name="degrees[]" type="int"/>
     <Arg input="true" name="destinations[]" type="int"/>
-    <Arg input="true" name="weights[]" type="int"/>
+    <Arg input="true" name="weights[]" type="int">
+      <Convert pointer="yes">MPI_UNWEIGHTED</Convert>
+      <Convert pointer="yes">MPI_WEIGHTS_EMPTY</Convert>
+    </Arg>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg input="true" name="reorder" type="int"/>
     <Arg name="comm_dist_graph" output="true" type="MPI_Comm*"/>
@@ -389,20 +392,29 @@
     <Arg name="info" type="MPI_Info"/>
     <Arg name="comm" type="MPI_Comm"/>
     <Arg name="baseptr" output="true" type="void*"/>
-    <Arg name="win" type="MPI_Win*"/>
+    <Arg name="win" output="true" type="MPI_Win*"/>
   </Function>
   <Function name="MPI_Win_post">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg input="true" name="assert" type="int"/>
+    <Arg input="true" name="assert" type="int">
+      <Convert function="yes">conv_onesided_constants</Convert>
+    </Arg>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Mprobe">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="source" type="int"/>
-    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_ANY_SOURCE</Convert>
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int">
+      <Convert>MPI_ANY_TAG</Convert>
+    </Arg>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="message" output="true" type="MPI_Message*"/>
+      <Convert trigger="post">MPI_MESSAGE_NO_PROC</Convert>
+    </Arg>
     <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_File_get_position_shared">
@@ -431,7 +443,9 @@
   </Function>
   <Function name="MPI_Win_fence">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="assert" type="int"/>
+    <Arg input="true" name="assert" type="int">
+      <Convert function="yes">conv_onesided_constants</Convert>
+    </Arg>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Comm_set_info">
@@ -441,7 +455,9 @@
   </Function>
   <Function name="MPI_Ialltoall">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="void*">
+      <Convert pointer="yes">MPI_IN_PLACE</Convert>
+    </Arg>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>
@@ -464,7 +480,7 @@
     <Arg name="buf" output="true" type="void*"/>
     <Arg name="count" type="int"/>
     <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="request" type="MPI_Request*"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Win_wait">
     <ReturnType>int</ReturnType>
@@ -474,13 +490,15 @@
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="disp" output="true" type="MPI_Offset*"/>
-    <Arg name="etype" type="MPI_Datatype*"/>
-    <Arg name="filetype" type="MPI_Datatype*"/>
-    <Arg name="datarep" type="char*"/>
+    <Arg name="etype" output="true" type="MPI_Datatype*"/>
+    <Arg name="filetype" output="true" type="MPI_Datatype*"/>
+    <Arg name="datarep" output="true" type="char*"/>
   </Function>
   <Function name="MPI_Ialltoallw">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="void*">
+      <Convert pointer="yes">MPI_IN_PLACE</Convert>
+    </Arg>
     <Arg input="true" name="sendcounts[]" type="int"/>
     <Arg input="true" name="sdispls[]" type="int"/>
     <Arg input="true" name="sendtypes[]" type="MPI_Datatype"/>
@@ -493,7 +511,9 @@
   </Function>
   <Function name="MPI_Reduce_scatter_block">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="void*">
+      <Convert pointer="yes">MPI_IN_PLACE</Convert>
+    </Arg>
     <Arg name="recvbuf" output="true" type="void*"/>
     <Arg input="true" name="recvcount" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
@@ -521,7 +541,7 @@
     <Arg name="buf" output="true" type="void*"/>
     <Arg name="count" type="int"/>
     <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" type="MPI_Status*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_Register_datarep">
     <ReturnType>int</ReturnType>
@@ -533,7 +553,9 @@
   </Function>
   <Function name="MPI_Comm_disconnect">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm*"/>
+    <Arg input="true" output="true" name="comm" type="MPI_Comm*">
+      <PostFreeHandle>MPI_COMM_NULL</PostFreeHandle>
+    </Arg>
   </Function>
   <Function name="MPI_Win_call_errhandler">
     <ReturnType>int</ReturnType>
@@ -542,7 +564,9 @@
   </Function>
   <Function name="MPI_Win_free">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="win" type="MPI_Win*"/>
+    <Arg input="true" name="win" type="MPI_Win*">
+      <PostFreeHandle>MPI_WIN_NULL</PostFreeHandle>
+    </Arg>
   </Function>
   <Function name="MPI_File_get_type_extent">
     <ReturnType>int</ReturnType>
@@ -566,7 +590,7 @@
     <Arg name="buf" type="void*"/>
     <Arg name="count" type="int"/>
     <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="request" output="true" type="MPIO_Request*"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Reduce_local">
     <ReturnType>int</ReturnType>
@@ -579,7 +603,9 @@
   <Function name="MPI_Win_start">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg input="true" name="assert" type="int"/>
+    <Arg input="true" name="assert" type="int">
+        <Convert function="yes">conv_onesided_constants</Convert>
+    </Arg>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Op_commutative">
@@ -595,7 +621,7 @@
   </Function>
   <Function name="MPI_Pack_external_size">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="datarep[]" type="char"/>
+    <Arg input="true" name="datarep" type="char*"/>
     <Arg input="true" name="incount" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg name="size" output="true" type="MPI_Aint*"/>
@@ -612,7 +638,9 @@
   </Function>
   <Function name="MPI_Iexscan">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="void*">
+      <Convert pointer="yes">MPI_IN_PLACE</Convert>
+    </Arg>
     <Arg name="recvbuf" output="true" type="void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
@@ -650,7 +678,7 @@
     <Arg name="buf" output="true" type="void*"/>
     <Arg name="count" type="int"/>
     <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="request" type="MPIO_Request*"/>
+    <Arg name="request" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Get_version">
     <ReturnType>int</ReturnType>
@@ -765,7 +793,7 @@
     <Arg name="buf" type="void*"/>
     <Arg name="count" type="int"/>
     <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="request" output="true" type="MPIO_Request*"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Win_test">
     <ReturnType>int</ReturnType>
@@ -1172,7 +1200,9 @@
   </Function>
   <Function name="MPI_Win_lock_all">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="assert" type="int"/>
+    <Arg input="true" name="assert" type="int">
+      <Convert function="yes">conv_onesided_constants</Convert>
+    </Arg>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_File_read_ordered">
@@ -1355,7 +1385,9 @@
     <ReturnType>int</ReturnType>
     <Arg input="true" name="lock_type" type="int"/>
     <Arg input="true" name="rank" type="int"/>
-    <Arg input="true" name="assert" type="int"/>
+    <Arg input="true" name="assert" type="int">
+      <Convert function="yes">conv_onesided_constants</Convert>
+    </Arg>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Get_elements_x">
