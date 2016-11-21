@@ -73,15 +73,15 @@ class GenerateWrap(object):
         self.functions = []
         self.parseInput(xmlInput)
         #self.debugValues()
-        self.writeFiles()
-        
+        #self.writeFiles()
+       
+    ## Parses an XML input and creates MPI functions and their arguments.
+    #  @param self Pointer to object.
+    #  @param fileName XML filename. 
     def parseInput(self, fileName):
         tree = ET.parse(fileName)
         xmlRoot = tree.getroot()
-
-        for funcElement in xmlRoot:
-            if funcElement.tag != 'Function':
-                continue
+        for funcElement in xmlRoot.find('Function'):
             thisFunction = MPIFunction()
             thisFunction.name = funcElement.attrib['name']
             thisFunction.returnType = funcElement.find('ReturnType').text
@@ -91,6 +91,7 @@ class GenerateWrap(object):
                 thisArg.name = argElement.attrib['name']
                 thisArg.callName = thisArg.name
                 if thisArg.name.strip().endswith('[]'):
+                    # An array is considered a pointer.
                     thisArg.isPointer = True
                     thisArg.isPlural = True
                     thisArg.callName = thisArg.name.replace('[]', '')
@@ -99,15 +100,20 @@ class GenerateWrap(object):
                     thisArg.isPlural = True
                 if 'output' in argElement.attrib:
                     thisArg.isOutput = True
+                    # Only make it input after specifying output if both are
+                    # explicitly listed.
                     if 'input' in argElement.attrib:
                         thisArg.isInput = True
                 else:
+                    # Assume that if nothing else is specified, this is an
+                    # input argument.
                     thisArg.isInput = True
                 rawType = argElement.attrib['type'].strip()
                 thisArg.type = rawType
                 if rawType.endswith('*'):
                     thisArg.isPointer = True
-                if rawType.startswith('MPI_') and not rawType.endswith('function*'):
+                if rawType.startswith('MPI_') and \
+                   not rawType.endswith('function*'):
                     thisArg.isMPIType = True
                     if 'dims' in argElement.attrib:
                         thisArg.isPlural = True
@@ -171,9 +177,11 @@ class GenerateWrap(object):
         return callRealMPI
     
     def _mpiConversions(self, aFunc):
+
         mpiTypes = ['MPI_Comm', 'MPI_Datatype', 'MPI_Info', 'MPI_File',
                     'MPI_Request', 'MPI_Group', 'MPI_Offset', 'MPI_Aint',
                     'MPI_Op', 'MPI_Errhandler']
+
         scalarFunc = {'MPI_Comm':'comm_to_mpi',
                       'MPI_Info':'info_to_mpi',
                       'MPI_File':'file_to_mpi',
@@ -184,10 +192,12 @@ class GenerateWrap(object):
                       'MPI_Aint':'aint_to_mpi',
                       'MPI_Op':'op_to_mpi',
                       'MPI_Errhandler':'errhandler_to_mpi'}
+
         arrayFunc = { 'MPI_Comm':'comm_array_to_mpi',
                       'MPI_Datatype':'datatype_array_to_mpi',
                       'MPI_Offset':'offset_array_to_mpi',
                       'MPI_Aint':'aint_array_to_mpi'}
+
         pscalarFunc = {'MPI_Comm':'add_new_comm',
                        'MPI_Info':'add_new_info',
                        'MPI_File':'add_new_file',
@@ -198,9 +208,11 @@ class GenerateWrap(object):
                        'MPI_Offset':'offset_to_yogi',
                        'MPI_Errhandler':'add_new_errhandler',
                        'MPI_Op':'add_new_op'}
+
         parrayFunc = {'MPI_Offset':'offset_array_to_yogi',
                       'MPI_Datatype':'datatype_array_to_yogi',
                       'MPI_Aint':'aint_array_to_yogi'}
+
         for i in range(len(aFunc.args)):
             anArg = aFunc.args[i]
             # MPI_Status is handled specially; don't do it here.
