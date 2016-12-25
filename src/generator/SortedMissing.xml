@@ -846,30 +846,6 @@
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
-  <Function name="MPI_Improbe">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="source" type="int">
-      <Convert>MPI_ANY_SOURCE</Convert>
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int">
-      <Convert>MPI_ANY_TAG</Convert>
-    </Arg>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="flag" output="true" type="int*"/>
-    <Arg name="message" output="true" type="MPI_Message*">
-      <Convert trigger="post">MPI_MESSAGE_NO_PROC</Convert>
-    </Arg>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_Imrecv">
-    <ReturnType>int</ReturnType>
-    <Arg name="buf" output="true" type="void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="message" type="MPI_Message*"/>
-    <Arg name="request" output="true" type="MPI_Request*"/>
-  </Function>
   <Function name="MPI_Ineighbor_allgather">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
@@ -1039,29 +1015,6 @@
     <Arg input="true" name="service_name" type="char*"/>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg name="port_name" output="true" type="char*"/>
-  </Function>
-  <Function name="MPI_Mprobe">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="source" type="int">
-      <Convert>MPI_ANY_SOURCE</Convert>
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int">
-      <Convert>MPI_ANY_TAG</Convert>
-    </Arg>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="message" output="true" type="MPI_Message*">
-      <Convert trigger="post">MPI_MESSAGE_NO_PROC</Convert>
-    </Arg>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_Mrecv">
-    <ReturnType>int</ReturnType>
-    <Arg name="buf" output="true" type="void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="message" type="MPI_Message*"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_Neighbor_allgather">
     <ReturnType>int</ReturnType>
