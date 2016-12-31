@@ -1,6 +1,6 @@
 INSTALLDIR=@INSTALLDIR@
 LIBEXTENSION=@LIBEXTENSION@
-MPICC=@MPICC@
+MPICXX=@MPICXX@
 CC=@CC@
 F90=@F90@
 # Change these if you require different compiler flags.
@@ -8,9 +8,3 @@ F90=@F90@
 FFLAGS=-I. -fPIC
 CFLAGS=-I. -fPIC
 LDFLAGS=-shared
-
-# Optionally enabled by configure for Python support.
-ENABLEPYTHON=@ENABLEPYTHON@
-SERIALC=@SERIALC@
-PYTHON_INCLUDE=@PYTHONINCLUDE@
-PYTHON_LDFLAGS=@PYTHONLDFLAGS@
