@@ -8,4 +8,3 @@ module-whatis   "loads the [module-info name] environment"
 
 prepend-path PATH $prefix/bin
 prepend-path @LIBPATHVAR@ $prefix/lib
-@PYTHON_MODULE_MOD@
