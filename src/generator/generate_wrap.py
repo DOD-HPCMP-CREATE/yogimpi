@@ -2,7 +2,6 @@ import xml.etree.ElementTree as ET
 import sys
 import wrap_objects
 import source_writers
-from pprint import pprint
 
 class GenerateWrap(object):
 
@@ -72,7 +71,15 @@ class GenerateWrap(object):
                         thisArg.is_plural = True
                         thisArg.is_pointer = True
                         thisArg.dims = argElement.attrib['dims']
+                shouldFree = argElement.attrib.get('free', None)
+                thisArg.free_handle = self._checkTrue(shouldFree)
+                thisArg.convert_class = argElement.attrib.get('class', None)
                 for conv in argElement.findall('Convert'):
+                    if thisArg.convert_class:
+                        loc = "Function " + thisFunction.name + ", argument " +\
+                              thisArg.name + ": " 
+                        errMsg = "Convert tag ignored when class specified."
+                        raise ValueError(loc + errMsg)
                     val = wrap_objects.MPIConvertValue()
                     val.name = conv.text
                     isPtr = conv.attrib.get('pointer', None)
@@ -85,8 +92,6 @@ class GenerateWrap(object):
                         thisArg.post_convert_values.append(val)
                     else:
                         thisArg.pre_convert_values.append(val)
-                shouldFree = argElement.attrib.get('free', None)
-                thisArg.free_handle = self._checkTrue(shouldFree) 
                 thisFunction.args.append(thisArg)
             self.functions.append(thisFunction)
                

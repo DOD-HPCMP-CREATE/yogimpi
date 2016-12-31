@@ -24,6 +24,10 @@ class MPIArgument(object):
         # Values that, if matching Yogi equivalent of argument, cause a
         # conversion to the value, except it happens AFTER the MPI call.
         self.post_convert_values = []
+        # Set if the argument is automatically converted by a special "class"
+        # of known constants. Useful for avoiding long lists of constants in
+        # the XML file.
+        self.convert_class = None
         # Whether this argument is an MPI typedef or MPI structure.
         self.is_mpi_type = False
         # If the argument is an MPI type and is plural, the dimensions. Note
