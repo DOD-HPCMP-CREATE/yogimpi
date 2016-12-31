@@ -1,11 +1,8 @@
 include Make.flags
  
-.PHONY: default clean test realclean python
+.PHONY: default clean test realclean
 
 default: src/libyogimpi.$(LIBEXTENSION)
-ifeq ($(ENABLEPYTHON),yes)
-	$(MAKE) -C src/python
-endif
 
 src/libyogimpi.$(LIBEXTENSION):
 	$(MAKE) -C src
@@ -34,21 +31,12 @@ install: default
 	install -m 750 wrapper/YogiMPIWrapper.py $(INSTALLDIR)/bin
 	install -m 640 Make.flags $(INSTALLDIR)
 
-ifeq ($(ENABLEPYTHON),yes)
-	install -d -m 750 $(INSTALLDIR)/python
-	install -m 640 src/python/_pyogimpi.so $(INSTALLDIR)/python
-endif
-
-
 test: default 
 	$(MAKE) -C test
 
 clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C test clean
-ifeq ($(ENABLEPYTHON),yes)
-	$(MAKE) -C src/python clean
-endif
 
 realclean: clean
 	$(RM) wrapper/mpicc
@@ -59,7 +47,4 @@ realclean: clean
 	$(RM) etc/modulefile
 	$(RM) etc/yogimpi.bashrc
 	$(RM) etc/yogimpi.cshrc
-ifeq ($(ENABLEPYTHON),yes)
-	$(MAKE) -C src/python clean
-endif
 	$(RM) Make.flags
