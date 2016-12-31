@@ -37,7 +37,7 @@ class GenerateWrap(object):
             thisFunction.name = funcElement.attrib['name']
             thisFunction.return_type = funcElement.find('ReturnType').text
 
-            for argElement in funcElement.iterfind('Arg'):
+            for argElement in funcElement.findall('Arg'):
                 thisArg = wrap_objects.MPIArgument()
                 thisArg.name = argElement.attrib['name']
                 # Start out simple.
@@ -72,7 +72,7 @@ class GenerateWrap(object):
                         thisArg.is_plural = True
                         thisArg.is_pointer = True
                         thisArg.dims = argElement.attrib['dims']
-                for conv in argElement.iterfind('Convert'):
+                for conv in argElement.findall('Convert'):
                     val = wrap_objects.MPIConvertValue()
                     val.name = conv.text
                     isPtr = conv.attrib.get('pointer', None)
