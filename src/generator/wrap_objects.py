@@ -48,8 +48,12 @@ class MPIArgument(object):
         self.temp_post_converter = None
         # Whether a handle will be freed by the operation.
         self.free_handle = False
-        # If free_handle is True, what to set the freed value to for user.
-        self.freed_value = None
+
+    def validate(self):
+        if self.is_output:
+            if not self.is_pointer:
+                errMsg = self.name + " is marked output but isn't a pointer."
+                raise ValueError(errMsg)
 
 class MPIConvertValue(object):
     def __init__(self):
@@ -58,6 +62,8 @@ class MPIConvertValue(object):
         self.is_pointer = False
         # Whether this conversion is a function or not.
         self.is_function = False
+        # Whether this conversion requires iteration.
+        self.iteration = False
 
 class MPIFunction(object):
     def __init__(self):
@@ -67,7 +73,26 @@ class MPIFunction(object):
         self.status_ignore_arg = 0
         self.return_type = 'int'
         self.args = []
-    
+  
+    def validate(self):
+        for anArg in self.args:
+            try:
+                anArg.validate()
+            except ValueError as v:
+                print "Error validating function " + self.name + ": " + str(v)
+                print sys.exit(1)
+ 
+    def cArgString(self):
+        arg_string = ''
+        for i, anArg in enumerate(self.args):
+            if i > 0:
+                arg_string += ', ' 
+            argType = anArg.type
+            if anArg.is_mpi_type:
+                argType = 'Yogi' + argType
+            arg_string += argType + ' ' + anArg.name
+        return arg_string
+ 
     def getArg(self, name):
         for anArg in self.args:
             if anArg.name == name:

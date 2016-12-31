@@ -133,9 +133,7 @@
   </Function>
   <Function name="MPI_Comm_disconnect">
     <ReturnType>int</ReturnType>
-    <Arg input="true" output="true" name="comm" type="MPI_Comm*">
-      <PostFreeHandle>MPI_COMM_NULL</PostFreeHandle>
-    </Arg>
+    <Arg input="true" output="true" name="comm" type="MPI_Comm*" free="true" />
   </Function>
   <Function name="MPI_Comm_dup_with_info">
     <ReturnType>int</ReturnType>
@@ -1394,9 +1392,7 @@
   </Function>
   <Function name="MPI_Win_free">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="win" type="MPI_Win*">
-      <PostFreeHandle>MPI_WIN_NULL</PostFreeHandle>
-    </Arg>
+    <Arg input="true" name="win" type="MPI_Win*" free="true" />
   </Function>
   <Function name="MPI_Win_free_keyval">
     <ReturnType>int</ReturnType>
