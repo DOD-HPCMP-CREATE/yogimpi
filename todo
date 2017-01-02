@@ -1,0 +1,7 @@
+- Finish basic code conversion. (Mon)
+- Verify existing code matches generated code. (Tue)
+- Write C++ core. (Tue + Wed)
+- Populate all required constants. (Thurs)
+- Try and build, implement tests (Fri/Sat)
+- Try and work on mpi4py (next week)
+

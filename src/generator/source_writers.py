@@ -179,8 +179,8 @@ class CSource(SourceFile):
             raise ValueError("Error: no if statements exist.")
         else:
             if cleanFormatting:
-                self.addLines("}")
                 self.removeIndent()
+                self.addLines("}")
             self.ifBranches -= 1
             
     ## Add an else if statement to an existing if statement

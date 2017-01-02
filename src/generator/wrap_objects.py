@@ -30,26 +30,19 @@ class MPIArgument(object):
         self.convert_class = None
         # Whether this argument is an MPI typedef or MPI structure.
         self.is_mpi_type = False
-        # If the argument is an MPI type and is plural, the dimensions. Note
-        # that this is not set for primitive type arrays.
+        # If the argument is plural, the dimensions. This is not necessarily 
+        # set for all plural arguments, but it is required for MPI type args.
         self.dims = None
         
         # The following variables are only used if is_mpi_type is True.
         # Otherwise the values all remain set to False and None.
 
-        # The name of the temporary variable.
-        self.temp_name = None
-        # The type of the temporary variable.
-        self.temp_type = None
-        # Whether the temporary variable is a pointer.
-        self.temp_is_ptr = False
-        # The function used to convert the argument to the input variable.
-        # If is_mpi_type is True and this is None, then it instantiates a 
-        # variable without a function call.
-        self.temp_pre_converter = None
-        # In the case of an output variable, the function used to convert the
-        # input variable back to the argument.
-        self.temp_post_converter = None
+        # The name of the MPI variable.
+        self.mpi_name = None
+        # The type of the MPI variable.
+        self.mpi_type = None
+        # Whether the MPI variable is a pointer.
+        self.mpi_is_ptr = False
         # Whether a handle will be freed by the operation.
         self.free_handle = False
 
@@ -64,8 +57,6 @@ class MPIConvertValue(object):
         self.name = None
         # Whether the output of the conversion is a pointer value or not.
         self.is_pointer = False
-        # Whether this conversion is a function or not.
-        self.is_function = False
         # Whether this conversion requires iteration.
         self.iteration = False
 
