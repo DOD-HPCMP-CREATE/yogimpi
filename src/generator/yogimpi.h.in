@@ -349,6 +349,14 @@ typedef int YogiMPI_Comm_delete_attr_function(YogiMPI_Comm comm,
 #define YogiMPI_COMM_DUP_FN  ((YogiMPI_Comm_copy_attr_function *)-1)
 #define YogiMPI_COMM_NULL_DELETE_FN ((YogiMPI_Comm_delete_attr_function *)0)
 
+int YogiMPI_Init(int* argc, char ***argv);
+
+int YogiMPI_Finalize();
+
+double YogiMPI_Wtick();
+
+double YogiMPI_Wtime();
+
 /* Begin function prototypes. */
 @YOGI_PROTOTYPES@
 /* End function prototypes. */

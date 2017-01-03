@@ -152,20 +152,6 @@ class GenerateWrap(object):
 
         return convLine
 
-    def _freeHandleLines(self, sourceFile, aFunc):
-        for i, anArg in enumerate(aFunc.args):
-            if anArg.type.startswith('MPI_Status'):
-                continue
-            if anArg.free_handle:
-                if not anArg.is_mpi_type:
-                    errMsg = "Cannot free an argument that isn't an MPI handle."
-                    raise ValueError(errMsg)
-                if not anArg.is_pointer:
-                    errMsg = "Freeing a non-pointer won't save the changes."
-                    raise ValueError(errMsg)
-                freeFunc = GenerateWrap.manPrefix + 'freeYogi' + anArg.mpi_type
-                sourceFile.addLines(freeFunc + '(' + anArg.name + ');') 
-
     def _makeConstantCall(self, sourceFile, anArg, before=True):
         if anArg.is_mpi_type:
             errMsg = "Constant functions unsupported for MPI arguments."
@@ -199,7 +185,7 @@ class GenerateWrap(object):
             else:
                 compareVar = anArg.mpi_name
                 assignVar = anArg.call_name
-
+        
         for i, convVal in enumerate(values):
             if before:
                 compareValue = self.prefix + convVal.name
@@ -208,16 +194,55 @@ class GenerateWrap(object):
                 compareValue = convVal.name
                 changeValue = self.prefix + convVal.name
             if anArg.is_pointer:
-                if not convVal.is_pointer:
+                if anArg.is_mpi_type:
+                    if not convVal.is_pointer:
+                        assignVar = '*' + assignVar
+                        if anArg.mpi_is_ptr:
+                            compareVar = '*' + assignVar
+                elif not convVal.is_pointer:
                     assignVar = '*' + assignVar
                     compareVar = '*' + compareVar
-                elif not anArg.is_pointer:
-                    if convVal.is_pointer:
-                        errMsg = "Assigning a pointer to a non-pointer."
-                        raise ValueError(errMsg)
-            sourceFile.addIf(compareVar + ' == ' + compareValue)
+            elif convVal.is_pointer:
+                errMsg = "Assigning a pointer to a non-pointer."
+                raise ValueError(errMsg)
+
+            compareStr = compareVar + ' == ' + compareValue
+            if i == 0:
+                sourceFile.addIf(compareStr)
+            else:
+                sourceFile.addElseIf(compareStr)
             sourceFile.addLines(assignVar + ' = ' + changeValue + ';')
-            sourceFile.endIf()
+            if i == 0:
+                sourceFile.endIf()
+            else:
+                sourceFile.endElseIf()
+
+    ## Appends the generated source code lines to convert an MPI item back and
+    #  forth between Yogi and MPI types. 
+    def _makeMPIConversion(self, sourceFile, anArg, before=True):
+        stripType = anArg.mpi_type.replace('MPI_', '')
+        convPrefix = GenerateWrap.manPrefix + stripType
+        if before:
+            convFunc = convPrefix + "ToMPI"
+            firstArg = anArg.mpi_name
+            secondArg = anArg.call_name
+        else:
+            convFunc = convPrefix + "ToYogi"
+            firstArg = anArg.call_name
+            secondArg = anArg.mpi_name
+
+        if not before and anArg.free_handle:
+            # If this is the "after" phase and this should be freed,
+            # don't do a conversion, just empty the handle.
+            freeHandle = GenerateWrap.manPrefix + 'unmap' + stripType
+            fhCall = freeHandle + '(' + anArg.call_name + ');'
+            sourceFile.addLines(fhCall)
+        elif anArg.is_plural and anArg.dims:
+            sourceFile.addLines(convFunc + '(' + firstArg + ', ' + secondArg +\
+                                ', ' + anArg.dims + ');')
+        else:
+            sourceFile.addLines(convFunc + '(' + firstArg + ', ' + secondArg +\
+                                ');')
 
     def writeFiles(self):        
         self.writeCHeader()
@@ -259,6 +284,7 @@ class GenerateWrap(object):
         else:
             if anArg.type.startswith('MPI_Status'):
                 return 
+            stripType = anArg.mpi_type.replace('MPI_', '')
             # Create a blank MPI version of that type.
             varDecl = anArg.mpi_type + ' ' + anArg.mpi_name
             if not anArg.is_plural:
@@ -269,7 +295,7 @@ class GenerateWrap(object):
                 # not be known until runtime.
                 sourceFile.addLines(varDecl + '* = NULL;')
                 createArrayFunc = GenerateWrap.manPrefix + 'create' +\
-                                  anArg.mpi_type + 'Array'
+                                  stripType + 'Array'
                 if not anArg.dims:
                     print "Argument " + anArg.name + " needed dims, " +\
                           "didn't have 'em."
@@ -279,11 +305,15 @@ class GenerateWrap(object):
                     sourceFile.addLines(createCall)
             if anArg.is_input:
                 if anArg.pre_convert_values:
-                
-                # Add conditional for conversion.
-                # Add else to create an item and convert the item normally.
+                    # Add conditional for conversion.
+                    # Add else to create an item and convert the item normally.
+                    self._makeConstantCheck(sourceFile, anArg, before=True)
+                    sourceFile.addElse()
+                    self._makeMPIConversion(sourceFile, anArg, before=True)
+                    sourceFile.endElse()
                 else:
                     # Convert the item normally.
+                    self._makeMPIConversion(sourceFile, anArg, before=True)
 
     ## Writes a chunk of code to handle conversions and conditionals after 
     #  calling the actual MPI function, for a single argument.
@@ -295,6 +325,29 @@ class GenerateWrap(object):
                 self._makeConstantCall(sourceFile, anArg, before=False)
             else:
                 self._makeConstantCheck(sourceFile, anArg, before=False)
+        else:
+            if anArg.type.startswith('MPI_Status'):
+                return
+            if anArg.is_output or anArg.free_handle:
+                if anArg.post_convert_values:
+                    # Add conditional for conversion.
+                    # Add else to create an item and convert the item normally.
+                    self._makeConstantCheck(sourceFile, anArg, before=False)
+                    sourceFile.addElse()
+                    self._makeMPIConversion(sourceFile, anArg, before=False)
+                    sourceFile.endElse()
+                else:
+                    # Convert the item normally.
+                    self._makeMPIConversion(sourceFile, anArg, before=False)
+
+            # Free any temporary arrays created. 
+            stripType = anArg.mpi_type.replace('MPI_', '')
+
+            if anArg.is_plural:
+                freeArrayFunc = GenerateWrap.manPrefix + 'free' + stripType +\
+                                'Array'
+                freeCall = freeArrayFunc + '(' + anArg.mpi_name + ');'
+                sourceFile.addLines(freeCall)
 
     ## Writes the internal C++ source file for YogiMPI.
     def writeCXXSource(self):
@@ -334,12 +387,12 @@ class GenerateWrap(object):
                 yogi_functions.addIf(aFunc.args[ignoreArg].name + ' == ' +\
                                      self.prefix + ignoreType) 
                 yogi_functions.addLines(withIgnore)
+                yogi_functions.endIf()
                 yogi_functions.addElse()
                 yogi_functions.addLines(self._statusConvLine(aFunc, 'input'),
                                         withoutIgnore,
                                         self._statusConvLine(aFunc, 'output'))
                 yogi_functions.endElse()
-                yogi_functions.endIf(cleanFormatting=False)
             else:
                 yogi_functions.addLines(withoutIgnore)
 

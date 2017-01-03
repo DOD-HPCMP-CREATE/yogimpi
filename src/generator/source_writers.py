@@ -127,11 +127,8 @@ class CSource(SourceFile):
     
     def __init__(self, inputFile=None):
         self.functions = []
-        self.ifBranches = 0
         self.switches = [] 
         self.cases = 0
-        self.elseIfBranches = 0
-        self.elseBranches = 0
         self.forLoops = 0
         self.insideStruct = False
         super(CSource,self).__init__(inputFile)
@@ -171,57 +168,31 @@ class CSource(SourceFile):
     def addIf(self, conditional):
         self.addLines("if (" + conditional + ") {")
         self.addIndent()
-        self.ifBranches += 1
     
     ## End a previous if statement 
-    def endIf(self, cleanFormatting=True):
-        if self.ifBranches == 0:
-            raise ValueError("Error: no if statements exist.")
-        else:
-            if cleanFormatting:
-                self.removeIndent()
-                self.addLines("}")
-            self.ifBranches -= 1
+    def endIf(self):
+        self.removeIndent()
+        self.addLines("}")
             
     ## Add an else if statement to an existing if statement
     def addElseIf(self, conditional):
-        if self.ifBranches == 0:
-            raise ValueError("Error: no if statements exist.")
-        else:
-            self.removeIndent()
-            self.addLines("}")
-            self.addLines("else if(" + conditional + ") {")
-            self.addIndent()
-            self.elseIfBranches += 1
+        self.addLines("else if(" + conditional + ") {")
+        self.addIndent()
 
     ## End a previous if statement 
     def endElseIf(self):
-        if self.elseIfBranches == 0:
-            raise ValueError("Error: no else if statements exist.")
-        else:
-            self.removeIndent()
-            self.addLines("}")
-            self.elseIfBranches -= 1
+        self.removeIndent()
+        self.addLines("}")
             
     ## Add an else statement to an existing if statement
     def addElse(self):
-        if self.ifBranches == 0:
-            raise ValueError("Error: no if statements exist.")
-        else:
-            self.removeIndent()
-            self.addLines("}")
-            self.addLines("else {")
-            self.addIndent()
-            self.elseBranches += 1
+        self.addLines("else {")
+        self.addIndent()
 
     ## Add an else statement to an existing if statement
     def endElse(self):
-        if self.elseBranches == 0:
-            raise ValueError("Error: no else statements exist.")
-        else:
-            self.removeIndent()
-            self.addLines("}")
-            self.elseBranches -= 1
+        self.removeIndent()
+        self.addLines("}")
             
     def addComments(self, *commentLines):
         numLines = len(commentLines)

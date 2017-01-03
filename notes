@@ -83,3 +83,5 @@ MPI_Type_get_envelope crap
 
 If you have a pure output object that is a handle, just instantiate the handle up front and then add it on the backend.
 Need to handle converting MPI_Requests.
+
+Check functions that have errorcodes as arguments.
