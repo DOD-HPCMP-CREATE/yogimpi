@@ -127,9 +127,7 @@
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg input="true" name="tag" type="int"/>
-    <Arg name="newcomm" output="true" type="MPI_Comm*">
-      <Convert trigger="post">MPI_COMM_NULL</Convert>
-    </Arg>
+    <Arg name="newcomm" output="true" type="MPI_Comm*" />
   </Function>
   <Function name="MPI_Comm_disconnect">
     <ReturnType>int</ReturnType>
@@ -154,9 +152,7 @@
   </Function>
   <Function name="MPI_Comm_get_parent">
     <ReturnType>int</ReturnType>
-    <Arg name="parent" output="true" type="MPI_Comm*">
-      <Convert trigger="post">MPI_COMM_NULL</Convert>
-    </Arg>
+    <Arg name="parent" output="true" type="MPI_Comm*" />
   </Function>
   <Function name="MPI_Comm_idup">
     <ReturnType>int</ReturnType>
@@ -193,9 +189,7 @@
     </Arg>
     <Arg input="true" name="key" type="int"/>
     <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg name="newcomm" output="true" type="MPI_Comm*">
-      <Convert trigger="post">MPI_COMM_NULL</Convert>
-    </Arg>
+    <Arg name="newcomm" output="true" type="MPI_Comm*" />
   </Function>
   <Function name="MPI_Comm_test_inter">
     <ReturnType>int</ReturnType>
@@ -579,9 +573,7 @@
     <Arg input="true" name="indx[]" type="int"/>
     <Arg input="true" name="edges[]" type="int"/>
     <Arg input="true" name="reorder" type="int"/>
-    <Arg name="comm_graph" output="true" type="MPI_Comm*">
-      <Convert trigger="post">MPI_COMM_NULL</Convert>
-    </Arg>
+    <Arg name="comm_graph" output="true" type="MPI_Comm*" />
   </Function>
   <Function name="MPI_Graph_get">
     <ReturnType>int</ReturnType>
@@ -642,25 +634,19 @@
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*">
-      <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
-    </Arg>
+    <Arg name="newgroup" output="true" type="MPI_Group*" />
   </Function>
   <Function name="MPI_Group_intersection">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*">
-      <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
-    </Arg>
+    <Arg name="newgroup" output="true" type="MPI_Group*" />
   </Function>
   <Function name="MPI_Group_union">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*">
-      <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
-    </Arg>
+    <Arg name="newgroup" output="true" type="MPI_Group*" />
   </Function>
   <Function name="MPI_Iallgather">
     <ReturnType>int</ReturnType>

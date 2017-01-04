@@ -514,7 +514,9 @@
     <Arg input="true" name="n" type="int"/>
     <Arg input="true" name="ranks1[]" type="int"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="ranks2[]" output="true" type="int"/>
+    <Arg name="ranks2[]" output="true" type="int">
+      <Convert trigger="post" iterate="true" dims="n">MPI_UNDEFINED</Convert>
+    </Arg>
   </Function>
   <Function name="MPI_Info_create">
     <ReturnType>int</ReturnType>
@@ -1053,13 +1055,13 @@
   </Function>
   <Function name="MPI_Wait">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="request" type="MPI_Request*"/>
+    <Arg input="true" output="true" name="request" type="MPI_Request*" />
     <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_Waitall">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
+    <Arg input="true" output="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
     <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="count"/>
   </Function>
   <Function name="MPI_Waitany">

@@ -58,7 +58,9 @@ class MPIConvertValue(object):
         # Whether the output of the conversion is a pointer value or not.
         self.is_pointer = False
         # Whether this conversion requires iteration.
-        self.iteration = False
+        self.iterate = False
+        # The dimensions required for an iteration, if it exists.
+        self.dims = None
 
 class MPIFunction(object):
     def __init__(self):

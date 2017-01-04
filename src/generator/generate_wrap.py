@@ -85,8 +85,8 @@ class GenerateWrap(object):
                         # the & symbol will be used to reference the address.
                         thisArg.mpi_is_ptr = False
 
-                shouldFree = argElement.attrib.get('free', None)
-                thisArg.free_handle = self._checkTrue(shouldFree)
+                freeVal = argElement.attrib.get('free', None)
+                thisArg.free_handle = self._checkTrue(freeVal)
                 thisArg.convert_class = argElement.attrib.get('class', None)
                 for conv in argElement.findall('Convert'):
                     if thisArg.convert_class:
@@ -101,7 +101,13 @@ class GenerateWrap(object):
                     isFunc = conv.attrib.get('function', None)
                     val.is_function = self._checkTrue(isFunc)
                     iterate = conv.attrib.get('iterate', None)
-                    val.iteration = self._checkTrue(iterate)
+                    val.iterate = self._checkTrue(iterate)
+                    val.dims = conv.attrib.get('dims', None)
+                    if val.iterate and not val.dims:
+                        loc = "Function " + thisFunction.name + ", argument " +\
+                              thisArg.name + ": "
+                        errMsg = "iteration for conversion with no dims."
+                        raise ValueError(loc + errMsg)
                     if conv.attrib.get('trigger', None) == 'post':
                         thisArg.post_convert_values.append(val)
                     else:
