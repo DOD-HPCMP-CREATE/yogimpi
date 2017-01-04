@@ -1,3 +1,48 @@
+"""
+                                  COPYRIGHT
+ 
+ The following is a notice of limited availability of the code, and disclaimer
+ which must be included in the prologue of the code and in all source listings
+ of the code.
+ 
+ Copyright Notice
+  + 2002 University of Chicago
+  + 2016 Stephen Adamec
+
+ Permission is hereby granted to use, reproduce, prepare derivative works, and
+ to redistribute to others.  This software was authored by:
+ 
+ Mathematics and Computer Science Division
+ Argonne National Laboratory, Argonne IL 60439
+ 
+ (and)
+ 
+ Department of Computer Science
+ University of Illinois at Urbana-Champaign
+
+ (and)
+
+ Stephen Adamec
+ 
+                              GOVERNMENT LICENSE
+ 
+ Portions of this material resulted from work developed under a U.S.
+ Government Contract and are subject to the following license: the Government
+ is granted for itself and others acting on its behalf a paid-up, nonexclusive,
+ irrevocable worldwide license in this computer software to reproduce, prepare
+ derivative works, and perform publicly and display publicly.
+  
+                                    DISCLAIMER
+  
+ This computer code material was prepared, in part, as an account of work
+ sponsored by an agency of the United States Government.  Neither the United
+ States, nor the University of Chicago, nor any of their employees, makes any
+ warranty express or implied, or assumes any legal liability or responsibility
+ for the accuracy, completeness, or usefulness of any information, apparatus,
+ product, or process disclosed, or represents that its use would not infringe
+ privately owned rights.
+"""
+
 import xml.etree.ElementTree as ET
 import sys
 import wrap_objects
@@ -36,17 +81,24 @@ class GenerateWrap(object):
             thisFunction.name = funcElement.attrib['name']
             thisFunction.return_type = funcElement.find('ReturnType').text
 
+            for codeElement in funcElement.findall('Code'):
+                order = codeElement.attrib.get('order', None)
+                if order is None:
+                    raise ValueError("Code block in " + thisFunction.name +\
+                                     " missing order.")
+                thisFunction.addBlock(codeElement.text, order)
+
             for argElement in funcElement.findall('Arg'):
                 thisArg = wrap_objects.MPIArgument()
                 thisArg.name = argElement.attrib['name']
                 # Start out simple.
                 thisArg.call_name = thisArg.name
-                if thisArg.name.strip().endswith('[]'):
+                if thisArg.name.strip().endswith(']'):
                     # An array is considered a pointer.
                     thisArg.is_pointer = True
                     thisArg.is_plural = True
                     # Brackets aren't used to reference an array variable.
-                    thisArg.call_name = thisArg.name.replace('[]', '')
+                    thisArg.call_name = thisArg.name.split('[')[0]
                 elif thisArg.name.strip().startswith('array_of'):
                     thisArg.is_pointer = True
                     thisArg.is_plural = True
@@ -98,16 +150,6 @@ class GenerateWrap(object):
                     val.name = conv.text
                     isPtr = conv.attrib.get('pointer', None)
                     val.is_pointer = self._checkTrue(isPtr)
-                    isFunc = conv.attrib.get('function', None)
-                    val.is_function = self._checkTrue(isFunc)
-                    iterate = conv.attrib.get('iterate', None)
-                    val.iterate = self._checkTrue(iterate)
-                    val.dims = conv.attrib.get('dims', None)
-                    if val.iterate and not val.dims:
-                        loc = "Function " + thisFunction.name + ", argument " +\
-                              thisArg.name + ": "
-                        errMsg = "iteration for conversion with no dims."
-                        raise ValueError(loc + errMsg)
                     if conv.attrib.get('trigger', None) == 'post':
                         thisArg.post_convert_values.append(val)
                     else:
@@ -380,6 +422,12 @@ class GenerateWrap(object):
             arg_string = aFunc.cArgString()
             yogi_functions.addFunction(name, aFunc.return_type, arg_string)
             yogi_functions.addLines('int mpi_error;')
+ 
+            # Write a code block marked as "first"
+            firstCode = aFunc.getBlock('first')
+            if firstCode is not None:
+                for aLine in firstCode:
+                    yogi_functions.addLines(aLine)
 
             for i, anArg in enumerate(aFunc.args):
                 self._createBeforeCXXCode(yogi_functions, anArg) 
@@ -402,10 +450,25 @@ class GenerateWrap(object):
             else:
                 yogi_functions.addLines(withoutIgnore)
 
+            # Write a code block marked as "aftercall"
+            afterCode = aFunc.getBlock('aftercall')
+            if afterCode is not None:
+                for aLine in afterCode:
+                    aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
+                    yogi_functions.addLines(aLine)
+
             for i, anArg in enumerate(aFunc.args):
                 self._createAfterCXXCode(yogi_functions, anArg)
-                
-            yogi_functions.addLines('return error_to_yogi(mpi_error);')
+               
+            # Write a code block marked as "beforereturn"
+            lastCode = aFunc.getBlock('beforereturn')
+            if lastCode is not None:
+                for aLine in lastCode:
+                    aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
+                    yogi_functions.addLines(aLine)
+
+            errorConv = GenerateWrap.manPrefix + 'errorToYogi' 
+            yogi_functions.addLines('return ' + errorConv + '(mpi_error);')
             yogi_functions.endFunction(name)
             yogi_functions.newLine()
         cxx_source.merge(yogi_functions, 'YOGI_FUNCTIONS')

@@ -1,20 +1,47 @@
-! YogiMPI Library - MPI ABI Translator
-! Copyright (C) 2006, 2007 Toon Knapen Free Field Technologies S.A.
-! Additions made by Stephen Adamec, University of Alabama at Birmingham
-
-! This library is free software; you can redistribute it and/or
-! modify it under the terms of the GNU Lesser General Public
-! License as published by the Free Software Foundation; either
-! version 2.1 of the License, or (at your option) any later version.
-
-! This library is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-! Lesser General Public License for more details.
-
-! You should have received a copy of the GNU Lesser General Public
-! License along with this library; if not, write to the Free Software
-! Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+!
+!                                  COPYRIGHT
+! 
+! The following is a notice of limited availability of the code, and disclaimer
+! which must be included in the prologue of the code and in all source listings
+! of the code.
+! 
+! Copyright Notice
+!  + 2002 University of Chicago
+!  + 2016 Stephen Adamec
+!
+! Permission is hereby granted to use, reproduce, prepare derivative works, and
+! to redistribute to others.  This software was authored by:
+! 
+! Mathematics and Computer Science Division
+! Argonne National Laboratory, Argonne IL 60439
+! 
+! (and)
+! 
+! Department of Computer Science
+! University of Illinois at Urbana-Champaign
+!
+! (and)
+!
+! Stephen Adamec
+! 
+!                              GOVERNMENT LICENSE
+! 
+! Portions of this material resulted from work developed under a U.S.
+! Government Contract and are subject to the following license: the Government
+! is granted for itself and others acting on its behalf a paid-up, nonexclusive,
+! irrevocable worldwide license in this computer software to reproduce, prepare
+! derivative works, and perform publicly and display publicly.
+!  
+!                                    DISCLAIMER
+!  
+! This computer code material was prepared, in part, as an account of work
+! sponsored by an agency of the United States Government.  Neither the United
+! States, nor the University of Chicago, nor any of their employees, makes any
+! warranty express or implied, or assumes any legal liability or responsibility
+! for the accuracy, completeness, or usefulness of any information, apparatus,
+! product, or process disclosed, or represents that its use would not infringe
+! privately owned rights.
+!
 
 ! Defined MPI constants for Fortran
 

@@ -276,7 +276,7 @@
   </Function>
   <Function name="MPI_File_close">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File*"/>
+    <Arg input="true" name="fh" type="MPI_File*" free="true"/>
   </Function>
   <Function name="MPI_File_delete">
     <ReturnType>int</ReturnType>
@@ -514,9 +514,13 @@
     <Arg input="true" name="n" type="int"/>
     <Arg input="true" name="ranks1[]" type="int"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="ranks2[]" output="true" type="int">
-      <Convert trigger="post" iterate="true" dims="n">MPI_UNDEFINED</Convert>
-    </Arg>
+    <Arg name="ranks2[]" output="true" type="int" />
+    <Code order='beforereturn'>
+    int i;
+    for(i = 0; i &lt; n; ++i) {
+        if (ranks2[i] == MPI_UNDEFINED) ranks2[i] = YogiMPI_UNDEFINED;
+    }
+    </Code>
   </Function>
   <Function name="MPI_Info_create">
     <ReturnType>int</ReturnType>
@@ -831,11 +835,14 @@
   </Function>
   <Function name="MPI_Test">
     <ReturnType>int</ReturnType>
-    <Arg output="true" input="true" name="request" type="MPI_Request*">
-      <Convert trigger="post" free="true">MPI_REQUEST_NULL</Convert>
-    </Arg>
+    <Arg input="true" name="request" type="MPI_Request*" />
     <Arg name="flag" output="true" type="int*"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
+    <Code order="beforereturn">
+    if (conv_request == MPI_REQUEST_NULL) {
+        {manPrefix}unmapRequest(request);
+    }
+    </Code>
   </Function>
   <Function name="MPI_Test_cancelled">
     <ReturnType>int</ReturnType>
@@ -848,26 +855,54 @@
     <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
     <Arg name="flag" output="true" type="int*"/>
     <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="count"/>
+    <Code order="aftercall">
+    int i;
+    for(i = 0; i &lt; count; ++i) {
+        if(conv_array_of_requests[i] == MPI_REQUEST_NULL) {
+            {manPrefix}unmapRequest(array_of_requests[i]);
+        }
+    }
+    </Code>
   </Function>
   <Function name="MPI_Testany">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="array_of_requests[]" type="MPI_Request"/>
-    <Arg name="indx" output="true" type="int*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
+    <Arg name="indx" output="true" type="int*" />
     <Arg name="flag" output="true" type="int*"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
+    <Code order="aftercall">
+    if (*indx == MPI_UNDEFINED) {
+        *indx = YogiMPI_UNDEFINED;
+    }
+    else {
+        if(conv_array_of_requests[*indx] == MPI_REQUEST_NULL) {
+            {manPrefix}unmapRequest(array_of_requests[*indx]);
+        }
+    }
+    </Code>
   </Function>
   <Function name="MPI_Testsome">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="incount" type="int"/>
     <Arg input="true" name="array_of_requests[]" type="MPI_Request"/>
-    <Arg name="outcount" output="true" type="int*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
+    <Arg name="outcount" output="true" type="int*" />
     <Arg name="array_of_indices[]" output="true" type="int"/>
     <Arg name="array_of_statuses[]" output="true" type="MPI_Status"/>
+    <Code order="aftercall">
+    if (*outcount == MPI_UNDEFINED) {
+        *outcount = YogiMPI_UNDEFINED;
+    }
+    else {
+        int i;
+        for(i = 0; i &lt; *outcount; ++i) {
+            int requestIndex = array_of_indices[i];
+            if(conv_array_of_requests[requestIndex] == MPI_REQUEST_NULL) {
+                {manPrefix}unmapRequest(array_of_requests[requestIndex]);
+            }
+        }
+    }
+    </Code>
   </Function>
   <Function name="MPI_Type_commit">
     <ReturnType>int</ReturnType>
@@ -1055,33 +1090,66 @@
   </Function>
   <Function name="MPI_Wait">
     <ReturnType>int</ReturnType>
-    <Arg input="true" output="true" name="request" type="MPI_Request*" />
+    <Arg input="true" name="request" type="MPI_Request*" />
     <Arg name="status" output="true" type="MPI_Status*"/>
+    <Code order="beforereturn">
+    if (conv_request == MPI_REQUEST_NULL) {
+        {manPrefix}unmapRequest(request);
+    }
+    </Code> 
   </Function>
   <Function name="MPI_Waitall">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
-    <Arg input="true" output="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
+    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
     <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="count"/>
+    <Code order="aftercall">
+    int i;
+    for(i = 0; i &lt; count; ++i) {
+        if(conv_array_of_requests[i] == MPI_REQUEST_NULL) {
+            {manPrefix}unmapRequest(array_of_requests[i]);
+        }
+    }
+    </Code>
   </Function>
   <Function name="MPI_Waitany">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
-    <Arg name="indx" output="true" type="int*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
+    <Arg name="indx" output="true" type="int*" />
     <Arg name="status" output="true" type="MPI_Status*"/>
+    <Code order="aftercall">
+    if (*indx == MPI_UNDEFINED) {
+        *indx = YogiMPI_UNDEFINED;
+    }
+    else {
+        if(conv_array_of_requests[*indx] == MPI_REQUEST_NULL) {
+            {manPrefix}unmapRequest(array_of_requests[*indx]);
+        }
+    }
+    </Code>
   </Function>
   <Function name="MPI_Waitsome">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="incount" type="int"/>
     <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="incount"/>
-    <Arg name="outcount" output="true" type="int*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
+    <Arg name="outcount" output="true" type="int*" />
     <Arg name="array_of_indices[]" output="true" type="int" dims="outcount"/>
     <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="outcount"/>
+    <Code order="aftercall">
+    if (*outcount == MPI_UNDEFINED) {
+        *outcount = YogiMPI_UNDEFINED;
+    }
+    else {
+        int i; 
+        for(i = 0; i &lt; *outcount; ++i) {
+            int requestIndex = array_of_indices[i];
+            if(conv_array_of_requests[requestIndex] == MPI_REQUEST_NULL) {
+                {manPrefix}unmapRequest(array_of_requests[requestIndex]);
+            }
+        }
+    }
+    </Code>
   </Function>
   <Function name="MPI_Accumulate">
     <ReturnType>int</ReturnType>
