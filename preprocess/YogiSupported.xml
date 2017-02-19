@@ -379,6 +379,7 @@
     <Function>MPI_Comm_free_keyval</Function>
     <Function>MPI_Type_get_true_extent</Function>
     <Function>MPI_Type_dup</Function>
+    <Function>MPI_Exscan</Function>
   </Language>
   
   <Language name='Fortran'>

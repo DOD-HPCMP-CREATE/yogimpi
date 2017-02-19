@@ -7,7 +7,6 @@ import subprocess
 import tempfile
 import filecmp
 import re
-from AVUtility import AVUtility as AU
 import xml.etree.ElementTree as ET
 
 class YogiMPIWrapper(object):

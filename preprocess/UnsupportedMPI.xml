@@ -159,7 +159,6 @@
     <Function>MPI_Topo_test</Function>
     <Function>MPI_Rget_accumulate</Function>
     <Function>MPI_Ireduce</Function>
-    <Function>MPI_Exscan</Function>
     <Function>MPI_Add_error_code</Function>
     <Function>MPI_Win_lock_all</Function>
     <Function>MPI_File_read_ordered</Function>
