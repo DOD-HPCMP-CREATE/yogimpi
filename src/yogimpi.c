@@ -1198,7 +1198,7 @@ int YogiMPI_Type_vector(int count, int blocklength, int stride,
     MPI_Datatype mpi_newtype = MPI_DATATYPE_NULL;
 
     int mpi_err = MPI_Type_vector(count, blocklength, stride, mpi_oldtype, 
-    		                      &mpi_newtype);
+                                  &mpi_newtype);
     *newtype = add_new_datatype(mpi_newtype);
     return error_to_yogi(mpi_err);
 }
@@ -1340,33 +1340,33 @@ int YogiMPI_Allgather(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype,
     int mpi_err = YogiMPI_SUCCESS;
     MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
+    MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
     if (YogiMPI_IN_PLACE == sendbuf) {
-        mpi_err = MPI_Allgather(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, recvbuf,
-        		                recvcount, mpi_recvtype, mpi_comm);
+        mpi_err = MPI_Allgather(MPI_IN_PLACE, sendcount, mpi_sendtype, recvbuf,
+                                recvcount, mpi_recvtype, mpi_comm);
     } 
     else {
-        MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
         mpi_err = MPI_Allgather(sendbuf, sendcount, mpi_sendtype, recvbuf, 
-        		                recvcount, mpi_recvtype, mpi_comm);
+                                recvcount, mpi_recvtype, mpi_comm);
     }
     return error_to_yogi(mpi_err);
 }
 
 int YogiMPI_Allgatherv(void* sendbuf, int sendcount, YogiMPI_Datatype sendtype, 
-		               void* recvbuf, int* recvcounts, int* displs, 
-					   YogiMPI_Datatype recvtype, YogiMPI_Comm comm) {
+                       void* recvbuf, int* recvcounts, int* displs, 
+                       YogiMPI_Datatype recvtype, YogiMPI_Comm comm) {
 
     int mpi_err = YogiMPI_SUCCESS;
     MPI_Datatype mpi_recvtype = datatype_to_mpi(recvtype);
     MPI_Comm mpi_comm = comm_to_mpi(comm);
     if (YogiMPI_IN_PLACE == sendbuf) {
         mpi_err = MPI_Allgatherv(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, recvbuf,
-        		                 recvcounts, displs, mpi_recvtype, mpi_comm);
+                                 recvcounts, displs, mpi_recvtype, mpi_comm);
     } 
     else {
         MPI_Datatype mpi_sendtype = datatype_to_mpi(sendtype);
         mpi_err = MPI_Allgatherv(sendbuf, sendcount, mpi_sendtype, recvbuf,
-        		                 recvcounts, displs, mpi_recvtype, mpi_comm);
+                                 recvcounts, displs, mpi_recvtype, mpi_comm);
     }
     return error_to_yogi(mpi_err);
 }
