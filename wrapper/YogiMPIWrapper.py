@@ -75,6 +75,7 @@ class YogiMPIWrapper(object):
     fixedExts = [ '.f77', '.f', '.for' ]
     f77Comments = [ 'c', 'C', '*' ]
     useMPIRegEx = re.compile(r"([\s]*)use[\s]+mpi([\s]+)", re.IGNORECASE)
+    defQuoteEx = re.compile(r'(-D[a-zA-Z0-9_]+)="([a-zA-Z0-9_/]+)"')
 
     def __init__(self, prefixDir, compilerName, compilerLang):
         global mpiConstants
@@ -127,6 +128,11 @@ class YogiMPIWrapper(object):
 
     def getRC(self):
         return self.rc
+
+    def _checkAssignQuotes(self, anArg):
+        aRegex = YogiMPIWrapper.defQuoteEx
+        retVal = aRegex.sub(r'\g<1>=' + '\\"' + r'\g<2>' + '\\"', anArg)
+        return retVal 
 
     def _isSourceType(self, inputFile, language):
         for anExt in YogiMPIWrapper.extensions[language]:
@@ -183,6 +189,10 @@ class YogiMPIWrapper(object):
         return filename
 
     def _changeArgs(self):
+        for i, anArg in enumerate(self.argArray):
+            if anArg.startswith('-D'):
+                self.argArray[i] = self._checkAssignQuotes(anArg)
+
         self.argArray[0] = self.compilerName 
         if self.sourceFile:
             if self.compilerLang == 'Fortran':
