@@ -819,6 +819,8 @@ int YogiMPI_Free_mem(void *base);
 int YogiMPI_Exscan(const void *sendbuf, void *recvbuf, int count, 
                    YogiMPI_Datatype datatype, YogiMPI_Op op, YogiMPI_Comm comm);
 
+int YogiMPI_Comm_test_inter(YogiMPI_Comm comm, int *flag);
+
 #ifdef __cplusplus
 }
 #endif
