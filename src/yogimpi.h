@@ -821,6 +821,10 @@ int YogiMPI_Exscan(const void *sendbuf, void *recvbuf, int count,
 
 int YogiMPI_Comm_test_inter(YogiMPI_Comm comm, int *flag);
 
+int YogiMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count,
+                       YogiMPI_Datatype datatype, YogiMPI_Op op,
+                       YogiMPI_Comm comm, YogiMPI_Request *request);
+
 #ifdef __cplusplus
 }
 #endif

@@ -3108,3 +3108,26 @@ int YogiMPI_Comm_test_inter(YogiMPI_Comm comm, int *flag) {
     return error_to_yogi(mpi_err);
 
 }
+
+int YogiMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count,
+                       YogiMPI_Datatype datatype, YogiMPI_Op op, 
+                       YogiMPI_Comm comm, YogiMPI_Request *request) {
+
+    int mpi_err;
+    MPI_Datatype conv_datatype = datatype_to_mpi(datatype);
+    MPI_Op conv_op = op_to_mpi(op);
+    MPI_Comm conv_comm = comm_to_mpi(comm);
+    MPI_Request mpi_request;
+
+    if (sendbuf == YogiMPI_IN_PLACE) {
+        mpi_err = MPI_Iallreduce(MPI_IN_PLACE, recvbuf, count, conv_datatype,
+                                 conv_op, conv_comm, &mpi_request);
+    }
+    else {
+        mpi_err = MPI_Iallreduce(sendbuf, recvbuf, count, conv_datatype,
+                                 conv_op, conv_comm, &mpi_request);    
+    }
+    *request = add_new_request(mpi_request);
+
+    return error_to_yogi(mpi_err);
+}
