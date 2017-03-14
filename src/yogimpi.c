@@ -83,7 +83,7 @@ static YogiMPI_Datatype add_new_datatype(MPI_Datatype mpi_datatype)
 int my_rank = -1;
 
 /* Array maps YogiMPI error constants to actual MPI constants */
-static int mpi_error_codes[37];
+static int mpi_error_codes[38];
 
 static int num_groups = 100; 
 /* Pointer to pool of MPI_Group objects */
@@ -803,7 +803,7 @@ static void initialize_datatype_pool() {
         datatype_pool[YogiMPI_UNSIGNED_LONG_LONG] = MPI_UNSIGNED_LONG_LONG;
         datatype_pool[YogiMPI_LB]                = MPI_LB;
         datatype_pool[YogiMPI_UB]                = MPI_UB;
-	
+        datatype_pool[YogiMPI_SIGNED_CHAR]       = MPI_SIGNED_CHAR;	
 }
 
 static void initialize_group_pool() {

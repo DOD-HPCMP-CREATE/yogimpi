@@ -127,6 +127,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MPI_2INT YogiMPI_2INT
 #define MPI_SHORT_INT YogiMPI_SHORT_INT
 #define MPI_LONG_DOUBLE_INT YogiMPI_LONG_DOUBLE_INT
+#define MPI_SIGNED_CHAR YogiMPI_SIGNED_CHAR
 
 #define MPI_LONG_LONG_INT YogiMPI_LONG_LONG_INT
 #define MPI_INT32_T YogiMPI_INT32_T
