@@ -45,53 +45,10 @@
 
 #include <yogimpi.h>
 #include <mpi.h>
-#include <assert.h>
+#include "YogiManager.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <unistd.h> /* for hostname */
-
-static const int YogiMPI_DATATYPE_VOLATILE_OFFSET = 38;
-int my_rank = -1;
-static int mpi_error_codes[37];
-static const YogiMPI_Group YogiMPI_GROUP_VOLATILE_OFFSET = 2; 
-static const YogiMPI_Comm YogiMPI_COMM_VOLATILE_OFFSET = 3;
-static const YogiMPI_Op YogiMPI_OP_VOLATILE_OFFSET = 13;
-static const YogiMPI_File YogiMPI_FILE_VOLATILE_OFFSET = 1;
-static const YogiMPI_Info YogiMPI_INFO_VOLATILE_OFFSET = 1;
-static const YogiMPI_Errhandler YogiMPI_ERRHANDLER_VOLATILE_OFFSET = 3;
-
-/*
- * conversion functions YogiMPI <-> MPI
- */
-
-/* Converts an MPI-error into a YogiMPI-error */
-int error_to_yogi(int mpi_error) 
-{ 
-  int current = 0;
-  while(mpi_error_codes[current] != mpi_error) {
-    if (current > YogiMPI_ERR_LASTCODE) {
-      return YogiMPI_ERR_INTERN;
-    }
-    ++current;
-  }
-  return current;
-}
-
-/* Convert a YogiMPI-error to MPI-error */
-int yogi_error_to_mpi(int yogi_error) {
-  return mpi_error_codes[yogi_error];
-}
-
-/* Convert MPI comparison constants to YogiMPI comparison constants */
-int comparison_to_yogi(int mpi_comp)
-{
-  if (mpi_comp == MPI_IDENT) return YogiMPI_IDENT;
-  if (mpi_comp == MPI_CONGRUENT) return YogiMPI_CONGRUENT;
-  if (mpi_comp == MPI_SIMILAR) return YogiMPI_SIMILAR;
-  if (mpi_comp == MPI_UNEQUAL) return YogiMPI_UNEQUAL;
-  return YogiMPI_UNEQUAL;
-}
 
 /* Copy an MPI_Status pointer into a YogiMPI_Status object.
  * @arg source The MPI_Status memory address from which to copy.
@@ -150,7 +107,6 @@ static int yogi_amode_to_mpi(int amode) {
     	return amode;
     }
 
-	
 }
 
 /* Convert root constants in the case of an intercommunicator. */
@@ -158,50 +114,6 @@ static int root_to_mpi(int root) {
     if (root == YogiMPI_ROOT) return MPI_ROOT;
     if (root == YogiMPI_PROC_NULL) return MPI_PROC_NULL;
     return root;
-}
-
-static void bind_mpi_err_constants() {
-
-    mpi_error_codes[YogiMPI_SUCCESS]         = MPI_SUCCESS;
-    mpi_error_codes[YogiMPI_ERR_BUFFER]      = MPI_ERR_BUFFER;
-    mpi_error_codes[YogiMPI_ERR_COUNT]       = MPI_ERR_COUNT;
-    mpi_error_codes[YogiMPI_ERR_TYPE]        = MPI_ERR_TYPE;
-    mpi_error_codes[YogiMPI_ERR_TAG]         = MPI_ERR_TAG;
-    mpi_error_codes[YogiMPI_ERR_COMM]        = MPI_ERR_COMM;
-    mpi_error_codes[YogiMPI_ERR_RANK]        = MPI_ERR_RANK;
-    mpi_error_codes[YogiMPI_ERR_REQUEST]     = MPI_ERR_REQUEST;
-    mpi_error_codes[YogiMPI_ERR_ROOT]        = MPI_ERR_ROOT;
-    mpi_error_codes[YogiMPI_ERR_GROUP]       = MPI_ERR_GROUP;
-    mpi_error_codes[YogiMPI_ERR_OP]          = MPI_ERR_OP;
-    mpi_error_codes[YogiMPI_ERR_TOPOLOGY]    = MPI_ERR_TOPOLOGY;
-    mpi_error_codes[YogiMPI_ERR_DIMS]        = MPI_ERR_DIMS;
-    mpi_error_codes[YogiMPI_ERR_ARG]         = MPI_ERR_ARG;
-    mpi_error_codes[YogiMPI_ERR_UNKNOWN]     = MPI_ERR_UNKNOWN;
-    mpi_error_codes[YogiMPI_ERR_TRUNCATE]    = MPI_ERR_TRUNCATE;
-    mpi_error_codes[YogiMPI_ERR_OTHER]       = MPI_ERR_OTHER;
-    mpi_error_codes[YogiMPI_ERR_INTERN]      = MPI_ERR_INTERN;
-    mpi_error_codes[YogiMPI_ERR_PENDING]     = MPI_ERR_PENDING;
-    mpi_error_codes[YogiMPI_ERR_IN_STATUS]   = MPI_ERR_IN_STATUS;
-    mpi_error_codes[YogiMPI_ERR_FILE]        = MPI_ERR_FILE;
-    mpi_error_codes[YogiMPI_ERR_NOT_SAME]    = MPI_ERR_NOT_SAME;
-    mpi_error_codes[YogiMPI_ERR_AMODE]       = MPI_ERR_AMODE;
-    mpi_error_codes[YogiMPI_ERR_UNSUPPORTED_DATAREP] 
-                                              = MPI_ERR_UNSUPPORTED_DATAREP;
-    mpi_error_codes[YogiMPI_ERR_UNSUPPORTED_OPERATION] 
-                                              = MPI_ERR_UNSUPPORTED_OPERATION;
-    mpi_error_codes[YogiMPI_ERR_NO_SUCH_FILE] = MPI_ERR_NO_SUCH_FILE;
-    mpi_error_codes[YogiMPI_ERR_FILE_EXISTS]  = MPI_ERR_FILE_EXISTS;
-    mpi_error_codes[YogiMPI_ERR_BAD_FILE]     = MPI_ERR_BAD_FILE;
-    mpi_error_codes[YogiMPI_ERR_ACCESS]       = MPI_ERR_ACCESS; 
-    mpi_error_codes[YogiMPI_ERR_NO_SPACE]     = MPI_ERR_NO_SPACE; 
-    mpi_error_codes[YogiMPI_ERR_QUOTA]        = MPI_ERR_QUOTA; 
-    mpi_error_codes[YogiMPI_ERR_READ_ONLY]    = MPI_ERR_READ_ONLY; 
-    mpi_error_codes[YogiMPI_ERR_FILE_IN_USE]  = MPI_ERR_FILE_IN_USE; 
-    mpi_error_codes[YogiMPI_ERR_DUP_DATAREP]  = MPI_ERR_DUP_DATAREP; 
-    mpi_error_codes[YogiMPI_ERR_CONVERSION]   = MPI_ERR_CONVERSION; 
-    mpi_error_codes[YogiMPI_ERR_IO]           = MPI_ERR_IO;
-    mpi_error_codes[YogiMPI_ERR_LASTCODE]     = MPI_ERR_LASTCODE;
-
 }
 
 int YogiMPI_Init(int* argc, char ***argv)

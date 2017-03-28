@@ -71,6 +71,7 @@ typedef int YogiMPI_Op;
 typedef int YogiMPI_Info;
 typedef int YogiMPI_File;
 typedef int YogiMPI_Errhandler;
+typedef int YogiMPI_Win;
 
 /* MPI constants for return codes (both C and Fortran) */
 #define YogiMPI_SUCCESS 0 
@@ -274,6 +275,7 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
 #define YogiMPI_INFO_NULL 0
 #define YogiMPI_FILE_NULL 0
 #define YogiMPI_ERRHANDLER_NULL 0
+#define YogiMPI_WIN_NULL 0
 
 /* Predefined error handlers */
 #define YogiMPI_ERRORS_ARE_FATAL 1
