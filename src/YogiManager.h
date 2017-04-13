@@ -11,6 +11,35 @@ public:
     int errorToYogi(int mpiError);
     int errorToMPI(int yogiMPIError);
     int comparisonToYogi(int mpiComp);
+    int amodeToMPI(int amode);
+    int rootToMPI(int root);
+
+    MPI_Offset offsetToMPI(YogiMPI_Offset in_offset);
+    MPI_Errhandler errhandlerToMPI(YogiMPI_Errhandler in_errhandler);
+    MPI_Comm commToMPI(YogiMPI_Comm in_comm);
+    MPI_Request requestToMPI(YogiMPI_Request in_request);
+    MPI_Win winToMPI(YogiMPI_Win in_win);
+    MPI_Op opToMPI(YogiMPI_Win in_op);
+    MPI_Datatype datatypeToMPI(YogiMPI_Datatype in_data);
+    MPI_Info infoToMPI(YogiMPI_Info in_info);
+    MPI_Group groupToMPI(YogiMPI_Group in_group);
+    MPI_File fileToMPI(YogiMPI_File in_file);
+    MPI_Aint aintToMPI(YogiMPI_Aint in_aint);
+    MPI_Status statusToMPI(YogiMPI_Status in_status);
+
+    YogiMPI_Offset offsetToYogi(MPI_Offset in_offset);
+    YogiMPI_Errhandler errhandlerToYogi(MPI_Errhandler in_errhandler);
+    YogiMPI_Comm commToYogi(MPI_Comm in_comm);
+    YogiMPI_Request requestToYogi(MPI_Request in_request);
+    YogiMPI_Win winToYogi(MPI_Win in_win);
+    YogiMPI_Op opToYogi(MPI_Win in_op);
+    YogiMPI_Datatype datatypeToYogi(MPI_Datatype in_data);
+    YogiMPI_Info infoToYogi(MPI_Info in_info);
+    YogiMPI_Group groupToYogi(MPI_Group in_group);
+    YogiMPI_File fileToYogi(MPI_File in_file);
+    YogiMPI_Aint aintToYogi(MPI_Aint in_aint);
+    YogiMPI_Status statusToYogi(MPI_Status in_status);
+
 protected: 
     YogiManager();
 private:

@@ -117,3 +117,69 @@ int YogiManager::comparisonToYogi(int mpiComp)
     if (it != yogiComps.end()) return it->second;
     return YogiMPI_UNEQUAL; 
 }
+
+/* Copy an MPI_Status pointer into a YogiMPI_Status object.
+ * @arg source The MPI_Status memory address from which to copy.
+ * @arg dest The YogiMPI_Status memory address into which copy is placed.
+ */
+YogiMPI_Status YogiManager::statusToYogi(MPI_Status in_status) {
+    dest->MPI_TAG = source->MPI_TAG;
+    dest->MPI_SOURCE = source->MPI_SOURCE;
+    dest->MPI_ERROR = source->MPI_ERROR;
+    /* If this isn't the same address, force a memcpy */
+    if ((void *)dest->realStatus != (void *)source) {
+        memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
+    }
+}
+
+/* Retrieve the real MPI_Status pointer from a YogiMPI_Status object */
+MPI_Status YogiManager::statusToMPI(YogiMPI_Status in_status)
+{
+    /* This will grab the number of bytes needed.  We don't care about
+     * structure padding since this area is never directly accessed by us.
+     * It is ensured to be larger than we need.
+    */
+    return (MPI_Status)&source->realStatus[0];
+}
+
+int YogiManager::amodeToMPI(int amode) {
+    switch(amode) {
+      case YogiMPI_MODE_RDONLY:
+            return MPI_MODE_RDONLY;
+            break;
+    case YogiMPI_MODE_RDWR:
+            return MPI_MODE_RDWR;
+            break;
+    case YogiMPI_MODE_WRONLY:
+            return MPI_MODE_WRONLY;
+        break;
+    case YogiMPI_MODE_CREATE:
+            return MPI_MODE_CREATE;
+            break;
+    case YogiMPI_MODE_EXCL:
+            return MPI_MODE_EXCL;
+        break;
+    case YogiMPI_MODE_DELETE_ON_CLOSE:
+            return MPI_MODE_DELETE_ON_CLOSE;
+            break;
+    case YogiMPI_MODE_UNIQUE_OPEN:
+            return MPI_MODE_UNIQUE_OPEN;
+    case YogiMPI_MODE_SEQUENTIAL:
+            return MPI_MODE_SEQUENTIAL;
+            break;
+    case YogiMPI_MODE_APPEND:
+            return MPI_MODE_APPEND;
+            break;
+    default:
+        return amode;
+    }
+
+}
+
+/* Convert root constants in the case of an intercommunicator. */
+int YogiManager::rootToMPI(int root) {
+    if (root == YogiMPI_ROOT) return MPI_ROOT;
+    if (root == YogiMPI_PROC_NULL) return MPI_PROC_NULL;
+    return root;
+}
+

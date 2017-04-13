@@ -50,72 +50,6 @@
 #include <string.h>
 #include <unistd.h> /* for hostname */
 
-/* Copy an MPI_Status pointer into a YogiMPI_Status object.
- * @arg source The MPI_Status memory address from which to copy.
- * @arg dest The YogiMPI_Status memory address into which copy is placed.
- */
-static void mpi_status_to_yogi(MPI_Status *source, YogiMPI_Status *dest) {
-    dest->MPI_TAG = source->MPI_TAG;
-    dest->MPI_SOURCE = source->MPI_SOURCE;
-    dest->MPI_ERROR = source->MPI_ERROR;
-    /* If this isn't the same address, force a memcpy */
-    if ((void *)dest->realStatus != (void *)source) {
-        memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
-    }
-}
-
-/* Retrieve the real MPI_Status pointer from a YogiMPI_Status object */
-static MPI_Status * yogi_status_to_mpi(YogiMPI_Status *source)
-{
-    /* This will grab the number of bytes needed.  We don't care about
-     * structure padding since this area is never directly accessed by us.
-     * It is ensured to be larger than we need.
-    */
-    return (MPI_Status *)&source->realStatus[0];
-}
-
-static int yogi_amode_to_mpi(int amode) {
-    switch(amode) {
-    case YogiMPI_MODE_RDONLY: 
-	    return MPI_MODE_RDONLY;
-	    break;
-    case YogiMPI_MODE_RDWR:
-	    return MPI_MODE_RDWR;
-	    break;
-    case YogiMPI_MODE_WRONLY:
-	    return MPI_MODE_WRONLY;
-      	break;
-    case YogiMPI_MODE_CREATE: 
-	    return MPI_MODE_CREATE;
-	    break;
-    case YogiMPI_MODE_EXCL: 
-	    return MPI_MODE_EXCL;
-        break;
-    case YogiMPI_MODE_DELETE_ON_CLOSE: 
-	    return MPI_MODE_DELETE_ON_CLOSE;
-	    break;
-    case YogiMPI_MODE_UNIQUE_OPEN: 
-	    return MPI_MODE_UNIQUE_OPEN;
-	    break;
-    case YogiMPI_MODE_SEQUENTIAL: 
-	    return MPI_MODE_SEQUENTIAL;
-	    break;
-    case YogiMPI_MODE_APPEND:
-	    return MPI_MODE_APPEND;
-	    break;
-    default:
-    	return amode;
-    }
-
-}
-
-/* Convert root constants in the case of an intercommunicator. */
-static int root_to_mpi(int root) {
-    if (root == YogiMPI_ROOT) return MPI_ROOT;
-    if (root == YogiMPI_PROC_NULL) return MPI_PROC_NULL;
-    return root;
-}
-
 int YogiMPI_Init(int* argc, char ***argv)
 { 
     int mpi_err = MPI_Init(argc,argv); 
@@ -126,6 +60,26 @@ int YogiMPI_Finalize() {
     int mpi_err = MPI_Finalize();
     return error_to_yogi(mpi_err);
 }
+
+int YogiMPI_Get_processor_name(char *name, int *resultlen) {
+    int mpi_err;
+    if (MPI_MAX_PROCESSOR_NAME > YogiMPI_MAX_PROCESSOR_NAME) {
+        char *tmp_name = (char*)malloc(MPI_MAX_PROCESSOR_NAME);
+        mpi_err = MPI_Get_processor_name(tmp_name,resultlen);
+        memcpy(name,tmp_name,YogiMPI_MAX_PROCESSOR_NAME-1);
+        name[YogiMPI_MAX_PROCESSOR_NAME-1] = '\0';
+        free(tmp_name);
+        if (*resultlen > YogiMPI_MAX_PROCESSOR_NAME-1) {
+            *resultlen = YogiMPI_MAX_PROCESSOR_NAME-1;
+        }
+    }
+    else {
+        mpi_err = MPI_Get_processor_name(name, resultlen);
+    }
+
+    return error_to_yogi(mpi_err);
+}
+
 
 double YogiMPI_Wtick() {
     return MPI_Wtick();
