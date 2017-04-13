@@ -3,7 +3,6 @@
 #include "yogimpi.h"
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <stdio.h>
 
 /* Access common block data from Fortran to determine the address of the
@@ -24,86 +23,6 @@ static int check_to_ignore(int *raw_status) {
     if ((void *)raw_status == (void *)&(ympiarray_.fignore)) return 1;
     return 0;
 }
-
-/* Define how the C functions will appear to Fortran.  Typically this is all
- * lowercase, with an additional underscore at the end.
- */
-#define YOGIMPI_SEND yogimpi_send_
-#define YOGIMPI_RECV yogimpi_recv_
-#define YOGIMPI_RECV_INIT yogimpi_recv_init_
-#define YOGIMPI_GET_COUNT yogimpi_get_count_
-#define YOGIMPI_SSEND yogimpi_ssend_
-#define YOGIMPI_ISEND yogimpi_isend_
-#define YOGIMPI_ISSEND yogimpi_issend_
-#define YOGIMPI_IRECV yogimpi_irecv_
-#define YOGIMPI_TYPE_VECTOR yogimpi_type_vector_
-#define YOGIMPI_TYPE_CONTIGUOUS yogimpi_type_contiguous_
-#define YOGIMPI_TYPE_INDEXED yogimpi_type_indexed_
-#define YOGIMPI_TYPE_SIZE yogimpi_type_size_
-#define YOGIMPI_TYPE_COMMIT yogimpi_type_commit_
-#define YOGIMPI_TYPE_FREE yogimpi_type_free_
-#define YOGIMPI_WAIT yogimpi_wait_
-#define YOGIMPI_REQUEST_FREE yogimpi_request_free_
-#define YOGIMPI_BARRIER yogimpi_barrier_
-#define YOGIMPI_BCAST yogimpi_bcast_
-#define YOGIMPI_GATHER yogimpi_gather_
-#define YOGIMPI_REDUCE yogimpi_reduce_
-#define YOGIMPI_ALLREDUCE yogimpi_allreduce_
-#define YOGIMPI_COMM_CREATE yogimpi_comm_create_
-#define YOGIMPI_COMM_GROUP yogimpi_comm_group_
-#define YOGIMPI_COMM_SIZE yogimpi_comm_size_
-#define YOGIMPI_COMM_RANK yogimpi_comm_rank_
-#define YOGIMPI_COMM_DUP yogimpi_comm_dup_
-#define YOGIMPI_COMM_SPLIT yogimpi_comm_split_
-#define YOGIMPI_COMM_FREE yogimpi_comm_free_
-#define YOGIMPI_GROUP_FREE yogimpi_group_free_
-#define YOGIMPI_GROUP_INCL yogimpi_group_incl_
-#define YOGIMPI_GROUP_RANK yogimpi_group_rank_
-#define YOGIMPI_GROUP_SIZE yogimpi_group_size_
-#define YOGIMPI_GROUP_TRANSLATE_RANKS yogimpi_group_translate_ranks_
-#define YOGIMPI_GET_PROCESSOR_NAME yogimpi_get_processor_name_
-#define YOGIMPI_WTIME yogimpi_wtime_
-#define YOGIMPI_INIT yogimpi_init_
-#define YOGIMPI_FINALIZE yogimpi_finalize_
-#define YOGIMPI_TYPE_CREATE_INDEXED_BLOCK yogimpi_type_create_indexed_block_
-#define YOGIMPI_ALLTOALLV yogimpi_alltoallv_
-#define YOGIMPI_ALLTOALL yogimpi_alltoall_
-#define YOGIMPI_STARTALL yogimpi_startall_
-#define YOGIMPI_SCAN yogimpi_scan_
-#define YOGIMPI_FILE_CLOSE yogimpi_file_close_
-#define YOGIMPI_FILE_GET_INFO yogimpi_file_get_info_
-#define YOGIMPI_FILE_OPEN yogimpi_file_open_
-#define YOGIMPI_FILE_SET_VIEW yogimpi_file_set_view_
-#define YOGIMPI_FILE_WRITE_ALL yogimpi_file_write_all_
-#define YOGIMPI_FILE_WRITE_AT yogimpi_file_write_at_
-#define YOGIMPI_FILE_READ yogimpi_file_read_
-#define YOGIMPI_FILE_READ_AT yogimpi_file_read_at_
-#define YOGIMPI_FILE_READ_ALL yogimpi_file_read_all_
-#define YOGIMPI_INFO_CREATE yogimpi_info_create_
-#define YOGIMPI_INFO_SET yogimpi_info_set_
-#define YOGIMPI_INFO_FREE yogimpi_info_free_
-#define YOGIMPI_WAITANY yogimpi_waitany_
-#define YOGIMPI_WAITSOME yogimpi_waitsome_
-#define YOGIMPI_WAITALL yogimpi_waitall_
-#define YOGIMPI_SEND_INIT yogimpi_send_init_
-#define YOGIMPI_SENDRECV yogimpi_sendrecv_
-#define YOGIMPI_GATHERV yogimpi_gatherv_
-#define YOGIMPI_SCATTER yogimpi_scatter_
-#define YOGIMPI_SCATTERV yogimpi_scatterv_
-#define YOGIMPI_ALLGATHER yogimpi_allgather_
-#define YOGIMPI_ALLGATHERV yogimpi_allgatherv_
-#define YOGIMPI_ABORT yogimpi_abort_
-#define YOGIMPI_PROBE yogimpi_probe_
-#define YOGIMPI_IPROBE f90bridge_yogimpi_iprobe_
-#define YOGIMPI_TEST f90bridge_yogimpi_test_
-#define YOGIMPI_ATTR_GET f90bridge_yogimpi_attr_get_
-#define YOGIMPI_INITIALIZED f90bridge_yogimpi_initialized_
-#define YOGIMPI_FINALIZED f90bridge_yogimpi_finalized_
-#define YOGIMPI_BSEND yogimpi_bsend_
-#define YOGIMPI_BUFFER_ATTACH yogimpi_buffer_attach_
-#define YOGIMPI_FILE_DELETE yogimpi_file_delete_
-#define YOGIMPI_FILE_WRITE yogimpi_file_write_
-#define YOGIMPI_FILE_SEEK yogimpi_file_seek_
 
 static char * null_terminate(char *fString, size_t slen) {
     char * returnString = (char *)malloc(slen + 1);
@@ -141,7 +60,6 @@ void YOGIMPI_RECV(void *buffer, int *count, int *datatype, int *source,
 void YOGIMPI_GET_COUNT(int *status, int *datatype, int *count, int *ierror)
 {
     /* MPI_Status argument can't be ignored. */
-    assert(check_to_ignore(status) == 0);
     *ierror = YogiMPI_Get_count((YogiMPI_Status *)status, *datatype, count);
 }
 
