@@ -118,30 +118,6 @@ int YogiManager::comparisonToYogi(int mpiComp)
     return YogiMPI_UNEQUAL; 
 }
 
-/* Copy an MPI_Status pointer into a YogiMPI_Status object.
- * @arg source The MPI_Status memory address from which to copy.
- * @arg dest The YogiMPI_Status memory address into which copy is placed.
- */
-YogiMPI_Status YogiManager::statusToYogi(MPI_Status in_status) {
-    dest->MPI_TAG = source->MPI_TAG;
-    dest->MPI_SOURCE = source->MPI_SOURCE;
-    dest->MPI_ERROR = source->MPI_ERROR;
-    /* If this isn't the same address, force a memcpy */
-    if ((void *)dest->realStatus != (void *)source) {
-        memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
-    }
-}
-
-/* Retrieve the real MPI_Status pointer from a YogiMPI_Status object */
-MPI_Status YogiManager::statusToMPI(YogiMPI_Status in_status)
-{
-    /* This will grab the number of bytes needed.  We don't care about
-     * structure padding since this area is never directly accessed by us.
-     * It is ensured to be larger than we need.
-    */
-    return (MPI_Status)&source->realStatus[0];
-}
-
 int YogiManager::amodeToMPI(int amode) {
     switch(amode) {
       case YogiMPI_MODE_RDONLY:
@@ -182,4 +158,111 @@ int YogiManager::rootToMPI(int root) {
     if (root == YogiMPI_PROC_NULL) return MPI_PROC_NULL;
     return root;
 }
+
+MPI_Offset YogiManager::toMPI(YogiMPI_Offset in_offset) {
+
+}
+
+MPI_Errhandler YogiManager::toMPI(YogiMPI_Errhandler in_errhandler) {
+
+}
+
+MPI_Comm YogiManager::toMPI(YogiMPI_Comm in_comm) {
+
+}
+
+MPI_Request YogiManager::toMPI(YogiMPI_Request in_request) {
+
+}
+
+MPI_Win YogiManager::toMPI(YogiMPI_Win in_win) {
+
+}
+
+MPI_Op YogiManager::toMPI(YogiMPI_Win in_op) {
+
+}
+
+MPI_Datatype YogiManager::toMPI(YogiMPI_Datatype in_data) {
+
+}
+
+MPI_Info YogiManager::toMPI(YogiMPI_Info in_info) {
+
+}
+
+MPI_Group YogiManager::toMPI(YogiMPI_Group in_group) {
+
+}
+
+MPI_File YogiManager::toMPI(YogiMPI_File in_file) {
+
+}
+
+MPI_Aint YogiManager::toMPI(YogiMPI_Aint in_aint) {
+
+}
+
+MPI_Status YogiManager::toMPI(YogiMPI_Status in_status) {
+    /* This will grab the number of bytes needed.  We don't care about
+     * structure padding since this area is never directly accessed by us.
+     * It is ensured to be larger than we need.
+    */
+    return (MPI_Status)&in_status->realStatus[0];
+}
+
+YogiMPI_Offset YogiManager::toYogi(MPI_Offset in_offset) {
+
+}
+
+YogiMPI_Errhandler YogiManager::toYogi(MPI_Errhandler in_errhandler) {
+
+}
+
+YogiMPI_Comm YogiManager::toYogi(MPI_Comm in_comm) {
+
+}
+
+YogiMPI_Request YogiManager::toYogi(MPI_Request in_request) {
+
+}
+
+YogiMPI_Win YogiManager::toYogi(MPI_Win in_win) {
+
+}
+
+YogiMPI_Op YogiManager::toYogi(MPI_Win in_op) {
+
+}
+
+YogiMPI_Datatype YogiManager::toYogi(MPI_Datatype in_data) {
+
+}
+
+YogiMPI_Info YogiManager::toYogi(MPI_Info in_info) {
+
+}
+
+YogiMPI_Group YogiManager::toYogi(MPI_Group in_group) {
+
+}
+
+YogiMPI_File YogiManager::toYogi(MPI_File in_file) {
+
+}
+
+YogiMPI_Aint YogiManager::toYogi(MPI_Aint in_aint) {
+
+}
+
+YogiMPI_Status YogiManager::toYogi(MPI_Status in_status) {
+    dest->MPI_TAG = source->MPI_TAG;
+    dest->MPI_SOURCE = source->MPI_SOURCE;
+    dest->MPI_ERROR = source->MPI_ERROR;
+    /* If this isn't the same address, force a memcpy */
+    if ((void *)dest->realStatus != (void *)source) {
+        memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
+    }
+}
+
 
