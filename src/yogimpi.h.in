@@ -236,6 +236,8 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
 #define YogiMPI_LB 36 
 #define YogiMPI_UB 37
 
+#define YogiMPI_SIGNED_CHAR 38
+
 /* reserved communicators (C and Fortran) */
 #define YogiMPI_COMM_WORLD 1
 #define YogiMPI_COMM_SELF 2

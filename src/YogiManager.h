@@ -2,11 +2,15 @@
 #define _yogi_manager_included_
 
 #include "yogimpi.h"
+#include "mpi.h"
 #include <map>
+#include <vector>
 
 class YogiManager 
 {
 public: 
+    static const int defaultPoolSize;
+
     static YogiManager* getInstance();
     int errorToYogi(int mpiError);
     int errorToMPI(int yogiMPIError);
@@ -43,10 +47,47 @@ public:
 protected: 
     YogiManager();
 private:
+    template <typename T> 
+    int insertIntoPool(std::vector<T> pool, T newItem, T marker, int offset,
+                       int &counter);
+    template <typename T>
+    void removeFromPool(std::vector<T> pool, int index, T marker, int offset,
+                        int &counter);
+    template <typename T>
+    void fetchFromPool(std::vector<T> pool, int index);
+
     static YogiManager* _instance;
     std::map<int, int> yogiComps;
     std::map<int, int> mpiErrors;
     std::map<int, int> yogiErrors;
+
+    std::vector<MPI_Errhandler> errPool;
+    int numErrs;
+    int errOffset;
+    std::vector<MPI_Comm> commPool;
+    int numComms;
+    int commOffset;
+    std::vector<MPI_Request> requestPool;
+    int numRequests;
+    int requestOffset;
+    std::vector<MPI_Win> winPool;
+    int numWins;
+    int winOffset; 
+    std::vector<MPI_Op> opPool;
+    int numOps;
+    int opOffset;
+    std::vector<MPI_Datatype> datatypePool;
+    int numDatatypes;
+    int datatypeOffset;
+    std::vector<MPI_Info> infoPool;
+    int numInfos;
+    int infoOffset;
+    std::vector<MPI_Group> groupPool;
+    int numGroups;
+    int groupOffset;
+    std::vector<MPI_File> filePool;
+    int numFiles;
+    int fileOffset;
 };
 
 #endif

@@ -1,6 +1,9 @@
-#include "yogimpi.h"
 #include "YogiManager.h"
-#include <map>
+#include <algorithm>
+#include <iterator>
+#include <cstring>
+
+const int YogiManager::defaultPoolSize = 100;
 
 YogiManager* YogiManager::_instance = 0;
 
@@ -11,7 +14,26 @@ YogiManager* YogiManager::getInstance() {
     return _instance;
 }
 
-int YogiManager::initializeConstants() {
+YogiManager::YogiManager() {
+    errPool.resize(defaultPoolSize, MPI_ERRHANDLER_NULL);
+    numErrs = errOffset = 3;
+    commPool.resize(defaultPoolSize, MPI_COMM_NULL);
+    numComms = commOffset = 3;
+    requestPool.resize(defaultPoolSize, MPI_REQUEST_NULL);
+    numRequests = requestOffset = 1;
+    winPool.resize(defaultPoolSize, MPI_WIN_NULL);
+    numWins = winOffset = 1;
+    opPool.resize(defaultPoolSize, MPI_OP_NULL);
+    numOps = opOffset = 13;
+    datatypePool.resize(defaultPoolSize, MPI_DATATYPE_NULL);
+    numDatatypes = datatypeOffset = 38;
+    infoPool.resize(defaultPoolSize, MPI_INFO_NULL);
+    numInfos = infoOffset = 1;
+    groupPool.resize(defaultPoolSize, MPI_GROUP_NULL);
+    numGroups = groupOffset = 2;
+    filePool(defaultPoolSize, MPI_FILE_NULL);
+    numFiles = fileOffset = 1;
+
     mpiErrors[YogiMPI_SUCCESS]         = MPI_SUCCESS;
     mpiErrors[YogiMPI_ERR_BUFFER]      = MPI_ERR_BUFFER;
     mpiErrors[YogiMPI_ERR_COUNT]       = MPI_ERR_COUNT;
@@ -97,6 +119,71 @@ int YogiManager::initializeConstants() {
     yogiComps[MPI_SIMILAR] = YogiMPI_SIMILAR;
     yogiComps[MPI_UNEQUAL] = YogiMPI_UNEQUAL;
 
+    // Set group pool constants
+    groupPool.at(YogiMPI_GROUP_EMPTY) = MPI_GROUP_EMPTY;
+
+    // Set comm pool constants
+    commPool.at(YogiMPI_COMM_WORLD) = MPI_COMM_WORLD;
+    commPool.at(YogiMPI_COMM_SELF) = MPI_COMM_SELF;
+
+    // Set op pool constants
+    opPool.at(YogiMPI_MAX)    = MPI_MAX;
+    opPool.at(YogiMPI_MIN)    = MPI_MIN;
+    opPool.at(YogiMPI_SUM)    = MPI_SUM;
+    opPool.at(YogiMPI_PROD)   = MPI_PROD;
+    opPool.at(YogiMPI_MAXLOC) = MPI_MAXLOC;
+    opPool.at(YogiMPI_MINLOC) = MPI_MINLOC;
+    opPool.at(YogiMPI_BAND)   = MPI_BAND;
+    opPool.at(YogiMPI_BOR)    = MPI_BOR;
+    opPool.at(YogiMPI_BXOR)   = MPI_BXOR;
+    opPool.at(YogiMPI_LAND)   = MPI_LAND;
+    opPool.at(YogiMPI_LOR)    = MPI_LOR;
+    opPool.at(YogiMPI_LXOR)   = MPI_LXOR;
+
+    // Set errhandler pool constants
+    errPool.at(YogiMPI_ERRORS_ARE_FATAL) = MPI_ERRORS_ARE_FATAL;
+    errPool.at(YogiMPI_ERRORS_RETURN)    = MPI_ERRORS_RETURN;
+
+    // Set datatype pool constants
+    datatypePool.at(YogiMPI_CHAR)              = MPI_CHAR;
+    datatypePool.at(YogiMPI_SHORT)             = MPI_SHORT;
+    datatypePool.at(YogiMPI_INT)               = MPI_INT;
+    datatypePool.at(YogiMPI_LONG)              = MPI_LONG;
+    datatypePool.at(YogiMPI_UNSIGNED_CHAR)     = MPI_UNSIGNED_CHAR;
+    datatypePool.at(YogiMPI_UNSIGNED_SHORT)    = MPI_UNSIGNED_SHORT;
+    datatypePool.at(YogiMPI_UNSIGNED)          = MPI_UNSIGNED;
+    datatypePool.at(YogiMPI_UNSIGNED_LONG)     = MPI_UNSIGNED_LONG;
+    datatypePool.at(YogiMPI_FLOAT)             = MPI_FLOAT;
+    datatypePool.at(YogiMPI_DOUBLE)            = MPI_DOUBLE;
+    datatypePool.at(YogiMPI_LONG_DOUBLE)       = MPI_LONG_DOUBLE;
+    datatypePool.at(YogiMPI_BYTE)              = MPI_BYTE;
+    datatypePool.at(YogiMPI_PACKED)            = MPI_PACKED;
+    datatypePool.at(YogiMPI_FLOAT_INT)         = MPI_FLOAT_INT;
+    datatypePool.at(YogiMPI_DOUBLE_INT)        = MPI_DOUBLE_INT;
+    datatypePool.at(YogiMPI_LONG_INT)          = MPI_LONG_INT;
+    datatypePool.at(YogiMPI_2INT)              = MPI_2INT;
+    datatypePool.at(YogiMPI_SHORT_INT)         = MPI_SHORT_INT;
+    datatypePool.at(YogiMPI_LONG_DOUBLE_INT)   = MPI_LONG_DOUBLE_INT;
+    datatypePool.at(YogiMPI_LONG_LONG_INT)     = MPI_LONG_LONG_INT;
+    datatypePool.at(YogiMPI_INT32_T)           = MPI_INT32_T;
+    datatypePool.at(YogiMPI_INT64_T)           = MPI_INT64_T;
+    datatypePool.at(YogiMPI_COMPLEX)           = MPI_COMPLEX;
+    datatypePool.at(YogiMPI_DOUBLE_COMPLEX)    = MPI_DOUBLE_COMPLEX;
+    datatypePool.at(YogiMPI_LOGICAL)           = MPI_LOGICAL;
+    datatypePool.at(YogiMPI_2REAL)             = MPI_2REAL;
+    datatypePool.at(YogiMPI_2DOUBLE_PRECISION) = MPI_2DOUBLE_PRECISION;
+    datatypePool.at(YogiMPI_2INTEGER)          = MPI_2INTEGER;
+    datatypePool.at(YogiMPI_INTEGER1)          = MPI_INTEGER1;
+    datatypePool.at(YogiMPI_INTEGER2)          = MPI_INTEGER2;
+    datatypePool.at(YogiMPI_INTEGER4)          = MPI_INTEGER4;
+    datatypePool.at(YogiMPI_INTEGER8)          = MPI_INTEGER8;
+    datatypePool.at(YogiMPI_REAL4)             = MPI_REAL4;
+    datatypePool.at(YogiMPI_REAL8)             = MPI_REAL8;
+    datatypePool.at(YogiMPI_UNSIGNED_LONG_LONG) = MPI_UNSIGNED_LONG_LONG;
+    datatypePool.at(YogiMPI_LB)                = MPI_LB;
+    datatypePool.at(YogiMPI_UB)                = MPI_UB;
+    datatypePool.at(YogiMPI_SIGNED_CHAR)       = MPI_SIGNED_CHAR;
+
 }
 
 int YogiManager::errorToYogi(int mpiError) {
@@ -159,48 +246,84 @@ int YogiManager::rootToMPI(int root) {
     return root;
 }
 
-MPI_Offset YogiManager::toMPI(YogiMPI_Offset in_offset) {
+template <typename T>
+int YogiManager::insertIntoPool(std::vector<T> pool, T newItem, T marker,
+                                int offset, int &counter) {
+    int index;
+    /* First see if the current counter exceeds the size of the vector.
+       If it does, double it. */ 
+    if (counter >= vector.size()) vector.resize(vector.size() * 2, marker);
+    // After the offset, find first instance of marker, replace with newItem.
+    std::vector<T>::iterator it = pool.begin();
+    std::advance(it, offset);
+    if (std::find(it, pool.end(), marker) != pool.end()) {
+        *it = marker;
+        index = std::distance(pool.begin(), it);
+    }
+    else {
+        return -1;
+    }
+    // Bump up the counter and return the index.
+    counter++; 
+    return index;
+}
+
+template <typename T>
+void YogiManager::removeFromPool(std::vector<T> pool, int index, T marker,
+                                int offset, int &counter) {
+    /* First see if the current index is at or above offset. If not, do not 
+       make any modifications as these are considered read-only. */
+    if (index < offset) return;
+    // Replace the value at index with the marker value. 
+    pool.at(index) = marker;
+    // Decrement the counter. 
+    counter--;
 
 }
 
-MPI_Errhandler YogiManager::toMPI(YogiMPI_Errhandler in_errhandler) {
-
-}
-
-MPI_Comm YogiManager::toMPI(YogiMPI_Comm in_comm) {
-
-}
-
-MPI_Request YogiManager::toMPI(YogiMPI_Request in_request) {
-
-}
-
-MPI_Win YogiManager::toMPI(YogiMPI_Win in_win) {
-
-}
-
-MPI_Op YogiManager::toMPI(YogiMPI_Win in_op) {
-
-}
-
-MPI_Datatype YogiManager::toMPI(YogiMPI_Datatype in_data) {
-
-}
-
-MPI_Info YogiManager::toMPI(YogiMPI_Info in_info) {
-
-}
-
-MPI_Group YogiManager::toMPI(YogiMPI_Group in_group) {
-
-}
-
-MPI_File YogiManager::toMPI(YogiMPI_File in_file) {
-
+template <typename T>
+<T> YogiManager::fetchFromPool(std::vector<T> pool, int index) {
+    return pool.at(index);  
 }
 
 MPI_Aint YogiManager::toMPI(YogiMPI_Aint in_aint) {
+    return (MPI_Aint) in_aint;
+}
+   
+MPI_Comm YogiManager::toMPI(YogiMPI_Comm in_comm) {
+    return fetchFromPool(commPool, in_comm);
+}
 
+MPI_Datatype YogiManager::toMPI(YogiMPI_Datatype in_data) {
+    return fetchFromPool(datatypePool, in_data);
+}
+
+MPI_Errhandler YogiManager::toMPI(YogiMPI_Errhandler in_errhandler) {
+    return fetchFromPool(errPool, in_errhandler);
+}
+
+MPI_File YogiManager::toMPI(YogiMPI_File in_file) {
+    return fetchFromPool(filePool, in_file);
+}
+
+MPI_Group YogiManager::toMPI(YogiMPI_Group in_group) {
+    return fetchFromPool(groupPool, in_group);
+}
+
+MPI_Info YogiManager::toMPI(YogiMPI_Info in_info) {
+    return fetchFromPool(infoPool, in_info);
+}
+
+MPI_Offset YogiManager::toMPI(YogiMPI_Offset in_offset) {
+    return (MPI_Offset) in_offset;
+}
+
+MPI_Op YogiManager::toMPI(YogiMPI_Win in_op) {
+    return fetchFromPool(opPool, in_op);
+}
+
+MPI_Request YogiManager::toMPI(YogiMPI_Request in_request) {
+    return fetchFromPool(requestPool, in_request);
 }
 
 MPI_Status YogiManager::toMPI(YogiMPI_Status in_status) {
@@ -208,61 +331,76 @@ MPI_Status YogiManager::toMPI(YogiMPI_Status in_status) {
      * structure padding since this area is never directly accessed by us.
      * It is ensured to be larger than we need.
     */
-    return (MPI_Status)&in_status->realStatus[0];
+    return (MPI_Status)&input->realStatus[0];
 }
 
-YogiMPI_Offset YogiManager::toYogi(MPI_Offset in_offset) {
-
+MPI_Win YogiManager::toMPI(YogiMPI_Win in_win) {
+    return fetchFromPool(winPool, in_win);
 }
 
-YogiMPI_Errhandler YogiManager::toYogi(MPI_Errhandler in_errhandler) {
+// Conversions from MPI handles to Yogi handles
 
+YogiMPI_Aint YogiManager::toYogi(MPI_Aint in_aint) {
+    return (YogiMPI_Aint) in_aint;
 }
 
 YogiMPI_Comm YogiManager::toYogi(MPI_Comm in_comm) {
-
-}
-
-YogiMPI_Request YogiManager::toYogi(MPI_Request in_request) {
-
-}
-
-YogiMPI_Win YogiManager::toYogi(MPI_Win in_win) {
-
-}
-
-YogiMPI_Op YogiManager::toYogi(MPI_Win in_op) {
-
+    return insertIntoPool(commPool, in_comm, MPI_COMM_NULL, commOffset,
+                          numComms);
 }
 
 YogiMPI_Datatype YogiManager::toYogi(MPI_Datatype in_data) {
-
+    return insertIntoPool(datatypePool, in_data, MPI_DATATYPE_NULL,
+                          datatypeOffset, numDatatypes);
 }
 
-YogiMPI_Info YogiManager::toYogi(MPI_Info in_info) {
+YogiMPI_Errhandler YogiManager::toYogi(MPI_Errhandler in_errhandler) {
+    return insertIntoPool(errPool, in_errhandler, MPI_ERRHANDLER_NULL,
+                          errOffset, numErrs);
+}
+
+YogiMPI_File YogiManager::toYogi(MPI_File in_file) {
+    return insertIntoPool(filePool, in_file, MPI_FILE_NULL, fileOffset,
+                          numFiles);
 
 }
 
 YogiMPI_Group YogiManager::toYogi(MPI_Group in_group) {
-
+    return insertIntoPool(groupPool, in_group, MPI_GROUP_NULL, groupOffset,
+                          numGroups);
 }
 
-YogiMPI_File YogiManager::toYogi(MPI_File in_file) {
-
+YogiMPI_Info YogiManager::toYogi(MPI_Info in_info) {
+    return insertIntoPool(infoPool, in_info, MPI_INFO_NULL, infoOffset,
+                          numInfos);
 }
 
-YogiMPI_Aint YogiManager::toYogi(MPI_Aint in_aint) {
+YogiMPI_Offset YogiManager::toYogi(MPI_Offset in_offset) {
+    return (YogiMPI_Offset) in_offset;
+}
 
+YogiMPI_Op YogiManager::toYogi(MPI_Win in_op) {
+    return insertIntoPool(opPool, in_op, MPI_OP_NULL, opOffset, numOps);
+}
+
+YogiMPI_Request YogiManager::toYogi(MPI_Request in_request) {
+    return insertIntoPool(requestPool, in_request, MPI_REQUEST_NULL,
+                          requestOffset, numRequests);
 }
 
 YogiMPI_Status YogiManager::toYogi(MPI_Status in_status) {
-    dest->MPI_TAG = source->MPI_TAG;
-    dest->MPI_SOURCE = source->MPI_SOURCE;
+    YogiMPI_Status dest;
+    dest->MPI_TAG = input->MPI_TAG;
+    dest->MPI_SOURCE = input->MPI_SOURCE;
     dest->MPI_ERROR = source->MPI_ERROR;
     /* If this isn't the same address, force a memcpy */
     if ((void *)dest->realStatus != (void *)source) {
-        memcpy((void *)dest->realStatus, (void *)source, sizeof(MPI_Status));
+        std::memcpy((void *)dest->realStatus, (void *)source,
+                    sizeof(MPI_Status));
     }
+    return dest;
 }
 
-
+YogiMPI_Win YogiManager::toYogi(MPI_Win in_win) {
+    return insertIntoPool(winPool, in_win, MPI_WIN_NULL, winOffset, numWins);
+}
