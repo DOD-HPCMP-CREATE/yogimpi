@@ -6,7 +6,7 @@ wrap: generate_wrap.py wrap_objects.py WrapMPI.xml
 	python generate_wrap.py WrapMPI.xml 
 
 clean:
-	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc
+	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o
 
 #default: yogimpi.c yogimpi_f90bridge.c yogimpi.h mpitoyogi.h yogimpif.h yogimpi_fortran.f90
 #	$(MPICXX) $(CFLAGS) -c yogimpi.cxx

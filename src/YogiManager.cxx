@@ -326,14 +326,13 @@ MPI_Request YogiManager::requestToMPI(YogiMPI_Request in_request) {
     return fetchFromPool(requestPool, in_request);
 }
 
-MPI_Status YogiManager::statusToMPI(YogiMPI_Status in_status) {
+MPI_Status * YogiManager::statusToMPI(YogiMPI_Status in_status) {
     /* This will grab the number of bytes needed.  We don't care about
      * structure padding since this area is never directly accessed by us.
      * It is ensured to be larger than we need.
     */
-    MPI_Status convert;
-    convert = (MPI_Status)in_status.realStatus;
-    return convert; 
+    MPI_Status *conv_status = reinterpret_cast<MPI_Status *> (in_status.realStatus);
+    return conv_status;
 }
 
 MPI_Win YogiManager::winToMPI(YogiMPI_Win in_win) {
