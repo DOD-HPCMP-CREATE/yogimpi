@@ -205,11 +205,10 @@ class GenerateWrap(object):
             errMsg = "Constant functions unsupported for MPI arguments."
             raise ValueError(errMsg)
 
-        classPrefix = GenerateWrap.manPrefix + anArg.convert_class.lower()
         if before:
-            classFunc = classPrefix + "ToMPI"
+            classFunc = GenerateWrap.manPrefix + "toMPI"
         else:
-            classFunc = classPrefix + "ToYogi"
+            classFunc = GenerateWrap.manPrefix + "toYogi"
 
         sourceFile.addLines(anArg.call_name + ' = ' + classFunc +\
                                     '(' + anArg.call_name + ');')
@@ -269,13 +268,12 @@ class GenerateWrap(object):
     #  forth between Yogi and MPI types. 
     def _makeMPIConversion(self, sourceFile, anArg, before=True):
         stripType = anArg.mpi_type.replace('MPI_', '')
-        convPrefix = GenerateWrap.manPrefix + stripType
         if before:
-            convFunc = convPrefix + "ToMPI"
+            convFunc = GenerateWrap.manPrefix + "toMPI"
             firstArg = anArg.mpi_name
             secondArg = anArg.call_name
         else:
-            convFunc = convPrefix + "ToYogi"
+            convFunc = GenerateWrap.manPrefix + "toYogi"
             firstArg = anArg.call_name
             secondArg = anArg.mpi_name
 
