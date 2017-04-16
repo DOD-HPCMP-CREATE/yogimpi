@@ -122,20 +122,26 @@ class GenerateWrap(object):
                     thisArg.is_pointer = True
                     thisArg.dims = argElement.attrib['dims']
 
-                if rawType.startswith('MPI_') and \
-                   not rawType.endswith('function*'):
-                    thisArg.is_mpi_type = True
-                    thisArg.mpi_name = 'conv_' + thisArg.call_name
-                    for mpiType in GenerateWrap.mpiTypes:
-                        if thisArg.type.startswith(mpiType):
-                            thisArg.mpi_type = mpiType
-                    if thisArg.is_plural:
-                        # A pointer will be allocated with new on the heap.
-                        thisArg.mpi_is_ptr = True
+                if rawType.startswith('MPI_'):
+                    if not rawType.endswith('function*'):
+                        thisArg.is_mpi_type = True
+                        thisArg.mpi_name = 'conv_' + thisArg.call_name
+                        for mpiType in GenerateWrap.mpiTypes:
+                            if thisArg.type.startswith(mpiType):
+                                thisArg.mpi_type = mpiType
+                        if thisArg.is_plural:
+                            # A pointer will be allocated with new on the heap.
+                            thisArg.mpi_is_ptr = True
+                        else:
+                            # The object will just be created on the stack, and
+                            # the & symbol is used to reference the address.
+                            thisArg.mpi_is_ptr = False
                     else:
-                        # The object will just be created on the stack, and
-                        # the & symbol will be used to reference the address.
-                        thisArg.mpi_is_ptr = False
+                        thisArg.is_mpi_type = True
+                        thisArg.is_mpi_ptr = True
+                        thisArg.mpi_func_ptr = True
+                        thisArg.mpi_type = thisArg.type
+                        thisArg.mpi_name = thisArg.call_name
 
                 freeVal = argElement.attrib.get('free', None)
                 thisArg.free_handle = self._checkTrue(freeVal)

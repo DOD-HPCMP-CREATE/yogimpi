@@ -357,6 +357,36 @@ typedef int YogiMPI_Copy_function(YogiMPI_Comm oldcomm, int keyval,
 typedef int YogiMPI_Delete_function(YogiMPI_Comm comm, int keyval,
                                     void *attribute_val, void *extra_state);
 
+typedef void YogiMPI_Handler_function(YogiMPI_Comm *, int *, ... );
+
+typedef int YogiMPI_Type_copy_attr_function(YogiMPI_Datatype, int, void *,
+                                            void *, void *, int *);
+
+typedef int YogiMPI_Type_delete_attr_function(YogiMPI_Datatype, int, void *,
+                                              void *);
+
+typedef int YogiMPI_Win_copy_attr_function(YogiMPI_Win, int, void *, void *,
+                                           void *, int *);
+
+typedef int YogiMPI_Win_delete_attr_function(YogiMPI_Win, int, void *, void *);
+
+typedef void YogiMPI_File_errhandler_function(YogiMPI_File *, int *, ...);
+
+typedef void YogiMPI_Win_errhandler_function(YogiMPI_Win *, int *, ...);
+
+typedef int YogiMPI_Grequest_cancel_function(void *, int);
+
+typedef int YogiMPI_Grequest_free_function(void *);
+
+typedef int YogiMPI_Grequest_query_function(void *, YogiMPI_Status *);
+
+typedef int YogiMPI_Datarep_conversion_function(void *, YogiMPI_Datatype, int,
+                                                void *, YogiMPI_Offset, void *);
+
+typedef int YogiMPI_Datarep_extent_function(YogiMPI_Datatype datatype, 
+                                            YogiMPI_Aint *, void *);
+
+#define MPI_CONVERSION_FN_NULL ((MPI_Datarep_conversion_function *)0)
 #define YogiMPI_NULL_COPY_FN   ((YogiMPI_Copy_function *)0)
 #define YogiMPI_DUP_FN  ((YogiMPI_Copy_function *)-1)
 #define YogiMPI_NULL_DELETE_FN ((YogiMPI_Delete_function *)0)

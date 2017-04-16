@@ -43,7 +43,6 @@
  privately owned rights.
 """
 
-import xml.etree.ElementTree as ET
 import sys
 
 class MPIArgument(object):
@@ -88,6 +87,8 @@ class MPIArgument(object):
         self.mpi_type = None
         # Whether the MPI variable is a pointer.
         self.mpi_is_ptr = False
+        # Whether the MPI variable is a function pointer.
+        self.mpi_func_ptr = False
         # Whether a handle will be freed by the operation.
         self.free_handle = False
 
