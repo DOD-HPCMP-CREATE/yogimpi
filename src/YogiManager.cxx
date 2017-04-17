@@ -326,13 +326,12 @@ MPI_Request YogiManager::requestToMPI(YogiMPI_Request in_request) {
     return fetchFromPool(requestPool, in_request);
 }
 
-MPI_Status * YogiManager::statusToMPI(YogiMPI_Status in_status) {
+MPI_Status * YogiManager::statusToMPI(YogiMPI_Status &in_status) {
     /* This will grab the number of bytes needed.  We don't care about
      * structure padding since this area is never directly accessed by us.
      * It is ensured to be larger than we need.
     */
-    MPI_Status *conv_status = reinterpret_cast<MPI_Status *> (in_status.realStatus);
-    return conv_status;
+    return reinterpret_cast<MPI_Status *> (&in_status.realStatus);
 }
 
 MPI_Win YogiManager::winToMPI(YogiMPI_Win in_win) {
@@ -395,8 +394,8 @@ YogiMPI_Status YogiManager::statusToYogi(MPI_Status in_status) {
     dest.MPI_SOURCE = in_status.MPI_SOURCE;
     dest.MPI_ERROR = in_status.MPI_ERROR;
     /* If this isn't the same address, force a memcpy */
-    if ((void *)dest.realStatus != (void *)&in_status) {
-        std::memcpy((void *)dest.realStatus, (void *)&in_status,
+    if ((void *)(dest.realStatus) != (void *)&in_status) {
+        std::memcpy((void *)(dest.realStatus), (void *)&in_status,
                     sizeof(MPI_Status));
     }
     return dest;

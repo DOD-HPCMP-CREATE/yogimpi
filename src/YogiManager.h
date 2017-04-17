@@ -29,7 +29,7 @@ public:
     MPI_Group groupToMPI(YogiMPI_Group in_group);
     MPI_File fileToMPI(YogiMPI_File in_file);
     MPI_Aint aintToMPI(YogiMPI_Aint in_aint);
-    MPI_Status * statusToMPI(YogiMPI_Status in_status);
+    MPI_Status * statusToMPI(YogiMPI_Status &in_status);
 
     YogiMPI_Offset offsetToYogi(MPI_Offset in_offset);
     YogiMPI_Errhandler errhandlerToYogi(MPI_Errhandler in_errhandler);

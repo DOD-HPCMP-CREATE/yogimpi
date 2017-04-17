@@ -6,16 +6,11 @@ wrap: generate_wrap.py wrap_objects.py WrapMPI.xml
 	python generate_wrap.py WrapMPI.xml 
 
 clean:
-	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o
+	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o test_YogiManager
 
-#default: yogimpi.c yogimpi_f90bridge.c yogimpi.h mpitoyogi.h yogimpif.h yogimpi_fortran.f90
-#	$(MPICXX) $(CFLAGS) -c yogimpi.cxx
-#	$(F90) $(FFLAGS) -c yogimpi_fortran.f90
-#	$(F90) $(FFLAGS) -c yogimpi_module.f90
-#	$(CC) $(CFLAGS) -c yogimpi_f90bridge.c
-#	$(MPICXX) $(CFLAGS) $(LDFLAGS) yogimpi.o yogimpi_module.o \
-#                 yogimpi_f90bridge.o yogimpi_fortran.o -o \
-#                 libyogimpi.$(LIBEXTENSION)
+manager: wrap YogiManager.cxx YogiManager.h
+	mpicxx -c -fPIC -I. YogiManager.cxx
+	mpicxx -I. -fPIC test_YogiManager.cxx YogiManager.o -o test_YogiManager
 
 #clean:
 #	$(RM) *.mod *.o libyogimpi.$(LIBEXTENSION)
