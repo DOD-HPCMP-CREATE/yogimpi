@@ -12,11 +12,20 @@ public:
     static const int defaultPoolSize;
 
     static YogiManager* getInstance();
-    int errorToYogi(int mpiError);
+
     int errorToMPI(int yogiMPIError);
-    int comparisonToYogi(int mpiComp);
     int amodeToMPI(int amode);
     int rootToMPI(int root);
+    int onesidedToMPI(int onesided);
+    int locktypeToMPI(int lock_type);
+    int threadmodelToMPI(int threadmodel);
+    int whenceToMPI(int whence);
+
+    int errorToYogi(int mpiError);
+    int comparisonToYogi(int mpiComp);
+    int providedToYogi(int provided);
+    int amodeToYogi(int amode);
+    int topoToYogi(int in_topo);
 
     MPI_Offset offsetToMPI(YogiMPI_Offset in_offset);
     MPI_Errhandler errhandlerToMPI(YogiMPI_Errhandler in_errhandler);
@@ -42,19 +51,29 @@ public:
     YogiMPI_Group groupToYogi(MPI_Group in_group);
     YogiMPI_File fileToYogi(MPI_File in_file);
     YogiMPI_Aint aintToYogi(MPI_Aint in_aint);
-    YogiMPI_Status statusToYogi(MPI_Status in_status);
+    YogiMPI_Status statusToYogi(MPI_Status &in_status);
+
+    YogiMPI_Comm unmapComm(YogiMPI_Comm to_free); 
+    YogiMPI_Datatype unmapDatatype(YogiMPI_Datatype to_free);
+    YogiMPI_Errhandler unmapErrhandler(YogiMPI_Errhandler to_free);
+    YogiMPI_File unmapFile(YogiMPI_File to_free);
+    YogiMPI_Group unmapGroup(YogiMPI_Group to_free);
+    YogiMPI_Info unmapInfo(YogiMPI_Info to_free);
+    YogiMPI_Op unmapOp(YogiMPI_Op to_free);
+    YogiMPI_Request unmapRequest(YogiMPI_Request to_free);
+    YogiMPI_Win unmapWin(YogiMPI_Win to_free);
 
 protected: 
     YogiManager();
 private:
     template <typename T> 
-    int insertIntoPool(std::vector<T> pool, T newItem, T marker, int offset,
+    int insertIntoPool(std::vector<T> &pool, T newItem, T marker, int offset,
                        int &counter);
     template <typename T>
-    void removeFromPool(std::vector<T> pool, int index, T marker, int offset,
+    void removeFromPool(std::vector<T> &pool, int index, T marker, int offset,
                         int &counter);
     template <typename T>
-    T fetchFromPool(std::vector<T> pool, int index);
+    T fetchFromPool(std::vector<T> &pool, int index);
 
     static YogiManager* _instance;
     std::map<int, int> yogiComps;

@@ -181,6 +181,13 @@ class GenerateWrap(object):
                 else:
                     if anArg.mpi_is_ptr:
                         printName = '*' + printName
+            elif anArg.type.startswith('MPI_Status') and anArg.is_output:
+                if anArg.is_pointer and not anArg.is_plural:
+                    # An MPI_Status argument that is scalar and only 
+                    # output is almost always a pointer, but a conversion
+                    # variable is normally passed.  Therefore we need the
+                    # & to pass the address.
+                    printName = '&' + anArg.call_name
             else:
                 printName = anArg.call_name
             if doIgnore:
@@ -193,16 +200,18 @@ class GenerateWrap(object):
    
     def _statusConvLine(self, aFunc, phase):
         convLine = ''
+        convPrefix = GenerateWrap.manPrefix + 'statusTo'
         if phase == 'input':
             if aFunc.status_ignore:
                 theArg = aFunc.args[aFunc.status_ignore_arg]
-                convLine += 'MPI_Status * ' + theArg.call_name +\
-                        ' = yogi_status_to_mpi(' + theArg.name + ');'
+                convLine += 'MPI_Status ' + theArg.call_name + ';'
         elif phase == 'output':
             if aFunc.status_ignore:
                 theArg = aFunc.args[aFunc.status_ignore_arg]
-                convLine += 'mpi_status_to_yogi(' + theArg.call_name +\
-                            ', ' + theArg.name + ');'
+                if theArg.is_pointer:
+                    convLine += '*'
+                convLine += theArg.name + ' = ' + convPrefix + 'Yogi(' +\
+                             theArg.call_name + ');'
 
         return convLine
 
@@ -210,14 +219,20 @@ class GenerateWrap(object):
         if anArg.is_mpi_type:
             errMsg = "Constant functions unsupported for MPI arguments."
             raise ValueError(errMsg)
-
+        
+        convPrefix = GenerateWrap.manPrefix + anArg.convert_class 
         if before:
-            classFunc = GenerateWrap.manPrefix + "toMPI"
+            classFunc = convPrefix + "ToMPI"
         else:
-            classFunc = GenerateWrap.manPrefix + "toYogi"
-
-        sourceFile.addLines(anArg.call_name + ' = ' + classFunc +\
-                                    '(' + anArg.call_name + ');')
+            classFunc = convPrefix + "ToYogi"
+        callString = ''
+        if anArg.is_pointer:
+            callString += '*'
+        callString += anArg.call_name + ' = ' + classFunc + '('
+        if anArg.is_pointer:
+            callString += '*'
+        callString += anArg.call_name + ');'
+        sourceFile.addLines(callString);
 
     def _makeConstantCheck(self, sourceFile, anArg, before=True):
         if before:
@@ -274,27 +289,45 @@ class GenerateWrap(object):
     #  forth between Yogi and MPI types. 
     def _makeMPIConversion(self, sourceFile, anArg, before=True):
         stripType = anArg.mpi_type.replace('MPI_', '')
+        convPrefix = GenerateWrap.manPrefix + stripType.lower() 
         if before:
-            convFunc = GenerateWrap.manPrefix + "toMPI"
-            firstArg = anArg.mpi_name
-            secondArg = anArg.call_name
+            convFunc = convPrefix + "ToMPI"
+            returnVal = anArg.mpi_name
+            inputArg = anArg.call_name
         else:
-            convFunc = GenerateWrap.manPrefix + "toYogi"
-            firstArg = anArg.call_name
-            secondArg = anArg.mpi_name
-
+            convFunc = convPrefix + "ToYogi"
+            returnVal = anArg.call_name
+            inputArg = anArg.mpi_name
+ 
+        callString = ''
         if not before and anArg.free_handle:
             # If this is the "after" phase and this should be freed,
             # don't do a conversion, just empty the handle.
-            freeHandle = GenerateWrap.manPrefix + 'unmap' + stripType
-            fhCall = freeHandle + '(' + anArg.call_name + ');'
-            sourceFile.addLines(fhCall)
+            callString = ''
+            if anArg.is_pointer:
+                callString += '*'          
+            callString += returnVal + ' = ' + GenerateWrap.manPrefix +\
+                          'unmap' + stripType + '('
+            if anArg.is_pointer:
+                callString += '*'
+            callString += anArg.call_name + ');'
+            sourceFile.addLines(callString)
         elif anArg.is_plural and anArg.dims:
-            sourceFile.addLines(convFunc + '(' + firstArg + ', ' + secondArg +\
-                                ', ' + anArg.dims + ');')
-        else:
-            sourceFile.addLines(convFunc + '(' + firstArg + ', ' + secondArg +\
+            sourceFile.addLines(convFunc + '(' + inputArg + ', ' + anArg.dims +\
                                 ');')
+        else:
+            callString = ''
+            if (not before and anArg.is_pointer):
+                # If this is a conversion after the MPI call, dereference the
+                # argument pointer and assign a new value.
+                callString += '*'
+            callString += returnVal + ' = ' + convFunc + '('
+            if before and anArg.is_pointer:
+                # If this is a conversion before the MPI call, dereference the
+                # argument pointer so that it may be converted to MPI.
+                callString += '*'
+            callString += inputArg + ');' 
+            sourceFile.addLines(callString);
 
     def writeFiles(self):        
         self.writeCHeader()
@@ -413,10 +446,10 @@ class GenerateWrap(object):
                 # that the user can optionally specify MPI_STATUS_IGNORE, which
                 # means Yogi skips any conversions for it.
                 if anArg.type.startswith('MPI_Status'):
-                    if anArg.is_output:
+                    if anArg.is_output and not anArg.is_input:
                         aFunc.status_ignore = True
                         aFunc.status_ignore_arg = i
-                        aFunc.args[i].call_name = 'in_' + aFunc.args[i].name
+                        aFunc.args[i].call_name = 'conv_' + aFunc.args[i].name
                         if anArg.is_plural:
                             aFunc.status_ignore_type = 'MPI_STATUSES_IGNORE'
                         else:

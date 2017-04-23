@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
+#ifdef YOGI_DEBUG
+#include <iostream>
+#endif
 
 const int YogiManager::defaultPoolSize = 100;
 
@@ -198,6 +201,58 @@ int YogiManager::errorToMPI(int yogiMPIError) {
     return MPI_ERR_INTERN;
 }
 
+int YogiManager::onesidedToMPI(int onesided) {
+    switch(onesided) {
+      case YogiMPI_MODE_NOCHECK:
+          return MPI_MODE_NOCHECK;
+          break;
+      case YogiMPI_MODE_NOSTORE:
+          return MPI_MODE_NOSTORE;
+          break;
+      case YogiMPI_MODE_NOPUT:
+          return MPI_MODE_NOPUT;
+          break;
+      case YogiMPI_MODE_NOPRECEDE:
+          return MPI_MODE_NOPRECEDE;
+          break;
+      case YogiMPI_MODE_NOSUCCEED:
+          return MPI_MODE_NOSUCCEED;
+          break;
+      default:
+          return onesided;
+    }
+
+}
+
+int YogiManager::locktypeToMPI(int lock_type) {
+    switch(lock_type) {
+      case YogiMPI_LOCK_EXCLUSIVE:
+          return MPI_LOCK_EXCLUSIVE;
+          break;
+      case YogiMPI_LOCK_SHARED:
+          return MPI_LOCK_SHARED;
+          break;
+      default:
+          return lock_type;
+    }
+}
+
+int YogiManager::topoToYogi(int in_topo) {
+    switch(in_topo) {
+      case MPI_GRAPH:
+          return YogiMPI_GRAPH;
+          break;
+      case MPI_CART:
+          return YogiMPI_CART;
+          break;
+      case MPI_UNDEFINED:
+          return YogiMPI_UNDEFINED;
+          break;
+      default:
+          return in_topo;
+    }
+}
+
 int YogiManager::comparisonToYogi(int mpiComp)
 {
     std::map<int,int>::iterator it = yogiComps.find(mpiComp);
@@ -205,36 +260,123 @@ int YogiManager::comparisonToYogi(int mpiComp)
     return YogiMPI_UNEQUAL; 
 }
 
+int YogiManager::threadmodelToMPI(int threadmodel) {
+    switch(threadmodel) {
+      case YogiMPI_THREAD_SINGLE:
+          return MPI_THREAD_SINGLE;
+          break;
+      case YogiMPI_THREAD_FUNNELED:
+          return MPI_THREAD_FUNNELED;
+          break;
+      case YogiMPI_THREAD_SERIALIZED:
+          return MPI_THREAD_SERIALIZED;
+          break;
+      case YogiMPI_THREAD_MULTIPLE:
+          return MPI_THREAD_MULTIPLE;
+          break;
+      default:
+          return threadmodel;
+    }
+}
+
+int YogiManager::whenceToMPI(int whence) {
+    switch(whence) {
+      case YogiMPI_SEEK_SET:
+          return MPI_SEEK_SET;
+          break;
+      case YogiMPI_SEEK_CUR:
+          return MPI_SEEK_CUR;
+          break;
+      case YogiMPI_SEEK_END:
+          return MPI_SEEK_END;
+          break;
+      default:
+          return whence;
+    }
+}
+
+int YogiManager::providedToYogi(int provided) {
+    switch(provided) {
+      case MPI_THREAD_SINGLE:
+          return YogiMPI_THREAD_SINGLE;
+          break;
+      case MPI_THREAD_FUNNELED:
+          return YogiMPI_THREAD_FUNNELED;
+          break;
+      case MPI_THREAD_SERIALIZED:
+          return YogiMPI_THREAD_SERIALIZED;
+          break;
+      case MPI_THREAD_MULTIPLE:
+          return YogiMPI_THREAD_MULTIPLE;
+          break;
+      default:
+          return provided;
+    }
+}
+
+int YogiManager::amodeToYogi(int amode) {
+    switch(amode) {
+      case MPI_MODE_RDONLY:
+          return YogiYogiMPI_MODE_RDONLY;
+          break;
+      case MPI_MODE_RDWR:
+          return YogiMPI_MODE_RDWR;
+          break;
+      case MPI_MODE_WRONLY:
+          return YogiMPI_MODE_WRONLY;
+          break;
+      case MPI_MODE_CREATE:
+          return YogiMPI_MODE_CREATE;
+          break;
+      case MPI_MODE_EXCL:
+          return YogiMPI_MODE_EXCL;
+          break;
+      case MPI_MODE_DELETE_ON_CLOSE:
+          return YogiMPI_MODE_DELETE_ON_CLOSE;
+          break;
+      case MPI_MODE_UNIQUE_OPEN:
+          return YogiMPI_MODE_UNIQUE_OPEN;
+      case MPI_MODE_SEQUENTIAL:
+          return YogiMPI_MODE_SEQUENTIAL;
+          break;
+      case MPI_MODE_APPEND:
+          return YogiMPI_MODE_APPEND;
+          break;
+      default:
+          return amode;
+    }
+}
+
 int YogiManager::amodeToMPI(int amode) {
     switch(amode) {
       case YogiMPI_MODE_RDONLY:
-            return MPI_MODE_RDONLY;
-            break;
-    case YogiMPI_MODE_RDWR:
-            return MPI_MODE_RDWR;
-            break;
-    case YogiMPI_MODE_WRONLY:
-            return MPI_MODE_WRONLY;
-        break;
-    case YogiMPI_MODE_CREATE:
-            return MPI_MODE_CREATE;
-            break;
-    case YogiMPI_MODE_EXCL:
-            return MPI_MODE_EXCL;
-        break;
-    case YogiMPI_MODE_DELETE_ON_CLOSE:
-            return MPI_MODE_DELETE_ON_CLOSE;
-            break;
-    case YogiMPI_MODE_UNIQUE_OPEN:
-            return MPI_MODE_UNIQUE_OPEN;
-    case YogiMPI_MODE_SEQUENTIAL:
-            return MPI_MODE_SEQUENTIAL;
-            break;
-    case YogiMPI_MODE_APPEND:
-            return MPI_MODE_APPEND;
-            break;
-    default:
-        return amode;
+          return MPI_MODE_RDONLY;
+          break;
+      case YogiMPI_MODE_RDWR:
+          return MPI_MODE_RDWR;
+          break;
+      case YogiMPI_MODE_WRONLY:
+          return MPI_MODE_WRONLY;
+          break;
+      case YogiMPI_MODE_CREATE:
+          return MPI_MODE_CREATE;
+          break;
+      case YogiMPI_MODE_EXCL:
+          return MPI_MODE_EXCL;
+          break;
+      case YogiMPI_MODE_DELETE_ON_CLOSE:
+          return MPI_MODE_DELETE_ON_CLOSE;
+          break;
+      case YogiMPI_MODE_UNIQUE_OPEN:
+          return MPI_MODE_UNIQUE_OPEN;
+      case YogiMPI_MODE_SEQUENTIAL:
+          return MPI_MODE_SEQUENTIAL;
+          break;
+      case YogiMPI_MODE_APPEND:
+          return MPI_MODE_APPEND;
+          break;
+      default:
+          return amode;
     }
 
 }
@@ -247,29 +389,38 @@ int YogiManager::rootToMPI(int root) {
 }
 
 template <typename T>
-int YogiManager::insertIntoPool(std::vector<T> pool, T newItem, T marker,
+int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, T marker,
                                 int offset, int &counter) {
-    int index;
+    int delta;
     /* First see if the current counter exceeds the size of the vector.
        If it does, double it. */ 
-    if (counter >= pool.size()) pool.resize(pool.size() * 2, marker);
+    if (counter >= pool.capacity() - 1) {
+#ifdef YOGI_DEBUG
+        std::cout << "Counter at " << counter << ", doubling vector."
+                  << std::endl;
+#endif
+        pool.resize(pool.capacity() * 2, marker);
+    }
     // After the offset, find first instance of marker, replace with newItem.
     typename std::vector<T>::iterator it = pool.begin();
     std::advance(it, offset);
     if (std::find(it, pool.end(), marker) != pool.end()) {
-        *it = marker;
-        index = std::distance(pool.begin(), it);
+        delta = std::distance(pool.begin(), std::find(it, pool.end(), marker));
+        pool.at(delta) = newItem;
     }
     else {
+#ifdef YOGI_DEBUG
+        std::cout << "Marker not found!" << std::endl;
+#endif
         return -1;
     }
     // Bump up the counter and return the index.
     counter++; 
-    return index;
+    return delta;
 }
 
 template <typename T>
-void YogiManager::removeFromPool(std::vector<T> pool, int index, T marker,
+void YogiManager::removeFromPool(std::vector<T> &pool, int index, T marker,
                                 int offset, int &counter) {
     /* First see if the current index is at or above offset. If not, do not 
        make any modifications as these are considered read-only. */
@@ -282,7 +433,7 @@ void YogiManager::removeFromPool(std::vector<T> pool, int index, T marker,
 }
 
 template <typename T>
-T YogiManager::fetchFromPool(std::vector<T> pool, int index) {
+T YogiManager::fetchFromPool(std::vector<T> &pool, int index) {
     return pool.at(index);  
 }
 
@@ -388,7 +539,7 @@ YogiMPI_Request YogiManager::requestToYogi(MPI_Request in_request) {
                           requestOffset, numRequests);
 }
 
-YogiMPI_Status YogiManager::statusToYogi(MPI_Status in_status) {
+YogiMPI_Status YogiManager::statusToYogi(MPI_Status &in_status) {
     YogiMPI_Status dest;
     dest.MPI_TAG = in_status.MPI_TAG;
     dest.MPI_SOURCE = in_status.MPI_SOURCE;
@@ -403,4 +554,51 @@ YogiMPI_Status YogiManager::statusToYogi(MPI_Status in_status) {
 
 YogiMPI_Win YogiManager::winToYogi(MPI_Win in_win) {
     return insertIntoPool(winPool, in_win, MPI_WIN_NULL, winOffset, numWins);
+}
+
+YogiMPI_Comm YogiManager::unmapComm(YogiMPI_Comm to_free) {
+    removeFromPool(commPool, to_free, MPI_COMM_NULL, commOffset, numComms);
+    return YogiMPI_COMM_NULL;
+}
+
+YogiMPI_Datatype YogiManager::unmapDatatype(YogiMPI_Datatype to_free) {
+    removeFromPool(datatypePool, to_free, MPI_DATATYPE_NULL, datatypeOffset,
+                   numDatatypes);
+    return YogiMPI_DATATYPE_NULL;
+}
+
+YogiMPI_Errhandler YogiManager::unmapErrhandler(YogiMPI_Errhandler to_free)  {
+    removeFromPool(errPool, to_free, MPI_ERRHANDLER_NULL, errOffset, numErrs);
+    return YogiMPI_ERRHANDLER_NULL;
+}
+
+YogiMPI_File YogiManager::unmapFile(YogiMPI_File to_free) {
+    removeFromPool(filePool, to_free, MPI_FILE_NULL, fileOffset, numFiles);
+    return YogiMPI_FILE_NULL;
+}
+
+YogiMPI_Group YogiManager::unmapGroup(YogiMPI_Group to_free) {
+    removeFromPool(groupPool, to_free, MPI_GROUP_NULL, groupOffset, numGroups);
+    return YogiMPI_GROUP_NULL;
+}
+
+YogiMPI_Info YogiManager::unmapInfo(YogiMPI_Info to_free) {
+    removeFromPool(infoPool, to_free, MPI_INFO_NULL, infoOffset, numInfos);
+    return YogiMPI_INFO_NULL;
+}
+
+YogiMPI_Op YogiManager::unmapOp(YogiMPI_Op to_free) {
+    removeFromPool(opPool, to_free, MPI_OP_NULL, opOffset, numOps);
+    return YogiMPI_OP_NULL;
+}
+
+YogiMPI_Request YogiManager::unmapRequest(YogiMPI_Request to_free) {
+    removeFromPool(requestPool, to_free, MPI_REQUEST_NULL, requestOffset, 
+                   numRequests);
+    return YogiMPI_REQUEST_NULL;
+}
+
+YogiMPI_Win YogiManager::unmapWin(YogiMPI_Win to_free) {
+    removeFromPool(winPool, to_free, MPI_WIN_NULL, winOffset, numWins);
+    return YogiMPI_WIN_NULL;
 }

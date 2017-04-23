@@ -286,6 +286,20 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
 /* Empty group */
 #define YogiMPI_GROUP_EMPTY 1
 
+/* For supported thread levels */
+#define YogiMPI_THREAD_SINGLE 0
+#define YogiMPI_THREAD_FUNNELED 1
+#define YogiMPI_THREAD_SERIALIZED 2
+#define YogiMPI_THREAD_MULTIPLE 3
+
+/* Lock type constants */
+#define YogiMPI_LOCK_EXCLUSIVE  234
+#define YogiMPI_LOCK_SHARED     235
+
+/* Topology test constants */
+#define YogiMPI_GRAPH 1
+#define YogiMPI_CART 2
+
 /* MPI Combiner state constants */
 #define YogiMPI_COMBINER_NAMED 1
 #define YogiMPI_COMBINER_DUP 2

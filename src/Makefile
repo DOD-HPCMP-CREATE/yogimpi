@@ -9,8 +9,9 @@ clean:
 	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o test_YogiManager
 
 manager: wrap YogiManager.cxx YogiManager.h
-	mpicxx -c -fPIC -I. YogiManager.cxx
-	mpicxx -I. -fPIC test_YogiManager.cxx YogiManager.o -o test_YogiManager
+	mpicxx -DYOGI_DEBUG -c -fPIC -I. YogiManager.cxx
+	mpicxx -DYOGI_DEBUG -I. -fPIC test_YogiManager.cxx YogiManager.o \
+               -o test_YogiManager
 
 #clean:
 #	$(RM) *.mod *.o libyogimpi.$(LIBEXTENSION)

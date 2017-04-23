@@ -1596,7 +1596,7 @@
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="buf" output="true" type="void*"/>
-    <Arg name="status" type="MPI_Status*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_File_read_shared">
     <ReturnType>int</ReturnType>
@@ -1668,7 +1668,7 @@
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="buf" output="true" type="void*"/>
-    <Arg name="status" type="MPI_Status*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_File_write_shared">
     <ReturnType>int</ReturnType>
@@ -2441,7 +2441,7 @@
     <Arg name="info" type="MPI_Info"/>
     <Arg name="comm" type="MPI_Comm"/>
     <Arg name="baseptr" output="true" type="void*"/>
-    <Arg name="win" type="MPI_Win*"/>
+    <Arg name="win" output="true" type="MPI_Win*"/>
   </Function>
   <Function name="MPI_Win_allocate_shared">
     <ReturnType>int</ReturnType>
