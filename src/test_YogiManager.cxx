@@ -12,7 +12,7 @@ int main() {
     std::cout << "Source: " << yogi.MPI_SOURCE <<std::endl;    
     std::cout << "Tag: " << yogi.MPI_TAG <<std::endl;
     std::cout << "Error: " << yogi.MPI_ERROR <<std::endl;
-    MPI_Status *another = manager->statusToMPI(yogi);
+    MPI_Status *another = manager->statusToMPI(&yogi);
     std::cout << "Source: " << another->MPI_SOURCE << std::endl;
     std::cout << "Tag: " << another->MPI_TAG << std::endl;
     std::cout << "Error: " << another->MPI_ERROR << std::endl;

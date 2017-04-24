@@ -19,8 +19,9 @@ public:
     int onesidedToMPI(int onesided);
     int locktypeToMPI(int lock_type);
     int threadmodelToMPI(int threadmodel);
+    int typeclassToMPI(int typeclass);
     int whenceToMPI(int whence);
-
+ 
     int errorToYogi(int mpiError);
     int comparisonToYogi(int mpiComp);
     int providedToYogi(int provided);
@@ -38,7 +39,16 @@ public:
     MPI_Group groupToMPI(YogiMPI_Group in_group);
     MPI_File fileToMPI(YogiMPI_File in_file);
     MPI_Aint aintToMPI(YogiMPI_Aint in_aint);
-    MPI_Status * statusToMPI(YogiMPI_Status &in_status);
+    MPI_Status * statusToMPI(YogiMPI_Status * in_status);
+
+    // Create MPI_Status arrays when required
+    void createStatus(MPI_Status *&, int);
+    void createStatus(MPI_Status *&, int *);
+  
+    // Array-conversion to MPI
+    void requestToMPI(YogiMPI_Request *, MPI_Request *&, int);
+    void aintToMPI(YogiMPI_Aint *, MPI_Aint *&, int);
+    void datatypeToMPI(YogiMPI_Datatype *, MPI_Datatype *&, int);
 
     YogiMPI_Offset offsetToYogi(MPI_Offset in_offset);
     YogiMPI_Errhandler errhandlerToYogi(MPI_Errhandler in_errhandler);
@@ -52,6 +62,21 @@ public:
     YogiMPI_File fileToYogi(MPI_File in_file);
     YogiMPI_Aint aintToYogi(MPI_Aint in_aint);
     YogiMPI_Status statusToYogi(MPI_Status &in_status);
+
+    // Array-conversion to Yogi
+    void requestToYogi(MPI_Request * &in_mpi, YogiMPI_Request *& out_yogi,
+                       int count, bool free_mpi = false);
+    void aintToYogi(MPI_Aint * &in_mpi, YogiMPI_Aint *& out_yogi, 
+                    int count, bool free_mpi = false);
+    void datatypeToYogi(MPI_Datatype * &in_mpi, YogiMPI_Datatype *& out_yogi,
+                        int count, bool free_mpi = false);
+    void statusToYogi(MPI_Status * &in_mpi, YogiMPI_Status *& out_yogi,
+                      int count, bool free_mpi = false);
+
+    void freeRequest(MPI_Request * &to_free);
+    void freeAint(MPI_Aint * &to_free);
+    void freeDatatype(MPI_Datatype * &to_free);
+    void freeStatus(MPI_Status * &to_free); 
 
     YogiMPI_Comm unmapComm(YogiMPI_Comm to_free); 
     YogiMPI_Datatype unmapDatatype(YogiMPI_Datatype to_free);

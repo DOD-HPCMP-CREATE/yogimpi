@@ -13,5 +13,8 @@ manager: wrap YogiManager.cxx YogiManager.h
 	mpicxx -DYOGI_DEBUG -I. -fPIC test_YogiManager.cxx YogiManager.o \
                -o test_YogiManager
 
+lib: manager
+	mpicxx -c -fPIC -I. yogimpi.cxx
+
 #clean:
 #	$(RM) *.mod *.o libyogimpi.$(LIBEXTENSION)

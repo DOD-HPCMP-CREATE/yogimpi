@@ -47,34 +47,14 @@
 
 int YogiMPI_Init(int* argc, char ***argv)
 { 
-    int mpi_err = MPI_Init(argc,argv); 
-    return YogiManager::getInstance()::errorToYogi(mpi_err);
+    int mpi_err = MPI_Init(argc, argv); 
+    return YogiManager::getInstance()->errorToYogi(mpi_err);
 }
 
 int YogiMPI_Finalize() {
     int mpi_err = MPI_Finalize();
-    return YogiManager::getInstance()::errorToYogi(mpi_err);
+    return YogiManager::getInstance()->errorToYogi(mpi_err);
 }
-
-int YogiMPI_Get_processor_name(char *name, int *resultlen) {
-    int mpi_err;
-    if (MPI_MAX_PROCESSOR_NAME > YogiMPI_MAX_PROCESSOR_NAME) {
-        char *tmp_name = (char*)malloc(MPI_MAX_PROCESSOR_NAME);
-        mpi_err = MPI_Get_processor_name(tmp_name,resultlen);
-        memcpy(name,tmp_name,YogiMPI_MAX_PROCESSOR_NAME-1);
-        name[YogiMPI_MAX_PROCESSOR_NAME-1] = '\0';
-        free(tmp_name);
-        if (*resultlen > YogiMPI_MAX_PROCESSOR_NAME-1) {
-            *resultlen = YogiMPI_MAX_PROCESSOR_NAME-1;
-        }
-    }
-    else {
-        mpi_err = MPI_Get_processor_name(name, resultlen);
-    }
-
-    return YogiManager::getInstance()::errorToYogi(mpi_err);
-}
-
 
 double YogiMPI_Wtick() {
     return MPI_Wtick();

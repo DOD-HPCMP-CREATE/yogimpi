@@ -141,6 +141,11 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
 #define YogiMPI_SEEK_CUR 55
 #define YogiMPI_SEEK_END 60
 
+/* typeclasses */
+#define YogiMPI_TYPECLASS_REAL 1
+#define YogiMPI_TYPECLASS_INTEGER 2
+#define YogiMPI_TYPECLASS_COMPLEX 3
+
 /* MPI I/O permission modes.  Supports bitwise OR. 2*/
 #define YogiMPI_MODE_RDONLY 2
 #define YogiMPI_MODE_RDWR 8
@@ -319,6 +324,9 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
 #define YogiMPI_COMBINER_F90_COMPLEX 17
 #define YogiMPI_COMBINER_F90_INTEGER 18
 #define YogiMPI_COMBINER_RESIZED 19
+
+/* predefined types for MPI_Comm_split_type */
+#define YogiMPI_COMM_TYPE_SHARED    1
 
 /* Define structure for MPI_Status - hide real object inside as int array */
 struct YogiMPI_Status

@@ -279,6 +279,22 @@ int YogiManager::threadmodelToMPI(int threadmodel) {
     }
 }
 
+int YogiManager::typeclassToMPI(int typeclass) {
+    switch(typeclass) {
+      case YogiMPI_TYPECLASS_REAL:
+          return MPI_TYPECLASS_REAL; 
+          break;
+      case YogiMPI_TYPECLASS_INTEGER:
+          return MPI_TYPECLASS_INTEGER;
+          break;
+      case YogiMPI_TYPECLASS_COMPLEX:
+          return MPI_TYPECLASS_COMPLEX;
+          break;
+      default:
+          return typeclass;
+    }
+}
+
 int YogiManager::whenceToMPI(int whence) {
     switch(whence) {
       case YogiMPI_SEEK_SET:
@@ -317,7 +333,7 @@ int YogiManager::providedToYogi(int provided) {
 int YogiManager::amodeToYogi(int amode) {
     switch(amode) {
       case MPI_MODE_RDONLY:
-          return YogiYogiMPI_MODE_RDONLY;
+          return YogiMPI_MODE_RDONLY;
           break;
       case MPI_MODE_RDWR:
           return YogiMPI_MODE_RDWR;
@@ -477,16 +493,55 @@ MPI_Request YogiManager::requestToMPI(YogiMPI_Request in_request) {
     return fetchFromPool(requestPool, in_request);
 }
 
-MPI_Status * YogiManager::statusToMPI(YogiMPI_Status &in_status) {
+MPI_Status * YogiManager::statusToMPI(YogiMPI_Status * in_status) {
     /* This will grab the number of bytes needed.  We don't care about
      * structure padding since this area is never directly accessed by us.
      * It is ensured to be larger than we need.
     */
-    return reinterpret_cast<MPI_Status *> (&in_status.realStatus);
+    return reinterpret_cast<MPI_Status *> (in_status->realStatus);
 }
 
 MPI_Win YogiManager::winToMPI(YogiMPI_Win in_win) {
     return fetchFromPool(winPool, in_win);
+}
+
+// Array conversions from Yogi handles to MPI handles
+
+void YogiManager::requestToMPI(YogiMPI_Request * in_yogi,
+                               MPI_Request * &out_mpi, int count) {
+    int i;
+    out_mpi = new MPI_Request[count];
+    for (int i = 0; i < count; i++) {
+        out_mpi[i] = requestToMPI(in_yogi[i]);
+    }
+}
+
+void YogiManager::aintToMPI(YogiMPI_Aint * in_yogi, MPI_Aint * &out_mpi,
+                            int count) {
+    int i;
+    out_mpi = new MPI_Aint[count];
+    for (int i = 0; i < count; i++) {
+        out_mpi[i] = aintToMPI(in_yogi[i]);
+    }
+}
+
+void YogiManager::datatypeToMPI(YogiMPI_Datatype * in_yogi, 
+                                MPI_Datatype * &out_mpi, int count) {
+    int i;
+    out_mpi = new MPI_Datatype[count];
+    for (int i = 0; i < count; i++) {
+        out_mpi[i] = datatypeToMPI(in_yogi[i]);
+    }
+}
+
+/* Create MPI_Status arrays when required.  The MPI_Status objects remain
+   uninitialized. */
+void YogiManager::createStatus(MPI_Status * &out_mpi, int count) {
+    out_mpi = new MPI_Status[count];
+}
+
+void YogiManager::createStatus(MPI_Status * &out_mpi, int *count) {
+    out_mpi = new MPI_Status[*count];
 }
 
 // Conversions from MPI handles to Yogi handles
@@ -556,6 +611,49 @@ YogiMPI_Win YogiManager::winToYogi(MPI_Win in_win) {
     return insertIntoPool(winPool, in_win, MPI_WIN_NULL, winOffset, numWins);
 }
 
+// Array conversion from MPI to Yogi
+
+void YogiManager::requestToYogi(MPI_Request * &in_mpi, 
+                                YogiMPI_Request * &out_yogi, int count,
+                                bool free_mpi) {
+    int i;
+    for (int i = 0; i < count; i++) {
+        out_yogi[i] = requestToYogi(in_mpi[i]);
+    }
+    if (free_mpi) freeRequest(in_mpi);
+}
+
+void YogiManager::aintToYogi(MPI_Aint * &in_mpi,
+                             YogiMPI_Aint * &out_yogi, int count, 
+                             bool free_mpi) {
+    int i;
+    for (int i = 0; i < count; i++) {
+        out_yogi[i] = aintToYogi(in_mpi[i]);
+    }
+    if (free_mpi) freeAint(in_mpi);
+}
+
+void YogiManager::datatypeToYogi(MPI_Datatype * &in_mpi,
+                                 YogiMPI_Datatype * &out_yogi, int count,
+                                 bool free_mpi) {
+    int i;
+    for (int i = 0; i < count; i++) {
+        out_yogi[i] = datatypeToYogi(in_mpi[i]);
+    }
+    if (free_mpi) freeDatatype(in_mpi);
+}
+
+void YogiManager::statusToYogi(MPI_Status * &in_mpi, YogiMPI_Status *& out_yogi,
+                               int count, bool free_mpi) {
+    int i;
+    for (int i = 0; i < count; i++) {
+        out_yogi[i] = statusToYogi(in_mpi[i]);
+    }
+    if (free_mpi) freeStatus(in_mpi);
+}
+
+// Removing Yogi handles
+
 YogiMPI_Comm YogiManager::unmapComm(YogiMPI_Comm to_free) {
     removeFromPool(commPool, to_free, MPI_COMM_NULL, commOffset, numComms);
     return YogiMPI_COMM_NULL;
@@ -601,4 +699,22 @@ YogiMPI_Request YogiManager::unmapRequest(YogiMPI_Request to_free) {
 YogiMPI_Win YogiManager::unmapWin(YogiMPI_Win to_free) {
     removeFromPool(winPool, to_free, MPI_WIN_NULL, winOffset, numWins);
     return YogiMPI_WIN_NULL;
+}
+
+/* Used to deallocate temporary arrays.  Keeping these here to track memory 
+   allocations (may implemented in future). */
+void YogiManager::freeRequest(MPI_Request * &to_free) {
+    delete[] to_free;
+}
+
+void YogiManager::freeAint(MPI_Aint * &to_free) {
+    delete[] to_free;
+}
+
+void YogiManager::freeDatatype(MPI_Datatype * &to_free) {
+    delete[] to_free;
+}
+
+void YogiManager::freeStatus(MPI_Status * &to_free) {
+    delete[] to_free;
 }
