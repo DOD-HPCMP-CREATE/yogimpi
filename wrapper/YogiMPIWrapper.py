@@ -7,8 +7,61 @@ import subprocess
 import tempfile
 import filecmp
 import re
-from AVUtility import AVUtility as AU
-import xml.etree.ElementTree as ET
+
+# MPI constants currently supported in Fortran.
+mpiConstants = [ 'MPI_SUCCESS', 'MPI_ERR_BUFFER', 'MPI_ERR_COUNT',
+    'MPI_ERR_TYPE', 'MPI_ERR_TAG', 'MPI_ERR_COMM', 'MPI_ERR_RANK', 
+    'MPI_ERR_REQUEST', 'MPI_ERR_ROOT',
+    'MPI_ERR_GROUP', 'MPI_ERR_OP', 'MPI_ERR_TOPOLOGY', 'MPI_ERR_DIMS', 
+    'MPI_ERR_ARG', 'MPI_ERR_UNKNOWN', 'MPI_ERR_TRUNCATE', 'MPI_ERR_OTHER', 
+    'MPI_ERR_INTERN', 'MPI_ERR_PENDING', 'MPI_ERR_IN_STATUS', 
+    'MPI_ERR_LASTCODE', 'MPI_BOTTOM', 'MPI_PROC_NULL', 'MPI_ANY_SOURCE',
+    'MPI_ANY_TAG', 'MPI_UNDEFINED', 'MPI_BSEND_OVERHEAD', 'MPI_KEYVAL_INVALID',
+    'MPI_STATUS_SIZE', 'MPI_SOURCE', 'MPI_TAG', 'MPI_ERROR', 
+    'MPI_MAX_PROCESSOR_NAME', 'MPI_CHARACTER', 'MPI_INTEGER', 'MPI_REAL',
+    'MPI_DOUBLE_PRECISION', 'MPI_BYTE', 'MPI_PACKED', 'MPI_COMPLEX',
+    'MPI_DOUBLE_COMPLEX', 'MPI_LOGICAL', 'MPI_2REAL', 'MPI_2DOUBLE_PRECISION',
+    'MPI_2INTEGER', 'MPI_INTEGER1', 'MPI_INTEGER2', 'MPI_INTEGER4',
+    'MPI_INTEGER8', 'MPI_REAL4', 'MPI_REAL8',
+    'MPI_COMM_WORLD', 'MPI_COMM_SELF', 'MPI_IDENT', 'MPI_CONGRUENT',
+    'MPI_SIMILAR', 'MPI_UNEQUAL', 'MPI_TAG_UB', 'MPI_IO', 'MPI_HOST',
+    'MPI_WTIME_IS_GLOBAL', 'MPI_MAX', 'MPI_MIN', 'MPI_SUM', 'MPI_PROD',
+    'MPI_MAXLOC', 'MPI_MINLOC', 'MPI_BAND', 'MPI_BOR', 'MPI_BXOR', 'MPI_LAND',
+    'MPI_LOR', 'MPI_LXOR', 'MPI_GROUP_NULL', 'MPI_COMM_NULL',
+    'MPI_REQUEST_NULL', 'MPI_OP_NULL', 'MPI_DATATYPE_NULL', 'MPI_INFO_NULL',
+    'MPI_FILE_NULL', 'MPI_GROUP_EMPTY', 'MPI_SEEK_SET', 'MPI_SEEK_CUR',
+    'MPI_SEEK_END', 'MPI_MODE_RDONLY', 'MPI_MODE_RDWR', 'MPI_MODE_WRONLY',
+    'MPI_MODE_CREATE', 'MPI_MODE_EXCL', 'MPI_MODE_DELETE_ON_CLOSE',
+    'MPI_MODE_UNIQUE_OPEN', 'MPI_MODE_SEQUENTIAL', 'MPI_MODE_APPEND',
+    'MPI_OFFSET_KIND', 'MPI_STATUS_IGNORE', 'MPI_STATUSES_IGNORE' ]
+
+# MPI objects currently supported in Fortran.
+mpiObjects = [ 'MPI_Comm', 'MPI_Request', 'MPI_Op', 'MPI_Info', 'MPI_Datatype',
+               'MPI_Group', 'MPI_Status', 'MPI_File', 'MPI_Offset' ]
+
+# MPI functions currently supported in Fortran.
+mpiFunctions = [ 'MPI_Send', 'MPI_Recv', 'MPI_Get_count', 'MPI_Ssend', 
+    'MPI_Isend',
+    'MPI_Issend', 'MPI_Irecv', 'MPI_Sendrecv', 'MPI_Wait', 'MPI_Request_free',
+    'MPI_Waitsome', 'MPI_Waitany', 'MPI_Waitall', 'MPI_Send_init',
+    'MPI_Type_size', 'MPI_Type_contiguous', 'MPI_Type_vector',
+    'MPI_Type_indexed', 'MPI_Type_commit', 'MPI_Type_free', 'MPI_Barrier',
+    'MPI_Bcast', 'MPI_Gather', 'MPI_Gatherv', 'MPI_Scatter', 'MPI_Scatterv',
+    'MPI_Allgather', 'MPI_Allgatherv', 'MPI_Reduce', 'MPI_Allreduce',
+    'MPI_Comm_create', 'MPI_Comm_group', 'MPI_Comm_size', 'MPI_Comm_rank',
+    'MPI_Comm_dup', 'MPI_Comm_split', 'MPI_Comm_free', 'MPI_Group_free',
+    'MPI_Group_incl', 'MPI_Group_rank', 'MPI_Group_size',
+    'MPI_Group_translate_ranks', 'MPI_Get_processor_name', 'MPI_Wtime',
+    'MPI_Init', 'MPI_Finalize', 'MPI_Type_create_indexed_block',
+    'MPI_Comm_f2c', 'MPI_Recv_init', 'MPI_Scan', 'MPI_Startall', 'MPI_Alltoall',
+    'MPI_Alltoallv', 'MPI_File_close', 'MPI_File_get_info', 'MPI_File_open',
+    'MPI_File_set_view', 'MPI_File_write_all', 'MPI_File_write_at',
+    'MPI_File_read_at', 'MPI_File_read_all', 'MPI_File_read',
+    'MPI_Info_create', 'MPI_Info_set', 'MPI_Info_free', 'MPI_Abort',
+    'MPI_Probe', 'MPI_Iprobe', 'MPI_Test', 'MPI_Attr_get', 'MPI_Finalized',
+    'MPI_Initialized', 'MPI_Bsend', 'MPI_Buffer_attach', 'MPI_File_delete',
+    'MPI_File_write', 'MPI_File_seek' ]
+
 
 class YogiMPIWrapper(object):
 
@@ -22,8 +75,12 @@ class YogiMPIWrapper(object):
     fixedExts = [ '.f77', '.f', '.for' ]
     f77Comments = [ 'c', 'C', '*' ]
     useMPIRegEx = re.compile(r"([\s]*)use[\s]+mpi([\s]+)", re.IGNORECASE)
+    defQuoteEx = re.compile(r'(-D[a-zA-Z0-9_]+)="([a-zA-Z0-9_/]+)"')
 
     def __init__(self, prefixDir, compilerName, compilerLang):
+        global mpiConstants
+        global mpiFunctions
+        global mpiObjects
         self.prefixDir = prefixDir
         self.compilerName = compilerName
         self.compilerLang = compilerLang
@@ -38,9 +95,9 @@ class YogiMPIWrapper(object):
         self.newPath = None
         self.namesOutput = False
         self.preprocessOnly = False
-        self.mpi_constants = []
-        self.mpi_objects = []
-        self.mpi_functions = []
+        self.mpi_constants = mpiConstants 
+        self.mpi_objects = mpiObjects 
+        self.mpi_functions = mpiFunctions
         self.mpi_regexes = []
         self.rc = 0
 
@@ -72,6 +129,11 @@ class YogiMPIWrapper(object):
     def getRC(self):
         return self.rc
 
+    def _checkAssignQuotes(self, anArg):
+        aRegex = YogiMPIWrapper.defQuoteEx
+        retVal = aRegex.sub(r'\g<1>=' + '\\"' + r'\g<2>' + '\\"', anArg)
+        return retVal 
+
     def _isSourceType(self, inputFile, language):
         for anExt in YogiMPIWrapper.extensions[language]:
             if inputFile.lower().endswith(anExt):
@@ -89,28 +151,6 @@ class YogiMPIWrapper(object):
             print message
 
     def loadSupported(self):
-        fileTree = ET.parse(self.supportFile).getroot()
-        if self.compilerLang == 'Fortran':
-            thisLang = 'Fortran'
-        else:
-            thisLang = 'C'
-        thisLangElement = None
-        for langElement in fileTree.findall('Language'):
-            if langElement.attrib['name'] == thisLang:
-                thisLangElement = langElement
-
-        for entry in thisLangElement.findall('Constant'):
-            self.mpi_constants.append(AU._getValidText(entry, True))
-        if not self.compilerLang == 'Fortran':
-            # Only search for constants and functions if this is not Fortran.
-            # MPI objects such as MPI_Datatype and MPI_Comm are integers in
-            # Fortran bindings.
-            for entry in thisLangElement.findall('Object'):
-                self.mpi_objects.append(AU._getValidText(entry, True))
-        for entry in thisLangElement.findall('Function'):
-            self.mpi_functions.append(AU._getValidText(entry, True))
-        # Now create regular expressions from everything loaded.
-        # This is currently only needed if using Fortran.
         if self.compilerLang == 'Fortran':
             for aPattern in self.mpi_constants:
                 regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
@@ -149,6 +189,10 @@ class YogiMPIWrapper(object):
         return filename
 
     def _changeArgs(self):
+        for i, anArg in enumerate(self.argArray):
+            if anArg.startswith('-D'):
+                self.argArray[i] = self._checkAssignQuotes(anArg)
+
         self.argArray[0] = self.compilerName 
         if self.sourceFile:
             if self.compilerLang == 'Fortran':
