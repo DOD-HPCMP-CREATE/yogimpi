@@ -44,6 +44,7 @@
 */
 
 #include "YogiManager.h"
+#include <cstring>
 
 int YogiMPI_Init(int* argc, char ***argv)
 { 
@@ -54,6 +55,25 @@ int YogiMPI_Init(int* argc, char ***argv)
 int YogiMPI_Finalize() {
     int mpi_err = MPI_Finalize();
     return YogiManager::getInstance()->errorToYogi(mpi_err);
+}
+
+int YogiMPI_Get_processor_name(char* name, int* resultlen) {
+    int mpi_error;
+
+    if (MPI_MAX_PROCESSOR_NAME > YogiMPI_MAX_PROCESSOR_NAME) {
+        char *tmp_name = new char[MPI_MAX_PROCESSOR_NAME];
+        mpi_error = MPI_Get_processor_name(tmp_name, resultlen);
+        std::memcpy(name, tmp_name, YogiMPI_MAX_PROCESSOR_NAME - 1);
+        name[YogiMPI_MAX_PROCESSOR_NAME - 1] = '\0';
+        delete[] tmp_name;
+        if (*resultlen > YogiMPI_MAX_PROCESSOR_NAME - 1) {
+            *resultlen = YogiMPI_MAX_PROCESSOR_NAME - 1;
+        }
+    }
+    else {
+        mpi_error = MPI_Get_processor_name(name, resultlen);
+    }
+    return YogiManager::getInstance()->errorToYogi(mpi_error);
 }
 
 double YogiMPI_Wtick() {

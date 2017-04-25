@@ -148,7 +148,7 @@ class GenerateWrap(object):
                         thisArg.is_mpi_ptr = True
                         thisArg.mpi_func_ptr = True
                         thisArg.mpi_type = thisArg.type
-                        thisArg.mpi_name = thisArg.call_name
+                        thisArg.mpi_name = 'conv_' + thisArg.call_name
 
                 freeVal = argElement.attrib.get('free', None)
                 thisArg.free_handle = self._checkTrue(freeVal)
@@ -180,7 +180,10 @@ class GenerateWrap(object):
         for i, anArg in enumerate(aFunc.args):
             if i > 0:
                 callRealMPI += ", "
-            if anArg.is_mpi_type and not anArg.type.startswith('MPI_Status'):
+            if anArg.mpi_func_ptr:
+                # For now, pass function pointers as they are.
+                printName = anArg.mpi_name
+            elif anArg.is_mpi_type and not anArg.type.startswith('MPI_Status'):
                 printName = anArg.mpi_name
                 if anArg.is_pointer:
                     if not anArg.mpi_is_ptr:
@@ -320,6 +323,10 @@ class GenerateWrap(object):
     #  forth between Yogi and MPI types. 
     def _makeMPIConversion(self, sourceFile, anArg, before=True):
 
+        # For now, just pass function pointers as they are.
+        if anArg.mpi_func_ptr:
+            return
+        
         if anArg.is_plural and not anArg.dims:
             msg = "arg " + anArg.name + " does not have dimensions."
             raise ValueError(msg)
@@ -430,8 +437,12 @@ class GenerateWrap(object):
             # Create a blank MPI version of that type.
             elif not anArg.is_plural:
                 varDecl = anArg.mpi_type + ' ' + anArg.mpi_name
-                # Declare it now, to be put on the stack.
-                sourceFile.addLines(varDecl + ';')
+                if anArg.mpi_func_ptr:
+                    sourceFile.addLines(varDecl + ' = (' + anArg.type + ')' +\
+                                        anArg.name + ';')
+                else:
+                    # Declare it now, to be put on the stack.
+                    sourceFile.addLines(varDecl + ';')
             else:
                 # The conversion array must be allocated because the size will
                 # not be known until runtime. Plus you don't want the stack

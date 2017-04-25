@@ -157,7 +157,6 @@
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg name="newcomm" output="true" type="MPI_Comm*"/>
   </Function>
-  <!--
   <Function name="MPI_Comm_create_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm_errhandler_fn" type="MPI_Comm_errhandler_function*"/>
@@ -175,7 +174,6 @@
     <Arg name="comm_keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
   </Function>
-  -->
   <Function name="MPI_Comm_delete_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
@@ -265,7 +263,6 @@
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="errhandler" type="MPI_Errhandler"/>
   </Function>
-  <!--
   <Function name="MPI_Error_class">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="errorcode" type="int"/>
@@ -277,7 +274,6 @@
     <Arg name="string" output="true" type="char*"/>
     <Arg name="resultlen" output="true" type="int*"/>
   </Function>
-  -->
   <Function name="MPI_File_close">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File*" free="true"/>
@@ -459,11 +455,13 @@
       <Convert trigger="post">MPI_UNDEFINED</Convert>
     </Arg>
   </Function>
+  <!-- Implemented manually
   <Function name="MPI_Get_processor_name">
     <ReturnType>int</ReturnType>
     <Arg name="name" output="true" type="char*"/>
     <Arg name="resultlen" output="true" type="int*"/>
   </Function>
+  -->
   <Function name="MPI_Group_excl">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
@@ -636,7 +634,6 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
-  <!--
   <Function name="MPI_Keyval_create">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="copy_fn" type="MPI_Copy_function*"/>
@@ -644,21 +641,18 @@ for(i = 0; i &lt; n; ++i) {
     <Arg name="keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
   </Function>
-  -->
   <Function name="MPI_Keyval_free">
     <ReturnType>int</ReturnType>
     <Arg input="true" output="true" name="keyval" type="int*">
       <Convert trigger="post">MPI_KEYVAL_INVALID</Convert>
     </Arg>
   </Function>
-  <!--
   <Function name="MPI_Op_create">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="user_fn" type="MPI_User_function*"/>
     <Arg input="true" name="commute" type="int"/>
     <Arg name="op" output="true" type="MPI_Op*"/>
   </Function>
-  -->
   <Function name="MPI_Op_free">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="op" type="MPI_Op*" free="true"/>
@@ -1171,7 +1165,6 @@ else {
     <Arg input="true" name="op" type="MPI_Op"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
-  <!--
   <Function name="MPI_Add_error_class">
     <ReturnType>int</ReturnType>
     <Arg name="errorclass" output="true" type="int*"/>
@@ -1186,7 +1179,6 @@ else {
     <Arg input="true" name="errorcode" type="int"/>
     <Arg input="true" name="string" type="char*"/>
   </Function>
-  -->
   <Function name="MPI_Alloc_mem">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="size" type="MPI_Aint"/>
@@ -1424,13 +1416,11 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="outdegree" output="true" type="int*"/>
     <Arg name="weighted" output="true" type="int*"/>
   </Function>
-  <!--
   <Function name="MPI_Errhandler_create">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="function" type="MPI_Handler_function*"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
   </Function>
-  -->
   <Function name="MPI_Errhandler_get">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
@@ -1462,13 +1452,11 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg input="true" name="errorcode" type="int"/>
   </Function>
-  <!--
   <Function name="MPI_File_create_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="file_errhandler_fn" type="MPI_File_errhandler_function*"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
   </Function>
-  -->
   <Function name="MPI_File_get_amode">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
@@ -1787,7 +1775,6 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="request" type="MPI_Request"/>
   </Function>
-  <!--
   <Function name="MPI_Grequest_start">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="query_fn" type="MPI_Grequest_query_function*"/>
@@ -1796,7 +1783,6 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="extra_state" type="void*"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
-  -->
   <Function name="MPI_Group_compare">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
@@ -2274,7 +2260,6 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="op" type="MPI_Op"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
-  <!--
   <Function name="MPI_Register_datarep">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datarep" type="char*"/>
@@ -2283,7 +2268,6 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="dtype_file_extent_fn" type="MPI_Datarep_extent_function*"/>
     <Arg input="true" name="extra_state" type="void*"/>
   </Function>
-  -->
   <Function name="MPI_Request_get_status">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="request" type="MPI_Request"/>
@@ -2390,7 +2374,6 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="oldtype" type="MPI_Datatype"/>
     <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
-  <!--
   <Function name="MPI_Type_create_keyval">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="type_copy_attr_fn" type="MPI_Type_copy_attr_function*"/>
@@ -2398,7 +2381,6 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="type_keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
   </Function>
-  -->
   <Function name="MPI_Type_delete_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
@@ -2512,7 +2494,6 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="win" output="true" type="MPI_Win*"/>
   </Function>
-  <!--
   <Function name="MPI_Win_create_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win_errhandler_fn" type="MPI_Win_errhandler_function*"/>
@@ -2525,7 +2506,6 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="win_keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
   </Function>
-  -->
   <Function name="MPI_Win_delete_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>

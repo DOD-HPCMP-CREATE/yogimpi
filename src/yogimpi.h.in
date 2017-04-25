@@ -119,6 +119,7 @@ typedef int YogiMPI_Win;
 
 /* Recommended that MPI_BOTTOM be zero address */
 static void * const  YogiMPI_BOTTOM = (void*)0;
+
 #define YogiMPI_PROC_NULL -2
 #define YogiMPI_ROOT -6
 #define YogiMPI_ANY_SOURCE -3
@@ -128,6 +129,10 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
 #define YogiMPI_UNDEFINED -5
 #define YogiMPI_BSEND_OVERHEAD 512
 #define YogiMPI_KEYVAL_INVALID -7
+
+/* Dist graph create constants */
+static void * const YogiMPI_WEIGHTS_EMPTY = (void*)1; 
+static void * const YogiMPI_UNWEIGHTED = (void*)2;
 
 /* MPI asserts for one-sided communication.  Supports bitwise OR. */
 #define YogiMPI_MODE_NOCHECK 1024
@@ -433,6 +438,8 @@ typedef int YogiMPI_Comm_delete_attr_function(YogiMPI_Comm comm,
 int YogiMPI_Init(int* argc, char ***argv);
 
 int YogiMPI_Finalize();
+
+int YogiMPI_Get_processor_name(char* name, int* resultlen);
 
 double YogiMPI_Wtick();
 
