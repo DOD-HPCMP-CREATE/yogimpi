@@ -5,7 +5,7 @@ include Make.flags
 default: src/libyogimpi.$(LIBEXTENSION)
 
 src/libyogimpi.$(LIBEXTENSION):
-	$(MAKE) -C src
+	$(MAKE) -C src lib
 
 install: default
 	install -d -m 750 $(INSTALLDIR)
@@ -16,18 +16,16 @@ install: default
 	install -m 640 src/libyogimpi.$(LIBEXTENSION) $(INSTALLDIR)/lib
 	install -m 640 src/mpitoyogi.h $(INSTALLDIR)/include/mpi.h
 	install -m 640 src/yogimpi.h $(INSTALLDIR)/include
-	install -m 640 src/yogimpif.h $(INSTALLDIR)/include/mpif.h
-	install -m 640 src/yogimpi.mod $(INSTALLDIR)/include/yogimpi.mod
-	install -m 640 src/yogiconvutil.h $(INSTALLDIR)/include
-	install -m 640 preprocess/YogiSupported.xml $(INSTALLDIR)/bin
-	install -m 640 preprocess/AVUtility.py $(INSTALLDIR)/bin
+	#install -m 640 src/yogimpif.h $(INSTALLDIR)/include/mpif.h
+	#install -m 640 src/yogimpi.mod $(INSTALLDIR)/include/yogimpi.mod
+	#install -m 640 src/yogiconvutil.h $(INSTALLDIR)/include
 	install -m 640 etc/yogimpi.bashrc $(INSTALLDIR)/etc
 	install -m 640 etc/yogimpi.cshrc $(INSTALLDIR)/etc
 	install -m 640 etc/modulefile $(INSTALLDIR)/etc
 	install -m 750 wrapper/mpicc $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpicxx $(INSTALLDIR)/bin
-	install -m 750 wrapper/mpif90 $(INSTALLDIR)/bin
-	install -m 750 wrapper/mpif77 $(INSTALLDIR)/bin
+	#install -m 750 wrapper/mpif90 $(INSTALLDIR)/bin
+	#install -m 750 wrapper/mpif77 $(INSTALLDIR)/bin
 	install -m 750 wrapper/YogiMPIWrapper.py $(INSTALLDIR)/bin
 	install -m 640 Make.flags $(INSTALLDIR)
 
@@ -40,8 +38,8 @@ clean:
 
 realclean: clean
 	$(RM) wrapper/mpicc
-	$(RM) wrapper/mpif90
-	$(RM) wrapper/mpif77
+	#$(RM) wrapper/mpif90
+	#$(RM) wrapper/mpif77
 	$(RM) wrapper/mpicxx
 	$(RM) test/testRunner.sh
 	$(RM) etc/modulefile
