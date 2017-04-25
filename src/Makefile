@@ -6,7 +6,7 @@ wrap: generate_wrap.py wrap_objects.py WrapMPI.xml
 	python generate_wrap.py WrapMPI.xml 
 
 clean:
-	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o test_YogiManager
+	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o *.so test_YogiManager
 
 manager: wrap YogiManager.cxx YogiManager.h
 	mpicxx -DYOGI_DEBUG -c -fPIC -I. YogiManager.cxx
@@ -15,6 +15,4 @@ manager: wrap YogiManager.cxx YogiManager.h
 
 lib: manager
 	mpicxx -c -fPIC -I. yogimpi.cxx
-
-#clean:
-#	$(RM) *.mod *.o libyogimpi.$(LIBEXTENSION)
+	mpicxx -shared -fPIC -I. YogiManager.o yogimpi.o -o libyogimpi.so
