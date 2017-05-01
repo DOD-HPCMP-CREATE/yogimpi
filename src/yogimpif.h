@@ -49,6 +49,12 @@
       integer, parameter :: YogiMPI_VERSION = 2
       integer, parameter :: YogiMPI_SUBVERSION = 2 
 
+! Handle various byte counts in Fortran to match the C counterparts.  On most
+! modern Intel/AMD 64-bit systems these are 4 or 8 byte values.
+      integer, parameter :: YogiMPI_INTEGER_KIND = 4
+      integer, parameter :: YogiMPI_OFFSET_KIND = 8
+      integer, parameter :: YogiMPI_ADDRESS_KIND = 8
+
 ! return codes (both C and Fortran)
       integer, parameter :: YogiMPI_SUCCESS = 0
       integer, parameter :: YogiMPI_ERR_BUFFER = 1
@@ -90,7 +96,7 @@
       integer, parameter :: YogiMPI_ERR_LASTCODE = 36
 
 ! Special case with MPI_BOTTOM
-      integer, parameter :: YogiMPI_BOTTOM = -1
+      integer(YogiMPI_INTEGER_KIND) :: YogiMPI_BOTTOM
 
 ! assorted constants (both C and Fortran)
       integer, parameter :: YogiMPI_PROC_NULL = -2
@@ -101,9 +107,10 @@
       integer, parameter :: YogiMPI_BSEND_OVERHEAD = 512 
       integer, parameter :: YogiMPI_KEYVAL_INVALID = -7
 
-! Special cases with graph create constants 
-      integer, parameter :: YogiMPI_WEIGHTS_EMPTY = -1
-      integer, parameter :: YogiMPI_UNWEIGHTED = -2
+! Graph creation constants.  These are pointer values in C, so they must go
+! within a common block.
+      integer(YogiMPI_INTEGER_KIND) :: YogiMPI_WEIGHTS_EMPTY
+      integer(YogiMPI_INTEGER_KIND) :: YogiMPI_UNWEIGHTED
 
 ! MPI asserts for one-sided communication.  Supports bitwise ops.
       integer, parameter :: YogiMPI_MODE_NOCHECK = 1024
@@ -280,16 +287,14 @@
       integer :: YogiMPI_STATUS_IGNORE(YogiMPI_STATUS_SIZE)
       integer :: YogiMPI_STATUSES_IGNORE(YogiMPI_STATUS_SIZE,1)
 
-! Declare common blocks to hold these special variables.
-      COMMON /ympiscalar/ YogiMPI_STATUS_IGNORE
-      COMMON /ympiarray/ YogiMPI_STATUSES_IGNORE
-      COMMON /ympispecial/ YogiMPI_IN_PLACE
+! MPI_IN_PLACE is a special constant that must go in a common block.
+      integer(YogiMPI_INTEGER_KIND) :: MPI_IN_PLACE
 
-! Handle various byte counts in Fortran to match the C counterparts.  On most
-! modern Intel/AMD 64-bit systems these are 4 or 8 byte values. 
-      integer, parameter :: YogiMPI_INTEGER_KIND = 4
-      integer, parameter :: YogiMPI_OFFSET_KIND = 8
-      integer, parameter :: YogiMPI_ADDRESS_KIND = 8
+! Declare common blocks.
+
+      COMMON /ympi1/ YogiMPI_STATUS_IGNORE, YogiMPI_STATUSES_IGNORE
+      COMMON /ympi2/ YogiMPI_IN_PLACE, YogiMPI_BOTTOM
+      COMMON /ympi3/ YogiMPI_UNWEIGHTED, YogiMPI_WEIGHTS_EMPTY 
 
       real*8 :: YOGIMPI_WTIME
       real*8 :: YOGIMPI_WTICK

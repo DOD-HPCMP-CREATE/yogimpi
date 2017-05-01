@@ -1,7 +1,6 @@
 To get working before leaving:
  - Add MPI c2f and f2c functions.
  - Generate Fortran layer interface.
-   - MPI_IN_PLACE, MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE, MPI_BOTTOM, MPI_UNWEIGHTED, and MPI_WEIGHTS_EMPTY in Fortran?
    - ISO C bind these variables.
    - Revamp preprocessor for Fortran.
 

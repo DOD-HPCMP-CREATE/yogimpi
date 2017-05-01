@@ -52,12 +52,12 @@ waitsome: waitsome.c
 testAttr: testAttr.c
 	$(YCC) $(CFLAGS) testAttr.c -o testAttr
 
-runtest: ctest ftest 
+runctests: ctest
 	./testRunner.sh 4 ./createOp
 	./testRunner.sh 4 ./errorHandler
 	./testRunner.sh 4 ./simple
 	./testRunner.sh 2 ./nonBlocking
-	./testRunner.sh 2 ./probe	
+	./testRunner.sh 2 ./probe       
 	./testRunner.sh 4 ./testAll
 	./testRunner.sh 4 ./writeFile1
 	cmp cWriteFile.expected cWriteFile.result || exit 1
@@ -68,6 +68,8 @@ runtest: ctest ftest
 	./testRunner.sh 4 ./nonblock_waitall
 	./testRunner.sh 4 ./waitsome
 	./testRunner.sh 4 ./testAttr
+	
+runtest: runctests ftest 
 	./testRunner.sh 2 ./fsimple
 	./testRunner.sh 4 ./fwriteFile1
 	cmp fWriteFile.expected fWriteFile.result || exit 1
