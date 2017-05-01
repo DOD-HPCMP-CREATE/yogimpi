@@ -599,8 +599,12 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="buf" type="void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="source" type="int"/>
-    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_ANY_SOURCE</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int">
+      <Convert>MPI_ANY_TAG</Convert>
+    </Arg>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
