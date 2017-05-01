@@ -1,18 +1,21 @@
-#include ../Make.flags
+include ../Make.flags
  
-.PHONY: wrap clean
+.PHONY: wrap clean manager lib
+
+lib: manager
+	mpicxx -c $(CXXFLAGS) yogimpi.cxx
+	$(F90) -c $(FFLAGS) yogimpi_module.f90
+	mpicxx $(LDFLAGS) $(CXXFLAGS) YogiManager.o yogimpi.o \
+               yogimpi_module.o -o libyogimpi.so
+
+manager: wrap YogiManager.cxx YogiManager.h
+	mpicxx -c $(CXXFLAGS) YogiManager.cxx
+	mpicxx $(CXXFLAGS) test_YogiManager.cxx YogiManager.o \
+               -o test_YogiManager
 
 wrap: generate_wrap.py wrap_objects.py WrapMPI.xml  
 	python generate_wrap.py WrapMPI.xml 
 
 clean:
-	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o *.so test_YogiManager
-
-manager: wrap YogiManager.cxx YogiManager.h
-	mpicxx -DYOGI_DEBUG -c -fPIC -I. YogiManager.cxx
-	mpicxx -DYOGI_DEBUG -I. -fPIC test_YogiManager.cxx YogiManager.o \
-               -o test_YogiManager
-
-lib: manager
-	mpicxx -c -fPIC -I. yogimpi.cxx
-	mpicxx -shared -fPIC -I. YogiManager.o yogimpi.o -o libyogimpi.so
+	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o *.so *.mod \
+              test_YogiManager

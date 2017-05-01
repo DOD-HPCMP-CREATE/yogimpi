@@ -71,23 +71,23 @@
       integer, parameter :: YogiMPI_ERR_PENDING = 18 
       integer, parameter :: YogiMPI_ERR_IN_STATUS = 19 
 
-      integer, parameter :: YogiMPI_ERR_FILE 20
-      integer, parameter :: YogiMPI_ERR_NOT_SAME 21
-      integer, parameter :: YogiMPI_ERR_AMODE 22
-      integer, parameter :: YogiMPI_ERR_UNSUPPORTED_DATAREP 23
-      integer, parameter :: YogiMPI_ERR_UNSUPPORTED_OPERATION 24
-      integer, parameter :: YogiMPI_ERR_NO_SUCH_FILE 25
-      integer, parameter :: YogiMPI_ERR_FILE_EXISTS 26
-      integer, parameter :: YogiMPI_ERR_BAD_FILE 27
-      integer, parameter :: YogiMPI_ERR_ACCESS 28
-      integer, parameter :: YogiMPI_ERR_NO_SPACE 29
-      integer, parameter :: YogiMPI_ERR_QUOTA 30
-      integer, parameter :: YogiMPI_ERR_READ_ONLY 31
-      integer, parameter :: YogiMPI_ERR_FILE_IN_USE 32
-      integer, parameter :: YogiMPI_ERR_DUP_DATAREP 33
-      integer, parameter :: YogiMPI_ERR_CONVERSION 34
-      integer, parameter :: YogiMPI_ERR_IO 35
-      integer, parameter :: YogiMPI_ERR_LASTCODE 36
+      integer, parameter :: YogiMPI_ERR_FILE = 20
+      integer, parameter :: YogiMPI_ERR_NOT_SAME = 21
+      integer, parameter :: YogiMPI_ERR_AMODE = 22
+      integer, parameter :: YogiMPI_ERR_UNSUPPORTED_DATAREP = 23
+      integer, parameter :: YogiMPI_ERR_UNSUPPORTED_OPERATION = 24
+      integer, parameter :: YogiMPI_ERR_NO_SUCH_FILE = 25
+      integer, parameter :: YogiMPI_ERR_FILE_EXISTS = 26
+      integer, parameter :: YogiMPI_ERR_BAD_FILE = 27
+      integer, parameter :: YogiMPI_ERR_ACCESS = 28
+      integer, parameter :: YogiMPI_ERR_NO_SPACE = 29
+      integer, parameter :: YogiMPI_ERR_QUOTA = 30
+      integer, parameter :: YogiMPI_ERR_READ_ONLY = 31
+      integer, parameter :: YogiMPI_ERR_FILE_IN_USE = 32
+      integer, parameter :: YogiMPI_ERR_DUP_DATAREP = 33
+      integer, parameter :: YogiMPI_ERR_CONVERSION = 34
+      integer, parameter :: YogiMPI_ERR_IO = 35
+      integer, parameter :: YogiMPI_ERR_LASTCODE = 36
 
 ! Special case with MPI_BOTTOM
       integer, parameter :: YogiMPI_BOTTOM = -1

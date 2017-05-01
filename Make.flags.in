@@ -7,4 +7,5 @@ F90=@F90@
 # These work for both Intel and GNU.
 FFLAGS=-I. -fPIC
 CFLAGS=-I. -fPIC
+CXXFLAGS=-I. -fPIC
 LDFLAGS=-shared
