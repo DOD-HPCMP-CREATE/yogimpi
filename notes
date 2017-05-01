@@ -4,20 +4,6 @@ Handle in MPI_Status:
 
 MPI_Get_library_version string length stuff.
 
-MPI_Win_errhandler_function*
-MPI_File_errhandler_function*
-MPI_Handler_function*
-MPI_Grequest_query_function*
-MPI_Grequest_free_function*
-MPI_Grequest_cancel_function*
-MPI_Datar
-ep_conversion_function*
-MPI_Datarep_extent_function*
-MPI_Win_copy_attr_function*
-MPI_Win_delete_attr_function*
-MPI_Type_copy_attr_function*
-MPI_Type_delete_attr_function*
-
 Possibly you need to convert errorcodes in some functions.
 - Error codes for DATAREP stuff.
 
@@ -25,15 +11,7 @@ New constants:
  - MPI_MAX_DATAREP_STRING (must be at least 64)
  - MPI_MAX_OBJECT_NAME (must be at least 64)
  - MPI_MAX_PORT_NAME
- - MPI_UNWEIGHTED as pointer
- - MPI_WEIGHTS_EMPTY as pointer
  - MPI_MESSAGE_NO_PROC
- /* asserts for one-sided communication */
- - MPI_MODE_NOCHECK      1024
- - MPI_MODE_NOSTORE      2048
- - MPI_MODE_NOPUT        4096
- - MPI_MODE_NOPRECEDE    8192
- - MPI_MODE_NOSUCCEED 16384 
  this is a function conv_onesided_constants
  - MPI_COMM_TYPE_SHARED
  - MPI_REPLACE
@@ -43,13 +21,6 @@ New constants:
 
 - MPI_ERR_SPAWN
 - MPI_ERR_PORT
-
-- MPI_LOCK_EXCLUSIVE
-- MPI_LOCK_SHARED
-
-- MPI_TYPECLASS_REAL
-- MPI_TYPECLASS_INTEGER
-- MPI_TYPECLASS_COMPLEX
 
 For arrays where conversions must happen, need to establish dimensions.
 MPI_Comm_spawn and MPI_Comm_spawn_multiple are doom-a-licious.

@@ -151,7 +151,7 @@ static void * const YogiMPI_UNWEIGHTED = (void*)2;
 #define YogiMPI_TYPECLASS_INTEGER 2
 #define YogiMPI_TYPECLASS_COMPLEX 3
 
-/* MPI I/O permission modes.  Supports bitwise OR. 2*/
+/* MPI I/O permission modes.  Supports bitwise ops. 2*/
 #define YogiMPI_MODE_RDONLY 2
 #define YogiMPI_MODE_RDWR 8
 #define YogiMPI_MODE_WRONLY 4
@@ -413,13 +413,6 @@ typedef int YogiMPI_Datarep_conversion_function(void *, YogiMPI_Datatype, int,
 typedef int YogiMPI_Datarep_extent_function(YogiMPI_Datatype datatype, 
                                             YogiMPI_Aint *, void *);
 
-#define MPI_CONVERSION_FN_NULL ((MPI_Datarep_conversion_function *)0)
-#define YogiMPI_NULL_COPY_FN   ((YogiMPI_Copy_function *)0)
-#define YogiMPI_DUP_FN  ((YogiMPI_Copy_function *)-1)
-#define YogiMPI_NULL_DELETE_FN ((YogiMPI_Delete_function *)0)
-
-/* Declare function pointer types associated with attribute keys. */
-
 typedef int YogiMPI_Comm_copy_attr_function(YogiMPI_Comm oldcomm,
                                             int comm_keyval,
                                             void *extra_state,
@@ -431,6 +424,10 @@ typedef int YogiMPI_Comm_delete_attr_function(YogiMPI_Comm comm,
                                               void *attribute_val,
                                               void *extra_state);
 
+#define MPI_CONVERSION_FN_NULL ((MPI_Datarep_conversion_function *)0)
+#define YogiMPI_NULL_COPY_FN   ((YogiMPI_Copy_function *)0)
+#define YogiMPI_DUP_FN  ((YogiMPI_Copy_function *)-1)
+#define YogiMPI_NULL_DELETE_FN ((YogiMPI_Delete_function *)0)
 #define YogiMPI_COMM_NULL_COPY_FN   ((YogiMPI_Comm_copy_attr_function *)0)
 #define YogiMPI_COMM_DUP_FN  ((YogiMPI_Comm_copy_attr_function *)-1)
 #define YogiMPI_COMM_NULL_DELETE_FN ((YogiMPI_Comm_delete_attr_function *)0)
