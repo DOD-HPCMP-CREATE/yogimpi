@@ -391,6 +391,54 @@ class GenerateWrap(object):
         self.writeCHeader()
         self.writeCUserHeader()
         self.writeCXXSource()
+        self.writeFortranSource()
+
+    # Writes the Fortran module that binds YogiMPI to Fortran.
+    def writeFortranSource(self):
+        fInput = 'yogimpi_module.f90.in'
+        fort_file = source_writers.FortranSource(inputFile=fInput)
+        fort_funcs = source_writers.FortranSource()
+        for aFunc in self.functions:
+            fortName = 'YogiFortran_' + aFunc.name
+            fortArgs = self._getFortArgsString(aFunc)
+            fort_funcs.addSubroutine(fortName, fortArgs)
+            for anArg in aFunc.args:
+                fort_funcs.addLines(self._getFortArgDecl(anArg))
+            fort_funcs.endSubroutine(fortName)
+            fort_funcs.newLine()
+        fort_file.merge(fort_funcs, 'YOGI_FUNCTIONS')
+        fort_file.writeFile('yogimpi_module.f90')
+
+    # Returns a string with argument names suitable for Fortran subroutine
+    # declaration.
+    def _getFortArgsString(self, func):
+        argString = ''
+        for i, anArg in enumerate(func.args):
+            if i > 0:
+                argString += ', '
+            argString += anArg.call_name
+        return argString
+
+    # Returns a string that can be used to declare an argument's type and
+    # intent within a Fortran subroutine.
+    def _getFortArgDecl(self, anArg):
+        argDecl = ''
+        intent = 'in'
+        fType = 'integer'
+        if anArg.is_mpi_type:
+            fType = 'integer(YogiMPI_INTEGER_KIND)' 
+        else:
+            if not anArg.is_plural:
+                fType = 'integer'
+            else:    
+                fType = 'lookatme' 
+        argDecl += fType + ', '
+        if anArg.is_input and anArg.is_output:
+            intent = 'inout'
+        elif anArg.is_output:
+            intent = 'out'
+        argDecl += 'intent(' + intent + ') :: ' + anArg.call_name 
+        return argDecl
 
     # Writes the header file that users will include in their program.
     def writeCUserHeader(self):
