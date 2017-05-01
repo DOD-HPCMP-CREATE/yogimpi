@@ -185,6 +185,8 @@ static void * const YogiMPI_UNWEIGHTED = (void*)2;
  */
 #define YogiMPI_MAX_PROCESSOR_NAME 32
 #define YogiMPI_MAX_ERROR_STRING 32 
+#define YogiMPI_MAX_PORT_NAME 512
+#define YogiMPI_MAX_OBJECT_NAME 64
 
 /* Elementary datatypes (C) */ 
 #define YogiMPI_CHAR 1

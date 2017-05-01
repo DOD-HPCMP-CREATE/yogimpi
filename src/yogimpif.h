@@ -151,6 +151,9 @@
 ! strings.
       integer, parameter :: YogiMPI_MAX_PROCESSOR_NAME = 31
       integer, parameter :: YogiMPI_MAX_ERROR_STRING = 31
+      integer, parameter :: YogiMPI_MAX_PORT_NAME = 511
+      integer, parameter :: YogiMPI_MAX_OBJECT_NAME = 63
+
 
 ! elementary datatypes (Fortran)
       integer, parameter :: YogiMPI_CHARACTER = 1
