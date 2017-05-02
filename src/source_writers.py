@@ -417,14 +417,17 @@ class FortranSource(SourceFile):
         self.removeIndent()
         self.addLines('end subroutine ' + name)
                 
-    def addFunction(self, name, returnType, args="", result=None):
-        if not result:
-            self.addLines(returnType + ' function ' + name + '(' + args + ')')
-        else:
-            self.addLines(returnType + ' function ' + name + '(' + args +\
-                          ') result(' + result + ')')
+    def addFunction(self, name, returnType, args="", result=None, bind=None,
+                    implicit=False):
+        funcDecl = returnType + ' function ' + name + '(' + args + ')'
+        if result:
+            funcDecl += ' result(' + result + ')'
+        elif bind:
+            funcDecl += ' bind(C,name="' + bind +'")'
+        self.addLines(funcDecl)
         self.addIndent()
-        self.addLines('implicit none')
+        if implicit:
+            self.addLines('implicit none')
         self.functions.append(name)
     
     def endFunction(self, name):

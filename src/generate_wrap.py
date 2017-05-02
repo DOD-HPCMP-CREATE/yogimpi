@@ -396,32 +396,49 @@ class GenerateWrap(object):
     # Writes the Fortran module that binds YogiMPI to Fortran.
     def writeFortranSource(self):
         fInput = 'yogimpi_functions.f90.in'
+        fInput2 = 'yogimpi_module.f90.in'
         fort_file = source_writers.FortranSource(inputFile=fInput)
+        mod_file = source_writers.FortranSource(inputFile=fInput2)
         fort_funcs = source_writers.FortranSource()
+        fort_ifaces = source_writers.FortranSource()
         for aFunc in self.functions:
             fortName = 'YogiFortran_' + aFunc.name
             fortArgs = self._getFortArgsString(aFunc)
             fort_funcs.addSubroutine(fortName, fortArgs, implicit=False)
             fort_funcs.addLines('use yogimpi',
-                               'implicit none')
+                                'implicit none')
             for anArg in aFunc.args:
                 fort_funcs.addLines(self._getFortArgDecl(anArg))
             fort_funcs.addLines('integer, intent(out) :: ierr')
             fort_funcs.endSubroutine(fortName)
             fort_funcs.newLine()
+
+            fort_ifaces.addInterface()
+            fort_ifaces.addFunction(aFunc.name + '_c', 'integer(kind=C_INT)',
+                                   self._getFortArgsString(aFunc, ierr=False),
+                                   bind='Yogi' + aFunc.name) 
+            for anArg in aFunc.args:
+                fort_ifaces.addLines(self._getFortArgDecl(anArg))
+            fort_ifaces.endFunction(aFunc.name + '_c')
+            fort_ifaces.endInterface()
+            fort_ifaces.newLine()
+
         fort_file.merge(fort_funcs, 'YOGI_FUNCTIONS')
         fort_file.writeFile('yogimpi_functions.f90')
+        mod_file.merge(fort_ifaces, 'YOGI_INTERFACES')
+        mod_file.writeFile('yogimpi_module.f90')
 
     # Returns a string with argument names suitable for Fortran subroutine
     # declaration.
-    def _getFortArgsString(self, func):
+    def _getFortArgsString(self, func, ierr=True):
         argString = ''
         for i, anArg in enumerate(func.args):
             if i > 0:
                 argString += ', '
             argString += anArg.call_name
-        # Add an ierror integer.
-        argString += ', ierr'
+        if ierr:
+            # Add an ierror integer.
+            argString += ', ierr'
         return argString
 
     # Returns a string that can be used to declare an argument's type and
