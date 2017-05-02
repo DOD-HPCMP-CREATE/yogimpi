@@ -1,1 +1,39 @@
+subroutine YogiFortran_MPI_Init(ierr)
+    use yogimpi
+    implicit none
+    integer, intent(out) :: ierr
+
+    call YogiBridge_MPI_Init(ierr)
+end subroutine YogiFortran_MPI_Init
+
+subroutine YogiFortran_MPI_Finalize(ierr)
+    use yogimpi
+    implicit none
+    integer, intent(out) :: ierr
+
+    call YogiBridge_MPI_Finalize(ierr)
+end subroutine YogiFortran_MPI_Finalize
+
+subroutine YogiFortran_MPI_Get_processor_name(name, resultlen, ierr)
+    use yogimpi
+    implicit none
+    character(len=*), intent(out) :: name
+    integer, intent(out) :: resultlen
+    integer, intent(out) :: ierr
+
+    call YogiBridge_MPI_Get_processor_name(name, resultlen, ierr)
+end subroutine YogiFortran_MPI_Get_processor_name
+
+real*8 function YogiFortran_MPI_Wtime()
+    use yogimpi
+    implicit none
+    YogiFortran_MPI_Wtime = YogiBridge_MPI_Wtime()
+end function
+
+real*8 function YogiFortran_MPI_Wtick()
+    use yogimpi
+    implicit none
+    YogiFortran_MPI_Wtick = YogiBridge_MPI_Wtick()
+end function
+
 @YOGI_FUNCTIONS@

@@ -461,7 +461,7 @@ class YogiMPIWrapper(object):
 
             for aRegex in self.func_regexes:
                 # Run through all the loaded MPI regular expressions.
-                line = aRegex.sub(r"\g<1>YogiFortran\g<2>\g<3>", line)
+                line = aRegex.sub(r"\g<1>YogiFortran_\g<2>\g<3>", line)
 
             # Substitute "use yogimpi" for "use mpi" where applicable.
             line = YogiMPIWrapper.useMPIRegEx.sub(r"\g<1>use yogimpi\g<2>",

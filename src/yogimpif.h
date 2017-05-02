@@ -288,7 +288,7 @@
       integer :: YogiMPI_STATUSES_IGNORE(YogiMPI_STATUS_SIZE,1)
 
 ! MPI_IN_PLACE is a special constant that must go in a common block.
-      integer(YogiMPI_INTEGER_KIND) :: MPI_IN_PLACE
+      integer(YogiMPI_INTEGER_KIND) :: YogiMPI_IN_PLACE
 
 ! Declare common blocks.
 
@@ -296,7 +296,7 @@
       COMMON /ympi2/ YogiMPI_IN_PLACE, YogiMPI_BOTTOM
       COMMON /ympi3/ YogiMPI_UNWEIGHTED, YogiMPI_WEIGHTS_EMPTY 
 
-      real*8 :: YOGIMPI_WTIME
-      real*8 :: YOGIMPI_WTICK
-      external YogiMPI_WTIME
-      external YogiMPI_WTICK
+      real*8 :: YOGIBRIDGE_MPI_WTIME
+      real*8 :: YOGIBRIDGE_MPI_WTICK
+      external YogiBRIDGE_MPI_WTIME
+      external YogiBRIDGE_MPI_WTICK

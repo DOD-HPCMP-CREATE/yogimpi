@@ -8,7 +8,8 @@ lib: manager
 	$(F90) -c $(FFLAGS) yogimpi_module.f90
 	$(F90) -c $(FFLAGS) yogimpi_functions.f90
 	mpicxx $(LDFLAGS) $(CXXFLAGS) YogiManager.o yogimpi.o \
-               yogimpi_module.o yogimpi_functions.o -o libyogimpi.so
+               yogimpi_f90bridge.o yogimpi_module.o yogimpi_functions.o \
+               -o libyogimpi.so
 
 manager: wrap YogiManager.cxx YogiManager.h
 	mpicxx -c $(CXXFLAGS) YogiManager.cxx
