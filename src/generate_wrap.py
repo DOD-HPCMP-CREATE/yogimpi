@@ -413,14 +413,13 @@ class GenerateWrap(object):
             fort_funcs.endSubroutine(fortName)
             fort_funcs.newLine()
 
-            fort_ifaces.addInterface()
             fort_ifaces.addFunction(aFunc.name + '_c', 'integer(kind=C_INT)',
                                    self._getFortArgsString(aFunc, ierr=False),
                                    bind='Yogi' + aFunc.name) 
+            fort_ifaces.addLines('import')
             for anArg in aFunc.args:
-                fort_ifaces.addLines(self._getFortArgDecl(anArg))
+                fort_ifaces.addLines(self._getISOCArgDecl(anArg))
             fort_ifaces.endFunction(aFunc.name + '_c')
-            fort_ifaces.endInterface()
             fort_ifaces.newLine()
 
         fort_file.merge(fort_funcs, 'YOGI_FUNCTIONS')
@@ -440,6 +439,47 @@ class GenerateWrap(object):
             # Add an ierror integer.
             argString += ', ierr'
         return argString
+
+    # Returns a string that can be used to declare an argument's type and
+    # intent within an ISO C-binding interface. 
+    def _getISOCArgDecl(self, anArg):
+        argDecl = ''
+        intent = 'in'
+        if anArg.is_mpi_type:
+            if anArg.mpi_type == 'MPI_Address':
+                isoType = 'integer(kind=C_LONG_LONG)'
+            elif anArg.mpi_type == 'MPI_Offset':
+                isoType = 'integer(kind=C_LONG_LONG)'
+            else:
+                isoType = 'integer(kind=C_INT)'
+        else:
+            if anArg.type.startswith('int'):
+                isoType = 'integer(kind=C_INT)'
+            elif anArg.type.startswith('void'):
+                # If an argument is void, it can take any type since a pointer
+                # will be passed to C.  Just call it an integer.
+                isoType = 'integer(kind=C_INT)'
+            elif anArg.type.startswith('char *') or \
+                 anArg.type.startswith('char*'):
+                isoType = 'character(kind=C_CHAR)'
+            else:
+                raise ValueError('no Fortran type assigned for ' + anArg.name +\
+                                 ' with type ' + anArg.type)
+        argDecl += isoType + ', '
+        if anArg.is_input and anArg.is_output:
+            intent = 'inout'
+        elif anArg.is_output:
+            intent = 'out'
+        argDecl += 'intent(' + intent + ')'
+        if not anArg.is_pointer:
+            argDecl += ', value'
+        argDecl += ' :: ' + anArg.call_name
+        if anArg.type.startswith('char *') or anArg.type.startswith('char*'):
+            argDecl += '(*)'
+        if anArg.is_plural:
+            argDecl += '(:)'
+
+        return argDecl
 
     # Returns a string that can be used to declare an argument's type and
     # intent within a Fortran subroutine.
