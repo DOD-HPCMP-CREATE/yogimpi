@@ -5,8 +5,9 @@ include ../Make.flags
 lib: manager
 	mpicxx -c $(CXXFLAGS) yogimpi.cxx
 	$(F90) -c $(FFLAGS) yogimpi_module.f90
+	$(F90) -c $(FFLAGS) yogimpi_functions.f90
 	mpicxx $(LDFLAGS) $(CXXFLAGS) YogiManager.o yogimpi.o \
-               yogimpi_module.o -o libyogimpi.so
+               yogimpi_module.o yogimpi_functions.o -o libyogimpi.so
 
 manager: wrap YogiManager.cxx YogiManager.h
 	mpicxx -c $(CXXFLAGS) YogiManager.cxx
@@ -18,4 +19,4 @@ wrap: generate_wrap.py wrap_objects.py WrapMPI.xml
 
 clean:
 	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o *.so *.mod \
-              test_YogiManager yogimpi_module.f90
+              test_YogiManager yogimpi_functions.f90

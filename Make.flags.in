@@ -4,8 +4,7 @@ MPICXX=@MPICXX@
 CC=@CC@
 F90=@F90@
 # Change these if you require different compiler flags.
-# These work for both Intel and GNU.
-FFLAGS=-I. -fPIC
+FFLAGS=-I. -fPIC @FCOMPFLAGS@
 CFLAGS=-I. -fPIC
 CXXFLAGS=-I. -fPIC
 LDFLAGS=-shared

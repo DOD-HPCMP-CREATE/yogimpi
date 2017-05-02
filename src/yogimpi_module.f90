@@ -2,8 +2,4 @@ module yogimpi
 
 include 'yogimpif.h'
 
-contains 
-
-    @YOGI_FUNCTIONS@
-
 end module yogimpi

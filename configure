@@ -41,6 +41,8 @@ while getopts ":i:h" opt; do
   esac
 done
 
+fFlags=""
+
 if [[ ! -z $YFAMILY ]]; then
     if [[ $YFAMILY == "intel" ]]; then 
         echo "Using Intel compiler family defaults for Yogi."
@@ -52,6 +54,7 @@ if [[ ! -z $YFAMILY ]]; then
         cCompiler=gcc
         cxxCompiler=g++
         fortranCompiler=gfortran
+        fFlags="-ffree-line-length-none"
     else
         echo "I don't recognize the $YFAMILY compiler family."
         exit 1
@@ -98,6 +101,7 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@SERIALC@|${cCompiler}|g" \
     -e "s|@F90@|${fortranCompiler}|g" \
     -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
+    -e "s|@FCOMPFLAGS@|${fFlags}|g" \
     Make.flags.in > Make.flags
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \

@@ -395,19 +395,22 @@ class GenerateWrap(object):
 
     # Writes the Fortran module that binds YogiMPI to Fortran.
     def writeFortranSource(self):
-        fInput = 'yogimpi_module.f90.in'
+        fInput = 'yogimpi_functions.f90.in'
         fort_file = source_writers.FortranSource(inputFile=fInput)
         fort_funcs = source_writers.FortranSource()
         for aFunc in self.functions:
             fortName = 'YogiFortran_' + aFunc.name
             fortArgs = self._getFortArgsString(aFunc)
-            fort_funcs.addSubroutine(fortName, fortArgs)
+            fort_funcs.addSubroutine(fortName, fortArgs, implicit=False)
+            fort_funcs.addLines('use yogimpi',
+                               'implicit none')
             for anArg in aFunc.args:
                 fort_funcs.addLines(self._getFortArgDecl(anArg))
+            fort_funcs.addLines('integer, intent(out) :: ierr')
             fort_funcs.endSubroutine(fortName)
             fort_funcs.newLine()
         fort_file.merge(fort_funcs, 'YOGI_FUNCTIONS')
-        fort_file.writeFile('yogimpi_module.f90')
+        fort_file.writeFile('yogimpi_functions.f90')
 
     # Returns a string with argument names suitable for Fortran subroutine
     # declaration.
@@ -417,6 +420,8 @@ class GenerateWrap(object):
             if i > 0:
                 argString += ', '
             argString += anArg.call_name
+        # Add an ierror integer.
+        argString += ', ierr'
         return argString
 
     # Returns a string that can be used to declare an argument's type and
@@ -426,18 +431,33 @@ class GenerateWrap(object):
         intent = 'in'
         fType = 'integer'
         if anArg.is_mpi_type:
-            fType = 'integer(YogiMPI_INTEGER_KIND)' 
+            if anArg.mpi_type == 'MPI_Address':
+                fType = 'integer(YogiMPI_ADDRESS_KIND)'
+            elif anArg.mpi_type == 'MPI_Offset':
+                fType = 'integer(YogiMPI_OFFSET_KIND)'
+            else:
+                fType = 'integer(YogiMPI_INTEGER_KIND)' 
         else:
-            if not anArg.is_plural:
+            if anArg.type.startswith('int'):
                 fType = 'integer'
+            elif anArg.type.startswith('void'):
+                # If an argument is void, it can take any type since a pointer
+                # will be passed to C.  Just call it an integer.
+                fType = 'integer'
+            elif anArg.type.startswith('char *') or \
+                 anArg.type.startswith('char*'):
+                fType = 'character(len=*)'
             else:    
-                fType = 'lookatme' 
+                raise ValueError('no Fortran type assigned for ' + anArg.name +\
+                                 ' with type ' + anArg.type)
         argDecl += fType + ', '
         if anArg.is_input and anArg.is_output:
             intent = 'inout'
         elif anArg.is_output:
             intent = 'out'
         argDecl += 'intent(' + intent + ') :: ' + anArg.call_name 
+        if anArg.is_plural:
+            argDecl += '(*)'
         return argDecl
 
     # Writes the header file that users will include in their program.
