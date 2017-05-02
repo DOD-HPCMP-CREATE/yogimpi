@@ -316,6 +316,13 @@
 #define MPI_COMM_DUP_FN YogiMPI_COMM_DUP_FN
 #define MPI_COMM_NULL_DELETE_FN YogiMPI_COMM_NULL_DELETE_FN
 
+// Handle hard-coded functions
+#define MPI_Init YogiMPI_Init
+#define MPI_Finalize YogiMPI_Finalize
+#define MPI_Get_processor_name YogiMPI_Get_processor_name
+#define MPI_Wtick YogiMPI_Wtick
+#define MPI_Wtime YogiMPI_Wtime
+
 // Begin automatically generated code
 @YOGI_DEFINES@
 // End automatically generated code
