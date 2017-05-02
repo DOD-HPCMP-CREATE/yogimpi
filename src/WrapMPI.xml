@@ -158,11 +158,13 @@
     <Arg name="newcomm" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Comm_create_errhandler">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm_errhandler_fn" type="MPI_Comm_errhandler_function*"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
   </Function>
   <Function name="MPI_Comm_create_keyval">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm_copy_attr_fn" type="MPI_Comm_copy_attr_function*">
       <Convert pointer="true">MPI_COMM_NULL_COPY_FN</Convert>
@@ -483,6 +485,7 @@
     </Arg>
   </Function>
   <Function name="MPI_Group_range_excl">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg input="true" name="n" type="int"/>
@@ -490,6 +493,7 @@
     <Arg name="newgroup" output="true" type="MPI_Group*"/>
   </Function>
   <Function name="MPI_Group_range_incl">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg input="true" name="n" type="int"/>
@@ -639,6 +643,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Keyval_create">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="copy_fn" type="MPI_Copy_function*"/>
     <Arg input="true" name="delete_fn" type="MPI_Delete_function*"/>
@@ -652,6 +657,7 @@ for(i = 0; i &lt; n; ++i) {
     </Arg>
   </Function>
   <Function name="MPI_Op_create">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="user_fn" type="MPI_User_function*"/>
     <Arg input="true" name="commute" type="int"/>
@@ -1421,6 +1427,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="weighted" output="true" type="int*"/>
   </Function>
   <Function name="MPI_Errhandler_create">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="function" type="MPI_Handler_function*"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
@@ -1457,6 +1464,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="errorcode" type="int"/>
   </Function>
   <Function name="MPI_File_create_errhandler">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="file_errhandler_fn" type="MPI_File_errhandler_function*"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
@@ -1780,6 +1788,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="request" type="MPI_Request"/>
   </Function>
   <Function name="MPI_Grequest_start">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="query_fn" type="MPI_Grequest_query_function*"/>
     <Arg input="true" name="free_fn" type="MPI_Grequest_free_function*"/>
@@ -2029,6 +2038,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="key" type="char*"/>
   </Function>
   <Function name="MPI_Init_thread">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="argc" type="int*"/>
     <Arg input="true" name="argv" type="char***"/>
@@ -2265,6 +2275,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Register_datarep">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datarep" type="char*"/>
     <Arg input="true" name="read_conversion_fn" type="MPI_Datarep_conversion_function*"/>
@@ -2379,6 +2390,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
   <Function name="MPI_Type_create_keyval">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="type_copy_attr_fn" type="MPI_Type_copy_attr_function*"/>
     <Arg input="true" name="type_delete_attr_fn" type="MPI_Type_delete_attr_function*"/>
@@ -2499,11 +2511,13 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="win" output="true" type="MPI_Win*"/>
   </Function>
   <Function name="MPI_Win_create_errhandler">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win_errhandler_fn" type="MPI_Win_errhandler_function*"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
   </Function>
   <Function name="MPI_Win_create_keyval">
+    <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win_copy_attr_fn" type="MPI_Win_copy_attr_function*"/>
     <Arg input="true" name="win_delete_attr_fn" type="MPI_Win_delete_attr_function*"/>

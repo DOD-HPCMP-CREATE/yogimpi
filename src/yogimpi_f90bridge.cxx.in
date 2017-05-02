@@ -1,0 +1,54 @@
+/* File to bind YogiMPI C functions to Fortran. */
+
+#include "yogimpi.h"
+#include <cstring>
+
+static char * null_terminate(char *fString, size_t slen) {
+    char * returnString = new char[slen + 1];
+    std::strncpy(returnString, fString, slen);
+    returnString[slen] = '\0';
+    return returnString;
+}
+
+extern "C" {
+
+/* Define how the C functions will appear to Fortran.  Typically this is all
+   lowercase, with an additional underscore at the end. */
+
+#define YOGIBRIDGE_MPI_INIT yogibridge_mpi_init_
+#define YOGIBRIDGE_MPI_FINALIZE yogibridge_mpi_finalize_
+#define YOGIBRIDGE_MPI_GET_PROCESSOR_NAME yogibridge_mpi_get_processor_name_
+#define YOGIBRIDGE_MPI_WTIME yogibridge_mpi_wtime_
+#define YOGIBRIDGE_MPI_WTICK yogibridge_mpi_wtick_
+
+@FUNCTION_DEFINES@
+
+void YOGIBRIDGE_MPI_INIT(int *ierror)
+{
+    *ierror = YogiMPI_Init(NULL, NULL);
+}
+
+void YOGIBRIDGE_MPI_FINALIZE(int *ierror)
+{
+    *ierror = YogiMPI_Finalize();
+}
+
+void YOGIBRIDGE_MPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
+                                        int name_len) {
+    char *interimName = null_terminate(name, name_len);
+    *ierror = YogiMPI_Get_processor_name(interimName, resultlen);
+    if (*resultlen > name_len) *resultlen = name_len;
+    std::strncpy(name, interimName, name_len);
+}
+
+double YOGIBRIDGE_MPI_WTIME() {
+    return YogiMPI_Wtime();
+}
+
+double YOGIBRIDGE_MPI_WTICK() {
+    return YogiMPI_Wtick();
+}
+
+@BRIDGE_FUNCTIONS@
+
+}

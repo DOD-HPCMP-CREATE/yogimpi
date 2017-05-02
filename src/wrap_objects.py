@@ -115,6 +115,7 @@ class MPIFunction(object):
         self.return_type = 'int'
         self.args = []
         self.codeBlocks = {}
+        self.fortran_support = True
 
     def _checkOrder(self, order):
         if order not in MPIFunction.orders:

@@ -82,7 +82,10 @@ class GenerateWrap(object):
             thisFunction = wrap_objects.MPIFunction()
             thisFunction.name = funcElement.attrib['name']
             thisFunction.return_type = funcElement.find('ReturnType').text
-
+            fortranSupport = funcElement.find('FortranSupport')
+            if fortranSupport is not None:
+                if fortranSupport.text == 'no':
+                    thisFunction.fortran_support = False 
             for codeElement in funcElement.findall('Code'):
                 order = codeElement.attrib.get('order', None)
                 if order is None:
@@ -391,17 +394,41 @@ class GenerateWrap(object):
         self.writeCHeader()
         self.writeCUserHeader()
         self.writeCXXSource()
+        self.writeFortranBridge()
         self.writeFortranSource()
+
+    # Writes the C++ code that binds YogiMPI to the Fortran layer.
+    def writeFortranBridge(self):
+        cxxInput = 'yogimpi_f90bridge.cxx.in'
+        bridge_file = source_writers.CSource(inputFile=cxxInput)
+        bridge_funcs = source_writers.CSource()
+        bridge_defs = source_writers.CSource()  
+        for aFunc in self.functions:
+            if not aFunc.fortran_support:
+                continue
+            fUpper = 'YOGIBRIDGE_' + aFunc.name.upper()
+            fLower = fUpper.lower() + '_'
+            bridge_defs.addLines('#define ' + fUpper + ' ' + fLower) 
+            funcArgs = self._getBridgeArgsString(aFunc)
+            bridge_funcs.addFunction(fUpper, 'void', funcArgs) 
+            callLine = '*ierr = Yogi' + aFunc.name + '(' +\
+                       self._getBridgeCallString(aFunc) + ');' 
+            bridge_funcs.addLines(callLine)
+            bridge_funcs.endFunction(fUpper)
+            bridge_funcs.newLine()
+
+        bridge_file.merge(bridge_defs, 'FUNCTION_DEFINES')
+        bridge_file.merge(bridge_funcs, 'BRIDGE_FUNCTIONS')
+        bridge_file.writeFile('yogimpi_f90bridge.cxx')
 
     # Writes the Fortran module that binds YogiMPI to Fortran.
     def writeFortranSource(self):
         fInput = 'yogimpi_functions.f90.in'
-        fInput2 = 'yogimpi_module.f90.in'
         fort_file = source_writers.FortranSource(inputFile=fInput)
-        mod_file = source_writers.FortranSource(inputFile=fInput2)
         fort_funcs = source_writers.FortranSource()
-        fort_ifaces = source_writers.FortranSource()
         for aFunc in self.functions:
+            if not aFunc.fortran_support:
+                continue
             fortName = 'YogiFortran_' + aFunc.name
             fortArgs = self._getFortArgsString(aFunc)
             fort_funcs.addSubroutine(fortName, fortArgs, implicit=False)
@@ -410,22 +437,49 @@ class GenerateWrap(object):
             for anArg in aFunc.args:
                 fort_funcs.addLines(self._getFortArgDecl(anArg))
             fort_funcs.addLines('integer, intent(out) :: ierr')
+            fort_funcs.newLine()
+            argString = self._getFortArgsString(aFunc)
+            fort_funcs.addLines('call YogiBridge_' + aFunc.name + '(' +\
+                                argString + ')') 
             fort_funcs.endSubroutine(fortName)
             fort_funcs.newLine()
-
-            fort_ifaces.addFunction(aFunc.name + '_c', 'integer(kind=C_INT)',
-                                   self._getFortArgsString(aFunc, ierr=False),
-                                   bind='Yogi' + aFunc.name) 
-            fort_ifaces.addLines('import')
-            for anArg in aFunc.args:
-                fort_ifaces.addLines(self._getISOCArgDecl(anArg))
-            fort_ifaces.endFunction(aFunc.name + '_c')
-            fort_ifaces.newLine()
-
         fort_file.merge(fort_funcs, 'YOGI_FUNCTIONS')
         fort_file.writeFile('yogimpi_functions.f90')
-        mod_file.merge(fort_ifaces, 'YOGI_INTERFACES')
-        mod_file.writeFile('yogimpi_module.f90')
+
+    # Returns a string with argument names suitable for the C++ Fortran
+    # bridge declaration.
+    def _getBridgeArgsString(self, func, ierr=True):
+        argString = ''
+        for i, anArg in enumerate(func.args):
+            if i > 0:
+                argString += ', '
+            # Strip all pointer and array argument information from the type.
+            # Using the old-fashioned Fortran-to-C method, everything shows
+            # up as a pointer.
+            if anArg.is_mpi_type:
+                argType = 'Yogi' + anArg.mpi_type + ' *'
+            else:
+                argType = anArg.type.split(' ')[0].split('[')[0].strip('*')
+                argType += ' *'
+            argString += argType + anArg.call_name
+        if ierr:
+            # Add an ierror integer.
+            argString += ', int *ierr'
+        return argString
+
+    # Returns a string with an argument call string suitable for C++ Fortran
+    # bridge declaration.
+    def _getBridgeCallString(self, func):
+        callString = ''
+        for i, anArg in enumerate(func.args):
+            if i > 0:
+                callString += ', '
+            # Pointer to pointer goes as-is, anything else is dereferenced. 
+            if anArg.is_pointer or anArg.is_plural:
+                callString += anArg.call_name
+            else:
+                callString += '*' + anArg.call_name
+        return callString
 
     # Returns a string with argument names suitable for Fortran subroutine
     # declaration.

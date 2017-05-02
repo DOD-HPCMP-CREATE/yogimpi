@@ -67,10 +67,9 @@ mpiObjects = [ 'MPI_Comm', 'MPI_Request', 'MPI_Op', 'MPI_Info', 'MPI_Datatype',
                'MPI_Errhandler' ]
 
 # MPI functions currently supported in Fortran.
-mpiFunctions = [ 'YogiMPI_Init', 'YogiMPI_Finalize', 
-                 'YogiMPI_Get_processor_name', 'YogiMPI_Wtick',
-                 'YogiMPI_Wtime', 'MPI_Abort', 'MPI_Address', 'MPI_Allgather',
-                 'MPI_Allgatherv', 'MPI_Allreduce', 'MPI_Alltoall',
+mpiFunctions = [ 'MPI_Init', 'MPI_Finalize', 'MPI_Get_processor_name',
+'MPI_Wtick', 'MPI_Wtime', 'MPI_Abort', 'MPI_Address', 'MPI_Allgather',
+'MPI_Allgatherv', 'MPI_Allreduce', 'MPI_Alltoall',
 'MPI_Alltoallv', 'MPI_Attr_delete', 'MPI_Attr_get', 'MPI_Attr_put',
 'MPI_Barrier', 'MPI_Bcast', 'MPI_Bsend', 'MPI_Buffer_attach',
 'MPI_Buffer_detach', 'MPI_Cancel', 'MPI_Cart_coords', 'MPI_Cart_create',
@@ -211,7 +210,8 @@ class YogiMPIWrapper(object):
         self.mpi_constants = mpiConstants 
         self.mpi_objects = mpiObjects 
         self.mpi_functions = mpiFunctions
-        self.mpi_regexes = []
+        self.const_regexes = []
+        self.func_regexes = []
         self.rc = 0
 
         diagOptions = [ '-h', '-help', '-show', '--help', '--version',
@@ -268,7 +268,7 @@ class YogiMPIWrapper(object):
             for aPattern in self.mpi_constants:
                 regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
                               r')(\s|,|\*|\)|\()'
-                self.mpi_regexes.append(re.compile(regexString, re.IGNORECASE))
+                self.const_regexes.append(re.compile(regexString, re.IGNORECASE))
             for aPattern in self.mpi_functions:
                 # Functions require an open parenthesis to follow, or
                 # if there is a line continuation just trust that someone
@@ -276,7 +276,7 @@ class YogiMPIWrapper(object):
                 # ToDo: Actually do lookahead and find out for that last case.
                 regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
                               r')([\s]*\(|[\s]*&$)'
-                self.mpi_regexes.append(re.compile(regexString, re.IGNORECASE))
+                self.func_regexes.append(re.compile(regexString, re.IGNORECASE))
         
     def setFile(self, inputFile, argLocation):
         self.sourceDir = os.path.dirname(inputFile)
@@ -455,9 +455,13 @@ class YogiMPIWrapper(object):
                 continue
             oldLine = line
 
-            for aRegex in self.mpi_regexes:
+            for aRegex in self.const_regexes:
                 # Run through all the loaded MPI regular expressions.
                 line = aRegex.sub(r"\g<1>Yogi\g<2>\g<3>", line)
+
+            for aRegex in self.func_regexes:
+                # Run through all the loaded MPI regular expressions.
+                line = aRegex.sub(r"\g<1>YogiFortran\g<2>\g<3>", line)
 
             # Substitute "use yogimpi" for "use mpi" where applicable.
             line = YogiMPIWrapper.useMPIRegEx.sub(r"\g<1>use yogimpi\g<2>",
