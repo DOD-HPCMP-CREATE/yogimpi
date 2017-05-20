@@ -1,0 +1,29 @@
+- Add some checks in ToYogi functions to catch NULL or preset handles.
+- Handle YogiMPI_WEIGHTS_EMPTY and YogiMPI_UNWEIGHTED
+- Handle lambda issues with function pointers.
+- Look closely at attributes and key values.
+- Handle constness of certain arguments.
+To get working before leaving:
+ - Add MPI c2f and f2c functions.
+ - Handle common block variables in Fortran.
+ - Handle additional string length arguments from Fortran.
+ - Restore functions from yogimpi.old
+ - Build avtools and Kestrel with new YogiMPI.
+ - Test that Kestrel still runs correctly.
+
+Error code conversion:
+YogiMPI_Add_error_class
+YogiMPI_Add_error_code
+YogiMPI_Add_error_string
+YogiMPI_Error_class
+YogiMPI_Error_string
+YogiMPI_File_call_errhandler
+YogiMPI_Win_call_errhandler
+
+Handle complicated logic:
+YogiMPI_Type_get_contents
+YogiMPI_Type_get_envelope
+
+Handle figuring out what dimensions are:
+YogiMPI_Ineighbor_alltoallw
+YogiMPI_Neighbor_alltoallw
