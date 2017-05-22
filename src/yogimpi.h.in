@@ -377,7 +377,7 @@ typedef void YogiMPI_User_function(void *invec, void *inoutvec,
  * This gets converted internally to the implementation's varargs function
  * pointer version.
  */
-typedef void YogiMPI_Comm_errhandler_function(YogiMPI_Comm *, int *, ...);
+typedef void YogiMPI_Comm_errhandler_function(YogiMPI_Comm *, int *);
 
 typedef int YogiMPI_Copy_function(YogiMPI_Comm oldcomm, int keyval,
                                   void *extra_state, void *attribute_val_in,

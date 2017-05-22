@@ -88,6 +88,36 @@ public:
     YogiMPI_Request unmapRequest(YogiMPI_Request to_free);
     YogiMPI_Win unmapWin(YogiMPI_Win to_free);
 
+    MPI_User_function * convertUserFunction(YogiMPI_User_function *);
+
+    MPI_Comm_errhandler_function * convertCommErrhandlerFunction(YogiMPI_Comm_errhandler_function *);
+
+    MPI_Copy_function * convertCopyFunction(YogiMPI_Copy_function *);
+
+    MPI_Delete_function * convertDeleteFunction(YogiMPI_Delete_function *);
+
+    MPI_Type_copy_attr_function * convertTypeCopyFunction(YogiMPI_Type_copy_attr_function *);
+
+    MPI_Type_delete_attr_function * convertTypeDeleteFunction(YogiMPI_Type_delete_attr_function);
+
+    MPI_Win_copy_attr_function * convertWinCopyFunction(YogiMPI_Win_copy_attr_function *);
+
+    MPI_Win_delete_attr_function * convertWinDeleteFunction(YogiMPI_Win_delete_attr_function *);
+
+    MPI_File_errhandler_function * convertFileErrhandlerFunction(YogiMPI_File_errhandler_function *);
+
+    MPI_Win_errhandler_function * convertWinErrhandlerFunction(YogiMPI_Win_errhandler_function *);
+
+    MPI_Grequest_cancel_function * convertGrequestCancelFunction(YogiMPI_Grequest_cancel_function *);
+
+    MPI_Datarep_conversion_function * convertDatarepConversionFunction(YogiMPI_Datarep_conversion_function *);
+
+    MPI_Datarep_extent_function * convertDatarepExtentFunction(YogiMPI_Datarep_extent_function *);
+
+    MPI_Comm_copy_attr_function * convertCommCopyFunction(YogiMPI_Comm_copy_attr_function *);
+
+    MPI_Comm_delete_attr_function * convertCommDeleteFunction(YogiMPI_Comm_delete_attr_function *);
+
 protected: 
     YogiManager();
 private:
@@ -132,6 +162,7 @@ private:
     std::vector<MPI_File> filePool;
     int numFiles;
     int fileOffset;
+
 };
 
 #endif

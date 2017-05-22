@@ -63,6 +63,23 @@ class GenerateWrap(object):
 
     manPrefix = "YogiManager::getInstance()->"
 
+    mpiFunctionMap = { 'MPI_User_function': 'UserFunction' }
+
+#                 'MPI_Comm_errhandler_function': 'CommErrhandlerFunction',
+#                 'MPI_Copy_function':'CopyFunction',
+#                 'MPI_Delete_function':'DeleteFunction',
+#                 'MPI_Type_copy_attr_function': 'TypeCopyFunction',
+#                 'MPI_Type_delete_attr_function': 'TypeDeleteFunction',
+#                 'MPI_Win_copy_attr_function': 'WinCopyFunction',
+#                 'MPI_Win_delete_attr_function': 'WinDeleteFunction',
+#                 'MPI_File_errhandler_function': 'FileErrhandlerFunction',
+#                 'MPI_Win_errhandler_function': 'WinErrhandlerFunction',
+#                 'MPI_Grequest_cancel_function': 'GrequestCancelFunction',
+#                'MPI_Datarep_conversion_function': 'DatarepConversionFunction',
+#                 'MPI_Datarep_extent_function': 'DatarepExtentFunction',
+#                 'MPI_Comm_copy_attr_function': 'CommCopyFunction',
+#                 'MPI_Comm_delete_attr_function': 'CommDeleteFunction'
+
     def __init__(self, xmlInput):
         # Prefix for all the functions to wrap.
         self.prefix = 'Yogi'
@@ -617,8 +634,15 @@ class GenerateWrap(object):
             elif not anArg.is_plural:
                 varDecl = anArg.mpi_type + ' ' + anArg.mpi_name
                 if anArg.mpi_func_ptr:
-                    sourceFile.addLines(varDecl + ' = (' + anArg.type + ')' +\
-                                        anArg.name + ';')
+                    funcType = anArg.type.strip('*')
+                    if funcType in GenerateWrap.mpiFunctionMap:
+                        convFunc = GenerateWrap.manPrefix + 'convert' +\
+                                   GenerateWrap.mpiFunctionMap[funcType]
+                        sourceFile.addLines(varDecl + ' = ' + convFunc + '(' +\
+                                            anArg.call_name + ');')
+                    else:
+                        sourceFile.addLines(varDecl + ' = (' + anArg.type +\
+                                            ')' + anArg.name + ';')
                 else:
                     # Declare it now, to be put on the stack.
                     sourceFile.addLines(varDecl + ';')

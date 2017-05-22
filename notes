@@ -1,11 +1,10 @@
-To get working before leaving:
  - Add MPI c2f and f2c functions.
  - Generate Fortran layer interface.
    - ISO C bind these variables.
    - Revamp preprocessor for Fortran.
-
  - Ensure existing Fortran and C tests work with YogiMPI.
  - Build avtools and Kestrel with new YogiMPI.
+
  - Test that Kestrel still runs correctly.
 
 Handle in MPI_Status:
