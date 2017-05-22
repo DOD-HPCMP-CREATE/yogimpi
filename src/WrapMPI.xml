@@ -79,7 +79,10 @@
   <Function name="MPI_Attr_get">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="keyval" type="int"/>
+    <Arg input="true" name="keyval" type="int">
+      <Convert>MPI_WTIME_IS_GLOBAL</Convert>
+      <Convert>MPI_TAG_UB</Convert>
+    </Arg>
     <Arg name="attribute_val" output="true" type="void*"/>
     <Arg name="flag" output="true" type="int*"/>
   </Function>
@@ -143,7 +146,7 @@
   <Function name="MPI_Comm_call_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="errorcode" type="int"/>
+    <Arg input="true" name="errorcode" type="int" class="error"/>
   </Function>
   <Function name="MPI_Comm_compare">
     <ReturnType>int</ReturnType>
@@ -169,10 +172,10 @@
     <Arg input="true" name="comm_copy_attr_fn" type="MPI_Comm_copy_attr_function*">
       <Convert pointer="true">MPI_COMM_NULL_COPY_FN</Convert>
       <Convert pointer="true">MPI_COMM_DUP_FN</Convert>
-      <Convert pointer="true">MPI_NULL_COPY_FN</Convert>
-      <Convert pointer="true">MPI_DUP_FN</Convert>
     </Arg>
-    <Arg input="true" name="comm_delete_attr_fn" type="MPI_Comm_delete_attr_function*"/>
+    <Arg input="true" name="comm_delete_attr_fn" type="MPI_Comm_delete_attr_function*">
+      <Convert pointer="true">MPI_COMM_NULL_DELETE_FN</Convert>
+    </Arg>
     <Arg name="comm_keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
   </Function>
@@ -206,7 +209,11 @@
   <Function name="MPI_Comm_get_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
+    <Arg name="errhandler" output="true" type="MPI_Errhandler*">
+      <Convert trigger="post">MPI_ERRHANDLER_NULL</Convert>
+      <Convert trigger="post">MPI_ERRORS_ARE_FATAL</Convert>
+      <Convert trigger="post">MPI_ERRORS_RETURN</Convert>
+    </Arg>
   </Function>
   <Function name="MPI_Comm_group">
     <ReturnType>int</ReturnType>
@@ -265,14 +272,16 @@
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="errhandler" type="MPI_Errhandler"/>
   </Function>
+  <!-- Implemented manually
   <Function name="MPI_Error_class">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="errorcode" type="int"/>
     <Arg name="errorclass" output="true" type="int*"/>
   </Function>
+  -->
   <Function name="MPI_Error_string">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="errorcode" type="int"/>
+    <Arg input="true" name="errorcode" type="int" class="error"/>
     <Arg name="string" output="true" type="char*"/>
     <Arg name="resultlen" output="true" type="int*"/>
   </Function>
@@ -645,8 +654,13 @@ for(i = 0; i &lt; n; ++i) {
   <Function name="MPI_Keyval_create">
     <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="copy_fn" type="MPI_Copy_function*"/>
-    <Arg input="true" name="delete_fn" type="MPI_Delete_function*"/>
+    <Arg input="true" name="copy_fn" type="MPI_Copy_function*">
+      <Convert pointer="yes">MPI_NULL_COPY_FN</Convert>
+      <Convert pointer="yes">MPI_DUP_FN</Convert>
+    </Arg>
+    <Arg input="true" name="delete_fn" type="MPI_Delete_function*">
+      <Convert pointer="yes">MPI_NULL_DELETE_FN</Convert>
+    </Arg>
     <Arg name="keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
   </Function>
@@ -926,19 +940,6 @@ else {
     <Arg input="true" name="oldtype" type="MPI_Datatype"/>
     <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
-  <Function name="MPI_Type_create_darray">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="size" type="int"/>
-    <Arg input="true" name="rank" type="int"/>
-    <Arg input="true" name="ndims" type="int"/>
-    <Arg input="true" name="array_of_gsizes[]" type="int"/>
-    <Arg input="true" name="array_of_distribs[]" type="int"/>
-    <Arg input="true" name="array_of_dargs[]" type="int"/>
-    <Arg input="true" name="array_of_psizes[]" type="int"/>
-    <Arg input="true" name="order" type="int"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
   <Function name="MPI_Type_create_hindexed">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
@@ -1005,23 +1006,13 @@ else {
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datatype" type="MPI_Datatype*" free="true"/>
   </Function>
-  <Function name="MPI_Type_get_contents">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="max_integers" type="int"/>
-    <Arg input="true" name="max_addresses" type="int"/>
-    <Arg input="true" name="max_datatypes" type="int"/>
-    <Arg name="array_of_integers[]" output="true" type="int"/>
-    <Arg name="array_of_addresses[]" output="true" type="MPI_Aint" dims="max_addresses"/>
-    <Arg name="array_of_datatypes[]" output="true" type="MPI_Datatype" dims="max_datatypes"/>
-  </Function>
   <Function name="MPI_Type_get_envelope">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg name="num_integers" output="true" type="int*"/>
     <Arg name="num_addresses" output="true" type="int*"/>
     <Arg name="num_datatypes" output="true" type="int*"/>
-    <Arg name="combiner" output="true" type="int*"/>
+    <Arg name="combiner" output="true" type="int*" class="combiner"/>
   </Function>
   <Function name="MPI_Type_get_extent">
     <ReturnType>int</ReturnType>
@@ -1461,7 +1452,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_File_call_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg input="true" name="errorcode" type="int"/>
+    <Arg input="true" name="errorcode" type="int" class="error"/>
   </Function>
   <Function name="MPI_File_create_errhandler">
     <FortranSupport>no</FortranSupport>
@@ -1483,7 +1474,11 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_File_get_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="file" type="MPI_File"/>
-    <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
+    <Arg name="errhandler" output="true" type="MPI_Errhandler*">
+      <Convert trigger="post">MPI_ERRHANDLER_NULL</Convert>
+      <Convert trigger="post">MPI_ERRORS_ARE_FATAL</Convert>
+      <Convert trigger="post">MPI_ERRORS_RETURN</Convert>
+    </Arg>
   </Function>
   <Function name="MPI_File_get_group">
     <ReturnType>int</ReturnType>
@@ -2489,7 +2484,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Win_call_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
-    <Arg input="true" name="errorcode" type="int"/>
+    <Arg input="true" name="errorcode" type="int" class="error"/>
   </Function>
   <Function name="MPI_Win_complete">
     <ReturnType>int</ReturnType>
@@ -2575,7 +2570,11 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Win_get_errhandler">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
-    <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
+    <Arg name="errhandler" output="true" type="MPI_Errhandler*">
+      <Convert trigger="post">MPI_ERRHANDLER_NULL</Convert>
+      <Convert trigger="post">MPI_ERRORS_ARE_FATAL</Convert>
+      <Convert trigger="post">MPI_ERRORS_RETURN</Convert>
+    </Arg>
   </Function>
   <Function name="MPI_Win_get_group">
     <ReturnType>int</ReturnType>

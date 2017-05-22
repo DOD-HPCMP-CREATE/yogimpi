@@ -309,6 +309,8 @@ class GenerateWrap(object):
                 assignVar = anArg.call_name
         
         for i, convVal in enumerate(values):
+            loopAssignVar = assignVar
+            loopCompareVar = compareVar
             if before:
                 compareValue = self.prefix + convVal.name
                 changeValue = convVal.name
@@ -318,22 +320,22 @@ class GenerateWrap(object):
             if anArg.is_pointer:
                 if anArg.is_mpi_type:
                     if not convVal.is_pointer:
-                        assignVar = '*' + assignVar
+                        loopAssignVar = '*' + assignVar
                         if anArg.mpi_is_ptr:
-                            compareVar = '*' + assignVar
+                            loopCompareVar = '*' + assignVar
                 elif not convVal.is_pointer:
-                    assignVar = '*' + assignVar
-                    compareVar = '*' + compareVar
+                    loopAssignVar = '*' + assignVar
+                    loopCompareVar = '*' + compareVar
             elif convVal.is_pointer:
                 errMsg = "Assigning a pointer to a non-pointer."
                 raise ValueError(errMsg)
 
-            compareStr = compareVar + ' == ' + compareValue
+            compareStr = loopCompareVar + ' == ' + compareValue
             if i == 0:
                 sourceFile.addIf(compareStr)
             else:
                 sourceFile.addElseIf(compareStr)
-            sourceFile.addLines(assignVar + ' = ' + changeValue + ';')
+            sourceFile.addLines(loopAssignVar + ' = ' + changeValue + ';')
             if i == 0:
                 sourceFile.endIf()
             else:
@@ -741,6 +743,12 @@ class GenerateWrap(object):
 
             for i, anArg in enumerate(aFunc.args):
                 self._createBeforeCXXCode(yogi_functions, anArg, aFunc) 
+
+            bcCode = aFunc.getBlock('beforecall')
+            if bcCode is not None:
+                for aLine in bcCode:
+                    aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
+                    yogi_functions.addLines(aLine)
 
             withoutIgnore = self._mpiCallString(aFunc, False)
             if aFunc.status_ignore:

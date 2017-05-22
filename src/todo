@@ -1,29 +1,42 @@
-- Add some checks in ToYogi functions to catch NULL or preset handles.
 - Handle YogiMPI_WEIGHTS_EMPTY and YogiMPI_UNWEIGHTED
 - Handle lambda issues with function pointers.
-- Look closely at attributes and key values.
 - Handle constness of certain arguments.
-To get working before leaving:
- - Add MPI c2f and f2c functions.
- - Handle common block variables in Fortran.
- - Handle additional string length arguments from Fortran.
- - Restore functions from yogimpi.old
- - Build avtools and Kestrel with new YogiMPI.
- - Test that Kestrel still runs correctly.
+- Handle common block variables in Fortran.
+- Handle additional string length arguments from Fortran.
 
 Error code conversion:
 YogiMPI_Add_error_class
 YogiMPI_Add_error_code
 YogiMPI_Add_error_string
-YogiMPI_Error_class
-YogiMPI_Error_string
-YogiMPI_File_call_errhandler
-YogiMPI_Win_call_errhandler
-
-Handle complicated logic:
-YogiMPI_Type_get_contents
-YogiMPI_Type_get_envelope
+- For the above functions, you'll need to handle appending new error codes
+  and handling lastcode boundary checks.
 
 Handle figuring out what dimensions are:
 YogiMPI_Ineighbor_alltoallw
 YogiMPI_Neighbor_alltoallw
+
+Notes:
+
+- Checking for MPI_PROC_NULL for source
+- Checking for MPI_ANY_TAG as tag
+
+- MPI_Get_library_version string length stuff.
+
+Possibly you need to convert errorcodes in some functions.
+- Error codes for DATAREP stuff.
+
+New constants:
+ - MPI_MAX_DATAREP_STRING (must be at least 64)
+ - MPI_MESSAGE_NO_PROC
+
+ this is a function conv_onesided_constants
+
+- Predefined operation constants 
+  - MPI_REPLACE
+  - MPI_NO_OP
+
+- MPI_ARGVS_NULL as pointer
+- MPI_ERR_SPAWN
+- MPI_ERR_PORT
+
+MPI_Type_match_size does predefined stuff.

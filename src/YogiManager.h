@@ -27,6 +27,7 @@ public:
     int providedToYogi(int provided);
     int amodeToYogi(int amode);
     int topoToYogi(int in_topo);
+    int combinerToYogi(int in_combiner);
 
     MPI_Offset offsetToMPI(YogiMPI_Offset in_offset);
     MPI_Errhandler errhandlerToMPI(YogiMPI_Errhandler in_errhandler);

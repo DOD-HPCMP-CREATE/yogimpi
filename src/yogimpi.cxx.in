@@ -52,6 +52,15 @@ int YogiMPI_Init(int* argc, char ***argv)
     return YogiManager::getInstance()->errorToYogi(mpi_err);
 }
 
+int YogiMPI_Error_class(int errorcode, int* errorclass) {
+
+    /* We make an assumption that error codes line up with classes. In the
+       case of implementation-specific error codes that do not, this must
+       be revised. */
+    *errorclass = errorcode;
+    return YogiManager::getInstance()->errorToYogi(MPI_SUCCESS);
+}
+
 int YogiMPI_Finalize() {
     int mpi_err = MPI_Finalize();
     return YogiManager::getInstance()->errorToYogi(mpi_err);
@@ -76,6 +85,95 @@ int YogiMPI_Get_processor_name(char* name, int* resultlen) {
     return YogiManager::getInstance()->errorToYogi(mpi_error);
 }
 
+int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
+                              int max_addresses, int max_datatypes,
+                              int array_of_integers[],
+                              YogiMPI_Aint array_of_addresses[],
+                              YogiMPI_Datatype array_of_datatypes[]) {
+
+    int mpi_error;
+    MPI_Datatype conv_datatype;
+    conv_datatype = YogiManager::getInstance()->datatypeToMPI(datatype);
+
+    /* In order to appropriately handle this function, we must call 
+     * MPI_Type_get_envelope to figure out what the user will get. This helps
+     * determine if the type is derived and if new datatype handles are added
+     * to our translation pool.
+     */
+    int num_integers, num_addresses, num_datatypes, combiner;
+    MPI_Type_get_envelope(conv_datatype, &num_integers, &num_addresses, 
+                          &num_datatypes, &combiner);
+    
+    MPI_Aint * conv_array_of_addresses = new MPI_Aint[max_addresses]; 
+    MPI_Datatype * conv_array_of_datatypes = new MPI_Datatype[max_datatypes];
+    mpi_error = MPI_Type_get_contents(conv_datatype, max_integers,
+                                      max_addresses, max_datatypes,
+                                      array_of_integers,
+                                      conv_array_of_addresses,
+                                      conv_array_of_datatypes);
+    if (combiner != MPI_COMBINER_F90_COMPLEX &&
+        combiner != MPI_COMBINER_F90_REAL && 
+        combiner != MPI_COMBINER_F90_INTEGER) {
+        /* The array won't be empty, so convert them to Yogi versions. */
+        YogiManager::getInstance()->datatypeToYogi(conv_array_of_datatypes,
+                                                   array_of_datatypes,
+                                                   max_datatypes, true);
+    }
+    else delete[] conv_array_of_datatypes;
+
+    YogiManager::getInstance()->aintToYogi(conv_array_of_addresses, array_of_addresses, max_addresses, true);
+    return YogiManager::getInstance()->errorToYogi(mpi_error);
+}
+
+int YogiMPI_Type_create_darray(int size, int rank, int ndims, int array_of_gsizes[], int array_of_distribs[], int array_of_dargs[], int array_of_psizes[], int order, YogiMPI_Datatype oldtype, YogiMPI_Datatype* newtype) {
+    int mpi_error;
+    MPI_Datatype conv_oldtype;
+    conv_oldtype = YogiManager::getInstance()->datatypeToMPI(oldtype);
+    MPI_Datatype conv_newtype;
+
+    /* Constant conversion requires some temporary arrays to hold state
+     * and distribution values.
+     */
+    int *distribs_conv = new int[ndims];
+    int *dargs_conv = new int[ndims];
+    int i;
+    for (i = 0; i < ndims; i++) {
+        switch(array_of_distribs[i]) {
+            case YogiMPI_DISTRIBUTE_BLOCK:
+                distribs_conv[i] = MPI_DISTRIBUTE_BLOCK;
+                break;
+            case YogiMPI_DISTRIBUTE_CYCLIC:
+                distribs_conv[i] = MPI_DISTRIBUTE_CYCLIC;
+                    break;
+            case YogiMPI_DISTRIBUTE_NONE:
+                distribs_conv[i] = MPI_DISTRIBUTE_NONE;
+                    break;
+            default:
+                    distribs_conv[i] = array_of_distribs[i];
+        }
+        if (array_of_dargs[i] == YogiMPI_DISTRIBUTE_DFLT_DARG) {
+            dargs_conv[i] = MPI_DISTRIBUTE_DFLT_DARG;
+        }
+        else {
+                dargs_conv[i] = array_of_dargs[i];
+        }
+    }
+
+    if (order == YogiMPI_ORDER_C) {
+        order = MPI_ORDER_C;
+    }
+    else if(order == YogiMPI_ORDER_FORTRAN) {
+        order = MPI_ORDER_FORTRAN;
+    }
+
+    mpi_error = MPI_Type_create_darray(size, rank, ndims, array_of_gsizes, distribs_conv, dargs_conv, array_of_psizes, order, conv_oldtype, &conv_newtype);
+    *newtype = YogiManager::getInstance()->datatypeToYogi(conv_newtype);
+
+    delete[] distribs_conv;
+    delete[] dargs_conv;
+    return YogiManager::getInstance()->errorToYogi(mpi_error);
+}
+
 double YogiMPI_Wtick() {
     return MPI_Wtick();
 }
@@ -83,6 +181,84 @@ double YogiMPI_Wtick() {
 double YogiMPI_Wtime() {
     return MPI_Wtime();
 }
+
+/* Converter functions between Fortran and C - really not needed since we
+   have a single ABI, but provided. */
+
+YogiMPI_Fint YogiMPI_Comm_c2f(YogiMPI_Comm comm) {
+    return comm;
+}
+
+YogiMPI_Comm YogiMPI_Comm_f2c(YogiMPI_Fint comm) {
+    return comm;
+}
+
+YogiMPI_Fint YogiMPI_File_c2f(YogiMPI_File file) {
+    return file;
+}
+
+YogiMPI_File YogiMPI_File_f2c(YogiMPI_Fint file) {
+    return file;
+}
+
+YogiMPI_Fint YogiMPI_Group_c2f(YogiMPI_Group group) {
+    return group;
+}
+
+YogiMPI_Group YogiMPI_Group_f2c(YogiMPI_Fint group) {
+    return group;
+}
+
+YogiMPI_Fint YogiMPI_Info_c2f(YogiMPI_Info info) {
+    return info;
+}
+
+YogiMPI_Info YogiMPI_Info_f2c(YogiMPI_Fint info) {
+    return info;
+}
+
+YogiMPI_Fint YogiMPI_Op_c2f(YogiMPI_Op op) {
+    return op;
+}
+
+YogiMPI_Op YogiMPI_Op_f2c(YogiMPI_Fint op) {
+    return op;
+}
+
+YogiMPI_Fint YogiMPI_Request_c2f(YogiMPI_Request request) {
+    return request;
+}
+
+YogiMPI_Request YogiMPI_Request_f2c(YogiMPI_Fint request) {
+    return request;
+}
+
+int YogiMPI_Status_f2c(const YogiMPI_Fint *f_status, YogiMPI_Status *c_status) {
+    /* Do nothing - these are already equivalent. */
+    return YogiManager::getInstance()->errorToYogi(MPI_SUCCESS);
+}
+
+int YogiMPI_Status_c2f(const YogiMPI_Status *c_status, YogiMPI_Fint *f_status) {
+    /* Do nothing - these are already equivalent. */
+    return YogiManager::getInstance()->errorToYogi(MPI_SUCCESS);
+}
+
+YogiMPI_Fint YogiMPI_Type_c2f(YogiMPI_Datatype datatype) {
+    return datatype;
+}
+
+YogiMPI_Datatype YogiMPI_Type_f2c(YogiMPI_Fint datatype) {
+    return datatype;
+}
+
+YogiMPI_Fint YogiMPI_Win_c2f(YogiMPI_Win win) {
+    return win;
+}
+
+YogiMPI_Win YogiMPI_Win_f2c(YogiMPI_Fint win) {
+    return win;
+}
+
 
 // Begin automatically-generated function code.
 @YOGI_FUNCTIONS@

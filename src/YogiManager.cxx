@@ -206,6 +206,65 @@ YogiManager::YogiManager() {
 
 }
 
+int YogiManager::combinerToYogi(int in_combiner) {
+    switch (in_combiner) {
+        case MPI_COMBINER_NAMED:
+            return YogiMPI_COMBINER_NAMED;
+            break;
+        case MPI_COMBINER_DUP:
+    	    return YogiMPI_COMBINER_DUP;        
+            break;
+        case MPI_COMBINER_CONTIGUOUS:
+    	    return YogiMPI_COMBINER_CONTIGUOUS;        
+            break;
+        case MPI_COMBINER_VECTOR:
+    	    return YogiMPI_COMBINER_VECTOR;
+            break;
+        case MPI_COMBINER_HVECTOR_INTEGER:
+    	    return YogiMPI_COMBINER_HVECTOR_INTEGER;
+            break;
+        case MPI_COMBINER_HVECTOR:
+    	    return YogiMPI_COMBINER_HVECTOR;
+            break;
+        case MPI_COMBINER_INDEXED:
+            return YogiMPI_COMBINER_INDEXED;
+            break;
+        case MPI_COMBINER_HINDEXED_INTEGER:
+            return YogiMPI_COMBINER_HINDEXED_INTEGER;
+            break;
+        case MPI_COMBINER_HINDEXED:
+            return YogiMPI_COMBINER_HINDEXED;
+            break;
+        case MPI_COMBINER_INDEXED_BLOCK:
+            return YogiMPI_COMBINER_INDEXED_BLOCK;
+            break;
+        case MPI_COMBINER_STRUCT_INTEGER:
+            return YogiMPI_COMBINER_STRUCT_INTEGER;
+            break;
+        case MPI_COMBINER_STRUCT:
+            return YogiMPI_COMBINER_STRUCT;
+            break;
+        case MPI_COMBINER_SUBARRAY:
+            return YogiMPI_COMBINER_SUBARRAY;
+            break;
+        case MPI_COMBINER_DARRAY:
+            return YogiMPI_COMBINER_DARRAY;
+            break;
+        case MPI_COMBINER_F90_REAL:
+            return YogiMPI_COMBINER_F90_REAL;
+            break;
+        case MPI_COMBINER_F90_COMPLEX:
+            return YogiMPI_COMBINER_F90_COMPLEX;
+            break;
+        case MPI_COMBINER_F90_INTEGER:
+            return YogiMPI_COMBINER_F90_INTEGER;
+            break;
+        case MPI_COMBINER_RESIZED:
+            return YogiMPI_COMBINER_RESIZED;
+            break;
+    }
+} 
+
 int YogiManager::errorToYogi(int mpiError) {
     std::map<int,int>::iterator it = yogiErrors.find(mpiError);
     if (it != yogiErrors.end()) return it->second;
@@ -760,6 +819,7 @@ MPI_User_function * YogiManager::convertUserFunction(YogiMPI_User_function * inp
 }
 
 MPI_Comm_errhandler_function * YogiManager::convertCommErrhandlerFunction(YogiMPI_Comm_errhandler_function * input_function) {
+    /*
     comm_errhandler_funcs.push_back(input_function);
     return [](MPI_Comm *comm, int *err, ...)
               {
@@ -767,7 +827,8 @@ MPI_Comm_errhandler_function * YogiManager::convertCommErrhandlerFunction(YogiMP
                   int conv_err = YogiManager::getInstance()->errorToYogi(*err);
                   user_funcs.back()(&conv_comm, &conv_err, 0);
               };
-
+    */
+    return NULL;
 }
 
 MPI_Copy_function * YogiManager::convertCopyFunction(YogiMPI_Copy_function * input_function) {
