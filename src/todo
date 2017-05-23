@@ -29,8 +29,6 @@ New constants:
  - MPI_MAX_DATAREP_STRING (must be at least 64)
  - MPI_MESSAGE_NO_PROC
 
- this is a function conv_onesided_constants
-
 - Predefined operation constants 
   - MPI_REPLACE
   - MPI_NO_OP

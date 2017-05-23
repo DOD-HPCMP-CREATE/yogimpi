@@ -655,11 +655,11 @@ for(i = 0; i &lt; n; ++i) {
     <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="copy_fn" type="MPI_Copy_function*">
-      <Convert pointer="yes">MPI_NULL_COPY_FN</Convert>
-      <Convert pointer="yes">MPI_DUP_FN</Convert>
+      <Convert pointer="true">MPI_NULL_COPY_FN</Convert>
+      <Convert pointer="true">MPI_DUP_FN</Convert>
     </Arg>
     <Arg input="true" name="delete_fn" type="MPI_Delete_function*">
-      <Convert pointer="yes">MPI_NULL_DELETE_FN</Convert>
+      <Convert pointer="true">MPI_NULL_DELETE_FN</Convert>
     </Arg>
     <Arg name="keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>

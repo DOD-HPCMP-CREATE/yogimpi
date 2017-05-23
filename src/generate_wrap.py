@@ -635,19 +635,8 @@ class GenerateWrap(object):
             # Create a blank MPI version of that type.
             elif not anArg.is_plural:
                 varDecl = anArg.mpi_type + ' ' + anArg.mpi_name
-                if anArg.mpi_func_ptr:
-                    funcType = anArg.type.strip('*')
-                    if funcType in GenerateWrap.mpiFunctionMap:
-                        convFunc = GenerateWrap.manPrefix + 'convert' +\
-                                   GenerateWrap.mpiFunctionMap[funcType]
-                        sourceFile.addLines(varDecl + ' = ' + convFunc + '(' +\
-                                            anArg.call_name + ');')
-                    else:
-                        sourceFile.addLines(varDecl + ' = (' + anArg.type +\
-                                            ')' + anArg.name + ';')
-                else:
-                    # Declare it now, to be put on the stack.
-                    sourceFile.addLines(varDecl + ';')
+                # Declare it now, to be put on the stack.
+                sourceFile.addLines(varDecl + ';')
             else:
                 # The conversion array must be allocated because the size will
                 # not be known until runtime. Plus you don't want the stack
@@ -655,7 +644,25 @@ class GenerateWrap(object):
                 varDecl = anArg.mpi_type + ' * ' + anArg.mpi_name
                 sourceFile.addLines(varDecl + ' = NULL;')
             if anArg.is_input:
-                if anArg.pre_convert_values:
+                if anArg.mpi_func_ptr:
+                    funcType = anArg.type.strip('*')
+                    if anArg.pre_convert_values:
+                        self._makeConstantCheck(sourceFile, anArg, before=True)
+                        sourceFile.addElse()
+                    if funcType in GenerateWrap.mpiFunctionMap:
+                        convFunc = GenerateWrap.manPrefix + 'convert' +\
+                                   GenerateWrap.mpiFunctionMap[funcType]
+                        sourceFile.addLines(anArg.mpi_name + ' = ' +\
+                                            convFunc + '(' + anArg.call_name +
+                                            ');')
+                    else:
+                        sourceFile.addLines(anArg.mpi_name + ' = (' +\
+                                            anArg.type + ')' +\
+                                            anArg.call_name + ';') 
+                    if anArg.pre_convert_values:
+                        sourceFile.endElse()
+
+                elif anArg.pre_convert_values:
                     # Add conditional for conversion.
                     # Add else to create an item and convert the item normally.
                     self._makeConstantCheck(sourceFile, anArg, before=True)
