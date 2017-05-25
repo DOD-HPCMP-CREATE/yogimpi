@@ -7,23 +7,6 @@
 #endif
 
 const int YogiManager::defaultPoolSize = 100;
-/* The following hold function pointers so that lambdas without captures
-   may be used */
-std::vector<YogiMPI_User_function *> user_funcs;
-std::vector<YogiMPI_Comm_errhandler_function *> comm_errhandler_funcs;
-std::vector<YogiMPI_Copy_function *> copy_funcs;
-std::vector<YogiMPI_Delete_function *> delete_funcs;
-std::vector<YogiMPI_Type_copy_attr_function *> type_copy_attr_funcs;
-std::vector<YogiMPI_Type_delete_attr_function *> type_delete_attr_funcs;
-std::vector<YogiMPI_Win_copy_attr_function *> win_copy_attr_funcs;
-std::vector<YogiMPI_Win_delete_attr_function *> win_delete_attr_funcs;
-std::vector<YogiMPI_File_errhandler_function *> file_errhandler_funcs;
-std::vector<YogiMPI_Win_errhandler_function *> win_errhandler_funcs;
-std::vector<YogiMPI_Grequest_cancel_function *> grequest_cancel_funcs;
-std::vector<YogiMPI_Datarep_conversion_function *> datarep_conv_funcs;
-std::vector<YogiMPI_Datarep_extent_function *> datarep_extent_funcs;
-std::vector<YogiMPI_Comm_copy_attr_function *> comm_copy_attr_funcs;
-std::vector<YogiMPI_Comm_delete_attr_function *> comm_delete_attr_funcs;
 
 YogiManager* YogiManager::_instance = 0;
 
@@ -803,82 +786,4 @@ void YogiManager::freeDatatype(MPI_Datatype * &to_free) {
 
 void YogiManager::freeStatus(MPI_Status * &to_free) {
     delete[] to_free;
-}
-
-/* Used to handle MPI function pointers.  Function pointers from users must
-   be wrapped by a C++ lambda so that the arguments received contain valid
-   Yogi datatypes. */
-
-MPI_User_function * YogiManager::convertUserFunction(YogiMPI_User_function * input_function) {
-    user_funcs.push_back(input_function);
-    return [](void *invec, void *inoutvec, int *len, MPI_Datatype *d) 
-              { 
-                  YogiMPI_Datatype conv_d = YogiManager::getInstance()->datatypeToYogi(*d);
-                  user_funcs.back()(invec, inoutvec, len, &conv_d);
-              };
-}
-
-MPI_Comm_errhandler_function * YogiManager::convertCommErrhandlerFunction(YogiMPI_Comm_errhandler_function * input_function) {
-    /*
-    comm_errhandler_funcs.push_back(input_function);
-    return [](MPI_Comm *comm, int *err, ...)
-              {
-                  YogiMPI_Comm conv_comm = YogiManager::getInstance()->commToYogi(*comm);
-                  int conv_err = YogiManager::getInstance()->errorToYogi(*err);
-                  user_funcs.back()(&conv_comm, &conv_err, 0);
-              };
-    */
-    return NULL;
-}
-
-MPI_Copy_function * YogiManager::convertCopyFunction(YogiMPI_Copy_function * input_function) {
-//copy_funcs
-}
-
-MPI_Delete_function * YogiManager::convertDeleteFunction(YogiMPI_Delete_function * input_function) {
-//delete_funcs
-}
-
-MPI_Type_copy_attr_function * YogiManager::convertTypeCopyFunction(YogiMPI_Type_copy_attr_function * input_function) {
-//type_copy_attr_funcs
-}
-
-MPI_Type_delete_attr_function * YogiManager::convertTypeDeleteFunction(YogiMPI_Type_delete_attr_function * input_function) {
-//type_delete_attr_funcs
-}
-
-MPI_Win_copy_attr_function * YogiManager::convertWinCopyFunction(YogiMPI_Win_copy_attr_function * input_function) {
-//win_copy_attr_funcs
-}
-
-MPI_Win_delete_attr_function * YogiManager::convertWinDeleteFunction(YogiMPI_Win_delete_attr_function * input_function) {
-//win_delete_attr_funcs
-}
-
-MPI_File_errhandler_function * YogiManager::convertFileErrhandlerFunction(YogiMPI_File_errhandler_function * input_function) {
-//file_errhandler_funcs
-}
-
-MPI_Win_errhandler_function * YogiManager::convertWinErrhandlerFunction(YogiMPI_Win_errhandler_function * input_function) {
-//win_errhandler_funcs
-}
-
-MPI_Grequest_cancel_function * YogiManager::convertGrequestCancelFunction(YogiMPI_Grequest_cancel_function * input_function) {
-//grequest_cancel_funcs;
-}
-
-MPI_Datarep_conversion_function * YogiManager::convertDatarepConversionFunction(YogiMPI_Datarep_conversion_function * input_function) {
-//datarep_conv_funcs;
-}
-
-MPI_Datarep_extent_function * YogiManager::convertDatarepExtentFunction(YogiMPI_Datarep_extent_function * input_function) {
-//datarep_extent_funcs;
-}
-
-MPI_Comm_copy_attr_function * YogiManager::convertCommCopyFunction(YogiMPI_Comm_copy_attr_function * input_function) {
-//comm_copy_attr_funcs
-}
-
-MPI_Comm_delete_attr_function * YogiManager::convertCommDeleteFunction(YogiMPI_Comm_delete_attr_function * input_function) {
-//comm_delete_attr_funcs
 }

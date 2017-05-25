@@ -494,7 +494,13 @@ class GenerateWrap(object):
             if i > 0:
                 callString += ', '
             # Pointer to pointer goes as-is, anything else is dereferenced. 
-            if anArg.is_pointer or anArg.is_plural:
+            if anArg.type.startswith('MPI_Status'):
+                if anArg.is_output and not anArg.is_input:
+                    callString += 'check_status_ignore(' + anArg.call_name + ')'
+                else:
+                    # MPI_Status input arguments are always pointers.
+                    callString += anArg.call_name
+            elif anArg.is_pointer or anArg.is_plural:
                 callString += anArg.call_name
             else:
                 callString += '*' + anArg.call_name

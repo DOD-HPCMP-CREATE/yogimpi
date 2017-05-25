@@ -21,7 +21,7 @@ include 'mpif.h'
     call MPI_FILE_OPEN(MPI_COMM_WORLD, "fWriteFile.result", &
                            OR(MPI_MODE_CREATE, MPI_MODE_WRONLY), &
                            MPI_INFO_NULL, fhw, ierr)
-    call MPI_FILE_WRITE_AT(fhw, offset, buf, (N/size), MPI_INTEGER, status, ierr)
+    call MPI_FILE_WRITE_AT(fhw, offset, buf, (N/size), MPI_INTEGER, MPI_STATUS_IGNORE, ierr)
     call MPI_FILE_CLOSE(fhw, ierr);
     call MPI_FINALIZE(ierr);
 end program
