@@ -53,7 +53,7 @@ testAttr: testAttr.c
 	$(YCC) $(CFLAGS) testAttr.c -o testAttr
 
 runctests: ctest
-	./testRunner.sh 4 ./createOp
+#	./testRunner.sh 4 ./createOp
 #	./testRunner.sh 4 ./errorHandler
 	./testRunner.sh 4 ./simple
 	./testRunner.sh 2 ./nonBlocking

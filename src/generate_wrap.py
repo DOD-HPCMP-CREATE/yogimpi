@@ -63,7 +63,8 @@ class GenerateWrap(object):
 
     manPrefix = "YogiManager::getInstance()->"
 
-    mpiFunctionMap = { 'MPI_User_function': 'UserFunction' }
+    #mpiFunctionMap = { 'MPI_User_function': 'UserFunction' }
+    mpiFunctionMap = { }
 
 #                 'MPI_Comm_errhandler_function': 'CommErrhandlerFunction',
 #                 'MPI_Copy_function':'CopyFunction',

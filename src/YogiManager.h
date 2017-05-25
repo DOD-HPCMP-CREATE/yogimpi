@@ -56,7 +56,7 @@ public:
     YogiMPI_Comm commToYogi(MPI_Comm in_comm);
     YogiMPI_Request requestToYogi(MPI_Request in_request);
     YogiMPI_Win winToYogi(MPI_Win in_win);
-    YogiMPI_Op opToYogi(MPI_Win in_op);
+    YogiMPI_Op opToYogi(MPI_Op in_op);
     YogiMPI_Datatype datatypeToYogi(MPI_Datatype in_data);
     YogiMPI_Info infoToYogi(MPI_Info in_info);
     YogiMPI_Group groupToYogi(MPI_Group in_group);

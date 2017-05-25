@@ -654,7 +654,7 @@ YogiMPI_Offset YogiManager::offsetToYogi(MPI_Offset in_offset) {
     return (YogiMPI_Offset) in_offset;
 }
 
-YogiMPI_Op YogiManager::opToYogi(MPI_Win in_op) {
+YogiMPI_Op YogiManager::opToYogi(MPI_Op in_op) {
     return insertIntoPool(opPool, in_op, MPI_OP_NULL, opOffset, numOps);
 }
 
