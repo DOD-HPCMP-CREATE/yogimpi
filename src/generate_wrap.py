@@ -456,11 +456,25 @@ class GenerateWrap(object):
                                 'implicit none')
             for anArg in aFunc.args:
                 fort_funcs.addLines(self._getFortArgDecl(anArg))
+                if self._isFortranLogical(anArg):
+                    fort_funcs.addLines('integer :: ' + 'conv_' + anArg.name)
             fort_funcs.addLines('integer, intent(out) :: ierr')
             fort_funcs.newLine()
-            argString = self._getFortArgsString(aFunc)
+            for anArg in aFunc.args:
+                if self._isFortranLogical(anArg):
+                    if anArg.is_input:
+                        fort_funcs.addLines('conv_' + anArg.name + ' = ' +\
+                                            'Yogi_LogicalToInteger(' +\
+                                            anArg.name + ')') 
+            argString = self._getFortArgsString(aFunc, noConvert=False)
             fort_funcs.addLines('call YogiBridge_' + aFunc.name + '(' +\
                                 argString + ')') 
+            for anArg in aFunc.args:
+                if self._isFortranLogical(anArg):
+                    if anArg.is_output:
+                        fort_funcs.addLines(anArg.name + ' = ' +\
+                                            'Yogi_IntegerToLogical(' +\
+                                            'conv_' + anArg.name + ')')
             fort_funcs.endSubroutine(fortName)
             fort_funcs.newLine()
         fort_file.merge(fort_funcs, 'YOGI_FUNCTIONS')
@@ -509,12 +523,15 @@ class GenerateWrap(object):
 
     # Returns a string with argument names suitable for Fortran subroutine
     # declaration.
-    def _getFortArgsString(self, func, ierr=True):
+    def _getFortArgsString(self, func, ierr=True, noConvert=True):
         argString = ''
         for i, anArg in enumerate(func.args):
             if i > 0:
                 argString += ', '
-            argString += anArg.call_name
+            if self._isFortranLogical(anArg) and (not noConvert):
+                argString += 'conv_' + anArg.call_name
+            else:
+                argString += anArg.call_name
         if ierr:
             # Add an ierror integer.
             argString += ', ierr'
@@ -575,7 +592,9 @@ class GenerateWrap(object):
             else:
                 fType = 'integer(YogiMPI_INTEGER_KIND)' 
         else:
-            if anArg.type.startswith('int'):
+            if self._isFortranLogical(anArg):
+                fType = 'logical'
+            elif anArg.type.startswith('int'):
                 fType = 'integer'
             elif anArg.type.startswith('void'):
                 # If an argument is void, it can take any type since a pointer
@@ -807,6 +826,14 @@ class GenerateWrap(object):
             yogi_functions.newLine()
         cxx_source.merge(yogi_functions, 'YOGI_FUNCTIONS')
         cxx_source.writeFile('yogimpi.cxx')
+
+    def _isFortranLogical(self, anArg):
+        if anArg.name == 'flag':
+            if anArg.type.startswith('int'):
+                if not anArg.is_plural:
+                    return True
+        return False
+
 
     def _checkTrue(self, value):
         if not value:
