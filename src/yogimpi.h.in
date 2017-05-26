@@ -434,6 +434,19 @@ typedef int YogiMPI_Comm_delete_attr_function(YogiMPI_Comm comm,
 #define YogiMPI_COMM_DUP_FN  ((YogiMPI_Comm_copy_attr_function *)-1)
 #define YogiMPI_COMM_NULL_DELETE_FN ((YogiMPI_Comm_delete_attr_function *)0)
 
+/* Until we properly use lambdas and do auto-magic with function pointers,
+   users must doctor their own functions that are supplied to YogiMPI. The
+   below perform common tasks used in the functions to convert MPI arguments.
+*/
+
+int Yogi_ResolveErrorCode(int *error);
+YogiMPI_Datatype Yogi_ResolveDatatype(void *input_pointer);
+YogiMPI_Comm Yogi_ResolveComm(void *input_pointer);
+YogiMPI_Offset Yogi_ResolveOffset(void *input_pointer);
+YogiMPI_Win Yogi_ResolveWin(void *input_pointer);
+YogiMPI_File Yogi_ResolveFile(void *input_pointer);
+YogiMPI_Aint Yogi_ResolveAint(void *input_pointer);
+
 int YogiMPI_Init(int* argc, char ***argv);
 
 int YogiMPI_Error_class(int errorcode, int* errorclass);

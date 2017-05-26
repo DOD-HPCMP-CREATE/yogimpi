@@ -7,11 +7,13 @@ static MPI_Comm mycomm;
 
 void eh(MPI_Comm *comm, int *err, ...)
 {
+    MPI_Comm rcomm = Yogi_ResolveComm(comm);
+    int code = Yogi_ResolveErrorCode(err);
     if (code != MPI_ERR_OTHER) {
         errs++;
         printf( "Unexpected error code\n" );fflush(stdout);
     }
-    if (*comm != mycomm) {
+    if (rcomm != mycomm) {
         errs++;
         printf( "Unexpected communicator\n" );fflush(stdout);
     }

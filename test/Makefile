@@ -53,8 +53,8 @@ testAttr: testAttr.c
 	$(YCC) $(CFLAGS) testAttr.c -o testAttr
 
 runctests: ctest
-#	./testRunner.sh 4 ./createOp
-#	./testRunner.sh 4 ./errorHandler
+	./testRunner.sh 4 ./createOp
+	./testRunner.sh 4 ./errorHandler
 	./testRunner.sh 4 ./simple
 	./testRunner.sh 2 ./nonBlocking
 	./testRunner.sh 2 ./probe       
@@ -82,8 +82,7 @@ runtest: runctests ftest
 	./testRunner.sh 2 ./fwtick
 	@echo "Tests passed."
 
-# Remove errorHandler and createOp
-ctest: simple createOp nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr
+ctest: simple createOp errorHandler nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr
 
 fsimple: fsimple.f90
 	$(YF90) $(FFLAGS) fsimple.f90 -o fsimple

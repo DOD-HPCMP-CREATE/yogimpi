@@ -46,6 +46,40 @@
 #include "YogiManager.h"
 #include <cstring>
 
+int Yogi_ResolveErrorCode(int *error) {
+    return YogiManager::getInstance()->errorToYogi(*error);
+}
+
+YogiMPI_Datatype Yogi_ResolveDatatype(void *input_pointer) {
+    MPI_Datatype *to_resolve = reinterpret_cast<MPI_Datatype *>(input_pointer); 
+    return YogiManager::getInstance()->datatypeToYogi(*to_resolve);
+}
+
+YogiMPI_Comm Yogi_ResolveComm(void *input_pointer) {
+    MPI_Comm *to_resolve = reinterpret_cast<MPI_Comm *>(input_pointer);
+    return YogiManager::getInstance()->commToYogi(*to_resolve);
+}
+
+YogiMPI_Offset Yogi_ResolveOffset(void *input_pointer) {
+    MPI_Offset *to_resolve = reinterpret_cast<MPI_Offset *>(input_pointer);
+    return YogiManager::getInstance()->aintToYogi(*to_resolve);
+}
+
+YogiMPI_Win Yogi_ResolveWin(void *input_pointer) {
+    MPI_Win *to_resolve = reinterpret_cast<MPI_Win *>(input_pointer);
+    return YogiManager::getInstance()->winToYogi(*to_resolve);
+}
+
+YogiMPI_File Yogi_ResolveFile(void *input_pointer) {
+    MPI_File *to_resolve = reinterpret_cast<MPI_File *>(input_pointer);
+    return YogiManager::getInstance()->fileToYogi(*to_resolve);
+}
+
+YogiMPI_Aint Yogi_ResolveAint(void *input_pointer) {
+    MPI_Aint *to_resolve = reinterpret_cast<MPI_Aint *>(input_pointer);
+    return YogiManager::getInstance()->aintToYogi(*to_resolve); 
+}
+
 int YogiMPI_Init(int* argc, char ***argv)
 { 
     int mpi_err = MPI_Init(argc, argv); 

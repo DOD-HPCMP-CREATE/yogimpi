@@ -1,7 +1,6 @@
 - Handle YogiMPI_WEIGHTS_EMPTY and YogiMPI_UNWEIGHTED
 - Handle lambda issues with function pointers.
 - Handle constness of certain arguments.
-- Handle common block variables in Fortran.
 - Handle additional string length arguments from Fortran.
 
 Error code conversion:
