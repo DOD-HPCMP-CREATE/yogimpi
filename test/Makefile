@@ -3,9 +3,12 @@ include ../Make.flags
 YCC=$(INSTALLDIR)/bin/mpicc
 YF90=$(INSTALLDIR)/bin/mpif90
 
-.PHONY: clean test
+.PHONY: clean test runctests runftests ctest ftest test
 
 test: ctest ftest 
+
+testInfo: testInfo.c
+	$(YCC) $(CFLAGS) testInfo.c -o testInfo
 
 testCancelled: testCancelled.c
 	$(YCC) $(CFLAGS) testCancelled.c -o testCancelled
@@ -68,8 +71,9 @@ runctests: ctest
 	./testRunner.sh 4 ./nonblock_waitall
 	./testRunner.sh 4 ./waitsome
 	./testRunner.sh 4 ./testAttr
-	
-runtest: runctests ftest 
+	./testRunner.sh 4 ./testInfo
+
+runftests: ftest	
 	./testRunner.sh 2 ./fsimple
 	./testRunner.sh 4 ./fwriteFile1
 	cmp fWriteFile.expected fWriteFile.result || exit 1
@@ -80,9 +84,12 @@ runtest: runctests ftest
 	./testRunner.sh 2 ./fnonblock
 	./testRunner.sh 4 ./fwaitsome
 	./testRunner.sh 2 ./fwtick
+	./testRunner.sh 4 ./testInfo
 	@echo "Tests passed."
 
-ctest: simple createOp errorHandler nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr
+runtest: runctests runftests 
+
+ctest: simple createOp errorHandler nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr testInfo
 
 fsimple: fsimple.f90
 	$(YF90) $(FFLAGS) fsimple.f90 -o fsimple
@@ -111,13 +118,16 @@ fwaitsome: waitsome.f90
 fwtick: fwtick.f90
 	$(YF90) $(FFLAGS) fwtick.f90 -o fwtick
 
+ftestInfo: testInfo.f90
+	$(YF90) $(FFLAGS) testInfo.f90 -o ftestInfo
+
 ftest: fwriteFile1 fsendrecv fcollective ftestComms f_gatherscatter \
-       fnonblock fwaitsome fsimple fwtick
+       fnonblock fwaitsome fsimple fwtick ftestInfo
 
 clean:
 	$(RM) *.o nonBlocking sendrecv fsendrecv simple testCancelled \
               writeFile1 fwriteFile1 f_gatherscatter fnonblock \
-              nonblock_waitall testComms fsimple \
+              nonblock_waitall testComms fsimple testInfo \
               ftestComms probe collective fcollective fwtick \
               waitsome waitany fwaitsome createOp errorHandler testAll \
-              cWriteFile.result fWriteFile.result testAttr
+              cWriteFile.result fWriteFile.result testAttr ftestInfo

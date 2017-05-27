@@ -12,16 +12,30 @@ static char * copy_and_add_null_terminator(char *f_string, size_t slen) {
     return c_string;
 }
 
+/* Allocates a character array in C of a specified size, plus adds one more 
+   for another null terminator.  Does no copying.  The C character array is
+   allocated on the heap. */
+static char * allocate_and_add_null_terminator(char *f_string, size_t slen) {
+    char * c_string = new char[slen + 1];
+    c_string[slen] = '\0';
+    return c_string;
+}
+
 /* Copies a C character array with a null terminator back into a Fortran
    character array (in-place), removing the null terminator.
    @param f_string The Fortran character array to which contents are copied.
    @param c_string The C string from which to copy.
    @param slen The original size of the Fortran character array. */
-void copy_without_null_terminator(char *f_string, char *c_string,
-                                     size_t slen) {
+void copy_without_null_terminator(char *f_string, char *c_string, size_t slen) {
     int clen = std::strlen(c_string);
-    if (clen <= slen) {
+    if (clen < slen) {
         std::strncpy(f_string, c_string, clen);
+        // Pad remaining spaces in Fortran string
+        int toPad = slen - clen;
+        int i;
+        for (i = clen; i < slen - 1; i++) {
+            f_string[i] = ' ';
+        }
     }
     else std::strncpy(f_string, c_string, slen);
 }

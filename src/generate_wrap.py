@@ -423,17 +423,39 @@ class GenerateWrap(object):
         bridge_file = source_writers.CSource(inputFile=cxxInput)
         bridge_funcs = source_writers.CSource()
         bridge_defs = source_writers.CSource()  
+        toCStrFunc = 'copy_and_add_null_terminator'
+        allocCStrFunc = 'allocate_and_add_null_terminator'
+        strBackToFortran = 'copy_without_null_terminator'
         for aFunc in self.functions:
             if not aFunc.fortran_support:
                 continue
+            # Figure out which arguments are strings.
+            stringArgs = []
+            for anArg in aFunc.args:
+                if anArg.type.startswith('char') and anArg.is_pointer:
+                    stringArgs.append(anArg) 
             fUpper = 'YOGIBRIDGE_' + aFunc.name.upper()
             fLower = fUpper.lower() + '_'
             bridge_defs.addLines('#define ' + fUpper + ' ' + fLower) 
             funcArgs = self._getBridgeArgsString(aFunc)
             bridge_funcs.addFunction(fUpper, 'void', funcArgs) 
+            for anArg in stringArgs:
+                copyLine = 'char * conv_' + anArg.name + ' = '
+                if anArg.is_input:
+                    copyLine += toCStrFunc 
+                else:
+                    copyLine += allocCStrFunc
+                copyLine += '(' + anArg.name + ', ' + anArg.name + '_len);'
+                bridge_funcs.addLines(copyLine)
             callLine = '*ierr = Yogi' + aFunc.name + '(' +\
                        self._getBridgeCallString(aFunc) + ');' 
             bridge_funcs.addLines(callLine)
+            for anArg in stringArgs:
+                if anArg.is_output:
+                    copyLine = strBackToFortran + '(' + anArg.name +\
+                               ', conv_' + anArg.name + ', ' + anArg.name +\
+                               '_len);'
+                    bridge_funcs.addLines(copyLine)
             bridge_funcs.endFunction(fUpper)
             bridge_funcs.newLine()
 
@@ -484,6 +506,7 @@ class GenerateWrap(object):
     # bridge declaration.
     def _getBridgeArgsString(self, func, ierr=True):
         argString = ''
+        stringArgs = []
         for i, anArg in enumerate(func.args):
             if i > 0:
                 argString += ', '
@@ -493,12 +516,16 @@ class GenerateWrap(object):
             if anArg.is_mpi_type:
                 argType = 'Yogi' + anArg.mpi_type + ' *'
             else:
+                if anArg.type.startswith('char') and anArg.is_pointer:
+                    stringArgs.append(anArg)
                 argType = anArg.type.split(' ')[0].split('[')[0].strip('*')
                 argType += ' *'
             argString += argType + anArg.call_name
         if ierr:
             # Add an ierror integer.
             argString += ', int *ierr'
+        for anArg in stringArgs:
+            argString += ', size_t ' + anArg.name + '_len'
         return argString
 
     # Returns a string with an argument call string suitable for C++ Fortran
@@ -515,6 +542,8 @@ class GenerateWrap(object):
                 else:
                     # MPI_Status input arguments are always pointers.
                     callString += anArg.call_name
+            elif anArg.type.startswith('char') and anArg.is_pointer:
+                callString += 'conv_' + anArg.call_name
             elif anArg.is_pointer or anArg.is_plural:
                 callString += anArg.call_name
             else:
