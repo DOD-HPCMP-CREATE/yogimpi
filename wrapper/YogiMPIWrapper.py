@@ -66,9 +66,10 @@ mpiObjects = [ 'MPI_Comm', 'MPI_Request', 'MPI_Op', 'MPI_Info', 'MPI_Datatype',
                'MPI_Group', 'MPI_Status', 'MPI_File', 'MPI_Win',
                'MPI_Errhandler' ]
 
+mpiTimeFunctions = [ 'MPI_Wtime', 'MPI_Wtick' ]
 # MPI functions currently supported in Fortran.
 mpiFunctions = [ 'MPI_Init', 'MPI_Finalize', 'MPI_Get_processor_name',
-'MPI_Wtick', 'MPI_Wtime', 'MPI_Abort', 'MPI_Address', 'MPI_Allgather',
+'MPI_Abort', 'MPI_Address', 'MPI_Allgather',
 'MPI_Allgatherv', 'MPI_Allreduce', 'MPI_Alltoall',
 'MPI_Alltoallv', 'MPI_Attr_delete', 'MPI_Attr_get', 'MPI_Attr_put',
 'MPI_Barrier', 'MPI_Bcast', 'MPI_Bsend', 'MPI_Buffer_attach',
@@ -193,6 +194,7 @@ class YogiMPIWrapper(object):
     def __init__(self, prefixDir, compilerName, compilerLang):
         global mpiConstants
         global mpiFunctions
+        global mpiTimeFunctions
         global mpiObjects
         self.prefixDir = prefixDir
         self.compilerName = compilerName
@@ -210,8 +212,10 @@ class YogiMPIWrapper(object):
         self.mpi_constants = mpiConstants 
         self.mpi_objects = mpiObjects 
         self.mpi_functions = mpiFunctions
+        self.mpi_time_functions = mpiTimeFunctions
         self.const_regexes = []
         self.func_regexes = []
+        self.time_regexes = []
         self.rc = 0
 
         diagOptions = [ '-h', '-help', '-show', '--help', '--version',
@@ -263,6 +267,15 @@ class YogiMPIWrapper(object):
         if self.debug:
             print message
 
+    def _buildRegEx(self, aPattern):
+        # Functions require an open parenthesis to follow, or
+        # if there is a line continuation just trust that someone
+        # put one on the next line.
+        # ToDo: Actually do lookahead and find out for that last case.
+        regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+                      r')([\s]*\(|[\s]*&$)'
+        return re.compile(regexString, re.IGNORECASE)
+
     def loadSupported(self):
         if self.compilerLang == 'Fortran':
             for aPattern in self.mpi_constants:
@@ -270,13 +283,9 @@ class YogiMPIWrapper(object):
                               r')(\s|,|\*|\)|\()'
                 self.const_regexes.append(re.compile(regexString, re.IGNORECASE))
             for aPattern in self.mpi_functions:
-                # Functions require an open parenthesis to follow, or
-                # if there is a line continuation just trust that someone
-                # put one on the next line.
-                # ToDo: Actually do lookahead and find out for that last case.
-                regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
-                              r')([\s]*\(|[\s]*&$)'
-                self.func_regexes.append(re.compile(regexString, re.IGNORECASE))
+                self.func_regexes.append(self._buildRegEx(aPattern))
+            for aPattern in self.mpi_time_functions:
+                self.time_regexes.append(self._buildRegEx(aPattern))
         
     def setFile(self, inputFile, argLocation):
         self.sourceDir = os.path.dirname(inputFile)
@@ -462,6 +471,10 @@ class YogiMPIWrapper(object):
             for aRegex in self.func_regexes:
                 # Run through all the loaded MPI regular expressions.
                 line = aRegex.sub(r"\g<1>YogiFortran_\g<2>\g<3>", line)
+
+            for aRegex in self.time_regexes:
+                # Run through all the loaded MPI regular expressions.
+                line = aRegex.sub(r"\g<1>YogiBridge_\g<2>\g<3>", line)
 
             # Substitute "use yogimpi" for "use mpi" where applicable.
             line = YogiMPIWrapper.useMPIRegEx.sub(r"\g<1>use yogimpi\g<2>",
