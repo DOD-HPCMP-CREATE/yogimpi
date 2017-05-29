@@ -447,6 +447,10 @@ YogiMPI_Win Yogi_ResolveWin(void *input_pointer);
 YogiMPI_File Yogi_ResolveFile(void *input_pointer);
 YogiMPI_Aint Yogi_ResolveAint(void *input_pointer);
 
+/* A couple of functions to take Fortran MPI objects and yogify them. */
+YogiMPI_Comm Yogi_ResolveFortranComm(int fortran_comm);
+YogiMPI_Group Yogi_ResolveFortranGroup(int fortran_group);
+
 int YogiMPI_Init(int* argc, char ***argv);
 
 int YogiMPI_Error_class(int errorcode, int* errorclass);

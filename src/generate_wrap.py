@@ -525,7 +525,7 @@ class GenerateWrap(object):
             # Add an ierror integer.
             argString += ', int *ierr'
         for anArg in stringArgs:
-            argString += ', size_t ' + anArg.name + '_len'
+            argString += ', int ' + anArg.name + '_len'
         return argString
 
     # Returns a string with an argument call string suitable for C++ Fortran

@@ -60,6 +60,16 @@ YogiMPI_Comm Yogi_ResolveComm(void *input_pointer) {
     return YogiManager::getInstance()->commToYogi(*to_resolve);
 }
 
+YogiMPI_Comm Yogi_ResolveFortranComm(int fortran_comm) {
+    MPI_Comm c_comm = MPI_Comm_f2c(fortran_comm);
+    return YogiManager::getInstance()->commToYogi(c_comm);
+}
+
+YogiMPI_Group Yogi_ResolveFortranGroup(int fortran_group) {
+    MPI_Group c_group = MPI_Group_f2c(fortran_group);
+    return YogiManager::getInstance()->groupToYogi(c_group);
+}
+
 YogiMPI_Offset Yogi_ResolveOffset(void *input_pointer) {
     MPI_Offset *to_resolve = reinterpret_cast<MPI_Offset *>(input_pointer);
     return YogiManager::getInstance()->aintToYogi(*to_resolve);
