@@ -1,15 +1,24 @@
 include ../Make.flags
  
-.PHONY: default clean
+.PHONY: wrap clean manager lib
 
-default: yogimpi.c yogimpi_f90bridge.c yogimpi.h mpitoyogi.h yogimpif.h yogimpi_fortran.f90
-	$(MPICC) $(CFLAGS) -c yogimpi.c
-	$(F90) $(FFLAGS) -c yogimpi_fortran.f90
-	$(F90) $(FFLAGS) -c yogimpi_module.f90
-	$(CC) $(CFLAGS) -c yogimpi_f90bridge.c
-	$(MPICC) $(CFLAGS) $(LDFLAGS) yogimpi.o yogimpi_module.o \
-                 yogimpi_f90bridge.o yogimpi_fortran.o -o \
-                 libyogimpi.$(LIBEXTENSION)
+lib: manager
+	mpicxx -c $(CXXFLAGS) yogimpi.cxx
+	mpicxx -c $(CXXFLAGS) yogimpi_f90bridge.cxx
+	$(F90) -c $(FFLAGS) yogimpi_module.f90
+	$(F90) -c $(FFLAGS) yogimpi_functions.f90
+	mpicxx $(LDFLAGS) $(CXXFLAGS) YogiManager.o yogimpi.o \
+               yogimpi_f90bridge.o yogimpi_module.o yogimpi_functions.o \
+               -o libyogimpi.so
+
+manager: wrap YogiManager.cxx YogiManager.h
+	mpicxx -c $(CXXFLAGS) YogiManager.cxx
+	mpicxx $(CXXFLAGS) test_YogiManager.cxx YogiManager.o \
+               -o test_YogiManager
+
+wrap: generate_wrap.py wrap_objects.py WrapMPI.xml  
+	python generate_wrap.py WrapMPI.xml 
 
 clean:
-	$(RM) *.mod *.o libyogimpi.$(LIBEXTENSION)
+	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o *.so *.mod \
+              test_YogiManager yogimpi_functions.f90 yogimpi_f90bridge.cxx

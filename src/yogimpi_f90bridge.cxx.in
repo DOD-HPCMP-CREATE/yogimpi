@@ -1,0 +1,110 @@
+/* File to bind YogiMPI C functions to Fortran. */
+
+#include "yogimpi.h"
+#include <cstring>
+
+/* Copies a character array from Fortran into one that has a null terminator. 
+   The C character array is allocated on the heap. */
+static char * copy_and_add_null_terminator(char *f_string, int slen) {
+    char * c_string = new char[slen + 1];
+    std::strncpy(c_string, f_string, slen);
+    c_string[slen] = '\0';
+    return c_string;
+}
+
+/* Allocates a character array in C of a specified size, plus adds one more 
+   for another null terminator.  Does no copying.  The C character array is
+   allocated on the heap. */
+static char * allocate_and_add_null_terminator(char *f_string, int slen) {
+    char * c_string = new char[slen + 1];
+    c_string[slen] = '\0';
+    return c_string;
+}
+
+/* Copies a C character array with a null terminator back into a Fortran
+   character array (in-place), removing the null terminator.
+   @param f_string The Fortran character array to which contents are copied.
+   @param c_string The C string from which to copy.
+   @param slen The original size of the Fortran character array. */
+void copy_without_null_terminator(char *f_string, char *c_string, int slen) {
+    int clen = std::strlen(c_string);
+    if (clen < slen) {
+        std::strncpy(f_string, c_string, clen);
+        // Pad remaining spaces in Fortran string
+        int toPad = slen - clen;
+        int i;
+        for (i = clen; i < slen - 1; i++) {
+            f_string[i] = ' ';
+        }
+    }
+    else std::strncpy(f_string, c_string, slen);
+}
+
+extern "C" {
+
+/* Define how the C functions will appear to Fortran.  Typically this is all
+   lowercase, with an additional underscore at the end. */
+
+/* Access common block data from Fortran to determine the address of the
+   MPI_STATUS_IGNORE and MPI_STATUSES_IGNORE. */
+
+extern struct {
+    YogiMPI_Status fignore;
+    YogiMPI_Status fignore_array;
+} ympi1_;
+
+extern struct {
+    int in_place;
+    int bottom;
+} ympi2_;
+
+/* Compares an integer pointer from Fortran to those defined in common blocks
+   for YogiMPI_STATUS_IGNORE and YogiMPI_STATUSES_IGNORE in Fortran.  Returns
+   the original pointer address or a suitable IGNORE value in C. */
+static YogiMPI_Status * check_status_ignore(YogiMPI_Status *fort_status) {
+    if ((void *)fort_status == (void *)&(ympi1_.fignore)) { 
+        return YogiMPI_STATUS_IGNORE;
+    }
+    if ((void *)fort_status == (void *)&(ympi1_.fignore_array)) {
+        return YogiMPI_STATUSES_IGNORE;
+    }
+    return fort_status;
+}
+
+#define YOGIBRIDGE_MPI_INIT yogibridge_mpi_init_
+#define YOGIBRIDGE_MPI_FINALIZE yogibridge_mpi_finalize_
+#define YOGIBRIDGE_MPI_GET_PROCESSOR_NAME yogibridge_mpi_get_processor_name_
+#define YOGIBRIDGE_MPI_WTIME yogibridge_mpi_wtime_
+#define YOGIBRIDGE_MPI_WTICK yogibridge_mpi_wtick_
+
+@FUNCTION_DEFINES@
+
+void YOGIBRIDGE_MPI_INIT(int *ierror)
+{
+    *ierror = YogiMPI_Init(NULL, NULL);
+}
+
+void YOGIBRIDGE_MPI_FINALIZE(int *ierror)
+{
+    *ierror = YogiMPI_Finalize();
+}
+
+void YOGIBRIDGE_MPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
+                                        int name_len) {
+    char *interimName = copy_and_add_null_terminator(name, name_len);
+    *ierror = YogiMPI_Get_processor_name(interimName, resultlen);
+    if (*resultlen > name_len) *resultlen = name_len;
+    std::strncpy(name, interimName, name_len);
+}
+
+double YOGIBRIDGE_MPI_WTIME() {
+    return YogiMPI_Wtime();
+}
+
+double YOGIBRIDGE_MPI_WTICK() {
+    return YogiMPI_Wtick();
+}
+
+@BRIDGE_FUNCTIONS@
+
+}

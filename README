@@ -4,17 +4,13 @@ YogiMPI Overview
 * Prerequisites *
   - Intel or GNU (4.8+) C, C++, and Fortran compiler
   - MPI distribution with compiler wrappers (e.g. mpicc, mpicxx, mpif90)
-  - (Optional) ptoolsrte-0.5.1 and above for Python support
 
 * Installation *
   - Load your compilers and MPI wrappers into the path and runtime library path.
   - Set the environment variable YCC, YCXX, and YF90 to point to your serial
     compilers.
-  - Set the environment variable YMPICC to point to your MPI's C compiler
+  - Set the environment variable YMPICXX to point to your MPI's C++ compiler
     wrapper. 
-  - Optionally load ptoolsrte-0.5.1 through a source file or module and set the
-    environment variable YMPI_ENABLE_PYTHON to 1.  This step is only required by
-    CREATE AV developers - end users don't have to do this. 
   - Once set, run ./configure -i /path/to/install
   - To build, type "make," and then "make install" to copy files to the
     installation directory.

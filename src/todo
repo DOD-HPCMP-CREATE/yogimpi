@@ -1,0 +1,38 @@
+- Handle YogiMPI_WEIGHTS_EMPTY and YogiMPI_UNWEIGHTED
+- Handle lambda issues with function pointers.
+- Handle constness of certain arguments.
+
+Error code conversion:
+YogiMPI_Add_error_class
+YogiMPI_Add_error_code
+YogiMPI_Add_error_string
+- For the above functions, you'll need to handle appending new error codes
+  and handling lastcode boundary checks.
+
+Handle figuring out what dimensions are:
+YogiMPI_Ineighbor_alltoallw
+YogiMPI_Neighbor_alltoallw
+
+Notes:
+
+- Checking for MPI_PROC_NULL for source
+- Checking for MPI_ANY_TAG as tag
+
+- MPI_Get_library_version string length stuff.
+
+Possibly you need to convert errorcodes in some functions.
+- Error codes for DATAREP stuff.
+
+New constants:
+ - MPI_MAX_DATAREP_STRING (must be at least 64)
+ - MPI_MESSAGE_NO_PROC
+
+- Predefined operation constants 
+  - MPI_REPLACE
+  - MPI_NO_OP
+
+- MPI_ARGVS_NULL as pointer
+- MPI_ERR_SPAWN
+- MPI_ERR_PORT
+
+MPI_Type_match_size does predefined stuff.

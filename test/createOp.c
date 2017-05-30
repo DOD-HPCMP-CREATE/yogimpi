@@ -2,12 +2,10 @@
 #include <assert.h>
 #include <stdio.h>
  
-void addem ( int *, int *, int *, MPI_Datatype * );
- 
 void addem(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype)
 {
-    MPI_Datatype aType = Yogi_ResolveDatatype(dtype);
-    assert(aType == MPI_INT); 
+    MPI_Datatype rtype = Yogi_ResolveDatatype(dtype);
+    assert(rtype == MPI_INT); 
     int i;
     for ( i=0; i<*len; i++ ) 
         inoutvec[i] += invec[i];

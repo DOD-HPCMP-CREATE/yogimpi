@@ -16,12 +16,7 @@ function showUsage {
     echo "YCC - Serial C compiler to use"
     echo "YCXX - Serial C++ compiler to use"
     echo "YF90 - Serial Fortran compiler to use"
-    echo "YMPICC - Parallel C compiler wrapper"
-    echo
-    echo "Optional environment variables for extended Python support:"
-    echo "(End users of CREATE AV products do not need to do this.)"
-    echo "YMPI_ENABLE_PYTHON - If set to 1, enable Python extension compile."
-    echo "PYTHONHOME must be set."
+    echo "YMPICXX - Parallel C++ compiler wrapper"
     exit 0
 }
 
@@ -46,6 +41,8 @@ while getopts ":i:h" opt; do
   esac
 done
 
+fFlags=""
+
 if [[ ! -z $YFAMILY ]]; then
     if [[ $YFAMILY == "intel" ]]; then 
         echo "Using Intel compiler family defaults for Yogi."
@@ -57,6 +54,7 @@ if [[ ! -z $YFAMILY ]]; then
         cCompiler=gcc
         cxxCompiler=g++
         fortranCompiler=gfortran
+        fFlags="-ffree-line-length-none"
     else
         echo "I don't recognize the $YFAMILY compiler family."
         exit 1
@@ -68,7 +66,7 @@ else
     fortranCompiler=$YF90
 fi
 
-mpiC=$YMPICC
+mpiCXX=$YMPICXX
 
 # Hardcode this value for now.
 callMPI="mpirun -np"
@@ -90,33 +88,7 @@ fi
 errorIfEmpty "$cCompiler" "C compiler"
 errorIfEmpty "$cxxCompiler" "C++ compiler"
 errorIfEmpty "$fortranCompiler" "Fortran compiler"
-errorIfEmpty "$mpiC" "Parallel C compiler"
-
-# If YMPI_ENABLE_PYTHON is empty, enable Python support if ptoolsrte is found.
-# Otherwise don't build it.
-if [[ -z $YMPI_ENABLE_PYTHON ]]; then
-    if [[ ! -z $PTOOLSVER && ! -z $PYTHONHOME ]]; then
-        enablePython="yes"
-    else
-        enablePython="no"
-    fi
-elif [[ $YMPI_ENABLE_PYTHON == "0" ]]; then
-    enablePython="no"
-else
-    if [[ -z $PYTHONHOME ]]; then
-        echo "Error: you enabled Python extensions, but PYTHONHOME not set."
-        exit 1
-    fi
-    enablePython="yes"
-fi
-
-if [[ $enablePython == "yes" ]]; then
-    echo "Enabling Python extension build."
-    pythonLDFlags="-L$PYTHONHOME/lib -lpython2.7"
-    pythonInclude="-I$PYTHONHOME/include/python2.7"
-else
-    echo "Disabling Python extension build."
-fi
+errorIfEmpty "$mpiCXX" "Parallel C++ compiler"
 
 if [[ ${installDir} == "" ]]; then
     echo "Error: install directory unspecified." >&2
@@ -124,14 +96,12 @@ if [[ ${installDir} == "" ]]; then
 fi
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
-    -e "s|@MPICC@|${mpiC}|g" \
-    -e "s|@ENABLEPYTHON@|${enablePython}|g" \
+    -e "s|@MPICXX@|${mpiCXX}|g" \
     -e "s|@CC@|${cCompiler}|g" \
     -e "s|@SERIALC@|${cCompiler}|g" \
     -e "s|@F90@|${fortranCompiler}|g" \
-    -e "s|@PYTHONINCLUDE@|${pythonInclude}|g" \
-    -e "s|@PYTHONLDFLAGS@|${pythonLDFlags}|g" \
     -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
+    -e "s|@FCOMPFLAGS@|${fFlags}|g" \
     Make.flags.in > Make.flags
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
@@ -159,29 +129,16 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@SERIALFORTRANCOMPILER@|${fortranCompiler}|g" \
     wrapper/mpif77.in > wrapper/mpif77
 
-if [[ $enablePython == "yes" ]]; then
-    pythonModString="prepend-path PYTHONPATH \$prefix/python"
-    pythonBashString="export PYTHONPATH=${installDir}/python:\$PYTHONPATH"
-    pythonCshString="setenv PYTHONPATH ${installDir}/python:\$PYTHONPATH"
-else
-    pythonModString="# Python support is disabled for this build."
-    pythonBashString="# Python support is disabled for this build."
-    pythonCshString="# Python support is disabled for this build."
-fi 
-
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \
-    -e "s|@PYTHON_MODULE_MOD@|${pythonModString}|g" \
     etc/modulefile.in > etc/modulefile
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \
-    -e "s|@PYTHON_BASHRC_MOD@|${pythonBashString}|g" \
     etc/yogimpi.bashrc.in > etc/yogimpi.bashrc
     
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \
-    -e "s|@PYTHON_CSHRC_MOD@|${pythonCshString}|g" \
     etc/yogimpi.cshrc.in > etc/yogimpi.cshrc
 
 echo "Type make to build YogiMPI."

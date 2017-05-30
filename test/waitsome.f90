@@ -29,7 +29,7 @@ use mpi
         enddo 
         remaining = size-1
         do while (remaining > 0)
-            call MPI_Waitsome(size-1, request, count, index, status, ierr)
+            call MPI_Waitsome(size-1, request, count, index, MPI_STATUSES_IGNORE, ierr)
             if (count == MPI_UNDEFINED) then
                 call exit(2)
             endif
