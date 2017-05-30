@@ -6,12 +6,12 @@
   </Function>
   <Function name="MPI_Address">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="location" type="void*"/>
+    <Arg input="true" name="location" type="const void*"/>
     <Arg name="address" output="true" type="MPI_Aint*"/>
   </Function>
   <Function name="MPI_Allgather">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg input="true" name="sendcount" type="int"/>
@@ -23,20 +23,20 @@
   </Function>
   <Function name="MPI_Allgatherv">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts" type="int*"/>
-    <Arg input="true" name="displs" type="int*"/>
+    <Arg input="true" name="recvcounts" type="const int*"/>
+    <Arg input="true" name="displs" type="const int*"/>
     <Arg input="true" name="recvtype" type="MPI_Datatype"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Allreduce">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg name="recvbuf" output="true" type="void*"/>
@@ -47,7 +47,7 @@
   </Function>
   <Function name="MPI_Alltoall">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg input="true" name="sendcount" type="int"/>
@@ -59,15 +59,15 @@
   </Function>
   <Function name="MPI_Alltoallv">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
-    <Arg input="true" name="sendcounts" type="int*"/>
-    <Arg input="true" name="sdispls" type="int*"/>
+    <Arg input="true" name="sendcounts" type="const int*"/>
+    <Arg input="true" name="sdispls" type="const int*"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts" type="int*"/>
-    <Arg input="true" name="rdispls" type="int*"/>
+    <Arg input="true" name="recvcounts" type="const int*"/>
+    <Arg input="true" name="rdispls" type="const int*"/>
     <Arg input="true" name="recvtype" type="MPI_Datatype"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
@@ -106,7 +106,7 @@
   </Function>
   <Function name="MPI_Bsend">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -420,7 +420,7 @@
   </Function>
   <Function name="MPI_Gather">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg input="true" name="sendcount" type="int"/>
@@ -433,14 +433,14 @@
   </Function>
   <Function name="MPI_Gatherv">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts" type="int*"/>
-    <Arg input="true" name="displs" type="int*"/>
+    <Arg input="true" name="recvcounts" type="const int*"/>
+    <Arg input="true" name="displs" type="const int*"/>
     <Arg input="true" name="recvtype" type="MPI_Datatype"/>
     <Arg input="true" name="root" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
@@ -452,7 +452,7 @@
   </Function>
   <Function name="MPI_Get_count">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="status" type="MPI_Status*"/>
+    <Arg input="true" name="status" type="const MPI_Status*"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg name="count" output="true" type="int*">
       <Convert trigger="post">MPI_UNDEFINED</Convert>
@@ -460,7 +460,7 @@
   </Function>
   <Function name="MPI_Get_elements">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="status" type="MPI_Status*"/>
+    <Arg input="true" name="status" type="const MPI_Status*"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg name="count" output="true" type="int*">
       <Convert trigger="post">MPI_UNDEFINED</Convert>
@@ -623,7 +623,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Irsend">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -633,7 +633,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Isend">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -643,7 +643,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Issend">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -751,7 +751,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Reduce_scatter">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg name="recvbuf" output="true" type="void*"/>
@@ -766,7 +766,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Rsend">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -775,7 +775,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Scan">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg name="recvbuf" output="true" type="void*"/>
@@ -786,7 +786,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Scatter">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg input="true" name="sendcount" type="int"/>
@@ -799,11 +799,11 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Scatterv">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
-    <Arg input="true" name="sendcounts" type="int*"/>
-    <Arg input="true" name="displs" type="int*"/>
+    <Arg input="true" name="sendcounts" type="const int*"/>
+    <Arg input="true" name="displs" type="const int*"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>
     <Arg input="true" name="recvcount" type="int"/>
@@ -813,7 +813,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Send">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -822,7 +822,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Send_init">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -832,7 +832,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Sendrecv">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -847,7 +847,7 @@ for(i = 0; i &lt; n; ++i) {
   </Function>
   <Function name="MPI_Ssend">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -872,7 +872,7 @@ if (conv_request == MPI_REQUEST_NULL) {
   </Function>
   <Function name="MPI_Test_cancelled">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="status" type="MPI_Status*"/>
+    <Arg input="true" name="status" type="const MPI_Status*"/>
     <Arg name="flag" output="true" type="int*"/>
   </Function>
   <Function name="MPI_Testall">
@@ -1053,8 +1053,8 @@ else {
   <Function name="MPI_Type_indexed">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_blocklengths" type="int*"/>
-    <Arg input="true" name="array_of_displacements" type="int*"/>
+    <Arg input="true" name="array_of_blocklengths" type="const int*"/>
+    <Arg input="true" name="array_of_displacements" type="const int*"/>
     <Arg input="true" name="oldtype" type="MPI_Datatype"/>
     <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
@@ -1068,9 +1068,9 @@ else {
   <Function name="MPI_Type_struct">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_blocklengths" type="int*"/>
-    <Arg input="true" name="array_of_displacements" type="MPI_Aint*" dims="count"/>
-    <Arg input="true" name="array_of_types" type="MPI_Datatype*" dims="count"/>
+    <Arg input="true" name="array_of_blocklengths" type="const int*"/>
+    <Arg input="true" name="array_of_displacements" type="const MPI_Aint*" dims="count"/>
+    <Arg input="true" name="array_of_types" type="const MPI_Datatype*" dims="count"/>
     <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
   <Function name="MPI_Type_vector">
@@ -1083,7 +1083,7 @@ else {
   </Function>
   <Function name="MPI_Unpack">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="inbuf" type="void*"/>
+    <Arg input="true" name="inbuf" type="const void*"/>
     <Arg input="true" name="insize" type="int"/>
     <Arg name="position" type="int*"/>
     <Arg name="outbuf" output="true" type="void*"/>
@@ -1430,7 +1430,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Exscan">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg name="recvbuf" output="true" type="void*"/>
@@ -1918,7 +1918,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Ibsend">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -2252,7 +2252,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Reduce_local">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="inbuf" type="void*"/>
+    <Arg input="true" name="inbuf" type="const void*"/>
     <Arg name="inoutbuf" output="true" type="void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
@@ -2326,7 +2326,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Rsend_init">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>
@@ -2348,7 +2348,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Ssend_init">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="dest" type="int"/>

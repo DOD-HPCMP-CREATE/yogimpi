@@ -51,6 +51,10 @@ class MPIArgument(object):
         self.name = None
         # The way the argument is called in a function.
         self.call_name = None
+        # C API type of the argument.  This is normally the same as the
+        # original type, but it may include const qualifiers that make C++
+        # happy.
+        self.c_api_type = None
         # Original type of the argument.
         self.type = None
         # Whether the argument is a pointer.
@@ -147,9 +151,9 @@ class MPIFunction(object):
         for i, anArg in enumerate(self.args):
             if i > 0:
                 arg_string += ', ' 
-            argType = anArg.type
+            argType = anArg.c_api_type
             if anArg.is_mpi_type:
-                argType = 'Yogi' + argType
+                argType = 'Yogi' + anArg.type
             arg_string += argType + ' ' + anArg.name
         return arg_string
  

@@ -135,7 +135,15 @@ class GenerateWrap(object):
                     # Assume that if nothing else is specified, this is an
                     # input argument.
                     thisArg.is_input = True
-                rawType = argElement.attrib['type'].strip()
+                apiType = argElement.attrib['type'].strip()
+                # Strip out the const qualifier. Generally unneeded for most
+                # code generation.
+                constStr = 'const '
+                if apiType.startswith(constStr):
+                    rawType = apiType[len(constStr):]
+                else:
+                    rawType = apiType
+                thisArg.c_api_type = apiType 
                 thisArg.type = rawType
                 if rawType.endswith('*'):
                     thisArg.is_pointer = True
