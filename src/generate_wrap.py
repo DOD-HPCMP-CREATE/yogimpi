@@ -456,6 +456,7 @@ class GenerateWrap(object):
                                ', conv_' + anArg.name + ', ' + anArg.name +\
                                '_len);'
                     bridge_funcs.addLines(copyLine)
+                bridge_funcs.addLines('delete[] conv_' + anArg.name + ';')
             bridge_funcs.endFunction(fUpper)
             bridge_funcs.newLine()
 
