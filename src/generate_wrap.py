@@ -81,9 +81,11 @@ class GenerateWrap(object):
 #                 'MPI_Comm_copy_attr_function': 'CommCopyFunction',
 #                 'MPI_Comm_delete_attr_function': 'CommDeleteFunction'
 
-    def __init__(self, xmlInput):
+    def __init__(self, xmlInput, version):
         # Prefix for all the functions to wrap.
         self.prefix = 'Yogi'
+        # MPI version to support 
+        self.mpiVersion = int(version)
         # Parsed functions to wrap.
         self.functions = []
 
@@ -98,6 +100,13 @@ class GenerateWrap(object):
         xmlRoot = tree.getroot()
         for funcElement in xmlRoot.findall('Function'):
             thisFunction = wrap_objects.MPIFunction()
+            # Discover the MPI version supporting this function.
+            mpiVersion = funcElement.find('Version')
+            if mpiVersion is not None:
+                thisFunction.mpi_version = int(mpiVersion.text)
+            # If this function is in too high a version of MPI, skip it. 
+            if thisFunction.mpi_version > self.mpiVersion:
+                continue
             thisFunction.name = funcElement.attrib['name']
             thisFunction.return_type = funcElement.find('ReturnType').text
             fortranSupport = funcElement.find('FortranSupport')
@@ -881,7 +890,7 @@ class GenerateWrap(object):
         return False            
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: python generate_wrap.py input.xml")
+    if len(sys.argv) != 3:
+        print("Usage: python generate_wrap.py --mpi=<2|3> input.xml")
     else:
-        GenerateWrap(sys.argv[1])
+        GenerateWrap(sys.argv[2], sys.argv[1][6:])

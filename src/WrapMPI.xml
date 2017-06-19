@@ -1843,6 +1843,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Iallreduce">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1903,11 +1904,13 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ibarrier">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ibcast">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg name="buffer" type="void*"/>
     <Arg input="true" name="count" type="int"/>
@@ -1968,6 +1971,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_allgather">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1979,6 +1983,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_allgatherv">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1991,6 +1996,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_alltoall">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -2002,6 +2008,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_alltoallv">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
@@ -2015,6 +2022,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_alltoallw">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
@@ -2047,6 +2055,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="newintracomm" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Ireduce">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -2135,6 +2144,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="port_name" output="true" type="char*"/>
   </Function>
   <Function name="MPI_Neighbor_allgather">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -2145,6 +2155,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Neighbor_allgatherv">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -2156,6 +2167,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Neighbor_alltoall">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -2166,6 +2178,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Neighbor_alltoallv">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
@@ -2178,6 +2191,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Neighbor_alltoallw">
+    <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
