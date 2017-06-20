@@ -137,7 +137,7 @@ typedef int YogiMPI_Win;
 /* Assorted constants (both C and Fortran) */
 
 /* Recommended that MPI_BOTTOM be zero address */
-static void * const  YogiMPI_BOTTOM = (void*)0;
+#define YogiMPI_BOTTOM (void*)0
 
 #define YogiMPI_PROC_NULL -2
 #define YogiMPI_ROOT -6
@@ -150,8 +150,8 @@ static void * const  YogiMPI_BOTTOM = (void*)0;
 #define YogiMPI_KEYVAL_INVALID -7
 
 /* Dist graph create constants */
-static void * const YogiMPI_WEIGHTS_EMPTY = (void*)1; 
-static void * const YogiMPI_UNWEIGHTED = (void*)2;
+#define YogiMPI_WEIGHTS_EMPTY (int*)2 
+#define YogiMPI_UNWEIGHTED (int*)3
 
 /* MPI asserts for one-sided communication.  Supports bitwise OR. */
 #define YogiMPI_MODE_NOCHECK 1024
