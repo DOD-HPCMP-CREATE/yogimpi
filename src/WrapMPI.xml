@@ -370,7 +370,9 @@
   <Function name="MPI_File_set_view">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="disp" type="MPI_Offset"/>
+    <Arg name="disp" type="MPI_Offset">
+      <Convert>MPI_DISPLACEMENT_CURRENT</Convert>
+    </Arg>
     <Arg name="etype" type="MPI_Datatype"/>
     <Arg name="filetype" type="MPI_Datatype"/>
     <Arg name="datarep" type="char*"/>
@@ -2577,7 +2579,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Win_get_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
-    <Arg input="true" name="win_keyval" type="int"/>
+    <Arg input="true" name="win_keyval" type="int" class="winattr"/>
     <Arg name="attribute_val" output="true" type="void*"/>
     <Arg name="flag" output="true" type="int*"/>
   </Function>

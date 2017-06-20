@@ -63,6 +63,8 @@ class GenerateWrap(object):
 
     manPrefix = "YogiManager::getInstance()->"
 
+    versionMap = { 2:['2','2'], 3:['3','1'] }
+
     #mpiFunctionMap = { 'MPI_User_function': 'UserFunction' }
     mpiFunctionMap = { }
 
@@ -676,12 +678,18 @@ class GenerateWrap(object):
     # Writes the actual header file for YogiMPI.
     def writeCHeader(self):
         c_header = source_writers.CSource(inputFile='yogimpi.h.in')
+        set_version = source_writers.CSource()
+        majorVersion = GenerateWrap.versionMap[self.mpiVersion][0]
+        minorVersion = GenerateWrap.versionMap[self.mpiVersion][1]
+        set_version.addLines('#define YogiMPI_VERSION ' + majorVersion,
+                             '#define YogiMPI_SUBVERSION ' + minorVersion)
         func_protos = source_writers.CSource()
         for aFunc in self.functions:
             name = self.prefix + aFunc.name
             arg_string = aFunc.cArgString()
             func_protos.addPrototype(name, aFunc.return_type, arg_string) 
             func_protos.newLine()
+        c_header.merge(set_version, 'SET_VERSION')
         c_header.merge(func_protos, 'YOGI_PROTOTYPES') 
         c_header.writeFile('yogimpi.h')
 

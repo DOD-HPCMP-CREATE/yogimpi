@@ -18,6 +18,7 @@ public:
     int rootToMPI(int root);
     int onesidedToMPI(int onesided);
     int locktypeToMPI(int lock_type);
+    int winattrToMPI(int win_attr);
     int threadmodelToMPI(int threadmodel);
     int typeclassToMPI(int typeclass);
     int whenceToMPI(int whence);

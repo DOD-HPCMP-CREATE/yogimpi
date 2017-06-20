@@ -27,9 +27,9 @@ YogiManager::YogiManager() {
     winPool.resize(defaultPoolSize, MPI_WIN_NULL);
     numWins = winOffset = 1;
     opPool.resize(defaultPoolSize, MPI_OP_NULL);
-    numOps = opOffset = 13;
+    numOps = opOffset = 14;
     datatypePool.resize(defaultPoolSize, MPI_DATATYPE_NULL);
-    numDatatypes = datatypeOffset = 38;
+    numDatatypes = datatypeOffset = 39;
     infoPool.resize(defaultPoolSize, MPI_INFO_NULL);
     numInfos = infoOffset = 1;
     groupPool.resize(defaultPoolSize, MPI_GROUP_NULL);
@@ -75,6 +75,24 @@ YogiManager::YogiManager() {
     mpiErrors[YogiMPI_ERR_DUP_DATAREP]  = MPI_ERR_DUP_DATAREP;
     mpiErrors[YogiMPI_ERR_CONVERSION]   = MPI_ERR_CONVERSION;
     mpiErrors[YogiMPI_ERR_IO]           = MPI_ERR_IO;
+    mpiErrors[YogiMPI_ERR_INFO]         = MPI_ERR_INFO;
+    mpiErrors[YogiMPI_ERR_INFO_KEY]     = MPI_ERR_INFO_KEY;
+    mpiErrors[YogiMPI_ERR_INFO_VALUE]   = MPI_ERR_INFO_VALUE;
+    mpiErrors[YogiMPI_ERR_INFO_NOKEY]   = MPI_ERR_INFO_NOKEY;
+    mpiErrors[YogiMPI_ERR_NAME]         = MPI_ERR_NAME;
+    mpiErrors[YogiMPI_ERR_NO_MEM]       = MPI_ERR_NO_MEM;
+    mpiErrors[YogiMPI_ERR_PORT]         = MPI_ERR_PORT;
+    mpiErrors[YogiMPI_ERR_SERVICE]      = MPI_ERR_SERVICE;
+    mpiErrors[YogiMPI_ERR_SPAWN]        = MPI_ERR_SPAWN;
+    mpiErrors[YogiMPI_ERR_WIN]          = MPI_ERR_WIN;
+    mpiErrors[YogiMPI_ERR_KEYVAL]       = MPI_ERR_KEYVAL;
+    mpiErrors[YogiMPI_ERR_BASE]         = MPI_ERR_BASE;
+    mpiErrors[YogiMPI_ERR_LOCKTYPE]     = MPI_ERR_LOCKTYPE;
+    mpiErrors[YogiMPI_ERR_RMA_CONFLICT] = MPI_ERR_RMA_CONFLICT;
+    mpiErrors[YogiMPI_ERR_RMA_SYNC]     = MPI_ERR_RMA_SYNC;
+    mpiErrors[YogiMPI_ERR_SIZE]         = MPI_ERR_SIZE;
+    mpiErrors[YogiMPI_ERR_DISP]         = MPI_ERR_DISP;
+    mpiErrors[YogiMPI_ERR_ASSERT]       = MPI_ERR_ASSERT;
     mpiErrors[YogiMPI_ERR_LASTCODE]     = MPI_ERR_LASTCODE;
 
     yogiErrors[MPI_SUCCESS]         = YogiMPI_SUCCESS;
@@ -115,6 +133,24 @@ YogiManager::YogiManager() {
     yogiErrors[MPI_ERR_DUP_DATAREP]  = YogiMPI_ERR_DUP_DATAREP;
     yogiErrors[MPI_ERR_CONVERSION]   = YogiMPI_ERR_CONVERSION;
     yogiErrors[MPI_ERR_IO]           = YogiMPI_ERR_IO;
+    yogiErrors[MPI_ERR_INFO]         = YogiMPI_ERR_INFO;
+    yogiErrors[MPI_ERR_INFO_KEY]     = YogiMPI_ERR_INFO_KEY;
+    yogiErrors[MPI_ERR_INFO_VALUE]   = YogiMPI_ERR_INFO_VALUE;
+    yogiErrors[MPI_ERR_INFO_NOKEY]   = YogiMPI_ERR_INFO_NOKEY;
+    yogiErrors[MPI_ERR_NAME]         = YogiMPI_ERR_NAME;
+    yogiErrors[MPI_ERR_NO_MEM]       = YogiMPI_ERR_NO_MEM;
+    yogiErrors[MPI_ERR_PORT]         = YogiMPI_ERR_PORT;
+    yogiErrors[MPI_ERR_SERVICE]      = YogiMPI_ERR_SERVICE;
+    yogiErrors[MPI_ERR_SPAWN]        = YogiMPI_ERR_SPAWN;
+    yogiErrors[MPI_ERR_WIN]          = YogiMPI_ERR_WIN;
+    yogiErrors[MPI_ERR_KEYVAL]       = YogiMPI_ERR_KEYVAL;
+    yogiErrors[MPI_ERR_BASE]         = YogiMPI_ERR_BASE;
+    yogiErrors[MPI_ERR_LOCKTYPE]     = YogiMPI_ERR_LOCKTYPE;
+    yogiErrors[MPI_ERR_RMA_CONFLICT] = YogiMPI_ERR_RMA_CONFLICT;
+    yogiErrors[MPI_ERR_RMA_SYNC]     = YogiMPI_ERR_RMA_SYNC;
+    yogiErrors[MPI_ERR_SIZE]         = YogiMPI_ERR_SIZE;
+    yogiErrors[MPI_ERR_DISP]         = YogiMPI_ERR_DISP;
+    yogiErrors[MPI_ERR_ASSERT]       = YogiMPI_ERR_ASSERT;
     yogiErrors[MPI_ERR_LASTCODE]     = YogiMPI_ERR_LASTCODE;
 
     yogiComps[MPI_IDENT] = YogiMPI_IDENT; 
@@ -142,6 +178,7 @@ YogiManager::YogiManager() {
     opPool.at(YogiMPI_LAND)   = MPI_LAND;
     opPool.at(YogiMPI_LOR)    = MPI_LOR;
     opPool.at(YogiMPI_LXOR)   = MPI_LXOR;
+    opPool.at(YogiMPI_REPLACE) = MPI_REPLACE;
 
     // Set errhandler pool constants
     errPool.at(YogiMPI_ERRORS_ARE_FATAL) = MPI_ERRORS_ARE_FATAL;
@@ -186,6 +223,7 @@ YogiManager::YogiManager() {
     datatypePool.at(YogiMPI_LB)                = MPI_LB;
     datatypePool.at(YogiMPI_UB)                = MPI_UB;
     datatypePool.at(YogiMPI_SIGNED_CHAR)       = MPI_SIGNED_CHAR;
+    datatypePool.at(YogiMPI_WCHAR)             = MPI_WCHAR;
 
 }
 
@@ -260,6 +298,22 @@ int YogiManager::errorToMPI(int yogiMPIError) {
     return MPI_ERR_INTERN;
 }
 
+int YogiManager::winattrToMPI(int win_attr) {
+    switch(win_attr) {
+      case YogiMPI_WIN_BASE:
+          return MPI_WIN_BASE;
+          break;
+      case YogiMPI_WIN_DISP_UNIT:
+          return MPI_WIN_DISP_UNIT;
+          break;
+      case YogiMPI_WIN_SIZE:
+          return MPI_WIN_SIZE;
+          break;
+      default:
+          return win_attr;
+    }
+}
+
 int YogiManager::onesidedToMPI(int onesided) {
     switch(onesided) {
       case YogiMPI_MODE_NOCHECK:
@@ -303,6 +357,9 @@ int YogiManager::topoToYogi(int in_topo) {
           break;
       case MPI_CART:
           return YogiMPI_CART;
+          break;
+      case MPI_DIST_GRAPH:
+          return YogiMPI_DIST_GRAPH;
           break;
       case MPI_UNDEFINED:
           return YogiMPI_UNDEFINED;

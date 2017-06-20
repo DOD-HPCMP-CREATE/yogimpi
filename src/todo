@@ -23,16 +23,4 @@ Notes:
 Possibly you need to convert errorcodes in some functions.
 - Error codes for DATAREP stuff.
 
-New constants:
- - MPI_MAX_DATAREP_STRING (must be at least 64)
- - MPI_MESSAGE_NO_PROC
-
-- Predefined operation constants 
-  - MPI_REPLACE
-  - MPI_NO_OP
-
-- MPI_ARGVS_NULL as pointer
-- MPI_ERR_SPAWN
-- MPI_ERR_PORT
-
 MPI_Type_match_size does predefined stuff.

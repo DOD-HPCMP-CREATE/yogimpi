@@ -93,7 +93,25 @@
       integer, parameter :: YogiMPI_ERR_DUP_DATAREP = 33
       integer, parameter :: YogiMPI_ERR_CONVERSION = 34
       integer, parameter :: YogiMPI_ERR_IO = 35
-      integer, parameter :: YogiMPI_ERR_LASTCODE = 36
+      integer, parameter :: YogiMPI_ERR_INFO = 36
+      integer, parameter :: YogiMPI_ERR_INFO_KEY = 37
+      integer, parameter :: YogiMPI_ERR_INFO_VALUE = 38
+      integer, parameter :: YogiMPI_ERR_INFO_NOKEY = 39
+      integer, parameter :: YogiMPI_ERR_NAME = 40
+      integer, parameter :: YogiMPI_ERR_NO_MEM = 41
+      integer, parameter :: YogiMPI_ERR_PORT = 42
+      integer, parameter :: YogiMPI_ERR_SERVICE = 43
+      integer, parameter :: YogiMPI_ERR_SPAWN = 44
+      integer, parameter :: YogiMPI_ERR_WIN = 45
+      integer, parameter :: YogiMPI_ERR_KEYVAL = 46
+      integer, parameter :: YogiMPI_ERR_BASE = 47
+      integer, parameter :: YogiMPI_ERR_LOCKTYPE = 48
+      integer, parameter :: YogiMPI_ERR_RMA_CONFLICT = 49
+      integer, parameter :: YogiMPI_ERR_RMA_SYNC = 50
+      integer, parameter :: YogiMPI_ERR_SIZE = 51
+      integer, parameter :: YogiMPI_ERR_DISP = 52
+      integer, parameter :: YogiMPI_ERR_ASSERT = 53
+      integer, parameter :: YogiMPI_ERR_LASTCODE = 54
 
 ! Special case with MPI_BOTTOM
       integer(YogiMPI_INTEGER_KIND) :: YogiMPI_BOTTOM
@@ -140,6 +158,9 @@
       integer, parameter :: YogiMPI_MODE_SEQUENTIAL = 256
       integer, parameter :: YogiMPI_MODE_APPEND = 128
 
+! Special displacement constant for certain sequential files.
+      integer, parameter :: YogiMPI_DISPLACEMENT_CURRENT = -5427827
+
 ! MPI_Info have key and value length constants.  Pick conservative values
 ! that accommodate OpenMPI and MPICH derivatives.
       integer, parameter :: YogiMPI_MAX_INFO_KEY = 32
@@ -160,7 +181,7 @@
       integer, parameter :: YogiMPI_MAX_ERROR_STRING = 31
       integer, parameter :: YogiMPI_MAX_PORT_NAME = 511
       integer, parameter :: YogiMPI_MAX_OBJECT_NAME = 63
-
+      integer, parameter :: YogiMPI_MAX_DATAREP_STRING = 63
 
 ! elementary datatypes (Fortran)
       integer, parameter :: YogiMPI_CHARACTER = 1
@@ -190,6 +211,9 @@
       integer, parameter :: YogiMPI_LB = 36 
       integer, parameter :: YogiMPI_UB = 37
 
+! Extra communicators defined in C but here (as specified by MPICH2)
+      integer, parameter :: YogiMPI_WCHAR = 39
+
 ! reserved communicators (C and Fortran)
       integer, parameter :: YogiMPI_COMM_WORLD = 1
       integer, parameter :: YogiMPI_COMM_SELF = 2
@@ -206,6 +230,11 @@
       integer, parameter :: YogiMPI_HOST = -10
       integer, parameter :: YogiMPI_WTIME_IS_GLOBAL = -11
 
+! Predefined MPI_Win attributes 
+      integer, parameter :: YogiMPI_WIN_BASE = -12 
+      integer, parameter :: YogiMPI_WIN_SIZE = -13
+      integer, parameter :: YogiMPI_WIN_DISP_UNIT = -14
+
 ! collective operations (C and Fortran)
       integer, parameter :: YogiMPI_MAX = 1
       integer, parameter :: YogiMPI_MIN = 2
@@ -219,6 +248,7 @@
       integer, parameter :: YogiMPI_LAND = 10
       integer, parameter :: YogiMPI_LOR = 11
       integer, parameter :: YogiMPI_LXOR = 12
+      integer, parameter :: YogiMPI_REPLACE = 13
 
 ! Null handles
 
@@ -252,6 +282,7 @@
 ! Topology test constants 
       integer, parameter :: YogiMPI_GRAPH = 1
       integer, parameter :: YogiMPI_CART = 2
+      integer, parameter :: YogiMPI_DIST_GRAPH = 3
 
 ! MPI Combiner state constants
       integer, parameter :: YogiMPI_COMBINER_NAMED = 1
