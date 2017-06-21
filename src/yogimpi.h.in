@@ -464,6 +464,9 @@ typedef int YogiMPI_Comm_delete_attr_function(YogiMPI_Comm comm,
 #define YogiMPI_COMM_NULL_COPY_FN   ((YogiMPI_Comm_copy_attr_function *)0)
 #define YogiMPI_COMM_DUP_FN  ((YogiMPI_Comm_copy_attr_function *)-1)
 #define YogiMPI_COMM_NULL_DELETE_FN ((YogiMPI_Comm_delete_attr_function *)0)
+#define YogiMPI_WIN_NULL_COPY_FN ((YogiMPI_Win_copy_attr_function*)0)
+#define YogiMPI_WIN_NULL_DELETE_FN ((YogiMPI_Win_delete_attr_function*)0)
+#define YogiMPI_WIN_DUP_FN   ((YogiMPI_Win_copy_attr_function*)MPI_DUP_FN)
 
 /* Until we properly use lambdas and do auto-magic with function pointers,
    users must doctor their own functions that are supplied to YogiMPI. The
