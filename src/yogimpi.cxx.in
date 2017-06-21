@@ -237,6 +237,14 @@ YogiMPI_Comm YogiMPI_Comm_f2c(YogiMPI_Fint comm) {
     return comm;
 }
 
+YogiMPI_Fint YogiMPI_Errhandler_c2f(YogiMPI_Errhandler err) {
+    return err;
+}
+
+YogiMPI_Errhandler YogiMPI_Errhandler_f2c(YogiMPI_Fint err) {
+    return err;
+}
+
 YogiMPI_Fint YogiMPI_File_c2f(YogiMPI_File file) {
     return file;
 }

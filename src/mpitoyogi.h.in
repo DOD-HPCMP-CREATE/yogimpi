@@ -360,6 +360,8 @@
 #define MPI_Wtime YogiMPI_Wtime
 #define MPI_Comm_c2f YogiMPI_Comm_c2f
 #define MPI_Comm_f2c YogiMPI_Comm_f2c
+#define MPI_Errhandler_c2f YogiMPI_Errhandler_c2f
+#define MPI_Errhandler_f2c YogiMPI_Errhandler_f2c
 #define MPI_File_c2f YogiMPI_File_c2f
 #define MPI_File_f2c YogiMPI_File_f2c
 #define MPI_Group_c2f YogiMPI_Group_c2f

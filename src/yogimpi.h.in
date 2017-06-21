@@ -501,14 +501,16 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
 
 int YogiMPI_Type_create_darray(int size, int rank, int ndims, int array_of_gsizes[], int array_of_distribs[], int array_of_dargs[], int array_of_psizes[], int order, YogiMPI_Datatype oldtype, YogiMPI_Datatype* newtype);
 
-double YogiMPI_Wtick();
+double YogiMPI_Wtick(void);
 
-double YogiMPI_Wtime();
+double YogiMPI_Wtime(void);
 
 /* Converter functions between Fortran and C - really not needed since we
    have a single ABI, but provided. */
 YogiMPI_Fint YogiMPI_Comm_c2f(YogiMPI_Comm comm);
 YogiMPI_Comm YogiMPI_Comm_f2c(YogiMPI_Fint comm);
+YogiMPI_Fint YogiMPI_Errhandler_c2f(YogiMPI_Errhandler err);
+YogiMPI_Errhandler YogiMPI_Errhandler_f2c(YogiMPI_Fint err);
 YogiMPI_Fint YogiMPI_File_c2f(YogiMPI_File file);
 YogiMPI_File YogiMPI_File_f2c(YogiMPI_Fint file);
 YogiMPI_Fint YogiMPI_Group_c2f(YogiMPI_Group group);
