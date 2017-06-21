@@ -489,7 +489,7 @@ int YogiMPI_Init(int* argc, char ***argv);
 
 int YogiMPI_Error_class(int errorcode, int* errorclass);
 
-int YogiMPI_Finalize();
+int YogiMPI_Finalize(void);
 
 int YogiMPI_Get_processor_name(char* name, int* resultlen);
 
