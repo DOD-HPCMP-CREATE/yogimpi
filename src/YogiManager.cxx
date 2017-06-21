@@ -2,9 +2,7 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
-#ifdef YOGI_DEBUG
 #include <iostream>
-#endif
 
 const int YogiManager::defaultPoolSize = 100;
 
@@ -296,6 +294,25 @@ int YogiManager::errorToMPI(int yogiMPIError) {
     std::map<int,int>::iterator it = mpiErrors.find(yogiMPIError);
     if (it != mpiErrors.end()) return it->second;
     return MPI_ERR_INTERN;
+}
+
+int YogiManager::commattrToMPI(int comm_attr) {
+    switch(comm_attr) {
+      case YogiMPI_TAG_UB:
+          return MPI_TAG_UB;
+          break;
+      case YogiMPI_IO:
+          return MPI_IO;
+          break;
+      case YogiMPI_HOST:
+          return MPI_HOST;
+          break;
+      case YogiMPI_WTIME_IS_GLOBAL:
+          return MPI_WTIME_IS_GLOBAL;
+          break; 
+      default:
+          return comm_attr;
+    }
 }
 
 int YogiManager::winattrToMPI(int win_attr) {
@@ -720,11 +737,40 @@ YogiMPI_Request YogiManager::requestToYogi(MPI_Request in_request) {
                           requestOffset, numRequests);
 }
 
-YogiMPI_Status YogiManager::statusToYogi(MPI_Status &in_status) {
+/* Converts an MPI_Status object back to a YogiMPI_Status object.
+   @param in_status A reference to the MPI_Status object to convert.
+   @param set_error Whether or not to intelligently set the error. Most message
+                    passing functions that output MPI_Status don't bother
+                    to change this field. At most they set MPI_ERR_IN_STATUS
+                    if there is a problem. This boolean makes Yogi sniff out
+                    how it should set the error field to prevent translation
+                    garbage.
+   @return A new YogiMPI_Status struct with updated fields and a hidden copy.
+*/
+YogiMPI_Status YogiManager::statusToYogi(MPI_Status &in_status,
+                                         bool set_error) {
     YogiMPI_Status dest;
-    dest.MPI_TAG = in_status.MPI_TAG;
-    dest.MPI_SOURCE = in_status.MPI_SOURCE;
-    dest.MPI_ERROR = in_status.MPI_ERROR;
+
+    if (in_status.MPI_TAG == MPI_ANY_TAG) {
+        dest.MPI_TAG = YogiMPI_ANY_TAG;
+    }
+    else dest.MPI_TAG = in_status.MPI_TAG;
+
+    if (in_status.MPI_SOURCE == MPI_PROC_NULL) {
+        dest.MPI_SOURCE = YogiMPI_PROC_NULL;
+    }
+    else dest.MPI_SOURCE = in_status.MPI_SOURCE;
+
+    if (set_error) {
+        if (in_status.MPI_ERROR == MPI_ERR_IN_STATUS) {
+            dest.MPI_ERROR = YogiMPI_ERR_IN_STATUS;
+        }
+        else {
+            dest.MPI_ERROR = YogiMPI_SUCCESS;
+        }
+    }
+    else dest.MPI_ERROR = errorToYogi(in_status.MPI_ERROR);
+
     /* If this isn't the same address, force a memcpy */
     if ((void *)(dest.realStatus) != (void *)&in_status) {
         std::memcpy((void *)(dest.realStatus), (void *)&in_status,

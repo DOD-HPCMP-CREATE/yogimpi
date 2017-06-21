@@ -22,6 +22,7 @@ public:
     int threadmodelToMPI(int threadmodel);
     int typeclassToMPI(int typeclass);
     int whenceToMPI(int whence);
+    int commattrToMPI(int comm_attr);
  
     int errorToYogi(int mpiError);
     int comparisonToYogi(int mpiComp);
@@ -63,7 +64,7 @@ public:
     YogiMPI_Group groupToYogi(MPI_Group in_group);
     YogiMPI_File fileToYogi(MPI_File in_file);
     YogiMPI_Aint aintToYogi(MPI_Aint in_aint);
-    YogiMPI_Status statusToYogi(MPI_Status &in_status);
+    YogiMPI_Status statusToYogi(MPI_Status &in_status, bool set_error = true);
 
     // Array-conversion to Yogi
     void requestToYogi(MPI_Request * &in_mpi, YogiMPI_Request *& out_yogi,

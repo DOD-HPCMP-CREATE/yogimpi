@@ -79,10 +79,7 @@
   <Function name="MPI_Attr_get">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="keyval" type="int">
-      <Convert>MPI_WTIME_IS_GLOBAL</Convert>
-      <Convert>MPI_TAG_UB</Convert>
-    </Arg>
+    <Arg input="true" name="keyval" type="int" class="commattr" />
     <Arg name="attribute_val" output="true" type="void*"/>
     <Arg name="flag" output="true" type="int*"/>
   </Function>
@@ -109,7 +106,9 @@
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
@@ -202,7 +201,7 @@
   <Function name="MPI_Comm_get_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="comm_keyval" type="int"/>
+    <Arg input="true" name="comm_keyval" type="int" class="commattr"/>
     <Arg name="attribute_val" output="true" type="void*"/>
     <Arg name="flag" output="true" type="int*"/>
   </Function>
@@ -601,6 +600,7 @@ for(i = 0; i &lt; n; ++i) {
     <ReturnType>int</ReturnType>
     <Arg input="true" name="source" type="int">
       <Convert>MPI_ANY_SOURCE</Convert>
+      <Convert>MPI_PROC_NULL</Convert>
     </Arg>
     <Arg input="true" name="tag" type="int">
       <Convert>MPI_ANY_TAG</Convert>
@@ -615,6 +615,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
       <Convert>MPI_ANY_SOURCE</Convert>
     </Arg>
     <Arg input="true" name="tag" type="int">
@@ -628,7 +629,9 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
@@ -638,7 +641,9 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
@@ -648,7 +653,9 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
@@ -707,6 +714,7 @@ for(i = 0; i &lt; n; ++i) {
   <Function name="MPI_Probe">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
       <Convert>MPI_ANY_SOURCE</Convert>
     </Arg>
     <Arg input="true" name="tag" type="int">
@@ -721,6 +729,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
       <Convert>MPI_ANY_SOURCE</Convert>
     </Arg>
     <Arg input="true" name="tag" type="int">
@@ -734,7 +743,9 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" output="true" name="buf" type="void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="source" type="int"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
@@ -771,7 +782,9 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
@@ -818,7 +831,9 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
@@ -827,7 +842,9 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
@@ -837,12 +854,16 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="sendbuf" type="const void*"/>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="sendtag" type="int"/>
     <Arg name="recvbuf" output="true" type="void*"/>
     <Arg input="true" name="recvcount" type="int"/>
     <Arg input="true" name="recvtype" type="MPI_Datatype"/>
-    <Arg input="true" name="source" type="int"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="recvtag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
@@ -852,7 +873,9 @@ for(i = 0; i &lt; n; ++i) {
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
@@ -1212,7 +1235,9 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="buf" type="void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
@@ -1926,7 +1951,9 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
@@ -2345,7 +2372,9 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
@@ -2355,9 +2384,13 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="buf" output="true" type="void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="sendtag" type="int"/>
-    <Arg input="true" name="source" type="int"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="recvtag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
@@ -2367,7 +2400,9 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="buf" type="const void*"/>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
