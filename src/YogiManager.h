@@ -13,6 +13,7 @@ public:
 
     static YogiManager* getInstance();
 
+    void loadMPILibrary();
     int errorToMPI(int yogiMPIError);
     int amodeToMPI(int amode);
     int rootToMPI(int root);
@@ -135,7 +136,7 @@ private:
     std::vector<MPI_File> filePool;
     int numFiles;
     int fileOffset;
-
+    void *libraryHandle;
 };
 
 #endif

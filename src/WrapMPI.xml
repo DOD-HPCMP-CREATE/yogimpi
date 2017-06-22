@@ -6,7 +6,7 @@
   </Function>
   <Function name="MPI_Address">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="location" type="const void*"/>
+    <Arg input="true" name="location" type="void*"/>
     <Arg name="address" output="true" type="MPI_Aint*"/>
   </Function>
   <Function name="MPI_Allgather">
@@ -1093,7 +1093,7 @@ else {
   <Function name="MPI_Type_struct">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_blocklengths" type="const int*"/>
+    <Arg input="true" name="array_of_blocklengths" type="int*"/>
     <Arg input="true" name="array_of_displacements" type="const MPI_Aint*" dims="count"/>
     <Arg input="true" name="array_of_types" type="const MPI_Datatype*" dims="count"/>
     <Arg name="newtype" output="true" type="MPI_Datatype*"/>
@@ -2070,6 +2070,9 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="key" type="char*"/>
   </Function>
   <Function name="MPI_Init_thread">
+    <Code order='first'>
+{manPrefix}loadMPILibrary();
+    </Code>
     <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="argc" type="int*"/>

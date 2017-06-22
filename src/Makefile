@@ -8,13 +8,13 @@ lib: manager
 	$(F90) -c $(FFLAGS) yogimpi_module.f90
 	$(F90) -c $(FFLAGS) yogimpi_functions.f90
 	$(MPICXX) $(LDFLAGS) $(CXXFLAGS) YogiManager.o yogimpi.o \
-               yogimpi_f90bridge.o yogimpi_module.o yogimpi_functions.o \
-               -o libyogimpi.so
+                  yogimpi_f90bridge.o yogimpi_module.o yogimpi_functions.o \
+                  -ldl -o libyogimpi.so
 
 manager: wrap YogiManager.cxx YogiManager.h
 	$(MPICXX) -c $(CXXFLAGS) YogiManager.cxx
 	$(MPICXX) $(CXXFLAGS) test_YogiManager.cxx YogiManager.o \
-               -o test_YogiManager
+                  -ldl -o test_YogiManager
 
 wrap: generate_wrap.py wrap_objects.py WrapMPI.xml  
 	python generate_wrap.py --mpi=$(MPIVERSION) WrapMPI.xml 

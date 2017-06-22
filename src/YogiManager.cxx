@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
+#include <cstdlib>
 #include <iostream>
+#include <dlfcn.h>
 
 const int YogiManager::defaultPoolSize = 100;
 
@@ -223,6 +225,25 @@ YogiManager::YogiManager() {
     datatypePool.at(YogiMPI_SIGNED_CHAR)       = MPI_SIGNED_CHAR;
     datatypePool.at(YogiMPI_WCHAR)             = MPI_WCHAR;
 
+    /* In the case of preloading a library (see below), keep a zero'd pointer
+       handy. */
+    libraryHandle = 0;
+}
+
+/* Some MPI libraries (ahem, ahem, OpenMPI and CRAY) have problems starting
+   up in an environment that uses dlopen to access YogiMPI (i.e. Python
+   extensions). In that case, Yogi may need to dlopen the backend MPI library
+   it hides.  
+*/
+void YogiManager::loadMPILibrary() {
+    char *libraryName = std::getenv("YMPI_LOADLIBRARY");
+    if (libraryName != NULL) {
+        int mode = RTLD_NOW | RTLD_GLOBAL;
+#ifdef RTLD_NOLOAD
+        mode |= RTLD_NOLOAD;
+#endif
+        if (!libraryHandle) libraryHandle = dlopen(libraryName, mode);
+    }
 }
 
 int YogiManager::combinerToYogi(int in_combiner) {

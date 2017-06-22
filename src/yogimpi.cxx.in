@@ -92,6 +92,7 @@ YogiMPI_Aint Yogi_ResolveAint(void *input_pointer) {
 
 int YogiMPI_Init(int* argc, char ***argv)
 { 
+    YogiManager::getInstance()->loadMPILibrary();
     int mpi_err = MPI_Init(argc, argv); 
     return YogiManager::getInstance()->errorToYogi(mpi_err);
 }
