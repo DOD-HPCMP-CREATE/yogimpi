@@ -6,5 +6,6 @@ set     prefix          @INSTALLDIR@
 
 module-whatis   "loads the [module-info name] environment"
 
+setenv YMPIDIR $prefix
 prepend-path PATH $prefix/bin
 prepend-path @LIBPATHVAR@ $prefix/lib
