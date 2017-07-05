@@ -1401,8 +1401,8 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="degrees[]" type="int"/>
     <Arg input="true" name="destinations[]" type="int"/>
     <Arg input="true" name="weights[]" type="int">
-      <Convert pointer="true">MPI_UNWEIGHTED</Convert>
-      <Convert pointer="true">MPI_WEIGHTS_EMPTY</Convert>
+      <Convert pointer="true" cast="int *">MPI_UNWEIGHTED</Convert>
+      <Convert pointer="true" cast="int *">MPI_WEIGHTS_EMPTY</Convert>
     </Arg>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg input="true" name="reorder" type="int"/>
@@ -1414,14 +1414,14 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="indegree" type="int"/>
     <Arg input="true" name="sources[]" type="int"/>
     <Arg input="true" name="sourceweights[]" type="int">
-      <Convert pointer="true">MPI_UNWEIGHTED</Convert>
-      <Convert pointer="true">MPI_WEIGHTS_EMPTY</Convert>
+      <Convert pointer="true" cast="int *">MPI_UNWEIGHTED</Convert>
+      <Convert pointer="true" cast="int *">MPI_WEIGHTS_EMPTY</Convert>
     </Arg>
     <Arg input="true" name="outdegree" type="int"/>
     <Arg input="true" name="destinations[]" type="int"/>
     <Arg input="true" name="destweights[]" type="int">
-      <Convert pointer="true">MPI_UNWEIGHTED</Convert>
-      <Convert pointer="true">MPI_WEIGHTS_EMPTY</Convert>
+      <Convert pointer="true" cast="int *">MPI_UNWEIGHTED</Convert>
+      <Convert pointer="true" cast="int *">MPI_WEIGHTS_EMPTY</Convert>
     </Arg>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg input="true" name="reorder" type="int"/>

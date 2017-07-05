@@ -207,6 +207,7 @@ class GenerateWrap(object):
                         thisArg.post_convert_values.append(val)
                     else:
                         thisArg.pre_convert_values.append(val)
+                    val.cast_type = conv.attrib.get('cast', None)
                 thisFunction.args.append(thisArg)
             self.functions.append(thisFunction)
                
@@ -355,7 +356,11 @@ class GenerateWrap(object):
                 sourceFile.addIf(compareStr)
             else:
                 sourceFile.addElseIf(compareStr)
-            sourceFile.addLines(loopAssignVar + ' = ' + changeValue + ';')
+            castStr = ''
+            if convVal.cast_type:
+                castStr += '(' + convVal.cast_type + ')'
+            sourceFile.addLines(loopAssignVar + ' = ' + castStr + changeValue +\
+                                ';')
             if i == 0:
                 sourceFile.endIf()
             else:
