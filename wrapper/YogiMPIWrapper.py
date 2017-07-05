@@ -9,30 +9,34 @@ import filecmp
 import re
 
 # MPI constants currently supported in Fortran.
-mpiConstants = [ 'MPI_VERSION', 'MPI_SUBVERSION',
-                 'MPI_INTEGER_KIND', 'MPI_OFFSET_KIND', 'MPI_ADDRESS_KIND',
-    'MPI_SUCCESS', 'MPI_ERR_BUFFER', 'MPI_ERR_COUNT', 'MPI_ERR_TYPE',
-    'MPI_ERR_TAG', 'MPI_ERR_COMM', 'MPI_ERR_RANK', 'MPI_ERR_REQUEST',
-    'MPI_ERR_ROOT', 'MPI_ERR_GROUP', 'MPI_ERR_OP', 'MPI_ERR_TOPOLOGY',
-    'MPI_ERR_DIMS', 'MPI_ERR_ARG', 'MPI_ERR_UNKNOWN', 'MPI_ERR_TRUNCATE',
-    'MPI_ERR_OTHER', 'MPI_ERR_INTERN', 'MPI_ERR_PENDING', 'MPI_ERR_IN_STATUS',
-    'MPI_ERR_FILE', 'MPI_ERR_NOT_SAME', 'MPI_ERR_AMODE',
-    'MPI_ERR_UNSUPPORTED_DATAREP', 'MPI_ERR_UNSUPPORTED_OPERATION',
-    'MPI_ERR_NO_SUCH_FILE', 'MPI_ERR_FILE_EXISTS', 'MPI_ERR_BAD_FILE',
-    'MPI_ERR_ACCESS', 'MPI_ERR_NO_SPACE', 'MPI_ERR_QUOTA', 'MPI_ERR_READ_ONLY',
-    'MPI_ERR_FILE_IN_USE', 'MPI_ERR_DUP_DATAREP', 'MPI_ERR_CONVERSION',
-    'MPI_ERR_IO', 'MPI_ERR_LASTCODE', 'MPI_BOTTOM', 'MPI_PROC_NULL',
-    'MPI_ROOT', 'MPI_ANY_SOURCE', 'MPI_ANY_TAG', 'MPI_UNDEFINED',
-    'MPI_BSEND_OVERHEAD', 'MPI_KEYVAL_INVALID', 'MPI_WEIGHTS_EMPTY',
-    'MPI_UNWEIGHTED', 'MPI_MODE_NOCHECK', 'MPI_MODE_NOSTORE',
-    'MPI_MODE_NOPRECEDE', 'MPI_MODE_NOSUCCEED', 'MPI_SEEK_SET', 'MPI_SEEK_CUR',
-    'MPI_SEEK_END', 'MPI_TYPECLASS_REAL', 'MPI_TYPECLASS_COMPLEX',
-    'MPI_MODE_RDONLY', 'MPI_MODE_RDWR', 'MPI_MODE_WRONLY', 'MPI_MODE_CREATE',
-    'MPI_MODE_EXCL', 'MPI_MODE_DELETE_ON_CLOSE',
-    'MPI_MODE_UNIQUE_OPEN', 'MPI_MODE_SEQUENTIAL', 'MPI_MODE_APPEND',
-    'MPI_MAX_INFO_KEY', 'MPI_MAX_INFO_VAL', 'MPI_ORDER_C', 'MPI_ORDER_FORTRAN',
-    'MPI_DISTRIBUTE_BLOCK', 'MPI_DISTRIBUTE_CYCLIC', 'MPI_DISTRIBUTE_NONE',
-    'MPI_DISTRIBUTE_DFLT_DARG', 'MPI_MAX_PROCESSOR_NAME',
+mpiConstants = [ 'MPI_VERSION', 'MPI_SUBVERSION', 'MPI_INTEGER_KIND',
+                 'MPI_OFFSET_KIND', 'MPI_ADDRESS_KIND', 'MPI_SUCCESS',
+                 'MPI_ERR_BUFFER', 'MPI_ERR_COUNT', 'MPI_ERR_TYPE',
+                 'MPI_ERR_TAG', 'MPI_ERR_COMM', 'MPI_ERR_RANK',
+                 'MPI_ERR_REQUEST', 'MPI_ERR_ROOT', 'MPI_ERR_GROUP',
+                 'MPI_ERR_OP', 'MPI_ERR_TOPOLOGY', 'MPI_ERR_DIMS',
+                 'MPI_ERR_ARG', 'MPI_ERR_UNKNOWN', 'MPI_ERR_TRUNCATE',
+                 'MPI_ERR_OTHER', 'MPI_ERR_INTERN', 'MPI_ERR_PENDING',
+                 'MPI_ERR_IN_STATUS', 'MPI_ERR_FILE', 'MPI_ERR_NOT_SAME',
+                 'MPI_ERR_AMODE', 'MPI_ERR_UNSUPPORTED_DATAREP',
+                 'MPI_ERR_UNSUPPORTED_OPERATION', 'MPI_ERR_NO_SUCH_FILE',
+                 'MPI_ERR_FILE_EXISTS', 'MPI_ERR_BAD_FILE', 'MPI_ERR_ACCESS',
+                 'MPI_ERR_NO_SPACE', 'MPI_ERR_QUOTA', 'MPI_ERR_READ_ONLY',
+                 'MPI_ERR_FILE_IN_USE', 'MPI_ERR_DUP_DATAREP',
+                 'MPI_ERR_CONVERSION', 'MPI_ERR_IO', 'MPI_ERR_LASTCODE',
+                 'MPI_BOTTOM', 'MPI_PROC_NULL', 'MPI_ROOT', 'MPI_ANY_SOURCE',
+                 'MPI_ANY_TAG', 'MPI_UNDEFINED', 'MPI_BSEND_OVERHEAD',
+                 'MPI_KEYVAL_INVALID', 'MPI_WEIGHTS_EMPTY', 'MPI_UNWEIGHTED',
+                 'MPI_MODE_NOCHECK', 'MPI_MODE_NOSTORE', 'MPI_MODE_NOPRECEDE',
+                 'MPI_MODE_NOSUCCEED', 'MPI_SEEK_SET', 'MPI_SEEK_CUR',
+                 'MPI_SEEK_END', 'MPI_TYPECLASS_REAL', 'MPI_TYPECLASS_COMPLEX',
+                 'MPI_MODE_RDONLY', 'MPI_MODE_RDWR', 'MPI_MODE_WRONLY',
+                 'MPI_MODE_CREATE', 'MPI_MODE_EXCL', 'MPI_MODE_DELETE_ON_CLOSE',
+                 'MPI_MODE_UNIQUE_OPEN', 'MPI_MODE_SEQUENTIAL',
+                 'MPI_MODE_APPEND', 'MPI_MAX_INFO_KEY', 'MPI_MAX_INFO_VAL',
+                 'MPI_ORDER_C', 'MPI_ORDER_FORTRAN', 'MPI_DISTRIBUTE_BLOCK',
+                 'MPI_DISTRIBUTE_CYCLIC', 'MPI_DISTRIBUTE_NONE',
+                 'MPI_DISTRIBUTE_DFLT_DARG', 'MPI_MAX_PROCESSOR_NAME',
     'MPI_MAX_ERROR_STRING', 'MPI_MAX_PORT_NAME', 'MPI_MAX_OBJECT_NAME',
     'MPI_CHARACTER', 'MPI_INTEGER', 'MPI_REAL', 'MPI_DOUBLE_PRECISION',
     'MPI_BYTE', 'MPI_PACKED', 'MPI_COMPLEX', 'MPI_DOUBLE_COMPLEX',
@@ -66,7 +70,10 @@ mpiObjects = [ 'MPI_Comm', 'MPI_Request', 'MPI_Op', 'MPI_Info', 'MPI_Datatype',
                'MPI_Group', 'MPI_Status', 'MPI_File', 'MPI_Win',
                'MPI_Errhandler' ]
 
+# MPI time functions, which are the only functions to return a non-integer
+# value.
 mpiTimeFunctions = [ 'MPI_Wtime', 'MPI_Wtick' ]
+
 # MPI functions currently supported in Fortran.
 mpiFunctions = [ 'MPI_Init', 'MPI_Finalize', 'MPI_Get_processor_name',
 'MPI_Abort', 'MPI_Address', 'MPI_Allgather',
@@ -207,6 +214,8 @@ class YogiMPIWrapper(object):
         self.newFile = None
         self.newPath = None
         self.namesOutput = False
+        # Whether or not Yogi does only preprocessing and stops sending
+        # the file to the compiler.
         self.preprocessOnly = False
         self.mpi_constants = mpiConstants 
         self.mpi_objects = mpiObjects 
@@ -239,7 +248,7 @@ class YogiMPIWrapper(object):
         if diagMode:
             self._showCompilerString()
         else:
-            self.loadSupported()
+            self.createRegExes()
             self.doWrap()
 
     def getRC(self):
@@ -275,7 +284,10 @@ class YogiMPIWrapper(object):
                       r')([\s]*\(|[\s]*&$)'
         return re.compile(regexString, re.IGNORECASE)
 
-    def loadSupported(self):
+    ## Creates the regular expressions needed to search and replace MPI
+    #  definitions with Fortran files. This is only needed within Fortran as
+    #  C and C++ have mpitoyogi.h transformations.
+    def createRegExes(self):
         if self.compilerLang == 'Fortran':
             for aPattern in self.mpi_constants:
                 regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
@@ -426,7 +438,7 @@ class YogiMPIWrapper(object):
             print "YogiMPI encountered an error preprocessing Fortran source."
             raise
 
-    ## Preprocesses a Fortran file, changing MPI_ to YogiMPI_ wherever
+    ## Preprocesses a Fortran file, changing MPI_ to YogiFortran_ wherever
     #  used.  A temporary file is created with the new contents.
     #  Returns True on False as to whether the file was ever changed.
     def preprocessFortran(self, inPlace=False):
