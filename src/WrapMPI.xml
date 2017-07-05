@@ -1872,7 +1872,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Iallreduce">
     <Version>3</Version>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
+    <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
     </Arg>
     <Arg name="recvbuf" output="true" type="void*"/>
