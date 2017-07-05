@@ -213,6 +213,11 @@
 
 ! Extra communicators defined in C but here (as specified by MPICH2)
       integer, parameter :: YogiMPI_WCHAR = 39
+      integer, parameter :: YogiMPI_C_BOOL = 40
+      integer, parameter :: YogiMPI_C_FLOAT_COMPLEX = 41
+      integer, parameter :: YogiMPI_C_COMPLEX = 42
+      integer, parameter :: YogiMPI_C_DOUBLE_COMPLEX = 43
+      integer, parameter :: YogiMPI_C_LONG_DOUBLE_COMPLEX = 44
 
 ! reserved communicators (C and Fortran)
       integer, parameter :: YogiMPI_COMM_WORLD = 1

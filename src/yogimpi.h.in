@@ -274,6 +274,13 @@ typedef int YogiMPI_Win;
 #define YogiMPI_SIGNED_CHAR 38
 #define YogiMPI_WCHAR 39
 
+/* C99 types */
+#define YogiMPI_C_BOOL 40
+#define YogiMPI_C_FLOAT_COMPLEX 41
+#define YogiMPI_C_COMPLEX 42
+#define YogiMPI_C_DOUBLE_COMPLEX 43
+#define YogiMPI_C_LONG_DOUBLE_COMPLEX 44
+
 /* reserved communicators (C and Fortran) */
 #define YogiMPI_COMM_WORLD 1
 #define YogiMPI_COMM_SELF 2
