@@ -98,9 +98,17 @@ private:
     template <typename T> 
     int insertIntoPool(std::vector<T> &pool, T newItem, T marker, int offset,
                        int &counter);
+    template <typename T, typename V>
+    int insertIntoPool(std::vector<T> &pool, T newItem, V marker, int offset,
+                       int &counter);
+
     template <typename T>
     void removeFromPool(std::vector<T> &pool, int index, T marker, int offset,
                         int &counter);
+    template <typename T, typename V>
+    void removeFromPool(std::vector<T> &pool, int index, V marker, int offset,
+                       int &counter);
+
     template <typename T>
     T fetchFromPool(std::vector<T> &pool, int index);
 

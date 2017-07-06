@@ -563,6 +563,13 @@ int YogiManager::rootToMPI(int root) {
     return root;
 }
 
+template <typename T, typename V>
+int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker,
+                                int offset, int &counter) {
+    insertIntoPool(pool, newItem, static_cast<T>(marker), offset, counter);
+}
+
+
 template <typename T>
 int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, T marker,
                                 int offset, int &counter) {
@@ -602,6 +609,12 @@ int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, T marker,
     // Bump up the counter and return the index.
     counter++; 
     return delta;
+}
+
+template <typename T, typename V>
+void YogiManager::removeFromPool(std::vector<T> &pool, int index, V marker,
+                                 int offset, int &counter) {
+    removeFromPool(pool, index, static_cast<T>(marker), offset, counter);
 }
 
 template <typename T>
