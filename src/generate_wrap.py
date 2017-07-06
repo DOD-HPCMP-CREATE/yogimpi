@@ -208,6 +208,7 @@ class GenerateWrap(object):
                     else:
                         thisArg.pre_convert_values.append(val)
                     val.cast_type = conv.attrib.get('cast', None)
+                    val.version = conv.attrib.get('version', 2)
                 thisFunction.args.append(thisArg)
             self.functions.append(thisFunction)
                
@@ -246,6 +247,11 @@ class GenerateWrap(object):
                     printName = anArg.mpi_name
             else:
                 printName = anArg.call_name
+                if anArg.c_api_type.startswith('const'):
+                    # We have to cast away the const in order to maintain
+                    # compatibility between MPI 2 and MPI 3. Nasty but
+                    # effective solution.
+                    printName = '(' + anArg.type + ')' + anArg.call_name
             if doIgnore:
                 if aFunc.status_ignore_arg:
                     if i == aFunc.status_ignore_arg:
@@ -328,8 +334,11 @@ class GenerateWrap(object):
             else:
                 compareVar = anArg.mpi_name
                 assignVar = anArg.call_name
-        
+       
+        pluralVal = False 
         for i, convVal in enumerate(values):
+            if convVal.version > self.mpiVersion:
+                continue 
             loopAssignVar = assignVar
             loopCompareVar = compareVar
             if before:
@@ -352,7 +361,7 @@ class GenerateWrap(object):
                 raise ValueError(errMsg)
 
             compareStr = loopCompareVar + ' == ' + compareValue
-            if i == 0:
+            if not pluralVal:
                 sourceFile.addIf(compareStr)
             else:
                 sourceFile.addElseIf(compareStr)
@@ -361,10 +370,11 @@ class GenerateWrap(object):
                 castStr += '(' + convVal.cast_type + ')'
             sourceFile.addLines(loopAssignVar + ' = ' + castStr + changeValue +\
                                 ';')
-            if i == 0:
+            if not pluralVal:
                 sourceFile.endIf()
             else:
                 sourceFile.endElseIf()
+            pluralVal = True
 
     ## Appends the generated source code lines to convert an MPI item back and
     #  forth between Yogi and MPI types. 

@@ -109,6 +109,8 @@ class MPIConvertValue(object):
         self.is_pointer = False
         # Whether the object requires a type casting.
         self.cast_type = None
+        # What version of MPI this conversion value appears.
+        self.version = 2
 
 class MPIFunction(object):
     orders = [ 'first', 'beforecall', 'aftercall', 'beforereturn' ]
