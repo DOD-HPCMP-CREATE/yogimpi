@@ -4,6 +4,32 @@
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="errorcode" type="int"/>
   </Function>
+  <Function name="MPI_Accumulate">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="origin_addr" type="void*"/>
+    <Arg input="true" name="origin_count" type="int"/>
+    <Arg input="true" name="origin_datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="target_rank" type="int"/>
+    <Arg input="true" name="target_disp" type="MPI_Aint"/>
+    <Arg input="true" name="target_count" type="int"/>
+    <Arg input="true" name="target_datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="op" type="MPI_Op"/>
+    <Arg input="true" name="win" type="MPI_Win"/>
+  </Function>
+  <Function name="MPI_Add_error_class">
+    <ReturnType>int</ReturnType>
+    <Arg name="errorclass" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Add_error_code">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="errorclass" type="int"/>
+    <Arg name="errorcode" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Add_error_string">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="errorcode" type="int"/>
+    <Arg input="true" name="string" type="char*"/>
+  </Function>
   <Function name="MPI_Address">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="location" type="void*"/>
@@ -33,6 +59,12 @@
     <Arg input="true" name="displs" type="const int*"/>
     <Arg input="true" name="recvtype" type="MPI_Datatype"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
+  <Function name="MPI_Alloc_mem">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="size" type="MPI_Aint"/>
+    <Arg input="true" name="info" type="MPI_Info"/>
+    <Arg name="baseptr" output="true" type="void*"/>
   </Function>
   <Function name="MPI_Allreduce">
     <ReturnType>int</ReturnType>
@@ -71,6 +103,25 @@
     <Arg input="true" name="recvtype" type="MPI_Datatype"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
+  <Function name="MPI_Alltoallw">
+    <ReturnType>int</ReturnType>
+    <Code order="first">
+int comm_size;
+MPI_Comm manual_conv_comm = {manPrefix}commToMPI(comm);
+MPI_Comm_size(manual_conv_comm, &amp;comm_size);
+    </Code>
+    <Arg input="true" name="sendbuf" type="void*">
+      <Convert pointer="true">MPI_IN_PLACE</Convert>
+    </Arg>
+    <Arg input="true" name="sendcounts[]" type="int"/>
+    <Arg input="true" name="sdispls[]" type="int"/>
+    <Arg input="true" name="sendtypes[]" type="MPI_Datatype" dims="comm_size"/>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="recvcounts[]" type="int"/>
+    <Arg input="true" name="rdispls[]" type="int"/>
+    <Arg input="true" name="recvtypes[]" type="MPI_Datatype" dims="comm_size"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
   <Function name="MPI_Attr_delete">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
@@ -79,7 +130,7 @@
   <Function name="MPI_Attr_get">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="keyval" type="int" class="commattr" />
+    <Arg input="true" name="keyval" type="int" class="commattr"/>
     <Arg name="attribute_val" output="true" type="void*"/>
     <Arg name="flag" output="true" type="int*"/>
   </Function>
@@ -112,6 +163,18 @@
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
+  <Function name="MPI_Bsend_init">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
+  </Function>
   <Function name="MPI_Buffer_attach">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="buffer" type="void*"/>
@@ -140,1107 +203,7 @@
     <Arg input="true" name="dims[]" type="int"/>
     <Arg input="true" name="periods[]" type="int"/>
     <Arg input="true" name="reorder" type="int"/>
-    <Arg name="comm_cart" output="true" type="MPI_Comm*" />
-  </Function>
-  <Function name="MPI_Comm_call_errhandler">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="errorcode" type="int" class="error"/>
-  </Function>
-  <Function name="MPI_Comm_compare">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm1" type="MPI_Comm"/>
-    <Arg input="true" name="comm2" type="MPI_Comm"/>
-    <Arg name="result" output="true" type="int*" class="comparison" />
-  </Function>
-  <Function name="MPI_Comm_create">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg name="newcomm" output="true" type="MPI_Comm*"/>
-  </Function>
-  <Function name="MPI_Comm_create_errhandler">
-    <FortranSupport>no</FortranSupport>
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm_errhandler_fn" type="MPI_Comm_errhandler_function*"/>
-    <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
-  </Function>
-  <Function name="MPI_Comm_create_keyval">
-    <FortranSupport>no</FortranSupport>
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm_copy_attr_fn" type="MPI_Comm_copy_attr_function*">
-      <Convert pointer="true">MPI_COMM_NULL_COPY_FN</Convert>
-      <Convert pointer="true">MPI_COMM_DUP_FN</Convert>
-    </Arg>
-    <Arg input="true" name="comm_delete_attr_fn" type="MPI_Comm_delete_attr_function*">
-      <Convert pointer="true">MPI_COMM_NULL_DELETE_FN</Convert>
-    </Arg>
-    <Arg name="comm_keyval" output="true" type="int*"/>
-    <Arg input="true" name="extra_state" type="void*"/>
-  </Function>
-  <Function name="MPI_Comm_delete_attr">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="comm_keyval" type="int"/>
-  </Function>
-  <Function name="MPI_Comm_dup">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="newcomm" output="true" type="MPI_Comm*"/>
-  </Function>
-  <Function name="MPI_Comm_free">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm*" free="true" />
-  </Function>
-  <Function name="MPI_Comm_free_keyval">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" output="true" name="comm_keyval" type="int*">
-      <Convert trigger="post">MPI_KEYVAL_INVALID</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Comm_get_attr">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="comm_keyval" type="int" class="commattr"/>
-    <Arg name="attribute_val" output="true" type="void*"/>
-    <Arg name="flag" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Comm_get_errhandler">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="errhandler" output="true" type="MPI_Errhandler*">
-      <Convert trigger="post">MPI_ERRHANDLER_NULL</Convert>
-      <Convert trigger="post">MPI_ERRORS_ARE_FATAL</Convert>
-      <Convert trigger="post">MPI_ERRORS_RETURN</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Comm_group">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="group" output="true" type="MPI_Group*"/>
-  </Function>
-  <Function name="MPI_Comm_rank">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="rank" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Comm_remote_size">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="size" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Comm_set_attr">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="comm_keyval" type="int"/>
-    <Arg input="true" name="attribute_val" type="void*"/>
-  </Function>
-  <Function name="MPI_Comm_set_errhandler">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="errhandler" type="MPI_Errhandler"/>
-  </Function>
-  <Function name="MPI_Comm_size">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="size" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Comm_split">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="color" type="int">
-      <Convert>MPI_UNDEFINED</Convert>
-    </Arg>
-    <Arg input="true" name="key" type="int"/>
-    <Arg name="newcomm" output="true" type="MPI_Comm*">
-      <Convert trigger="post">MPI_COMM_NULL</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Dims_create">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="nnodes" type="int"/>
-    <Arg input="true" name="ndims" type="int"/>
-    <Arg name="dims[]" type="int"/>
-  </Function>
-  <Function name="MPI_Errhandler_free">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="errhandler" type="MPI_Errhandler*" free="true"/>
-  </Function>
-  <Function name="MPI_Errhandler_set">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="errhandler" type="MPI_Errhandler"/>
-  </Function>
-  <!-- Implemented manually
-  <Function name="MPI_Error_class">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="errorcode" type="int"/>
-    <Arg name="errorclass" output="true" type="int*"/>
-  </Function>
-  -->
-  <Function name="MPI_Error_string">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="errorcode" type="int" class="error"/>
-    <Arg name="string" output="true" type="char*"/>
-    <Arg name="resultlen" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_File_close">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File*" free="true"/>
-  </Function>
-  <Function name="MPI_File_delete">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="filename" type="char*"/>
-    <Arg name="info" type="MPI_Info"/>
-  </Function>
-  <Function name="MPI_File_get_atomicity">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="flag" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_File_get_info">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="info_used" output="true" type="MPI_Info*"/>
-  </Function>
-  <Function name="MPI_File_get_size">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="size" output="true" type="MPI_Offset*"/>
-  </Function>
-  <Function name="MPI_File_open">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="filename" type="char*"/>
-    <Arg name="amode" type="int" class="amode"/>
-    <Arg name="info" type="MPI_Info"/>
-    <Arg name="fh" output="true" type="MPI_File*"/>
-  </Function>
-  <Function name="MPI_File_read">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="buf" output="true" type="void*"/>
-    <Arg name="count" type="int"/>
-    <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_File_read_all">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="buf" output="true" type="void*"/>
-    <Arg name="count" type="int"/>
-    <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_File_read_at">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="offset" type="MPI_Offset"/>
-    <Arg name="buf" output="true" type="void*"/>
-    <Arg name="count" type="int"/>
-    <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_File_read_at_all">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="offset" type="MPI_Offset"/>
-    <Arg name="buf" output="true" type="void*"/>
-    <Arg name="count" type="int"/>
-    <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_File_seek">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="offset" type="MPI_Offset"/>
-    <Arg name="whence" type="int" class="whence" />
-  </Function>
-  <Function name="MPI_File_set_atomicity">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="flag" type="int"/>
-  </Function>
-  <Function name="MPI_File_set_size">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="size" type="MPI_Offset"/>
-  </Function>
-  <Function name="MPI_File_set_view">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="disp" type="MPI_Offset">
-      <Convert>MPI_DISPLACEMENT_CURRENT</Convert>
-    </Arg>
-    <Arg name="etype" type="MPI_Datatype"/>
-    <Arg name="filetype" type="MPI_Datatype"/>
-    <Arg name="datarep" type="char*"/>
-    <Arg name="info" type="MPI_Info"/>
-  </Function>
-  <Function name="MPI_File_sync">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-  </Function>
-  <Function name="MPI_File_write">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="buf" type="void*"/>
-    <Arg name="count" type="int"/>
-    <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_File_write_all">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="buf" type="void*"/>
-    <Arg name="count" type="int"/>
-    <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_File_write_at">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="offset" type="MPI_Offset"/>
-    <Arg name="buf" type="void*"/>
-    <Arg name="count" type="int"/>
-    <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_File_write_at_all">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="offset" type="MPI_Offset"/>
-    <Arg name="buf" type="void*"/>
-    <Arg name="count" type="int"/>
-    <Arg name="datatype" type="MPI_Datatype"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_Finalized">
-    <ReturnType>int</ReturnType>
-    <Arg name="flag" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Gather">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="const void*">
-      <Convert pointer="true">MPI_IN_PLACE</Convert>
-    </Arg>
-    <Arg input="true" name="sendcount" type="int"/>
-    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
-    <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcount" type="int"/>
-    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
-    <Arg input="true" name="root" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Gatherv">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="const void*">
-      <Convert pointer="true">MPI_IN_PLACE</Convert>
-    </Arg>
-    <Arg input="true" name="sendcount" type="int"/>
-    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
-    <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts" type="const int*"/>
-    <Arg input="true" name="displs" type="const int*"/>
-    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
-    <Arg input="true" name="root" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Get_address">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="location" type="void*"/>
-    <Arg name="address" output="true" type="MPI_Aint*"/>
-  </Function>
-  <Function name="MPI_Get_count">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="status" type="const MPI_Status*"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="count" output="true" type="int*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Get_elements">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="status" type="const MPI_Status*"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="count" output="true" type="int*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
-  </Function>
-  <!-- Implemented manually
-  <Function name="MPI_Get_processor_name">
-    <ReturnType>int</ReturnType>
-    <Arg name="name" output="true" type="char*"/>
-    <Arg name="resultlen" output="true" type="int*"/>
-  </Function>
-  -->
-  <Function name="MPI_Group_excl">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks[]" type="int"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*"/>
-  </Function>
-  <Function name="MPI_Group_free">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="group" type="MPI_Group*" free="true"/>
-  </Function>
-  <Function name="MPI_Group_incl">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks[]" type="int"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*">
-      <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Group_range_excl">
-    <FortranSupport>no</FortranSupport>
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranges[][3]" type="int"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*"/>
-  </Function>
-  <Function name="MPI_Group_range_incl">
-    <FortranSupport>no</FortranSupport>
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranges[][3]" type="int"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*"/>
-  </Function>
-  <Function name="MPI_Group_rank">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg name="rank" output="true" type="int*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Group_size">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="group" type="MPI_Group" />
-    <Arg input="true" name="size" type="int*">
-      <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Group_translate_ranks">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="group1" type="MPI_Group"/>
-    <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks1[]" type="int"/>
-    <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="ranks2[]" output="true" type="int" />
-    <Code order='beforereturn'>
-int i;
-for(i = 0; i &lt; n; ++i) {
-    if (ranks2[i] == MPI_UNDEFINED) ranks2[i] = YogiMPI_UNDEFINED;
-}
-    </Code>
-  </Function>
-  <Function name="MPI_Info_create">
-    <ReturnType>int</ReturnType>
-    <Arg name="info" output="true" type="MPI_Info*"/>
-  </Function>
-  <Function name="MPI_Info_dup">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg name="newinfo" output="true" type="MPI_Info*"/>
-  </Function>
-  <Function name="MPI_Info_free">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="info" type="MPI_Info*" free="true"/>
-  </Function>
-  <Function name="MPI_Info_get">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg input="true" name="key" type="char*"/>
-    <Arg input="true" name="valuelen" type="int"/>
-    <Arg name="value" output="true" type="char*"/>
-    <Arg name="flag" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Info_get_nkeys">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg name="nkeys" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Info_get_nthkey">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg input="true" name="n" type="int"/>
-    <Arg name="key" output="true" type="char*"/>
-  </Function>
-  <Function name="MPI_Info_get_valuelen">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg input="true" name="key" type="char*"/>
-    <Arg name="valuelen" output="true" type="int*"/>
-    <Arg name="flag" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Info_set">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg input="true" name="key" type="char*"/>
-    <Arg input="true" name="value" type="char*"/>
-  </Function>
-  <Function name="MPI_Initialized">
-    <ReturnType>int</ReturnType>
-    <Arg name="flag" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Intercomm_create">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="local_comm" type="MPI_Comm"/>
-    <Arg input="true" name="local_leader" type="int"/>
-    <Arg input="true" name="peer_comm" type="MPI_Comm"/>
-    <Arg input="true" name="remote_leader" type="int"/>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg name="newintercomm" output="true" type="MPI_Comm*"/>
-  </Function>
-  <Function name="MPI_Iprobe">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="source" type="int">
-      <Convert>MPI_ANY_SOURCE</Convert>
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int">
-      <Convert>MPI_ANY_TAG</Convert>
-    </Arg>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="flag" output="true" type="int*"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_Irecv">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="source" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-      <Convert>MPI_ANY_SOURCE</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int">
-      <Convert>MPI_ANY_TAG</Convert>
-    </Arg>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="request" output="true" type="MPI_Request*"/>
-  </Function>
-  <Function name="MPI_Irsend">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="const void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="request" output="true" type="MPI_Request*"/>
-  </Function>
-  <Function name="MPI_Isend">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="const void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="request" output="true" type="MPI_Request*"/>
-  </Function>
-  <Function name="MPI_Issend">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="const void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="request" output="true" type="MPI_Request*"/>
-  </Function>
-  <Function name="MPI_Keyval_create">
-    <FortranSupport>no</FortranSupport>
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="copy_fn" type="MPI_Copy_function*">
-      <Convert pointer="true">MPI_NULL_COPY_FN</Convert>
-      <Convert pointer="true">MPI_DUP_FN</Convert>
-    </Arg>
-    <Arg input="true" name="delete_fn" type="MPI_Delete_function*">
-      <Convert pointer="true">MPI_NULL_DELETE_FN</Convert>
-    </Arg>
-    <Arg name="keyval" output="true" type="int*"/>
-    <Arg input="true" name="extra_state" type="void*"/>
-  </Function>
-  <Function name="MPI_Keyval_free">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" output="true" name="keyval" type="int*">
-      <Convert trigger="post">MPI_KEYVAL_INVALID</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Op_create">
-    <FortranSupport>no</FortranSupport>
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="user_fn" type="MPI_User_function*"/>
-    <Arg input="true" name="commute" type="int"/>
-    <Arg name="op" output="true" type="MPI_Op*"/>
-  </Function>
-  <Function name="MPI_Op_free">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="op" type="MPI_Op*" free="true"/>
-  </Function>
-  <Function name="MPI_Pack">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="inbuf" type="void*"/>
-    <Arg input="true" name="incount" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="outbuf" output="true" type="void*"/>
-    <Arg input="true" name="outsize" type="int"/>
-    <Arg name="position" input="true" output="true" type="int*"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Pack_size">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="incount" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="size" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Pcontrol">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="level" type="int"/>
-  </Function>
-  <Function name="MPI_Probe">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="source" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-      <Convert>MPI_ANY_SOURCE</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int">
-      <Convert>MPI_ANY_TAG</Convert>
-    </Arg>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_Recv">
-    <ReturnType>int</ReturnType>
-    <Arg name="buf" output="true" type="void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="source" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-      <Convert>MPI_ANY_SOURCE</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int">
-      <Convert>MPI_ANY_TAG</Convert>
-    </Arg>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_Recv_init">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" output="true" name="buf" type="void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="source" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="request" output="true" type="MPI_Request*"/>
-  </Function>
-  <Function name="MPI_Reduce">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*">
-      <Convert pointer="true">MPI_IN_PLACE</Convert>
-    </Arg>
-    <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="op" type="MPI_Op"/>
-    <Arg input="true" name="root" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Reduce_scatter">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="const void*">
-      <Convert pointer="true">MPI_IN_PLACE</Convert>
-    </Arg>
-    <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts[]" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="op" type="MPI_Op"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Request_free">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" output="true" name="request" type="MPI_Request*" free="true"/>
-  </Function>
-  <Function name="MPI_Rsend">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="const void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Scan">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="const void*">
-      <Convert pointer="true">MPI_IN_PLACE</Convert>
-    </Arg>
-    <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="op" type="MPI_Op"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Scatter">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="const void*">
-      <Convert pointer="true">MPI_IN_PLACE</Convert>
-    </Arg>
-    <Arg input="true" name="sendcount" type="int"/>
-    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
-    <Arg name="recvbuf" output="true" type="void*" />
-    <Arg input="true" name="recvcount" type="int"/>
-    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
-    <Arg input="true" name="root" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Scatterv">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="const void*">
-      <Convert pointer="true">MPI_IN_PLACE</Convert>
-    </Arg>
-    <Arg input="true" name="sendcounts" type="const int*"/>
-    <Arg input="true" name="displs" type="const int*"/>
-    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
-    <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcount" type="int"/>
-    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
-    <Arg input="true" name="root" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Send">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="const void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Send_init">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="const void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="request" output="true" type="MPI_Request*"/>
-  </Function>
-  <Function name="MPI_Sendrecv">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="const void*"/>
-    <Arg input="true" name="sendcount" type="int"/>
-    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="sendtag" type="int"/>
-    <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcount" type="int"/>
-    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
-    <Arg input="true" name="source" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="recvtag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-  </Function>
-  <Function name="MPI_Ssend">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="const void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Startall">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" output="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
-  </Function>
-  <Function name="MPI_Test">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="request" type="MPI_Request*" />
-    <Arg name="flag" output="true" type="int*"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-    <Code order="beforereturn">
-if (conv_request == MPI_REQUEST_NULL) {
-    *request = {manPrefix}unmapRequest(*request);
-}
-    </Code>
-  </Function>
-  <Function name="MPI_Test_cancelled">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="status" type="const MPI_Status*"/>
-    <Arg name="flag" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Testall">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
-    <Arg name="flag" output="true" type="int*"/>
-    <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="count"/>
-    <Code order="aftercall">
-int i;
-for(i = 0; i &lt; count; ++i) {
-    if(conv_array_of_requests[i] == MPI_REQUEST_NULL) {
-        array_of_requests[i] = {manPrefix}unmapRequest(array_of_requests[i]);
-    }
-}
-    </Code>
-  </Function>
-  <Function name="MPI_Testany">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
-    <Arg name="indx" output="true" type="int*" />
-    <Arg name="flag" output="true" type="int*"/>
-    <Arg name="status" output="true" type="MPI_Status*"/>
-    <Code order="aftercall">
-if (*indx == MPI_UNDEFINED) {
-    *indx = YogiMPI_UNDEFINED;
-}
-else {
-    if(conv_array_of_requests[*indx] == MPI_REQUEST_NULL) {
-        array_of_requests[*indx] = {manPrefix}unmapRequest(array_of_requests[*indx]);
-    }
-}
-    </Code>
-  </Function>
-  <Function name="MPI_Testsome">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="incount" type="int"/>
-    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="incount"/>
-    <Arg name="outcount" output="true" type="int*" />
-    <Arg name="array_of_indices[]" output="true" type="int"/>
-    <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="incount"/>
-    <Code order="aftercall">
-if (*outcount == MPI_UNDEFINED) {
-    *outcount = YogiMPI_UNDEFINED;
-}
-else {
-    int i;
-    for(i = 0; i &lt; *outcount; ++i) {
-        int requestIndex = array_of_indices[i];
-        if(conv_array_of_requests[requestIndex] == MPI_REQUEST_NULL) {
-            array_of_requests[requestIndex] = {manPrefix}unmapRequest(array_of_requests[requestIndex]);
-        }
-    }
-}
-    </Code>
-  </Function>
-  <Function name="MPI_Type_commit">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="datatype" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_contiguous">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_create_hindexed">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_blocklengths[]" type="int"/>
-    <Arg input="true" name="array_of_displacements[]" type="MPI_Aint" dims="count"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_create_hvector">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="blocklength" type="int"/>
-    <Arg input="true" name="stride" type="MPI_Aint"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_create_indexed_block">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="blocklength" type="int"/>
-    <Arg input="true" name="array_of_displacements[]" type="int"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_create_resized">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg input="true" name="lb" type="MPI_Aint"/>
-    <Arg input="true" name="extent" type="MPI_Aint"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_create_struct">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_blocklengths[]" type="int"/>
-    <Arg input="true" name="array_of_displacements[]" type="MPI_Aint" dims="count"/>
-    <Arg input="true" name="array_of_types[]" type="MPI_Datatype" dims="count"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_create_subarray">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="ndims" type="int"/>
-    <Arg input="true" name="array_of_sizes[]" type="int"/>
-    <Arg input="true" name="array_of_subsizes[]" type="int"/>
-    <Arg input="true" name="array_of_starts[]" type="int"/>
-    <Arg input="true" name="order" type="int">
-      <Convert>MPI_ORDER_C</Convert>
-      <Convert>MPI_ORDER_FORTRAN</Convert>
-    </Arg>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_dup">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_extent">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="extent" output="true" type="MPI_Aint*"/>
-  </Function>
-  <Function name="MPI_Type_free">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="datatype" type="MPI_Datatype*" free="true"/>
-  </Function>
-  <Function name="MPI_Type_get_envelope">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="num_integers" output="true" type="int*"/>
-    <Arg name="num_addresses" output="true" type="int*"/>
-    <Arg name="num_datatypes" output="true" type="int*"/>
-    <Arg name="combiner" output="true" type="int*" class="combiner"/>
-  </Function>
-  <Function name="MPI_Type_get_extent">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="lb" output="true" type="MPI_Aint*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
-    <Arg name="extent" output="true" type="MPI_Aint*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Type_get_true_extent">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="true_lb" output="true" type="MPI_Aint*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
-    <Arg name="true_extent" output="true" type="MPI_Aint*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Type_hindexed">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_blocklengths" type="int*"/>
-    <Arg input="true" name="array_of_displacements" type="MPI_Aint*" dims="count"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_hvector">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="blocklength" type="int"/>
-    <Arg input="true" name="stride" type="MPI_Aint"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_indexed">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_blocklengths" type="const int*"/>
-    <Arg input="true" name="array_of_displacements" type="const int*"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_size">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg name="size" output="true" type="int*">
-      <Convert trigger="post">MPI_UNDEFINED</Convert>
-    </Arg>
-  </Function>
-  <Function name="MPI_Type_struct">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_blocklengths" type="int*"/>
-    <Arg input="true" name="array_of_displacements" type="const MPI_Aint*" dims="count"/>
-    <Arg input="true" name="array_of_types" type="const MPI_Datatype*" dims="count"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Type_vector">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="blocklength" type="int"/>
-    <Arg input="true" name="stride" type="int"/>
-    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
-    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
-  </Function>
-  <Function name="MPI_Unpack">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="inbuf" type="const void*"/>
-    <Arg input="true" name="insize" type="int"/>
-    <Arg name="position" type="int*"/>
-    <Arg name="outbuf" output="true" type="void*"/>
-    <Arg input="true" name="outcount" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Wait">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="request" type="MPI_Request*" />
-    <Arg name="status" output="true" type="MPI_Status*"/>
-    <Code order="beforereturn">
-if (conv_request == MPI_REQUEST_NULL) {
-    *request = {manPrefix}unmapRequest(*request);
-}
-    </Code> 
-  </Function>
-  <Function name="MPI_Waitall">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
-    <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="count"/>
-    <Code order="aftercall">
-int i;
-for(i = 0; i &lt; count; ++i) {
-    if(conv_array_of_requests[i] == MPI_REQUEST_NULL) {
-        array_of_requests[i] = {manPrefix}unmapRequest(array_of_requests[i]);
-    }
-}
-    </Code>
-  </Function>
-  <Function name="MPI_Waitany">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
-    <Arg name="indx" output="true" type="int*" />
-    <Arg name="status" output="true" type="MPI_Status*"/>
-    <Code order="aftercall">
-if (*indx == MPI_UNDEFINED) {
-    *indx = YogiMPI_UNDEFINED;
-}
-else {
-    if(conv_array_of_requests[*indx] == MPI_REQUEST_NULL) {
-        array_of_requests[*indx] = {manPrefix}unmapRequest(array_of_requests[*indx]);
-    }
-}
-    </Code>
-  </Function>
-  <Function name="MPI_Waitsome">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="incount" type="int"/>
-    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="incount"/>
-    <Arg name="outcount" output="true" type="int*" />
-    <Arg name="array_of_indices[]" output="true" type="int"/>
-    <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="incount"/>
-    <Code order="aftercall">
-if (*outcount == MPI_UNDEFINED) {
-    *outcount = YogiMPI_UNDEFINED;
-}
-else {
-    int i; 
-    for(i = 0; i &lt; *outcount; ++i) {
-        int requestIndex = array_of_indices[i];
-        if(conv_array_of_requests[requestIndex] == MPI_REQUEST_NULL) {
-            array_of_requests[requestIndex] = {manPrefix}unmapRequest(array_of_requests[requestIndex]);
-        }
-    }
-}
-    </Code>
-  </Function>
-  <Function name="MPI_Accumulate">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="origin_addr" type="void*"/>
-    <Arg input="true" name="origin_count" type="int"/>
-    <Arg input="true" name="origin_datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="target_rank" type="int"/>
-    <Arg input="true" name="target_disp" type="MPI_Aint"/>
-    <Arg input="true" name="target_count" type="int"/>
-    <Arg input="true" name="target_datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="op" type="MPI_Op"/>
-    <Arg input="true" name="win" type="MPI_Win"/>
-  </Function>
-  <Function name="MPI_Add_error_class">
-    <ReturnType>int</ReturnType>
-    <Arg name="errorclass" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Add_error_code">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="errorclass" type="int"/>
-    <Arg name="errorcode" output="true" type="int*"/>
-  </Function>
-  <Function name="MPI_Add_error_string">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="errorcode" type="int"/>
-    <Arg input="true" name="string" type="char*"/>
-  </Function>
-  <Function name="MPI_Alloc_mem">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="size" type="MPI_Aint"/>
-    <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg name="baseptr" output="true" type="void*"/>
-  </Function>
-  <Function name="MPI_Alltoallw">
-    <ReturnType>int</ReturnType>
-    <Code order='first'>
-int comm_size;
-MPI_Comm manual_conv_comm = {manPrefix}commToMPI(comm);
-MPI_Comm_size(manual_conv_comm, &amp;comm_size);
-    </Code>
-    <Arg input="true" name="sendbuf" type="void*">
-      <Convert pointer="true">MPI_IN_PLACE</Convert>
-    </Arg>
-    <Arg input="true" name="sendcounts[]" type="int"/>
-    <Arg input="true" name="sdispls[]" type="int"/>
-    <Arg input="true" name="sendtypes[]" type="MPI_Datatype" dims="comm_size"/>
-    <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts[]" type="int"/>
-    <Arg input="true" name="rdispls[]" type="int"/>
-    <Arg input="true" name="recvtypes[]" type="MPI_Datatype" dims="comm_size"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-  </Function>
-  <Function name="MPI_Bsend_init">
-    <ReturnType>int</ReturnType>
-    <Arg input="true" name="buf" type="void*"/>
-    <Arg input="true" name="count" type="int"/>
-    <Arg input="true" name="datatype" type="MPI_Datatype"/>
-    <Arg input="true" name="dest" type="int">
-      <Convert>MPI_PROC_NULL</Convert>
-    </Arg>
-    <Arg input="true" name="tag" type="int"/>
-    <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="request" output="true" type="MPI_Request*"/>
+    <Arg name="comm_cart" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Cart_get">
     <ReturnType>int</ReturnType>
@@ -1301,6 +264,17 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="newcomm" output="true" type="MPI_Comm*"/>
   </Function>
+  <Function name="MPI_Comm_call_errhandler">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg input="true" name="errorcode" type="int" class="error"/>
+  </Function>
+  <Function name="MPI_Comm_compare">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm1" type="MPI_Comm"/>
+    <Arg input="true" name="comm2" type="MPI_Comm"/>
+    <Arg name="result" output="true" type="int*" class="comparison"/>
+  </Function>
   <Function name="MPI_Comm_connect">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="port_name" type="char*"/>
@@ -1309,17 +283,52 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="newcomm" output="true" type="MPI_Comm*"/>
   </Function>
+  <Function name="MPI_Comm_create">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg input="true" name="group" type="MPI_Group"/>
+    <Arg name="newcomm" output="true" type="MPI_Comm*"/>
+  </Function>
+  <Function name="MPI_Comm_create_errhandler">
+    <FortranSupport>no</FortranSupport>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm_errhandler_fn" type="MPI_Comm_errhandler_function*"/>
+    <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
+  </Function>
   <Function name="MPI_Comm_create_group">
     <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg input="true" name="tag" type="int"/>
-    <Arg name="newcomm" output="true" type="MPI_Comm*" />
+    <Arg name="newcomm" output="true" type="MPI_Comm*"/>
+  </Function>
+  <Function name="MPI_Comm_create_keyval">
+    <FortranSupport>no</FortranSupport>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm_copy_attr_fn" type="MPI_Comm_copy_attr_function*">
+      <Convert pointer="true">MPI_COMM_NULL_COPY_FN</Convert>
+      <Convert pointer="true">MPI_COMM_DUP_FN</Convert>
+    </Arg>
+    <Arg input="true" name="comm_delete_attr_fn" type="MPI_Comm_delete_attr_function*">
+      <Convert pointer="true">MPI_COMM_NULL_DELETE_FN</Convert>
+    </Arg>
+    <Arg name="comm_keyval" output="true" type="int*"/>
+    <Arg input="true" name="extra_state" type="void*"/>
+  </Function>
+  <Function name="MPI_Comm_delete_attr">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg input="true" name="comm_keyval" type="int"/>
   </Function>
   <Function name="MPI_Comm_disconnect">
     <ReturnType>int</ReturnType>
-    <Arg input="true" output="true" name="comm" type="MPI_Comm*" free="true" />
+    <Arg input="true" output="true" name="comm" type="MPI_Comm*" free="true"/>
+  </Function>
+  <Function name="MPI_Comm_dup">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="newcomm" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Comm_dup_with_info">
     <Version>3</Version>
@@ -1327,6 +336,32 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg name="newcomm" output="true" type="MPI_Comm*"/>
+  </Function>
+  <Function name="MPI_Comm_free">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm*" free="true"/>
+  </Function>
+  <Function name="MPI_Comm_free_keyval">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" output="true" name="comm_keyval" type="int*">
+      <Convert trigger="post">MPI_KEYVAL_INVALID</Convert>
+    </Arg>
+  </Function>
+  <Function name="MPI_Comm_get_attr">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg input="true" name="comm_keyval" type="int" class="commattr"/>
+    <Arg name="attribute_val" output="true" type="void*"/>
+    <Arg name="flag" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Comm_get_errhandler">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="errhandler" output="true" type="MPI_Errhandler*">
+      <Convert trigger="post">MPI_ERRHANDLER_NULL</Convert>
+      <Convert trigger="post">MPI_ERRORS_ARE_FATAL</Convert>
+      <Convert trigger="post">MPI_ERRORS_RETURN</Convert>
+    </Arg>
   </Function>
   <Function name="MPI_Comm_get_info">
     <Version>3</Version>
@@ -1342,7 +377,12 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Comm_get_parent">
     <ReturnType>int</ReturnType>
-    <Arg name="parent" output="true" type="MPI_Comm*" />
+    <Arg name="parent" output="true" type="MPI_Comm*"/>
+  </Function>
+  <Function name="MPI_Comm_group">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="group" output="true" type="MPI_Group*"/>
   </Function>
   <Function name="MPI_Comm_idup">
     <Version>3</Version>
@@ -1356,10 +396,31 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="fd" type="int"/>
     <Arg name="intercomm" output="true" type="MPI_Comm*"/>
   </Function>
+  <Function name="MPI_Comm_rank">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="rank" output="true" type="int*"/>
+  </Function>
   <Function name="MPI_Comm_remote_group">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="group" output="true" type="MPI_Group*"/>
+  </Function>
+  <Function name="MPI_Comm_remote_size">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="size" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Comm_set_attr">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg input="true" name="comm_keyval" type="int"/>
+    <Arg input="true" name="attribute_val" type="void*"/>
+  </Function>
+  <Function name="MPI_Comm_set_errhandler">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg input="true" name="errhandler" type="MPI_Errhandler"/>
   </Function>
   <Function name="MPI_Comm_set_info">
     <Version>3</Version>
@@ -1372,6 +433,22 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="comm_name" type="char*"/>
   </Function>
+  <Function name="MPI_Comm_size">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="size" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Comm_split">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg input="true" name="color" type="int">
+      <Convert>MPI_UNDEFINED</Convert>
+    </Arg>
+    <Arg input="true" name="key" type="int"/>
+    <Arg name="newcomm" output="true" type="MPI_Comm*">
+      <Convert trigger="post">MPI_COMM_NULL</Convert>
+    </Arg>
+  </Function>
   <Function name="MPI_Comm_split_type">
     <Version>3</Version>
     <ReturnType>int</ReturnType>
@@ -1382,7 +459,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     </Arg>
     <Arg input="true" name="key" type="int"/>
     <Arg input="true" name="info" type="MPI_Info"/>
-    <Arg name="newcomm" output="true" type="MPI_Comm*" />
+    <Arg name="newcomm" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Comm_test_inter">
     <ReturnType>int</ReturnType>
@@ -1399,6 +476,12 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="target_rank" type="int"/>
     <Arg input="true" name="target_disp" type="MPI_Aint"/>
     <Arg input="true" name="win" type="MPI_Win"/>
+  </Function>
+  <Function name="MPI_Dims_create">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="nnodes" type="int"/>
+    <Arg input="true" name="ndims" type="int"/>
+    <Arg name="dims[]" type="int"/>
   </Function>
   <Function name="MPI_Dist_graph_create">
     <ReturnType>int</ReturnType>
@@ -1457,10 +540,32 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="function" type="MPI_Handler_function*"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
   </Function>
+  <Function name="MPI_Errhandler_free">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="errhandler" type="MPI_Errhandler*" free="true"/>
+  </Function>
   <Function name="MPI_Errhandler_get">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
+  </Function>
+  <Function name="MPI_Errhandler_set">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg input="true" name="errhandler" type="MPI_Errhandler"/>
+  </Function>
+  <!-- Implemented manually
+  <Function name="MPI_Error_class">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="errorcode" type="int"/>
+    <Arg name="errorclass" output="true" type="int*"/>
+  </Function>
+  -->
+  <Function name="MPI_Error_string">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="errorcode" type="int" class="error"/>
+    <Arg name="string" output="true" type="char*"/>
+    <Arg name="resultlen" output="true" type="int*"/>
   </Function>
   <Function name="MPI_Exscan">
     <ReturnType>int</ReturnType>
@@ -1489,16 +594,30 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg input="true" name="errorcode" type="int" class="error"/>
   </Function>
+  <Function name="MPI_File_close">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File*" free="true"/>
+  </Function>
   <Function name="MPI_File_create_errhandler">
     <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="file_errhandler_fn" type="MPI_File_errhandler_function*"/>
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
   </Function>
+  <Function name="MPI_File_delete">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="filename" type="char*"/>
+    <Arg name="info" type="MPI_Info"/>
+  </Function>
   <Function name="MPI_File_get_amode">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
-    <Arg name="amode" output="true" type="int*" class="amode" />
+    <Arg name="amode" output="true" type="int*" class="amode"/>
+  </Function>
+  <Function name="MPI_File_get_atomicity">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="flag" output="true" type="int*"/>
   </Function>
   <Function name="MPI_File_get_byte_offset">
     <ReturnType>int</ReturnType>
@@ -1520,6 +639,11 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="group" output="true" type="MPI_Group*"/>
   </Function>
+  <Function name="MPI_File_get_info">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="info_used" output="true" type="MPI_Info*"/>
+  </Function>
   <Function name="MPI_File_get_position">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
@@ -1529,6 +653,11 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="offset" output="true" type="MPI_Offset*"/>
+  </Function>
+  <Function name="MPI_File_get_size">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="size" output="true" type="MPI_Offset*"/>
   </Function>
   <Function name="MPI_File_get_type_extent">
     <ReturnType>int</ReturnType>
@@ -1594,10 +723,34 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="datatype" type="MPI_Datatype"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
+  <Function name="MPI_File_open">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="filename" type="char*"/>
+    <Arg name="amode" type="int" class="amode"/>
+    <Arg name="info" type="MPI_Info"/>
+    <Arg name="fh" output="true" type="MPI_File*"/>
+  </Function>
   <Function name="MPI_File_preallocate">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="size" type="MPI_Offset"/>
+  </Function>
+  <Function name="MPI_File_read">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="buf" output="true" type="void*"/>
+    <Arg name="count" type="int"/>
+    <Arg name="datatype" type="MPI_Datatype"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_File_read_all">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="buf" output="true" type="void*"/>
+    <Arg name="count" type="int"/>
+    <Arg name="datatype" type="MPI_Datatype"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_File_read_all_begin">
     <ReturnType>int</ReturnType>
@@ -1610,6 +763,24 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="buf" output="true" type="void*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_File_read_at">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="offset" type="MPI_Offset"/>
+    <Arg name="buf" output="true" type="void*"/>
+    <Arg name="count" type="int"/>
+    <Arg name="datatype" type="MPI_Datatype"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_File_read_at_all">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="offset" type="MPI_Offset"/>
+    <Arg name="buf" output="true" type="void*"/>
+    <Arg name="count" type="int"/>
+    <Arg name="datatype" type="MPI_Datatype"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_File_read_at_all_begin">
@@ -1655,11 +826,22 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="datatype" type="MPI_Datatype"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
+  <Function name="MPI_File_seek">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="offset" type="MPI_Offset"/>
+    <Arg name="whence" type="int" class="whence"/>
+  </Function>
   <Function name="MPI_File_seek_shared">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="offset" type="MPI_Offset"/>
-    <Arg name="whence" type="int" class="whence" />
+    <Arg name="whence" type="int" class="whence"/>
+  </Function>
+  <Function name="MPI_File_set_atomicity">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="flag" type="int"/>
   </Function>
   <Function name="MPI_File_set_errhandler">
     <ReturnType>int</ReturnType>
@@ -1670,6 +852,42 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="info" type="MPI_Info"/>
+  </Function>
+  <Function name="MPI_File_set_size">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="size" type="MPI_Offset"/>
+  </Function>
+  <Function name="MPI_File_set_view">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="disp" type="MPI_Offset">
+      <Convert>MPI_DISPLACEMENT_CURRENT</Convert>
+    </Arg>
+    <Arg name="etype" type="MPI_Datatype"/>
+    <Arg name="filetype" type="MPI_Datatype"/>
+    <Arg name="datarep" type="char*"/>
+    <Arg name="info" type="MPI_Info"/>
+  </Function>
+  <Function name="MPI_File_sync">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+  </Function>
+  <Function name="MPI_File_write">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="buf" type="void*"/>
+    <Arg name="count" type="int"/>
+    <Arg name="datatype" type="MPI_Datatype"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_File_write_all">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="buf" type="void*"/>
+    <Arg name="count" type="int"/>
+    <Arg name="datatype" type="MPI_Datatype"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_File_write_all_begin">
     <ReturnType>int</ReturnType>
@@ -1682,6 +900,24 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="fh" type="MPI_File"/>
     <Arg name="buf" output="true" type="void*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_File_write_at">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="offset" type="MPI_Offset"/>
+    <Arg name="buf" type="void*"/>
+    <Arg name="count" type="int"/>
+    <Arg name="datatype" type="MPI_Datatype"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_File_write_at_all">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="fh" type="MPI_File"/>
+    <Arg name="offset" type="MPI_Offset"/>
+    <Arg name="buf" type="void*"/>
+    <Arg name="count" type="int"/>
+    <Arg name="datatype" type="MPI_Datatype"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_File_write_at_all_begin">
@@ -1727,9 +963,40 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="datatype" type="MPI_Datatype"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
+  <Function name="MPI_Finalized">
+    <ReturnType>int</ReturnType>
+    <Arg name="flag" output="true" type="int*"/>
+  </Function>
   <Function name="MPI_Free_mem">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="base" type="void*"/>
+  </Function>
+  <Function name="MPI_Gather">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="sendbuf" type="const void*">
+      <Convert pointer="true">MPI_IN_PLACE</Convert>
+    </Arg>
+    <Arg input="true" name="sendcount" type="int"/>
+    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="recvcount" type="int"/>
+    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
+    <Arg input="true" name="root" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
+  <Function name="MPI_Gatherv">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="sendbuf" type="const void*">
+      <Convert pointer="true">MPI_IN_PLACE</Convert>
+    </Arg>
+    <Arg input="true" name="sendcount" type="int"/>
+    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="recvcounts" type="const int*"/>
+    <Arg input="true" name="displs" type="const int*"/>
+    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
+    <Arg input="true" name="root" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Get">
     <ReturnType>int</ReturnType>
@@ -1758,12 +1025,40 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="op" type="MPI_Op"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
+  <Function name="MPI_Get_address">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="location" type="void*"/>
+    <Arg name="address" output="true" type="MPI_Aint*"/>
+  </Function>
+  <Function name="MPI_Get_count">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="status" type="const MPI_Status*"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="count" output="true" type="int*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
+  <Function name="MPI_Get_elements">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="status" type="const MPI_Status*"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="count" output="true" type="int*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
   <Function name="MPI_Get_library_version">
     <Version>3</Version>
     <ReturnType>int</ReturnType>
     <Arg name="version" output="true" type="char*"/>
     <Arg name="resultlen" output="true" type="int*"/>
   </Function>
+  <!-- Implemented manually
+  <Function name="MPI_Get_processor_name">
+    <ReturnType>int</ReturnType>
+    <Arg name="name" output="true" type="char*"/>
+    <Arg name="resultlen" output="true" type="int*"/>
+  </Function>
+  -->
   <Function name="MPI_Get_version">
     <ReturnType>int</ReturnType>
     <Arg name="version" output="true" type="int*"/>
@@ -1776,7 +1071,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="indx[]" type="int"/>
     <Arg input="true" name="edges[]" type="int"/>
     <Arg input="true" name="reorder" type="int"/>
-    <Arg name="comm_graph" output="true" type="MPI_Comm*" />
+    <Arg name="comm_graph" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Graph_get">
     <ReturnType>int</ReturnType>
@@ -1832,25 +1127,89 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="result" output="true" type="int*" class="comparison" />
+    <Arg name="result" output="true" type="int*" class="comparison"/>
   </Function>
   <Function name="MPI_Group_difference">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*" />
+    <Arg name="newgroup" output="true" type="MPI_Group*"/>
+  </Function>
+  <Function name="MPI_Group_excl">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="group" type="MPI_Group"/>
+    <Arg input="true" name="n" type="int"/>
+    <Arg input="true" name="ranks[]" type="int"/>
+    <Arg name="newgroup" output="true" type="MPI_Group*"/>
+  </Function>
+  <Function name="MPI_Group_free">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="group" type="MPI_Group*" free="true"/>
+  </Function>
+  <Function name="MPI_Group_incl">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="group" type="MPI_Group"/>
+    <Arg input="true" name="n" type="int"/>
+    <Arg input="true" name="ranks[]" type="int"/>
+    <Arg name="newgroup" output="true" type="MPI_Group*">
+      <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
+    </Arg>
   </Function>
   <Function name="MPI_Group_intersection">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*" />
+    <Arg name="newgroup" output="true" type="MPI_Group*"/>
+  </Function>
+  <Function name="MPI_Group_range_excl">
+    <FortranSupport>no</FortranSupport>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="group" type="MPI_Group"/>
+    <Arg input="true" name="n" type="int"/>
+    <Arg input="true" name="ranges[][3]" type="int"/>
+    <Arg name="newgroup" output="true" type="MPI_Group*"/>
+  </Function>
+  <Function name="MPI_Group_range_incl">
+    <FortranSupport>no</FortranSupport>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="group" type="MPI_Group"/>
+    <Arg input="true" name="n" type="int"/>
+    <Arg input="true" name="ranges[][3]" type="int"/>
+    <Arg name="newgroup" output="true" type="MPI_Group*"/>
+  </Function>
+  <Function name="MPI_Group_rank">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="group" type="MPI_Group"/>
+    <Arg name="rank" output="true" type="int*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
+  <Function name="MPI_Group_size">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="group" type="MPI_Group"/>
+    <Arg input="true" name="size" type="int*">
+      <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
+    </Arg>
+  </Function>
+  <Function name="MPI_Group_translate_ranks">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="group1" type="MPI_Group"/>
+    <Arg input="true" name="n" type="int"/>
+    <Arg input="true" name="ranks1[]" type="int"/>
+    <Arg input="true" name="group2" type="MPI_Group"/>
+    <Arg name="ranks2[]" output="true" type="int"/>
+    <Code order="beforereturn">
+int i;
+for(i = 0; i &lt; n; ++i) {
+    if (ranks2[i] == MPI_UNDEFINED) ranks2[i] = YogiMPI_UNDEFINED;
+}
+    </Code>
   </Function>
   <Function name="MPI_Group_union">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
-    <Arg name="newgroup" output="true" type="MPI_Group*" />
+    <Arg name="newgroup" output="true" type="MPI_Group*"/>
   </Function>
   <Function name="MPI_Iallgather">
     <Version>3</Version>
@@ -1927,7 +1286,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Ialltoallw">
     <Version>3</Version>
     <ReturnType>int</ReturnType>
-    <Code order='first'>
+    <Code order="first">
 int comm_size;
 MPI_Comm manual_conv_comm = {manPrefix}commToMPI(comm);
 MPI_Comm_size(manual_conv_comm, &amp;comm_size);
@@ -2082,27 +1441,113 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
+  <Function name="MPI_Info_create">
+    <ReturnType>int</ReturnType>
+    <Arg name="info" output="true" type="MPI_Info*"/>
+  </Function>
   <Function name="MPI_Info_delete">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg input="true" name="key" type="char*"/>
   </Function>
+  <Function name="MPI_Info_dup">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="info" type="MPI_Info"/>
+    <Arg name="newinfo" output="true" type="MPI_Info*"/>
+  </Function>
+  <Function name="MPI_Info_free">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="info" type="MPI_Info*" free="true"/>
+  </Function>
+  <Function name="MPI_Info_get">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="info" type="MPI_Info"/>
+    <Arg input="true" name="key" type="char*"/>
+    <Arg input="true" name="valuelen" type="int"/>
+    <Arg name="value" output="true" type="char*"/>
+    <Arg name="flag" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Info_get_nkeys">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="info" type="MPI_Info"/>
+    <Arg name="nkeys" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Info_get_nthkey">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="info" type="MPI_Info"/>
+    <Arg input="true" name="n" type="int"/>
+    <Arg name="key" output="true" type="char*"/>
+  </Function>
+  <Function name="MPI_Info_get_valuelen">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="info" type="MPI_Info"/>
+    <Arg input="true" name="key" type="char*"/>
+    <Arg name="valuelen" output="true" type="int*"/>
+    <Arg name="flag" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Info_set">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="info" type="MPI_Info"/>
+    <Arg input="true" name="key" type="char*"/>
+    <Arg input="true" name="value" type="char*"/>
+  </Function>
   <Function name="MPI_Init_thread">
-    <Code order='first'>
+    <Code order="first">
 {manPrefix}loadMPILibrary();
     </Code>
     <FortranSupport>no</FortranSupport>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="argc" type="int*"/>
     <Arg input="true" name="argv" type="char***"/>
-    <Arg input="true" name="required" type="int" class="threadmodel" />
-    <Arg name="provided" output="true" type="int*" class="provided" />
+    <Arg input="true" name="required" type="int" class="threadmodel"/>
+    <Arg name="provided" output="true" type="int*" class="provided"/>
+  </Function>
+  <Function name="MPI_Initialized">
+    <ReturnType>int</ReturnType>
+    <Arg name="flag" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Intercomm_create">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="local_comm" type="MPI_Comm"/>
+    <Arg input="true" name="local_leader" type="int"/>
+    <Arg input="true" name="peer_comm" type="MPI_Comm"/>
+    <Arg input="true" name="remote_leader" type="int"/>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg name="newintercomm" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Intercomm_merge">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="intercomm" type="MPI_Comm"/>
     <Arg input="true" name="high" type="int"/>
     <Arg name="newintracomm" output="true" type="MPI_Comm*"/>
+  </Function>
+  <Function name="MPI_Iprobe">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_ANY_SOURCE</Convert>
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int">
+      <Convert>MPI_ANY_TAG</Convert>
+    </Arg>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="flag" output="true" type="int*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_Irecv">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+      <Convert>MPI_ANY_SOURCE</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int">
+      <Convert>MPI_ANY_TAG</Convert>
+    </Arg>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ireduce">
     <Version>3</Version>
@@ -2141,6 +1586,18 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="recvcount" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="op" type="MPI_Op"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
+  </Function>
+  <Function name="MPI_Irsend">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="const void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
@@ -2191,6 +1648,49 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="root" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
+  </Function>
+  <Function name="MPI_Isend">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="const void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
+  </Function>
+  <Function name="MPI_Issend">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="const void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
+  </Function>
+  <Function name="MPI_Keyval_create">
+    <FortranSupport>no</FortranSupport>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="copy_fn" type="MPI_Copy_function*">
+      <Convert pointer="true">MPI_NULL_COPY_FN</Convert>
+      <Convert pointer="true">MPI_DUP_FN</Convert>
+    </Arg>
+    <Arg input="true" name="delete_fn" type="MPI_Delete_function*">
+      <Convert pointer="true">MPI_NULL_DELETE_FN</Convert>
+    </Arg>
+    <Arg name="keyval" output="true" type="int*"/>
+    <Arg input="true" name="extra_state" type="void*"/>
+  </Function>
+  <Function name="MPI_Keyval_free">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" output="true" name="keyval" type="int*">
+      <Convert trigger="post">MPI_KEYVAL_INVALID</Convert>
+    </Arg>
   </Function>
   <Function name="MPI_Lookup_name">
     <ReturnType>int</ReturnType>
@@ -2263,10 +1763,31 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="op" type="MPI_Op"/>
     <Arg name="commute" output="true" type="int*"/>
   </Function>
+  <Function name="MPI_Op_create">
+    <FortranSupport>no</FortranSupport>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="user_fn" type="MPI_User_function*"/>
+    <Arg input="true" name="commute" type="int"/>
+    <Arg name="op" output="true" type="MPI_Op*"/>
+  </Function>
+  <Function name="MPI_Op_free">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="op" type="MPI_Op*" free="true"/>
+  </Function>
   <Function name="MPI_Open_port">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg name="port_name" output="true" type="char*"/>
+  </Function>
+  <Function name="MPI_Pack">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="inbuf" type="void*"/>
+    <Arg input="true" name="incount" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="outbuf" output="true" type="void*"/>
+    <Arg input="true" name="outsize" type="int"/>
+    <Arg name="position" input="true" output="true" type="int*"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Pack_external">
     <ReturnType>int</ReturnType>
@@ -2284,6 +1805,29 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="incount" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg name="size" output="true" type="MPI_Aint*"/>
+  </Function>
+  <Function name="MPI_Pack_size">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="incount" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="size" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Pcontrol">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="level" type="int"/>
+  </Function>
+  <Function name="MPI_Probe">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+      <Convert>MPI_ANY_SOURCE</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int">
+      <Convert>MPI_ANY_TAG</Convert>
+    </Arg>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_Publish_name">
     <ReturnType>int</ReturnType>
@@ -2304,7 +1848,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Query_thread">
     <ReturnType>int</ReturnType>
-    <Arg name="provided" output="true" type="int*" class="provided" />
+    <Arg name="provided" output="true" type="int*" class="provided"/>
   </Function>
   <Function name="MPI_Raccumulate">
     <Version>3</Version>
@@ -2320,6 +1864,45 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="win" type="MPI_Win"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
+  <Function name="MPI_Recv">
+    <ReturnType>int</ReturnType>
+    <Arg name="buf" output="true" type="void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+      <Convert>MPI_ANY_SOURCE</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int">
+      <Convert>MPI_ANY_TAG</Convert>
+    </Arg>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_Recv_init">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" output="true" name="buf" type="void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
+  </Function>
+  <Function name="MPI_Reduce">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="sendbuf" type="void*">
+      <Convert pointer="true">MPI_IN_PLACE</Convert>
+    </Arg>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="op" type="MPI_Op"/>
+    <Arg input="true" name="root" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
   <Function name="MPI_Reduce_local">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="inbuf" type="const void*"/>
@@ -2327,6 +1910,17 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="op" type="MPI_Op"/>
+  </Function>
+  <Function name="MPI_Reduce_scatter">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="sendbuf" type="const void*">
+      <Convert pointer="true">MPI_IN_PLACE</Convert>
+    </Arg>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="recvcounts[]" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="op" type="MPI_Op"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Reduce_scatter_block">
     <ReturnType>int</ReturnType>
@@ -2347,6 +1941,10 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="write_conversion_fn" type="MPI_Datarep_conversion_function*"/>
     <Arg input="true" name="dtype_file_extent_fn" type="MPI_Datarep_extent_function*"/>
     <Arg input="true" name="extra_state" type="void*"/>
+  </Function>
+  <Function name="MPI_Request_free">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" output="true" name="request" type="MPI_Request*" free="true"/>
   </Function>
   <Function name="MPI_Request_get_status">
     <ReturnType>int</ReturnType>
@@ -2397,6 +1995,17 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="win" type="MPI_Win"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
+  <Function name="MPI_Rsend">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="const void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
   <Function name="MPI_Rsend_init">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="buf" type="const void*"/>
@@ -2408,6 +2017,86 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="tag" type="int"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
+  </Function>
+  <Function name="MPI_Scan">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="sendbuf" type="const void*">
+      <Convert pointer="true">MPI_IN_PLACE</Convert>
+    </Arg>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="op" type="MPI_Op"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
+  <Function name="MPI_Scatter">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="sendbuf" type="const void*">
+      <Convert pointer="true">MPI_IN_PLACE</Convert>
+    </Arg>
+    <Arg input="true" name="sendcount" type="int"/>
+    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="recvcount" type="int"/>
+    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
+    <Arg input="true" name="root" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
+  <Function name="MPI_Scatterv">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="sendbuf" type="const void*">
+      <Convert pointer="true">MPI_IN_PLACE</Convert>
+    </Arg>
+    <Arg input="true" name="sendcounts" type="const int*"/>
+    <Arg input="true" name="displs" type="const int*"/>
+    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="recvcount" type="int"/>
+    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
+    <Arg input="true" name="root" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
+  <Function name="MPI_Send">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="const void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
+  <Function name="MPI_Send_init">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="const void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="request" output="true" type="MPI_Request*"/>
+  </Function>
+  <Function name="MPI_Sendrecv">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="sendbuf" type="const void*"/>
+    <Arg input="true" name="sendcount" type="int"/>
+    <Arg input="true" name="sendtype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="sendtag" type="int"/>
+    <Arg name="recvbuf" output="true" type="void*"/>
+    <Arg input="true" name="recvcount" type="int"/>
+    <Arg input="true" name="recvtype" type="MPI_Datatype"/>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="recvtag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_Sendrecv_replace">
     <ReturnType>int</ReturnType>
@@ -2425,6 +2114,17 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
+  <Function name="MPI_Ssend">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="buf" type="const void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="dest" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+  </Function>
   <Function name="MPI_Ssend_init">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="buf" type="const void*"/>
@@ -2441,6 +2141,11 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="request" type="MPI_Request*"/>
   </Function>
+  <Function name="MPI_Startall">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" output="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
+  </Function>
   <Function name="MPI_Status_set_cancelled">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="status" output="true" type="MPI_Status*"/>
@@ -2452,10 +2157,99 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="count" type="int"/>
   </Function>
+  <Function name="MPI_Test">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="request" type="MPI_Request*"/>
+    <Arg name="flag" output="true" type="int*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+    <Code order="beforereturn">
+if (conv_request == MPI_REQUEST_NULL) {
+    *request = {manPrefix}unmapRequest(*request);
+}
+    </Code>
+  </Function>
+  <Function name="MPI_Test_cancelled">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="status" type="const MPI_Status*"/>
+    <Arg name="flag" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Testall">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
+    <Arg name="flag" output="true" type="int*"/>
+    <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="count"/>
+    <Code order="aftercall">
+int i;
+for(i = 0; i &lt; count; ++i) {
+    if(conv_array_of_requests[i] == MPI_REQUEST_NULL) {
+        array_of_requests[i] = {manPrefix}unmapRequest(array_of_requests[i]);
+    }
+}
+    </Code>
+  </Function>
+  <Function name="MPI_Testany">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
+    <Arg name="indx" output="true" type="int*"/>
+    <Arg name="flag" output="true" type="int*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+    <Code order="aftercall">
+if (*indx == MPI_UNDEFINED) {
+    *indx = YogiMPI_UNDEFINED;
+}
+else {
+    if(conv_array_of_requests[*indx] == MPI_REQUEST_NULL) {
+        array_of_requests[*indx] = {manPrefix}unmapRequest(array_of_requests[*indx]);
+    }
+}
+    </Code>
+  </Function>
+  <Function name="MPI_Testsome">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="incount" type="int"/>
+    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="incount"/>
+    <Arg name="outcount" output="true" type="int*"/>
+    <Arg name="array_of_indices[]" output="true" type="int"/>
+    <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="incount"/>
+    <Code order="aftercall">
+if (*outcount == MPI_UNDEFINED) {
+    *outcount = YogiMPI_UNDEFINED;
+}
+else {
+    int i;
+    for(i = 0; i &lt; *outcount; ++i) {
+        int requestIndex = array_of_indices[i];
+        if(conv_array_of_requests[requestIndex] == MPI_REQUEST_NULL) {
+            array_of_requests[requestIndex] = {manPrefix}unmapRequest(array_of_requests[requestIndex]);
+        }
+    }
+}
+    </Code>
+  </Function>
   <Function name="MPI_Topo_test">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg name="status" output="true" type="int*" class="topo" />
+    <Arg name="status" output="true" type="int*" class="topo"/>
+  </Function>
+  <Function name="MPI_Type_commit">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_contiguous">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_create_hindexed">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_blocklengths[]" type="int"/>
+    <Arg input="true" name="array_of_displacements[]" type="MPI_Aint" dims="count"/>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
   <Function name="MPI_Type_create_hindexed_block">
     <Version>3</Version>
@@ -2463,6 +2257,22 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="blocklength" type="int"/>
     <Arg input="true" name="array_of_displacements[]" type="MPI_Aint" dims="count"/>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_create_hvector">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="blocklength" type="int"/>
+    <Arg input="true" name="stride" type="MPI_Aint"/>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_create_indexed_block">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="blocklength" type="int"/>
+    <Arg input="true" name="array_of_displacements[]" type="int"/>
     <Arg input="true" name="oldtype" type="MPI_Datatype"/>
     <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
@@ -2474,10 +2284,52 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="type_keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
   </Function>
+  <Function name="MPI_Type_create_resized">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg input="true" name="lb" type="MPI_Aint"/>
+    <Arg input="true" name="extent" type="MPI_Aint"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_create_struct">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_blocklengths[]" type="int"/>
+    <Arg input="true" name="array_of_displacements[]" type="MPI_Aint" dims="count"/>
+    <Arg input="true" name="array_of_types[]" type="MPI_Datatype" dims="count"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_create_subarray">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="ndims" type="int"/>
+    <Arg input="true" name="array_of_sizes[]" type="int"/>
+    <Arg input="true" name="array_of_subsizes[]" type="int"/>
+    <Arg input="true" name="array_of_starts[]" type="int"/>
+    <Arg input="true" name="order" type="int">
+      <Convert>MPI_ORDER_C</Convert>
+      <Convert>MPI_ORDER_FORTRAN</Convert>
+    </Arg>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
   <Function name="MPI_Type_delete_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="type_keyval" type="int"/>
+  </Function>
+  <Function name="MPI_Type_dup">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_extent">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="extent" output="true" type="MPI_Aint*"/>
+  </Function>
+  <Function name="MPI_Type_free">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype*" free="true"/>
   </Function>
   <Function name="MPI_Type_free_keyval">
     <ReturnType>int</ReturnType>
@@ -2490,11 +2342,63 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="attribute_val" output="true" type="void*"/>
     <Arg name="flag" output="true" type="int*"/>
   </Function>
+  <Function name="MPI_Type_get_envelope">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="num_integers" output="true" type="int*"/>
+    <Arg name="num_addresses" output="true" type="int*"/>
+    <Arg name="num_datatypes" output="true" type="int*"/>
+    <Arg name="combiner" output="true" type="int*" class="combiner"/>
+  </Function>
+  <Function name="MPI_Type_get_extent">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="lb" output="true" type="MPI_Aint*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+    <Arg name="extent" output="true" type="MPI_Aint*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
   <Function name="MPI_Type_get_name">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg name="type_name" output="true" type="char*"/>
     <Arg name="resultlen" output="true" type="int*"/>
+  </Function>
+  <Function name="MPI_Type_get_true_extent">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="true_lb" output="true" type="MPI_Aint*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+    <Arg name="true_extent" output="true" type="MPI_Aint*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
+  <Function name="MPI_Type_hindexed">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_blocklengths" type="int*"/>
+    <Arg input="true" name="array_of_displacements" type="MPI_Aint*" dims="count"/>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_hvector">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="blocklength" type="int"/>
+    <Arg input="true" name="stride" type="MPI_Aint"/>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Type_indexed">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_blocklengths" type="const int*"/>
+    <Arg input="true" name="array_of_displacements" type="const int*"/>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
   <Function name="MPI_Type_lb">
     <ReturnType>int</ReturnType>
@@ -2518,10 +2422,43 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="type_name" type="char*"/>
   </Function>
+  <Function name="MPI_Type_size">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="size" output="true" type="int*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
+  <Function name="MPI_Type_struct">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_blocklengths" type="int*"/>
+    <Arg input="true" name="array_of_displacements" type="const MPI_Aint*" dims="count"/>
+    <Arg input="true" name="array_of_types" type="const MPI_Datatype*" dims="count"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
   <Function name="MPI_Type_ub">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg name="displacement" output="true" type="MPI_Aint*"/>
+  </Function>
+  <Function name="MPI_Type_vector">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="blocklength" type="int"/>
+    <Arg input="true" name="stride" type="int"/>
+    <Arg input="true" name="oldtype" type="MPI_Datatype"/>
+    <Arg name="newtype" output="true" type="MPI_Datatype*"/>
+  </Function>
+  <Function name="MPI_Unpack">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="inbuf" type="const void*"/>
+    <Arg input="true" name="insize" type="int"/>
+    <Arg name="position" type="int*"/>
+    <Arg name="outbuf" output="true" type="void*"/>
+    <Arg input="true" name="outcount" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Unpack_external">
     <ReturnType>int</ReturnType>
@@ -2538,6 +2475,69 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="service_name" type="char*"/>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg input="true" name="port_name" type="char*"/>
+  </Function>
+  <Function name="MPI_Wait">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="request" type="MPI_Request*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+    <Code order="beforereturn">
+if (conv_request == MPI_REQUEST_NULL) {
+    *request = {manPrefix}unmapRequest(*request);
+}
+    </Code> 
+  </Function>
+  <Function name="MPI_Waitall">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
+    <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="count"/>
+    <Code order="aftercall">
+int i;
+for(i = 0; i &lt; count; ++i) {
+    if(conv_array_of_requests[i] == MPI_REQUEST_NULL) {
+        array_of_requests[i] = {manPrefix}unmapRequest(array_of_requests[i]);
+    }
+}
+    </Code>
+  </Function>
+  <Function name="MPI_Waitany">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
+    <Arg name="indx" output="true" type="int*"/>
+    <Arg name="status" output="true" type="MPI_Status*"/>
+    <Code order="aftercall">
+if (*indx == MPI_UNDEFINED) {
+    *indx = YogiMPI_UNDEFINED;
+}
+else {
+    if(conv_array_of_requests[*indx] == MPI_REQUEST_NULL) {
+        array_of_requests[*indx] = {manPrefix}unmapRequest(array_of_requests[*indx]);
+    }
+}
+    </Code>
+  </Function>
+  <Function name="MPI_Waitsome">
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="incount" type="int"/>
+    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="incount"/>
+    <Arg name="outcount" output="true" type="int*"/>
+    <Arg name="array_of_indices[]" output="true" type="int"/>
+    <Arg name="array_of_statuses[]" output="true" type="MPI_Status" dims="incount"/>
+    <Code order="aftercall">
+if (*outcount == MPI_UNDEFINED) {
+    *outcount = YogiMPI_UNDEFINED;
+}
+else {
+    int i; 
+    for(i = 0; i &lt; *outcount; ++i) {
+        int requestIndex = array_of_indices[i];
+        if(conv_array_of_requests[requestIndex] == MPI_REQUEST_NULL) {
+            array_of_requests[requestIndex] = {manPrefix}unmapRequest(array_of_requests[requestIndex]);
+        }
+    }
+}
+    </Code>
   </Function>
   <Function name="MPI_Win_allocate">
     <Version>3</Version>
@@ -2618,7 +2618,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Win_fence">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="assert" type="int" class="onesided" />
+    <Arg input="true" name="assert" type="int" class="onesided"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_flush">
@@ -2645,7 +2645,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Win_free">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="win" type="MPI_Win*" free="true" />
+    <Arg input="true" name="win" type="MPI_Win*" free="true"/>
   </Function>
   <Function name="MPI_Win_free_keyval">
     <ReturnType>int</ReturnType>
@@ -2686,21 +2686,21 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Win_lock">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="lock_type" type="int" class="locktype" />
+    <Arg input="true" name="lock_type" type="int" class="locktype"/>
     <Arg input="true" name="rank" type="int"/>
-    <Arg input="true" name="assert" type="int" class="onesided" />
+    <Arg input="true" name="assert" type="int" class="onesided"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_lock_all">
     <Version>3</Version>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="assert" type="int" class="onesided" />
+    <Arg input="true" name="assert" type="int" class="onesided"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_post">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg input="true" name="assert" type="int" class="onesided" />
+    <Arg input="true" name="assert" type="int" class="onesided"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_set_attr">
@@ -2739,7 +2739,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Win_start">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
-    <Arg input="true" name="assert" type="int" class="onesided" />
+    <Arg input="true" name="assert" type="int" class="onesided"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_sync">
