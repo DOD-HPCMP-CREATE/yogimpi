@@ -18,7 +18,7 @@ function showUsage {
     echo "YF90 - Serial Fortran compiler to use"
     echo "YMPICXX - Parallel C++ compiler wrapper"
     echo "* Optional environment variables: "
-    echo "YVERSION - Version of MPI to support (2 or 3, default is 2)"
+    echo "YVERSION - Version of MPI to support (2.1, 2.2, or 3, default is 2.1)"
     exit 0
 }
 
@@ -71,17 +71,24 @@ fi
 if [[ ! -z $YVERSION ]]; then
     if [[ $YVERSION == "3" ]]; then
         echo "Enabling MPI 3 support in YogiMPI."
-        mpiVersion=3
-    elif [[ $YVERSION == "2" ]]; then
-        echo "Enabling MPI 2 support in YogiMPI."
-        mpiVersion=2
+        mpiMajVersion=3
+        mpiMinVersion=0
+    elif [[ $YVERSION == "2.1" ]]; then
+        echo "Enabling MPI 2.1 support in YogiMPI."
+        mpiMajVersion=2
+        mpiMinVersion=1
+    elif [[ $YVERSION == "2.2" ]]; then
+        echo "Enabling MPI 2.2 support in YogiMPI."
+        mpiMajVersion=2
+        mpiMinVersion=2
     else
         echo "Unrecognized MPI version $YVERSION."
         exit 1
     fi
 else
-    echo "Default MPI 2 support enabled."
-    mpiVersion=2
+    echo "Default MPI 2.1 support enabled."
+    mpiMajVersion=2
+    mpiMinVersion=1
 fi
 
 mpiCXX=$YMPICXX
@@ -120,7 +127,8 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@F90@|${fortranCompiler}|g" \
     -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
     -e "s|@FCOMPFLAGS@|${fFlags}|g" \
-    -e "s|@MPIVERSION@|${mpiVersion}|g" \
+    -e "s|@MPIMAJVERSION@|${mpiMajVersion}|g" \
+    -e "s|@MPIMINVERSION@|${mpiMinVersion}|g" \
     Make.flags.in > Make.flags
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \

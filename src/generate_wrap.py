@@ -63,8 +63,6 @@ class GenerateWrap(object):
 
     manPrefix = "YogiManager::getInstance()->"
 
-    versionMap = { 2:['2','2'], 3:['3','1'] }
-
     #mpiFunctionMap = { 'MPI_User_function': 'UserFunction' }
     mpiFunctionMap = { }
 
@@ -87,7 +85,7 @@ class GenerateWrap(object):
         # Prefix for all the functions to wrap.
         self.prefix = 'Yogi'
         # MPI version to support 
-        self.mpiVersion = int(version)
+        self.mpiVersion = MPIVersion(version) 
         # Parsed functions to wrap.
         self.functions = []
 
@@ -105,7 +103,9 @@ class GenerateWrap(object):
             # Discover the MPI version supporting this function.
             mpiVersion = funcElement.find('Version')
             if mpiVersion is not None:
-                thisFunction.mpi_version = int(mpiVersion.text)
+                thisFunction.mpi_version = wrap_objects.MPIVersion(mpiVersion.text)
+            else:
+                thisFunction.mpi_version = wrap_objects.MPIVersion('2.1')
             # If this function is in too high a version of MPI, skip it. 
             if thisFunction.mpi_version > self.mpiVersion:
                 continue
@@ -694,8 +694,8 @@ class GenerateWrap(object):
     def writeCHeader(self):
         c_header = source_writers.CSource(inputFile='yogimpi.h.in')
         set_version = source_writers.CSource()
-        majorVersion = GenerateWrap.versionMap[self.mpiVersion][0]
-        minorVersion = GenerateWrap.versionMap[self.mpiVersion][1]
+        majorVersion = self.mpiVersion.major
+        minorVersion = self.mpiVersion.minor
         set_version.addLines('#define YogiMPI_VERSION ' + majorVersion,
                              '#define YogiMPI_SUBVERSION ' + minorVersion)
         func_protos = source_writers.CSource()
@@ -914,6 +914,6 @@ class GenerateWrap(object):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print("Usage: python generate_wrap.py --mpi=<2|3> input.xml")
+        print("Usage: python generate_wrap.py --mpiver=<2.1|2.2|3.0> input.xml")
     else:
-        GenerateWrap(sys.argv[2], sys.argv[1][6:])
+        GenerateWrap(sys.argv[2], sys.argv[1][9:])

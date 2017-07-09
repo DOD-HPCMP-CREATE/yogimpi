@@ -45,6 +45,58 @@
 
 import sys
 
+class MPIVersion(object):
+    def __init__(self, version):
+        splitVer = version.split('.')
+        self.major = int(splitVer[0].strip())
+        self.minor = int(splitVer[1].strip()) 
+
+    def __eq__(self, other):
+        if isinstance(other, MPIVersion):
+            return (self.major == other.major) and (self.minor == other.minor)
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
+
+    def __lt__(self, other):
+        if isinstance(other, MPIVersion):
+            if self.major < other.major:
+                return True
+            if self.major == other.major:
+                if self.minor < other.minor:
+                    return True 
+            return False
+        else:
+            return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, MPIVersion):
+            if self.major > other.major:
+                return True
+            if self.major == other.major:
+                if self.minor > other.minor:
+                    return True
+            return False
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, MPIVersion):
+            return self.__eq__(other) or self.__lt__(other)
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, MPIVersion):
+            return self.__eq__(other) or self.__gt__(other)
+        else:
+            return NotImplemented
+
 class MPIArgument(object):
     def __init__(self):
         # Original name of the argument.
@@ -124,7 +176,7 @@ class MPIFunction(object):
         self.args = []
         self.codeBlocks = {}
         self.fortran_support = True
-        self.mpi_version = 2
+        self.mpi_version = None
 
     def _checkOrder(self, order):
         if order not in MPIFunction.orders:

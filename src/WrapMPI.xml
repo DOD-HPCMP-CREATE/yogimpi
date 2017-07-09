@@ -296,7 +296,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="errhandler" output="true" type="MPI_Errhandler*"/>
   </Function>
   <Function name="MPI_Comm_create_group">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="group" type="MPI_Group"/>
@@ -331,7 +331,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="newcomm" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Comm_dup_with_info">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="info" type="MPI_Info"/>
@@ -364,7 +364,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     </Arg>
   </Function>
   <Function name="MPI_Comm_get_info">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="info_used" output="true" type="MPI_Info*"/>
@@ -385,7 +385,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="group" output="true" type="MPI_Group*"/>
   </Function>
   <Function name="MPI_Comm_idup">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="newcomm" output="true" type="MPI_Comm*"/>
@@ -423,7 +423,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="errhandler" type="MPI_Errhandler"/>
   </Function>
   <Function name="MPI_Comm_set_info">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="info" type="MPI_Info"/>
@@ -450,7 +450,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     </Arg>
   </Function>
   <Function name="MPI_Comm_split_type">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="split_type" type="int">
@@ -467,7 +467,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="flag" output="true" type="int*"/>
   </Function>
   <Function name="MPI_Compare_and_swap">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="origin_addr" type="void*"/>
     <Arg input="true" name="compare_addr" type="void*"/>
@@ -484,6 +484,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="dims[]" type="int"/>
   </Function>
   <Function name="MPI_Dist_graph_create">
+    <Version>2.2</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm_old" type="MPI_Comm"/>
     <Arg input="true" name="n" type="int"/>
@@ -492,26 +493,27 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="destinations[]" type="int"/>
     <Arg input="true" name="weights[]" type="int">
       <Convert pointer="true" cast="int *">MPI_UNWEIGHTED</Convert>
-      <Convert pointer="true" cast="int *" version="3">MPI_WEIGHTS_EMPTY</Convert>
+      <Convert pointer="true" cast="int *" version="3.0">MPI_WEIGHTS_EMPTY</Convert>
     </Arg>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg input="true" name="reorder" type="int"/>
     <Arg name="comm_dist_graph" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Dist_graph_create_adjacent">
+    <Version>2.2</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm_old" type="MPI_Comm"/>
     <Arg input="true" name="indegree" type="int"/>
     <Arg input="true" name="sources[]" type="int"/>
     <Arg input="true" name="sourceweights[]" type="int">
       <Convert pointer="true" cast="int *">MPI_UNWEIGHTED</Convert>
-      <Convert pointer="true" cast="int *" version="3">MPI_WEIGHTS_EMPTY</Convert>
+      <Convert pointer="true" cast="int *" version="3.0">MPI_WEIGHTS_EMPTY</Convert>
     </Arg>
     <Arg input="true" name="outdegree" type="int"/>
     <Arg input="true" name="destinations[]" type="int"/>
     <Arg input="true" name="destweights[]" type="int">
       <Convert pointer="true" cast="int *">MPI_UNWEIGHTED</Convert>
-      <Convert pointer="true" cast="int *" version="3">MPI_WEIGHTS_EMPTY</Convert>
+      <Convert pointer="true" cast="int *" version="3.0">MPI_WEIGHTS_EMPTY</Convert>
     </Arg>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg input="true" name="reorder" type="int"/>
@@ -528,6 +530,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="destweights[]" output="true" type="int"/>
   </Function>
   <Function name="MPI_Dist_graph_neighbors_count">
+    <Version>2.2</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="indegree" output="true" type="int*"/>
@@ -579,7 +582,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Fetch_and_op">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="origin_addr" type="void*"/>
     <Arg input="true" name="result_addr" type="void*"/>
@@ -1010,7 +1013,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Get_accumulate">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="origin_addr" type="void*"/>
     <Arg input="true" name="origin_count" type="int"/>
@@ -1047,7 +1050,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     </Arg>
   </Function>
   <Function name="MPI_Get_library_version">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg name="version" output="true" type="char*"/>
     <Arg name="resultlen" output="true" type="int*"/>
@@ -1212,7 +1215,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg name="newgroup" output="true" type="MPI_Group*"/>
   </Function>
   <Function name="MPI_Iallgather">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1226,7 +1229,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Iallgatherv">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1241,7 +1244,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Iallreduce">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="const void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1254,7 +1257,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ialltoall">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1268,7 +1271,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ialltoallv">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1284,7 +1287,7 @@ for(i = 0; i &lt; n; ++i) {
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ialltoallw">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Code order="first">
 int comm_size;
@@ -1305,13 +1308,13 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ibarrier">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ibcast">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg name="buffer" type="void*"/>
     <Arg input="true" name="count" type="int"/>
@@ -1333,7 +1336,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Iexscan">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1346,7 +1349,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Igather">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1361,7 +1364,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Igatherv">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1377,7 +1380,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_allgather">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1389,7 +1392,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_allgatherv">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1402,7 +1405,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_alltoall">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1414,7 +1417,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_alltoallv">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
@@ -1428,7 +1431,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_alltoallw">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
@@ -1550,7 +1553,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ireduce">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1564,7 +1567,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ireduce_scatter">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1577,7 +1580,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ireduce_scatter_block">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1606,7 +1609,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="flag" output="true" type="int*"/>
   </Function>
   <Function name="MPI_Iscan">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1619,7 +1622,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Iscatter">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1634,7 +1637,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Iscatterv">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
@@ -1699,7 +1702,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="port_name" output="true" type="char*"/>
   </Function>
   <Function name="MPI_Neighbor_allgather">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1710,7 +1713,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Neighbor_allgatherv">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1722,7 +1725,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Neighbor_alltoall">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcount" type="int"/>
@@ -1733,7 +1736,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Neighbor_alltoallv">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
@@ -1746,7 +1749,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Neighbor_alltoallw">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*"/>
     <Arg input="true" name="sendcounts[]" type="int"/>
@@ -1759,6 +1762,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Op_commutative">
+    <Version>2.2</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="op" type="MPI_Op"/>
     <Arg name="commute" output="true" type="int*"/>
@@ -1851,7 +1855,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="provided" output="true" type="int*" class="provided"/>
   </Function>
   <Function name="MPI_Raccumulate">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="origin_addr" type="void*"/>
     <Arg input="true" name="origin_count" type="int"/>
@@ -1904,6 +1908,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Reduce_local">
+    <Version>2.2</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="inbuf" type="const void*"/>
     <Arg name="inoutbuf" output="true" type="void*"/>
@@ -1923,6 +1928,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Reduce_scatter_block">
+    <Version>2.2</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="void*">
       <Convert pointer="true">MPI_IN_PLACE</Convert>
@@ -1953,7 +1959,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="status" output="true" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_Rget">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="origin_addr" type="void*"/>
     <Arg input="true" name="origin_count" type="int"/>
@@ -1966,7 +1972,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Rget_accumulate">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="origin_addr" type="void*"/>
     <Arg input="true" name="origin_count" type="int"/>
@@ -1983,7 +1989,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Rput">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="origin_addr" type="void*"/>
     <Arg input="true" name="origin_count" type="int"/>
@@ -2252,7 +2258,7 @@ else {
     <Arg name="newtype" output="true" type="MPI_Datatype*"/>
   </Function>
   <Function name="MPI_Type_create_hindexed_block">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
     <Arg input="true" name="blocklength" type="int"/>
@@ -2540,7 +2546,7 @@ else {
     </Code>
   </Function>
   <Function name="MPI_Win_allocate">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="size" type="MPI_Aint"/>
     <Arg name="disp_unit" type="int"/>
@@ -2550,7 +2556,7 @@ else {
     <Arg name="win" output="true" type="MPI_Win*"/>
   </Function>
   <Function name="MPI_Win_allocate_shared">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="size" type="MPI_Aint"/>
     <Arg name="disp_unit" type="int"/>
@@ -2560,7 +2566,7 @@ else {
     <Arg name="win" output="true" type="MPI_Win*"/>
   </Function>
   <Function name="MPI_Win_attach">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
     <Arg input="true" name="base" type="void*"/>
@@ -2585,7 +2591,7 @@ else {
     <Arg name="win" output="true" type="MPI_Win*"/>
   </Function>
   <Function name="MPI_Win_create_dynamic">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
@@ -2611,7 +2617,7 @@ else {
     <Arg input="true" name="win_keyval" type="int"/>
   </Function>
   <Function name="MPI_Win_detach">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
     <Arg input="true" name="base" type="void*"/>
@@ -2622,24 +2628,24 @@ else {
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_flush">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="rank" type="int"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_flush_all">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_flush_local">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="rank" type="int"/>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_flush_local_all">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
@@ -2673,7 +2679,7 @@ else {
     <Arg name="group" output="true" type="MPI_Group*"/>
   </Function>
   <Function name="MPI_Win_get_info">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
     <Arg name="info_used" output="true" type="MPI_Info*"/>
@@ -2692,7 +2698,7 @@ else {
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_lock_all">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="assert" type="int" class="onesided"/>
     <Arg input="true" name="win" type="MPI_Win"/>
@@ -2715,7 +2721,7 @@ else {
     <Arg input="true" name="errhandler" type="MPI_Errhandler"/>
   </Function>
   <Function name="MPI_Win_set_info">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
     <Arg input="true" name="info" type="MPI_Info"/>
@@ -2726,7 +2732,7 @@ else {
     <Arg input="true" name="win_name" type="char*"/>
   </Function>
   <Function name="MPI_Win_shared_query">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
     <Arg input="true" name="rank" type="int">
@@ -2743,7 +2749,7 @@ else {
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_sync">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
@@ -2758,7 +2764,7 @@ else {
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>
   <Function name="MPI_Win_unlock_all">
-    <Version>3</Version>
+    <Version>3.0</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="win" type="MPI_Win"/>
   </Function>

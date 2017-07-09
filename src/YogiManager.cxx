@@ -401,9 +401,11 @@ int YogiManager::topoToYogi(int in_topo) {
       case MPI_CART:
           return YogiMPI_CART;
           break;
+#if YogiMPI_VERSION == 3 || YogiMPI_SUBVERSION > 1
       case MPI_DIST_GRAPH:
           return YogiMPI_DIST_GRAPH;
           break;
+#endif
       case MPI_UNDEFINED:
           return YogiMPI_UNDEFINED;
           break;
