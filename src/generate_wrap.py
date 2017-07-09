@@ -85,7 +85,7 @@ class GenerateWrap(object):
         # Prefix for all the functions to wrap.
         self.prefix = 'Yogi'
         # MPI version to support 
-        self.mpiVersion = MPIVersion(version) 
+        self.mpiVersion = wrap_objects.MPIVersion(version) 
         # Parsed functions to wrap.
         self.functions = []
 
@@ -694,8 +694,8 @@ class GenerateWrap(object):
     def writeCHeader(self):
         c_header = source_writers.CSource(inputFile='yogimpi.h.in')
         set_version = source_writers.CSource()
-        majorVersion = self.mpiVersion.major
-        minorVersion = self.mpiVersion.minor
+        majorVersion = str(self.mpiVersion.major)
+        minorVersion = str(self.mpiVersion.minor)
         set_version.addLines('#define YogiMPI_VERSION ' + majorVersion,
                              '#define YogiMPI_SUBVERSION ' + minorVersion)
         func_protos = source_writers.CSource()
