@@ -564,15 +564,11 @@ int YogiManager::rootToMPI(int root) {
 }
 
 template <typename T, typename V>
-int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker,
+int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker_in,
                                 int offset, int &counter) {
-    insertIntoPool(pool, newItem, static_cast<T>(marker), offset, counter);
-}
 
-
-template <typename T>
-int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, T marker,
-                                int offset, int &counter) {
+    /* Cast the marker to the type in the pool */
+    T marker = std::move(static_cast<T>(marker_in));
 
     /* First see if this already exists as a constant. If it does, just
        return the equivalent Yogi constant value. 
@@ -612,14 +608,12 @@ int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, T marker,
 }
 
 template <typename T, typename V>
-void YogiManager::removeFromPool(std::vector<T> &pool, int index, V marker,
-                                 int offset, int &counter) {
-    removeFromPool(pool, index, static_cast<T>(marker), offset, counter);
-}
-
-template <typename T>
-void YogiManager::removeFromPool(std::vector<T> &pool, int index, T marker,
+void YogiManager::removeFromPool(std::vector<T> &pool, int index, V marker_in,
                                 int offset, int &counter) {
+
+    /* Cast the marker to the type in the pool */
+    T marker = std::move(static_cast<T>(marker_in));
+
     /* First see if the current index is at or above offset. If not, do not 
        make any modifications as these are considered read-only. */
     if (index < offset) return;
