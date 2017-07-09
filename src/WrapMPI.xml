@@ -520,6 +520,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="comm_dist_graph" output="true" type="MPI_Comm*"/>
   </Function>
   <Function name="MPI_Dist_graph_neighbors">
+    <Version>2.2</Version>
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg input="true" name="maxindegree" type="int"/>
