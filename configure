@@ -18,7 +18,7 @@ function showUsage {
     echo "YF90 - Serial Fortran compiler to use"
     echo "YMPICXX - Parallel C++ compiler wrapper"
     echo "* Optional environment variables: "
-    echo "YVERSION - Version of MPI to support (2 or 3, default is 3)"
+    echo "YVERSION - Version of MPI to support (2 or 3, default is 2)"
     exit 0
 }
 
@@ -80,8 +80,8 @@ if [[ ! -z $YVERSION ]]; then
         exit 1
     fi
 else
-    echo "Default MPI 3 support enabled."
-    mpiVersion=3
+    echo "Default MPI 2 support enabled."
+    mpiVersion=2
 fi
 
 mpiCXX=$YMPICXX
