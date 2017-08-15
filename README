@@ -21,6 +21,12 @@ YogiMPI Overview
     compilation.
   - Set the environment variable YMPICXX to point to your MPI's C++ compiler
     wrapper. 
+  - YogiMPI has optional debugging output enabled by setting the YDEBUG 
+    environment variable to 1. This will create a yogimpi.log.<global_rank>
+    file for each MPI rank, and it will list functions entered and exited
+    by the rank. Use only when required. This can be useful when you create
+    a "release" and "debug" version of Yogi as they can be swapped out for each
+    other as needed.
   - Once set, run ./configure -i /path/to/install
   - To build, type "make," and then "make install" to copy files to the
     installation directory.

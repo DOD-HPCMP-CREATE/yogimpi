@@ -2,9 +2,12 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
+#include <string>
+#include <sstream>
 #include <cstdlib>
 #include <iostream>
 #include <dlfcn.h>
+#include <fstream>
 
 const int YogiManager::defaultPoolSize = 100;
 
@@ -233,6 +236,29 @@ YogiManager::YogiManager() {
     /* In the case of preloading a library (see below), keep a zero'd pointer
        handy. */
     libraryHandle = 0;
+}
+
+void YogiManager::setGlobalRank(int rank) {
+    globalRank = rank;
+}
+
+void YogiManager::openDebugLog() {
+    // Filename is yogimpi.log.<globalRank>
+    std::string logFileName = "yogimpi.log.";
+    /* Would rather do this the C++11 way, but some old systems have issues
+    with the to_string function, even with C++11 enabled in the compiler. */
+    std::ostringstream oss;
+    oss << globalRank;
+    logFileName += oss.str();
+    debugLogFile.open(logFileName.c_str());
+}
+
+void YogiManager::closeDebugLog() {
+    debugLogFile.close();
+}
+
+void YogiManager::writeToDebugLog(const char * toWrite) {
+    debugLogFile << toWrite << std::endl;
 }
 
 /* Some MPI libraries (ahem, ahem, OpenMPI and CRAY) have problems starting
@@ -585,10 +611,6 @@ int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker_in,
     /* Then see if the current counter exceeds the size of the vector.
        If it does, double it. */ 
     if (counter >= pool.capacity() - 1) {
-#ifdef YOGI_DEBUG
-        std::cout << "Counter at " << counter << ", doubling vector."
-                  << std::endl;
-#endif
         pool.resize(pool.capacity() * 2, marker);
     }
     // After the offset, find first instance of marker, replace with newItem.
@@ -599,9 +621,6 @@ int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker_in,
         pool.at(delta) = newItem;
     }
     else {
-#ifdef YOGI_DEBUG
-        std::cout << "Marker not found!" << std::endl;
-#endif
         return -1;
     }
     // Bump up the counter and return the index.
@@ -636,11 +655,15 @@ MPI_Aint YogiManager::aintToMPI(YogiMPI_Aint in_aint) {
 }
    
 MPI_Comm YogiManager::commToMPI(YogiMPI_Comm in_comm) {
-    return fetchFromPool(commPool, in_comm);
+    std::cout << "Try to fetch a comm at index " << in_comm << std::endl;
+    MPI_Comm a_comm = fetchFromPool(commPool, in_comm);
+    std::cout << "Done getting comm." << std::endl;
+    return a_comm;
 }
 
 MPI_Datatype YogiManager::datatypeToMPI(YogiMPI_Datatype in_data) {
-    return fetchFromPool(datatypePool, in_data);
+    MPI_Datatype a_datatype = fetchFromPool(datatypePool, in_data);
+    return a_datatype;
 }
 
 MPI_Errhandler YogiManager::errhandlerToMPI(YogiMPI_Errhandler in_errhandler) {
@@ -664,7 +687,8 @@ MPI_Offset YogiManager::offsetToMPI(YogiMPI_Offset in_offset) {
 }
 
 MPI_Op YogiManager::opToMPI(YogiMPI_Win in_op) {
-    return fetchFromPool(opPool, in_op);
+    MPI_Op an_op = fetchFromPool(opPool, in_op);
+    return an_op;
 }
 
 MPI_Request YogiManager::requestToMPI(YogiMPI_Request in_request) {

@@ -494,6 +494,8 @@ YogiMPI_Group Yogi_ResolveFortranGroup(int fortran_group);
 
 int YogiMPI_Init(int* argc, char ***argv);
 
+int YogiMPI_Init_thread(int* argc, char*** argv, int required, int* provided);
+
 int YogiMPI_Error_class(int errorcode, int* errorclass);
 
 int YogiMPI_Finalize(void);

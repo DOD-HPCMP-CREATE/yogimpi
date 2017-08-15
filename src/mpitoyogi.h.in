@@ -357,6 +357,7 @@
 
 // Handle hard-coded functions
 #define MPI_Init YogiMPI_Init
+#define MPI_Init_thread YogiMPI_Init_thread
 #define MPI_Error_class YogiMPI_Error_class
 #define MPI_Finalize YogiMPI_Finalize
 #define MPI_Get_processor_name YogiMPI_Get_processor_name

@@ -18,6 +18,7 @@ function showUsage {
     echo "YF90 - Serial Fortran compiler to use"
     echo "YMPICXX - Parallel C++ compiler wrapper"
     echo "* Optional environment variables: "
+    echo "YDEBUG - Whether to enable YogiMPI debugging (1 for enabled)"
     echo "YVERSION - Version of MPI to support (2.1, 2.2, or 3, default is 2.1)"
     exit 0
 }
@@ -44,6 +45,14 @@ while getopts ":i:h" opt; do
 done
 
 fFlags=""
+debugFlags=""
+
+if [[ ! -z $YDEBUG ]]; then
+    if [[ $YDEBUG == "1" ]]; then
+        echo "Enabling YogiMPI debugging output."
+        debugFlags="-DYOGI_DEBUG"
+    fi
+fi
 
 if [[ ! -z $YFAMILY ]]; then
     if [[ $YFAMILY == "intel" ]]; then 
@@ -127,6 +136,7 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@F90@|${fortranCompiler}|g" \
     -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
     -e "s|@FCOMPFLAGS@|${fFlags}|g" \
+    -e "s|@DEBUGFLAGS@|${debugFlags}|g" \
     -e "s|@MPIMAJVERSION@|${mpiMajVersion}|g" \
     -e "s|@MPIMINVERSION@|${mpiMinVersion}|g" \
     Make.flags.in > Make.flags

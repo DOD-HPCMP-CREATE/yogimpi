@@ -835,6 +835,11 @@ class GenerateWrap(object):
             name = self.prefix + aFunc.name                                
             arg_string = aFunc.cArgString()
             yogi_functions.addFunction(name, aFunc.return_type, arg_string)
+            writeDebug = "Entering " + name
+            yogi_functions.addLinesNoIndent('#ifdef YOGI_DEBUG')
+            yogi_functions.addLines(GenerateWrap.manPrefix +\
+                                    'writeToDebugLog("' + writeDebug + '");')
+            yogi_functions.addLinesNoIndent('#endif')
             yogi_functions.addLines('int mpi_error;')
  
             # Write a code block marked as "first"
@@ -890,6 +895,11 @@ class GenerateWrap(object):
                     aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
                     yogi_functions.addLines(aLine)
 
+            writeDebug = "Exiting " + name
+            yogi_functions.addLinesNoIndent('#ifdef YOGI_DEBUG')
+            yogi_functions.addLines(GenerateWrap.manPrefix +\
+                                    'writeToDebugLog("' + writeDebug + '");')
+            yogi_functions.addLinesNoIndent('#endif')
             errorConv = GenerateWrap.manPrefix + 'errorToYogi' 
             yogi_functions.addLines('return ' + errorConv + '(mpi_error);')
             yogi_functions.endFunction(name)

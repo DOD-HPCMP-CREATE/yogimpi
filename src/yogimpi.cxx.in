@@ -94,26 +94,65 @@ int YogiMPI_Init(int* argc, char ***argv)
 { 
     YogiManager::getInstance()->loadMPILibrary();
     int mpi_err = MPI_Init(argc, argv); 
+#ifdef YOGI_DEBUG
+    int glob_rank = -1;
+    MPI_Comm_rank(MPI_COMM_WORLD, &glob_rank);
+    YogiManager::getInstance()->setGlobalRank(glob_rank);
+    YogiManager::getInstance()->openDebugLog();
+    YogiManager::getInstance()->writeToDebugLog("Completed MPI_Init.");
+#endif
     return YogiManager::getInstance()->errorToYogi(mpi_err);
 }
 
+int YogiMPI_Init_thread(int* argc, char*** argv, int required, int* provided) {
+    int mpi_error;
+    YogiManager::getInstance()->loadMPILibrary();
+
+    required = YogiManager::getInstance()->threadmodelToMPI(required);
+    mpi_error = MPI_Init_thread(argc, argv, required, provided);
+    *provided = YogiManager::getInstance()->providedToYogi(*provided);
+#ifdef YOGI_DEBUG
+    int glob_rank = -1;
+    MPI_Comm_rank(MPI_COMM_WORLD, &glob_rank);
+    YogiManager::getInstance()->setGlobalRank(glob_rank);
+    YogiManager::getInstance()->openDebugLog();
+    YogiManager::getInstance()->writeToDebugLog("Completed MPI_Init_thread.");
+#endif
+    return YogiManager::getInstance()->errorToYogi(mpi_error);
+}
+
 int YogiMPI_Error_class(int errorcode, int* errorclass) {
+
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Entering MPI_Error_class");
+#endif
 
     /* We make an assumption that error codes line up with classes. In the
        case of implementation-specific error codes that do not, this must
        be revised. */
     *errorclass = errorcode;
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Exiting MPI_Error_class");
+#endif
     return YogiManager::getInstance()->errorToYogi(MPI_SUCCESS);
 }
 
 int YogiMPI_Finalize() {
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Calling MPI_Finalize.");
+#endif
     int mpi_err = MPI_Finalize();
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->closeDebugLog();
+#endif
     return YogiManager::getInstance()->errorToYogi(mpi_err);
 }
 
 int YogiMPI_Get_processor_name(char* name, int* resultlen) {
     int mpi_error;
-
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Entering MPI_Get_processor_name");
+#endif
     if (MPI_MAX_PROCESSOR_NAME > YogiMPI_MAX_PROCESSOR_NAME) {
         char *tmp_name = new char[MPI_MAX_PROCESSOR_NAME];
         mpi_error = MPI_Get_processor_name(tmp_name, resultlen);
@@ -127,6 +166,9 @@ int YogiMPI_Get_processor_name(char* name, int* resultlen) {
     else {
         mpi_error = MPI_Get_processor_name(name, resultlen);
     }
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Exiting MPI_Get_processor_name");
+#endif
     return YogiManager::getInstance()->errorToYogi(mpi_error);
 }
 
@@ -136,6 +178,9 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
                               YogiMPI_Aint array_of_addresses[],
                               YogiMPI_Datatype array_of_datatypes[]) {
 
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Entering MPI_Type_get_contents");
+#endif
     int mpi_error;
     MPI_Datatype conv_datatype;
     conv_datatype = YogiManager::getInstance()->datatypeToMPI(datatype);
@@ -167,10 +212,17 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
     else delete[] conv_array_of_datatypes;
 
     YogiManager::getInstance()->aintToYogi(conv_array_of_addresses, array_of_addresses, max_addresses, true);
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Exiting MPI_Type_get_contents");
+#endif
     return YogiManager::getInstance()->errorToYogi(mpi_error);
 }
 
 int YogiMPI_Type_create_darray(int size, int rank, int ndims, int array_of_gsizes[], int array_of_distribs[], int array_of_dargs[], int array_of_psizes[], int order, YogiMPI_Datatype oldtype, YogiMPI_Datatype* newtype) {
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Entering MPI_Type_create_darray");
+#endif
+
     int mpi_error;
     MPI_Datatype conv_oldtype;
     conv_oldtype = YogiManager::getInstance()->datatypeToMPI(oldtype);
@@ -216,14 +268,23 @@ int YogiMPI_Type_create_darray(int size, int rank, int ndims, int array_of_gsize
 
     delete[] distribs_conv;
     delete[] dargs_conv;
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Exiting MPI_Type_create_darray");
+#endif
     return YogiManager::getInstance()->errorToYogi(mpi_error);
 }
 
 double YogiMPI_Wtick() {
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Enter/exit MPI_Wtick");
+#endif
     return MPI_Wtick();
 }
 
 double YogiMPI_Wtime() {
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Enter/exit MPI_Wtime");
+#endif
     return MPI_Wtime();
 }
 

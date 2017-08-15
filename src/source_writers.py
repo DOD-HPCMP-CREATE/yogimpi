@@ -94,6 +94,10 @@ class SourceFile(object):
     def addLines(self, *rawLines):
         for rawLine in rawLines:
             self.sourceString += (' ' * self.currentIndent) + rawLine + '\n'
+
+    def addLinesNoIndent(self, *rawLines):
+        for rawLine in rawLines:
+            self.sourceString += rawLine + '\n'
     
     def addTemplate(self, aTemplate):
         for aLine in aTemplate:

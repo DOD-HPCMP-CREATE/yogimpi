@@ -5,6 +5,8 @@
 #include "mpi.h"
 #include <map>
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 class YogiManager 
 {
@@ -13,6 +15,10 @@ public:
 
     static YogiManager* getInstance();
 
+    void setGlobalRank(int rank);
+    void openDebugLog();
+    void closeDebugLog();
+    void writeToDebugLog(const char * toWrite);
     void loadMPILibrary();
     int errorToMPI(int yogiMPIError);
     int amodeToMPI(int amode);
@@ -107,6 +113,10 @@ private:
     T fetchFromPool(std::vector<T> &pool, int index);
 
     static YogiManager* _instance;
+
+    int globalRank;
+    std::ofstream debugLogFile;
+
     std::map<int, int> yogiComps;
     std::map<int, int> mpiErrors;
     std::map<int, int> yogiErrors;
