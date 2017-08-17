@@ -211,7 +211,7 @@
       integer, parameter :: YogiMPI_LB = 36 
       integer, parameter :: YogiMPI_UB = 37
 
-! Extra communicators defined in C but here (as specified by MPICH2)
+! Extra datatypes defined in C but here (as specified by MPICH2)
       integer, parameter :: YogiMPI_WCHAR = 39
       integer, parameter :: YogiMPI_C_BOOL = 40
       integer, parameter :: YogiMPI_C_FLOAT_COMPLEX = 41
@@ -219,6 +219,10 @@
       integer, parameter :: YogiMPI_C_DOUBLE_COMPLEX = 43
       integer, parameter :: YogiMPI_C_LONG_DOUBLE_COMPLEX = 44
 
+! MPI 2.2 datatypes needed by MPI I/O
+      integer, parameter :: YogiMPI_AINT = 45
+      integer, parameter :: YogiMPI_OFFSET = 46
+ 
 ! reserved communicators (C and Fortran)
       integer, parameter :: YogiMPI_COMM_WORLD = 1
       integer, parameter :: YogiMPI_COMM_SELF = 2

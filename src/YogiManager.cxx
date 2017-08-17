@@ -32,7 +32,7 @@ YogiManager::YogiManager() {
     opPool.resize(defaultPoolSize, MPI_OP_NULL);
     numOps = opOffset = 14;
     datatypePool.resize(defaultPoolSize, MPI_DATATYPE_NULL);
-    numDatatypes = datatypeOffset = 44;
+    numDatatypes = datatypeOffset = 46;
     infoPool.resize(defaultPoolSize, MPI_INFO_NULL);
     numInfos = infoOffset = 1;
     groupPool.resize(defaultPoolSize, MPI_GROUP_NULL);
@@ -232,6 +232,8 @@ YogiManager::YogiManager() {
     datatypePool.at(YogiMPI_C_COMPLEX)         = MPI_C_COMPLEX;
     datatypePool.at(YogiMPI_C_DOUBLE_COMPLEX)  = MPI_C_DOUBLE_COMPLEX;
     datatypePool.at(YogiMPI_C_LONG_DOUBLE_COMPLEX) = MPI_C_LONG_DOUBLE_COMPLEX;
+    datatypePool.at(YogiMPI_AINT)              = MPI_AINT;
+    datatypePool.at(YogiMPI_OFFSET)            = YogiMPI_OFFSET;
 
     /* In the case of preloading a library (see below), keep a zero'd pointer
        handy. */

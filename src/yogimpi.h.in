@@ -281,6 +281,10 @@ typedef int YogiMPI_Win;
 #define YogiMPI_C_DOUBLE_COMPLEX 43
 #define YogiMPI_C_LONG_DOUBLE_COMPLEX 44
 
+/* MPI 2.2 types that are needed for MPI I/O */
+#define YogiMPI_AINT 45
+#define YogiMPI_OFFSET 46
+
 /* reserved communicators (C and Fortran) */
 #define YogiMPI_COMM_WORLD 1
 #define YogiMPI_COMM_SELF 2
