@@ -657,9 +657,7 @@ MPI_Aint YogiManager::aintToMPI(YogiMPI_Aint in_aint) {
 }
    
 MPI_Comm YogiManager::commToMPI(YogiMPI_Comm in_comm) {
-    std::cout << "Try to fetch a comm at index " << in_comm << std::endl;
     MPI_Comm a_comm = fetchFromPool(commPool, in_comm);
-    std::cout << "Done getting comm." << std::endl;
     return a_comm;
 }
 
