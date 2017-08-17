@@ -233,7 +233,7 @@ YogiManager::YogiManager() {
     datatypePool.at(YogiMPI_C_DOUBLE_COMPLEX)  = MPI_C_DOUBLE_COMPLEX;
     datatypePool.at(YogiMPI_C_LONG_DOUBLE_COMPLEX) = MPI_C_LONG_DOUBLE_COMPLEX;
     datatypePool.at(YogiMPI_AINT)              = MPI_AINT;
-    datatypePool.at(YogiMPI_OFFSET)            = YogiMPI_OFFSET;
+    datatypePool.at(YogiMPI_OFFSET)            = MPI_OFFSET;
 
     /* In the case of preloading a library (see below), keep a zero'd pointer
        handy. */
