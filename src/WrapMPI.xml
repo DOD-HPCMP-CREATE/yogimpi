@@ -2153,7 +2153,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Startall">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="count" type="int"/>
-    <Arg input="true" output="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
+    <Arg input="true" name="array_of_requests[]" type="MPI_Request" dims="count"/>
   </Function>
   <Function name="MPI_Status_set_cancelled">
     <ReturnType>int</ReturnType>
