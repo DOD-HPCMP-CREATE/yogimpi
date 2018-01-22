@@ -172,6 +172,35 @@ int YogiMPI_Get_processor_name(char* name, int* resultlen) {
     return YogiManager::getInstance()->errorToYogi(mpi_error);
 }
 
+int YogiMPI_Error_string(int errorcode, char* string, int* resultlen) {
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Entering YogiMPI_Error_string");
+#endif
+    int mpi_error;
+    errorcode = YogiManager::getInstance()->errorToMPI(errorcode);
+    if (MPI_MAX_ERROR_STRING > YogiMPI_MAX_ERROR_STRING) {
+        char *tmp_string = new char[MPI_MAX_ERROR_STRING];
+        mpi_error = MPI_Error_string(errorcode, tmp_string, resultlen);
+        if (*resultlen > YogiMPI_MAX_ERROR_STRING - 1) {
+            std::memcpy(string, tmp_string, YogiMPI_MAX_ERROR_STRING - 1);
+            *resultlen = YogiMPI_MAX_ERROR_STRING - 1;
+            string[YogiMPI_MAX_ERROR_STRING - 1] = '\0';
+        }
+        else {
+            std::memcpy(string, tmp_string, *resultlen);
+            string[*resultlen] = '\0';
+        }
+        delete[] tmp_string;
+    }
+    else {
+        mpi_error = MPI_Error_string(errorcode, string, resultlen);
+    }
+#ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Exiting YogiMPI_Error_string");
+#endif
+    return YogiManager::getInstance()->errorToYogi(mpi_error);
+}
+
 int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
                               int max_addresses, int max_datatypes,
                               int array_of_integers[],

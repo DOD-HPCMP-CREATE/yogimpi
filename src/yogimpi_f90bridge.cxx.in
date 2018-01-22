@@ -84,6 +84,7 @@ static void * check_address(void *fort_loc) {
 #define YOGIBRIDGE_MPI_INIT yogibridge_mpi_init_
 #define YOGIBRIDGE_MPI_FINALIZE yogibridge_mpi_finalize_
 #define YOGIBRIDGE_MPI_GET_PROCESSOR_NAME yogibridge_mpi_get_processor_name_
+#define YOGIBRIDGE_MPI_ERROR_STRING yogibridge_mpi_error_string_
 #define YOGIBRIDGE_MPI_WTIME yogibridge_mpi_wtime_
 #define YOGIBRIDGE_MPI_WTICK yogibridge_mpi_wtick_
 
@@ -105,6 +106,13 @@ void YOGIBRIDGE_MPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
     *ierror = YogiMPI_Get_processor_name(interimName, resultlen);
     if (*resultlen > name_len) *resultlen = name_len;
     std::strncpy(name, interimName, name_len);
+}
+
+void YOGIBRIDGE_MPI_ERROR_STRING(int *errorcode, char *string, int *resultlen, int *ierr, int string_len) {
+    char * conv_string = allocate_and_add_null_terminator(string, string_len);
+    *ierr = YogiMPI_Error_string(*errorcode, conv_string, resultlen);
+    copy_without_null_terminator(string, conv_string, string_len);
+    delete[] conv_string;
 }
 
 double YOGIBRIDGE_MPI_WTIME() {

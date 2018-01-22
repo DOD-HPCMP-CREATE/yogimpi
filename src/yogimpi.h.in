@@ -502,6 +502,8 @@ int YogiMPI_Init_thread(int* argc, char*** argv, int required, int* provided);
 
 int YogiMPI_Error_class(int errorcode, int* errorclass);
 
+int YogiMPI_Error_string(int errorcode, char* string, int* resultlen);
+
 int YogiMPI_Finalize(void);
 
 int YogiMPI_Get_processor_name(char* name, int* resultlen);

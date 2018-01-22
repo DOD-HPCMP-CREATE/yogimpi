@@ -362,6 +362,7 @@
 #define MPI_Init YogiMPI_Init
 #define MPI_Init_thread YogiMPI_Init_thread
 #define MPI_Error_class YogiMPI_Error_class
+#define MPI_Error_string YogiMPI_Error_string
 #define MPI_Finalize YogiMPI_Finalize
 #define MPI_Get_processor_name YogiMPI_Get_processor_name
 #define MPI_Type_get_contents YogiMPI_Type_get_contents

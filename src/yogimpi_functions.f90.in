@@ -24,6 +24,17 @@ subroutine YogiFortran_MPI_Get_processor_name(name, resultlen, ierr)
     call YogiBridge_MPI_Get_processor_name(name, resultlen, ierr)
 end subroutine YogiFortran_MPI_Get_processor_name
 
+subroutine YogiFortran_MPI_Error_string(errorcode, string, resultlen, ierr)
+    use yogimpi
+    implicit none
+    integer, intent(in) :: errorcode
+    character(len=*), intent(out) :: string
+    integer, intent(out) :: resultlen
+    integer, intent(out) :: ierr
+
+    call YogiBridge_MPI_Error_string(errorcode, string, resultlen, ierr)
+end subroutine YogiFortran_MPI_Error_string
+
 real*8 function YogiFortran_MPI_Wtime()
     use yogimpi
     implicit none

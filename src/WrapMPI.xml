@@ -564,13 +564,13 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="errorcode" type="int"/>
     <Arg name="errorclass" output="true" type="int*"/>
   </Function>
-  -->
   <Function name="MPI_Error_string">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="errorcode" type="int" class="error"/>
     <Arg name="string" output="true" type="char*"/>
     <Arg name="resultlen" output="true" type="int*"/>
   </Function>
+  -->
   <Function name="MPI_Exscan">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="sendbuf" type="const void*">
