@@ -249,6 +249,12 @@ class YogiMPIWrapper(object):
         # Obtain the debug level set by the user.
         self.debug = int(os.environ.get('YMPI_COMPILER_DEBUG', 0))
 
+        # Check if the user wants fixed-length Fortran lines
+        if self.compilerLang == 'Fortran' and self.compilerName == 'gfortran':
+            self.lineLength = int(os.environ.get('YMPI_OVERRIDE_LINE_LENGTH', 1))
+        else:
+            self.lineLength = False
+
         diagMode = False
         if "--no-yogi" in self.argArray:
             self.passThrough()
@@ -261,6 +267,9 @@ class YogiMPIWrapper(object):
                 self.preprocessOnly = True
             if anArg.startswith(('-D', '-I')):
                 self.cppArgs.append(anArg)
+        if self.lineLength:
+            self.argArray.append('-ffixed-line-length-none')
+            self.argArray.append('-ffree-line-length-none')
         if diagMode:
             self._showCompilerString()
         else:

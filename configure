@@ -20,6 +20,7 @@ function showUsage {
     echo "* Optional environment variables: "
     echo "YDEBUG - Whether to enable YogiMPI debugging (1 for enabled)"
     echo "YVERSION - Version of MPI to support (2.1, 2.2, or 3, default is 2.1)"
+    echo "YFAMILY - Compiler family (gnu or intel)"
     exit 0
 }
 
