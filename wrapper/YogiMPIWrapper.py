@@ -452,6 +452,7 @@ class YogiMPIWrapper(object):
             cppString += anArg 
         cppString += " " + self._getFullSourcePath()
         try:   
+            fileExtension = self._getExtension(self.sourceFile)
             newFile, newPath = tempfile.mkstemp(prefix='yogiF_',
                                                 suffix=fileExtension)
             os.close(newFile)
