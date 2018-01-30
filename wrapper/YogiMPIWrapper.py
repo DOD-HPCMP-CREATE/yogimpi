@@ -431,6 +431,15 @@ class YogiMPIWrapper(object):
         # Return the bumped up line count.  In any case it's two lines.
         return (lineNumber + 2)
 
+    def _makeTempFilename(self, sourceFile):
+        tempStr = ''
+        filePath = os.path.abspath(sourceFile)
+        here = ''
+        for i in range(3):
+            filePath, here = os.path.split(filePath)
+            tempStr = here + '_' + tempStr
+        return tempStr
+
     ## Calls the system preprocessor (cpp) to yield a fully expanded Fortran
     #  source file.  Sometimes this is needed in tricky situations where 
     #  Fortran source "includes" another source file that has MPI definitions.
@@ -443,7 +452,6 @@ class YogiMPIWrapper(object):
             cppString += anArg 
         cppString += " " + self._getFullSourcePath()
         try:   
-            fileExtension = self._getExtension(self.sourceFile)
             newFile, newPath = tempfile.mkstemp(prefix='yogiF_',
                                                 suffix=fileExtension)
             os.close(newFile)
@@ -545,7 +553,10 @@ class YogiMPIWrapper(object):
                 newFile.writelines(rawFile)
                 newFile.close()
             else:
-                self.newFile, self.newPath = tempfile.mkstemp(prefix='yogiF_',
+                fileExtension = self._getExtension(self.sourceFile)
+                uniqueStr = self._makeTempFilename(self._getFullSourcePath())
+                filePrefix = 'yogiF_' + uniqueStr
+                self.newFile, self.newPath = tempfile.mkstemp(prefix=filePrefix,
                                                           suffix=fileExtension)
                 os.close(self.newFile)
                 self.newFile = open(self.newPath, 'w')
