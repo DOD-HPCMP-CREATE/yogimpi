@@ -82,6 +82,7 @@ static void * check_address(void *fort_loc) {
 }
 
 #define YOGIBRIDGE_MPI_INIT yogibridge_mpi_init_
+#define YOGIBRIDGE_MPI_INIT_THREAD yogibridge_mpi_init_thread_
 #define YOGIBRIDGE_MPI_FINALIZE yogibridge_mpi_finalize_
 #define YOGIBRIDGE_MPI_GET_PROCESSOR_NAME yogibridge_mpi_get_processor_name_
 #define YOGIBRIDGE_MPI_ERROR_STRING yogibridge_mpi_error_string_
@@ -93,6 +94,10 @@ static void * check_address(void *fort_loc) {
 void YOGIBRIDGE_MPI_INIT(int *ierror)
 {
     *ierror = YogiMPI_Init(NULL, NULL);
+}
+
+void YOGIBRIDGE_MPI_INIT_THREAD(int *required, int *provided, int *ierror) {
+    *ierror = YogiMPI_Init_thread(NULL, NULL, *required, provided);
 }
 
 void YOGIBRIDGE_MPI_FINALIZE(int *ierror)

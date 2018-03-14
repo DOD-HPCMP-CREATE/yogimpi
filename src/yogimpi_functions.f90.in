@@ -6,6 +6,17 @@ subroutine YogiFortran_MPI_Init(ierr)
     call YogiBridge_MPI_Init(ierr)
 end subroutine YogiFortran_MPI_Init
 
+
+subroutine YogiFortran_MPI_Init_thread(required, provided, ierr)
+    use yogimpi
+    implicit none
+    integer, intent(in) :: required
+    integer, intent(out) :: provided
+    integer, intent(out) :: ierr
+    
+    call YogiBridge_MPI_Init_thread(required, provided, ierr)
+end subroutine
+
 subroutine YogiFortran_MPI_Finalize(ierr)
     use yogimpi
     implicit none
