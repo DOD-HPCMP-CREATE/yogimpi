@@ -396,8 +396,11 @@ class YogiMPIWrapper(object):
             return True 
         if sourceLine.startswith('#'):
             # Ignore preprocessor directives.
-            return True           
-        return False
+            return True 
+        # All replace items have mpi in it, if not, no need to process line
+        if 'mpi' in sourceLine.lower()
+                return False
+        return True
 
     ## Handle line-continuation in Fortran, which may require breaking a line
     #  into pieces if we have made it too long.
