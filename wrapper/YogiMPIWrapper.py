@@ -398,7 +398,7 @@ class YogiMPIWrapper(object):
             # Ignore preprocessor directives.
             return True 
         # All replace items have mpi in it, if not, no need to process line
-        if 'mpi' in sourceLine.lower()
+        if 'mpi' in sourceLine.lower():
                 return False
         return True
 
