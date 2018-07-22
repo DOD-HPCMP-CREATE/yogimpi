@@ -251,7 +251,11 @@ class GenerateWrap(object):
                     # We have to cast away the const in order to maintain
                     # compatibility between MPI 2 and MPI 3. Nasty but
                     # effective solution.
-                    printName = '(' + anArg.type + ')' + anArg.call_name
+                    convType = anArg.type
+                    if anArg.is_plural:
+                        # The code won't add the * for an array, add that in.
+                        convType += ' *'
+                    printName = '(' + convType + ')' + anArg.call_name
             if doIgnore:
                 if aFunc.status_ignore_arg:
                     if i == aFunc.status_ignore_arg:
