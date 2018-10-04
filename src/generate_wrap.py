@@ -584,7 +584,10 @@ class GenerateWrap(object):
             elif anArg.type.startswith('char') and anArg.is_pointer:
                 callString += 'conv_' + anArg.call_name
             elif anArg.is_pointer or anArg.is_plural:
-                callString += anArg.call_name
+                if 'MPI_IN_PLACE' in anArg.preConvertNames():
+                    callString += 'check_ptr_constant(' + anArg.call_name + ')'
+                else:
+                    callString += anArg.call_name
             else:
                 callString += '*' + anArg.call_name
         return callString

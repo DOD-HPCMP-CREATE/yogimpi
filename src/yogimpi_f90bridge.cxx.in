@@ -72,11 +72,14 @@ static YogiMPI_Status * check_status_ignore(YogiMPI_Status *fort_status) {
 }
 
 /* Compares an integer pointer from Fortran to those defined in common blocks
-   for YogiMPI_BOTTOM.  Returns the original pointer address or YogiMPI_BOTTOM
-   in C. */
-static void * check_address(void *fort_loc) {
+   for YogiMPI_BOTTOM and YogiMPI_IN_PLACE. Returns either the original pointer
+   address or one of the two pointer constants in C. */
+static void * check_ptr_constant(void *fort_loc) {
     if (fort_loc == (void *)&(ympi2_.bottom)) {
         return YogiMPI_BOTTOM;
+    }
+    else if (fort_loc == (void *)&(ympi2_.in_place)) { 
+        return YogiMPI_IN_PLACE;
     }
     return fort_loc;
 }

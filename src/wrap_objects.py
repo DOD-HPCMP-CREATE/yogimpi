@@ -154,6 +154,12 @@ class MPIArgument(object):
                 errMsg = self.name + " is marked output but isn't a pointer."
                 raise ValueError(errMsg)
 
+    def preConvertNames(self):
+        nameList = []
+        for val in self.pre_convert_values:
+            nameList.append(val.name)
+        return nameList
+
 class MPIConvertValue(object):
     def __init__(self):
         self.name = None
