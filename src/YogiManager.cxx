@@ -520,70 +520,80 @@ int YogiManager::providedToYogi(int provided) {
 }
 
 int YogiManager::amodeToYogi(int amode) {
-    switch(amode) {
-      case MPI_MODE_RDONLY:
-          return YogiMPI_MODE_RDONLY;
-          break;
-      case MPI_MODE_RDWR:
-          return YogiMPI_MODE_RDWR;
-          break;
-      case MPI_MODE_WRONLY:
-          return YogiMPI_MODE_WRONLY;
-          break;
-      case MPI_MODE_CREATE:
-          return YogiMPI_MODE_CREATE;
-          break;
-      case MPI_MODE_EXCL:
-          return YogiMPI_MODE_EXCL;
-          break;
-      case MPI_MODE_DELETE_ON_CLOSE:
-          return YogiMPI_MODE_DELETE_ON_CLOSE;
-          break;
-      case MPI_MODE_UNIQUE_OPEN:
-          return YogiMPI_MODE_UNIQUE_OPEN;
-      case MPI_MODE_SEQUENTIAL:
-          return YogiMPI_MODE_SEQUENTIAL;
-          break;
-      case MPI_MODE_APPEND:
-          return YogiMPI_MODE_APPEND;
-          break;
-      default:
-          return amode;
+
+    // Do some bit checking to properly handle this.
+    int amodeYogi = 0;
+
+    if ((amode & MPI_MODE_CREATE) != 0) {
+        amodeYogi = amodeYogi | YogiMPI_MODE_CREATE;
     }
+
+    if ((amode & MPI_MODE_RDONLY) != 0) {
+        amodeYogi = amodeYogi | YogiMPI_MODE_RDONLY;
+    }
+
+    if ((amode & MPI_MODE_WRONLY) != 0) {
+        amodeYogi = amodeYogi | YogiMPI_MODE_WRONLY;
+    }
+
+    if ((amode & MPI_MODE_RDWR) != 0) {
+        amodeYogi = amodeYogi | YogiMPI_MODE_RDWR;
+    }
+
+    if ((amode & MPI_MODE_DELETE_ON_CLOSE) != 0) {
+        amodeYogi = amodeYogi | YogiMPI_MODE_DELETE_ON_CLOSE;
+    }
+
+    if ((amode & MPI_MODE_UNIQUE_OPEN) != 0) {
+        amodeYogi = amodeYogi | YogiMPI_MODE_UNIQUE_OPEN;
+    }
+
+
+    return amodeYogi;
 }
 
 int YogiManager::amodeToMPI(int amode) {
-    switch(amode) {
-      case YogiMPI_MODE_RDONLY:
-          return MPI_MODE_RDONLY;
-          break;
-      case YogiMPI_MODE_RDWR:
-          return MPI_MODE_RDWR;
-          break;
-      case YogiMPI_MODE_WRONLY:
-          return MPI_MODE_WRONLY;
-          break;
-      case YogiMPI_MODE_CREATE:
-          return MPI_MODE_CREATE;
-          break;
-      case YogiMPI_MODE_EXCL:
-          return MPI_MODE_EXCL;
-          break;
-      case YogiMPI_MODE_DELETE_ON_CLOSE:
-          return MPI_MODE_DELETE_ON_CLOSE;
-          break;
-      case YogiMPI_MODE_UNIQUE_OPEN:
-          return MPI_MODE_UNIQUE_OPEN;
-      case YogiMPI_MODE_SEQUENTIAL:
-          return MPI_MODE_SEQUENTIAL;
-          break;
-      case YogiMPI_MODE_APPEND:
-          return MPI_MODE_APPEND;
-          break;
-      default:
-          return amode;
+
+    // Do some bit checking to properly handle this.
+    int amodeMPI = 0;
+
+    if ((amode & YogiMPI_MODE_CREATE) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_CREATE;
     }
 
+    if ((amode & YogiMPI_MODE_RDONLY) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_RDONLY;
+    }
+
+    if ((amode & YogiMPI_MODE_WRONLY) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_WRONLY;
+    }
+
+    if ((amode & YogiMPI_MODE_RDWR) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_RDWR;
+    }
+
+    if ((amode & YogiMPI_MODE_DELETE_ON_CLOSE) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_DELETE_ON_CLOSE;
+    }
+
+    if ((amode & YogiMPI_MODE_UNIQUE_OPEN) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_UNIQUE_OPEN;
+    }
+
+    if ((amode & YogiMPI_MODE_EXCL) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_EXCL;
+    }
+
+    if ((amode & YogiMPI_MODE_APPEND) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_APPEND;
+    }
+
+    if ((amode & YogiMPI_MODE_SEQUENTIAL) != 0) {
+        amodeMPI = amodeMPI | MPI_MODE_SEQUENTIAL;
+    }
+
+    return amodeMPI;
 }
 
 /* Convert root constants in the case of an intercommunicator. */
