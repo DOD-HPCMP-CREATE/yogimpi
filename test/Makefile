@@ -7,6 +7,8 @@ YF90=$(INSTALLDIR)/bin/mpif90
 
 test: ctest ftest 
 
+testFileModes: testFileModes.c
+	$(YCC) $(CFLAGS) testFileModes.c -o testFileModes
 testInfo: testInfo.c
 	$(YCC) $(CFLAGS) testInfo.c -o testInfo
 
@@ -72,6 +74,7 @@ runctests: ctest
 	./testRunner.sh 4 ./waitsome
 	./testRunner.sh 4 ./testAttr
 	./testRunner.sh 4 ./testInfo
+	./testRunner.sh 2 ./testFileModes
 
 runftests: ftest	
 	./testRunner.sh 2 ./fsimple
@@ -89,7 +92,7 @@ runftests: ftest
 
 runtest: runctests runftests 
 
-ctest: simple createOp errorHandler nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr testInfo
+ctest: simple createOp errorHandler nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr testInfo testFileModes
 
 fsimple: fsimple.f90
 	$(YF90) $(FFLAGS) fsimple.f90 -o fsimple
@@ -130,4 +133,6 @@ clean:
               nonblock_waitall testComms fsimple testInfo \
               ftestComms probe collective fcollective fwtick \
               waitsome waitany fwaitsome createOp errorHandler testAll \
-              cWriteFile.result fWriteFile.result testAttr ftestInfo
+              cWriteFile.result fWriteFile.result testAttr ftestInfo \
+              testFileModes
+
