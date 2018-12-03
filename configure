@@ -179,4 +179,8 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \
     etc/yogimpi.cshrc.in > etc/yogimpi.cshrc
 
+cd wrapper
+python configure_wrapper.py
+cd ..
+
 echo "Type make to build YogiMPI."

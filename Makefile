@@ -40,6 +40,7 @@ realclean: clean
 	$(RM) wrapper/mpif90
 	$(RM) wrapper/mpif77
 	$(RM) wrapper/mpicxx
+	$(RM) wrapper/YogiMPIWrapper.py
 	$(RM) test/testRunner.sh
 	$(RM) etc/modulefile
 	$(RM) etc/yogimpi.bashrc
