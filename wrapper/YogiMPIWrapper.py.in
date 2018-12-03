@@ -9,11 +9,9 @@ import filecmp
 import re
 
 # MPI constants currently supported in Fortran.
-# mpiConstants
 @MPI_CONSTANTS@
 
 # MPI objects currently supported in Fortran.
-# mpiObjects
 @MPI_OBJECTS@
 
 # MPI time functions, which are the only functions to return a non-integer
@@ -21,7 +19,6 @@ import re
 mpiTimeFunctions = [ 'MPI_Wtime', 'MPI_Wtick' ]
 
 # MPI functions currently supported in Fortran.
-# mpiFunctions
 @MPI_FUNCTIONS@
 
 class YogiMPIWrapper(object):
@@ -194,7 +191,13 @@ class YogiMPIWrapper(object):
             for aPattern in self.mpi_functions:
                 self.func_regexes.append(self._buildRegEx(aPattern))
             for aPattern in self.mpi_time_functions:
-                self.time_regexes.append(self._buildRegEx(aPattern))
+                #self.time_regexes.append(self._buildRegEx(aPattern))
+                # Quick fix: for time functions, support non-parentheses
+                # matching for edge cases.
+                regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+                              r')(\s|,|\*|\)|\()'
+                self.time_regexes.append(re.compile(regexString,
+                                                    re.IGNORECASE))
        
     ## Sets the source file and its command-line argument index which Yogi must
     #  compile. 
