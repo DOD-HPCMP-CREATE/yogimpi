@@ -21,5 +21,6 @@ wrap: generate_wrap.py wrap_objects.py WrapMPI.xml
                WrapMPI.xml 
 
 clean:
-	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx *.pyc *.o *.so *.mod \
+	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx yogimpif.h \
+              *.pyc *.o *.so *.mod \
               test_YogiManager yogimpi_functions.f90 yogimpi_f90bridge.cxx

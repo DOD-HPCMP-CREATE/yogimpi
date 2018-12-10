@@ -452,8 +452,23 @@ class GenerateWrap(object):
         self.writeCHeader()
         self.writeCUserHeader()
         self.writeCXXSource()
+        self.writeFortranHeader()
         self.writeFortranBridge()
         self.writeFortranSource()
+
+    # Writes the yogimpif.h header 
+    def writeFortranHeader(self):
+        fInput = 'yogimpif.h.in'
+        header_file = source_writers.FortranSource(inputFile=fInput)
+        set_version = source_writers.FortranSource()
+        majorVersion = str(self.mpiVersion.major)
+        minorVersion = str(self.mpiVersion.minor)
+        set_version.addLines('integer, parameter :: YogiMPI_VERSION = ' +\
+                             majorVersion,
+                             'integer, parameter :: YogiMPI_SUBVERSION = ' +\
+                             minorVersion)
+        header_file.merge(set_version, 'SET_VERSION')
+        header_file.writeFile('yogimpif.h')
 
     # Writes the C++ code that binds YogiMPI to the Fortran layer.
     def writeFortranBridge(self):

@@ -409,6 +409,16 @@ typedef long long YogiMPI_Offset;
  */
 typedef int YogiMPI_Fint;
 
+#if YogiMPI_VERSION == 3
+
+/* MPI_Count is implementation dependent. Pick a long long int for it locally
+ * and then cast to the actual type within the function.  In some instances 
+ * casting may not be necessary, which can be determined at runtime.
+ */
+typedef long long YogiMPI_Count;
+
+#endif
+
 static void * const YogiMPI_IN_PLACE = (void *)-1;
 
 /* Prototype function pointers for MPI. */

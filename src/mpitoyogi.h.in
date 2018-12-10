@@ -389,6 +389,9 @@
 #define MPI_Type_f2c YogiMPI_Type_f2c
 #define MPI_Win_c2f YogiMPI_Win_c2f
 #define MPI_Win_f2c YogiMPI_Win_f2c
+#if YogiMPI_VERSION == 3
+#define MPI_Count YogiMPI_Count
+#endif
 
 // Begin automatically generated code
 @YOGI_DEFINES@

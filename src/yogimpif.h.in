@@ -45,9 +45,7 @@
 
 ! Defined MPI constants for Fortran
 
-! Version information
-      integer, parameter :: YogiMPI_VERSION = 2
-      integer, parameter :: YogiMPI_SUBVERSION = 2 
+@SET_VERSION@
 
 ! Handle various byte counts in Fortran to match the C counterparts.  On most
 ! modern Intel/AMD 64-bit systems these are 4 or 8 byte values.
