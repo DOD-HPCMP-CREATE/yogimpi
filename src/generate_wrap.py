@@ -57,7 +57,7 @@ class GenerateWrap(object):
 
     mpiObjects = [ 'MPI_Status' ]
 
-    mpiTypeDefs = [ 'MPI_Offset', 'MPI_Aint' ]
+    mpiTypeDefs = [ 'MPI_Offset', 'MPI_Aint', 'MPI_Count' ]
 
     mpiTypes = mpiHandles + mpiTypeDefs + mpiObjects
 

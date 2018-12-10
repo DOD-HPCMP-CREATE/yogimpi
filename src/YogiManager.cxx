@@ -671,6 +671,12 @@ MPI_Comm YogiManager::commToMPI(YogiMPI_Comm in_comm) {
     return a_comm;
 }
 
+#if YogiMPI_VERSION == 3
+MPI_Count YogiManager::countToMPI(YogiMPI_Count in_count) {
+    return (MPI_Count) in_count;
+}
+#endif
+
 MPI_Datatype YogiManager::datatypeToMPI(YogiMPI_Datatype in_data) {
     MPI_Datatype a_datatype = fetchFromPool(datatypePool, in_data);
     return a_datatype;
@@ -766,6 +772,12 @@ YogiMPI_Comm YogiManager::commToYogi(MPI_Comm in_comm) {
     return insertIntoPool(commPool, in_comm, MPI_COMM_NULL, commOffset,
                           numComms);
 }
+
+#if YogiMPI_VERSION == 3
+YogiMPI_Count YogiManager::countToYogi(MPI_Count in_count) {
+    return (YogiMPI_Count) in_count;
+}
+#endif
 
 YogiMPI_Datatype YogiManager::datatypeToYogi(MPI_Datatype in_data) {
     return insertIntoPool(datatypePool, in_data, MPI_DATATYPE_NULL,

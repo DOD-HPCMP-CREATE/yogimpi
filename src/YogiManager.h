@@ -49,6 +49,7 @@ public:
     MPI_Group groupToMPI(YogiMPI_Group in_group);
     MPI_File fileToMPI(YogiMPI_File in_file);
     MPI_Aint aintToMPI(YogiMPI_Aint in_aint);
+    MPI_Count countToMPI(YogiMPI_Count in_count);
     MPI_Status * statusToMPI(YogiMPI_Status * in_status);
 
     // Create MPI_Status arrays when required
@@ -71,6 +72,7 @@ public:
     YogiMPI_Group groupToYogi(MPI_Group in_group);
     YogiMPI_File fileToYogi(MPI_File in_file);
     YogiMPI_Aint aintToYogi(MPI_Aint in_aint);
+    YogiMPI_Count countToYogi(MPI_Count in_count);
     YogiMPI_Status statusToYogi(MPI_Status &in_status, bool set_error = true);
 
     // Array-conversion to Yogi

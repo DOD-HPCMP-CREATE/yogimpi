@@ -1050,6 +1050,16 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
       <Convert trigger="post">MPI_UNDEFINED</Convert>
     </Arg>
   </Function>
+  <Function name="MPI_Get_elements_x">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="status" type="const MPI_Status*"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="count" output="true" type="MPI_Count*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
   <Function name="MPI_Get_library_version">
     <Version>3.0</Version>
     <ReturnType>int</ReturnType>
@@ -2166,6 +2176,14 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg input="true" name="count" type="int"/>
   </Function>
+  <Function name="MPI_Status_set_elements_x">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" output="true" name="status" type="MPI_Status*"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="count" type="MPI_Count"/>
+  </Function>
   <Function name="MPI_Test">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="request" type="MPI_Request*"/>
@@ -2369,6 +2387,18 @@ else {
       <Convert trigger="post">MPI_UNDEFINED</Convert>
     </Arg>
   </Function>
+  <Function name="MPI_Type_get_extent_x">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="lb" output="true" type="MPI_Count*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+    <Arg name="extent" output="true" type="MPI_Count*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
   <Function name="MPI_Type_get_name">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
@@ -2382,6 +2412,18 @@ else {
       <Convert trigger="post">MPI_UNDEFINED</Convert>
     </Arg>
     <Arg name="true_extent" output="true" type="MPI_Aint*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
+  <Function name="MPI_Type_get_true_extent_x">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="true_lb" output="true" type="MPI_Count*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+    <Arg name="true_extent" output="true" type="MPI_Count*">
       <Convert trigger="post">MPI_UNDEFINED</Convert>
     </Arg>
   </Function>
@@ -2435,6 +2477,15 @@ else {
     <ReturnType>int</ReturnType>
     <Arg input="true" name="datatype" type="MPI_Datatype"/>
     <Arg name="size" output="true" type="int*">
+      <Convert trigger="post">MPI_UNDEFINED</Convert>
+    </Arg>
+  </Function>
+  <Function name="MPI_Type_size_x">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg name="size" output="true" type="MPI_Count*">
       <Convert trigger="post">MPI_UNDEFINED</Convert>
     </Arg>
   </Function>
