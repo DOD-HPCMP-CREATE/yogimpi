@@ -45,7 +45,7 @@
 
 ! Defined MPI constants for Fortran
 
-@SET_VERSION@
+      @SET_VERSION@
 
 ! Handle various byte counts in Fortran to match the C counterparts.  On most
 ! modern Intel/AMD 64-bit systems these are 4 or 8 byte values.
