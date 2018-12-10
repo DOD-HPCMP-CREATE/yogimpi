@@ -4,6 +4,8 @@ Make.flags
 etc/modulefile
 etc/yogimpi.bashrc
 etc/yogimpi.cshrc
+src/*.pyc
+src/yogimpif.h
 src/YogiManager.o
 src/libyogimpi.so
 src/mpitoyogi.h
