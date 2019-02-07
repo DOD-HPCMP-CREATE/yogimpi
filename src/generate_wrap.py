@@ -487,7 +487,7 @@ class GenerateWrap(object):
             for anArg in aFunc.args:
                 if anArg.type.startswith('char') and anArg.is_pointer:
                     stringArgs.append(anArg) 
-            fUpper = 'YOGIBRIDGE_' + aFunc.name.upper()
+            fUpper = aFunc.name.upper().replace('MPI_', 'YOGIBRIDGE_')
             fLower = fUpper.lower() + '_'
             bridge_defs.addLines('#define ' + fUpper + ' ' + fLower) 
             funcArgs = self._getBridgeArgsString(aFunc)
@@ -525,7 +525,8 @@ class GenerateWrap(object):
         for aFunc in self.functions:
             if not aFunc.fortran_support:
                 continue
-            fortName = 'YogiFortran_' + aFunc.name
+            fortName = aFunc.name.replace('MPI_', 'Yog_')
+            bridgeName = aFunc.name.replace('MPI_', 'YogiBridge_')
             fortArgs = self._getFortArgsString(aFunc)
             fort_funcs.addSubroutine(fortName, fortArgs, implicit=False)
             fort_funcs.addLines('use yogimpi',
@@ -543,8 +544,7 @@ class GenerateWrap(object):
                                             'Yogi_LogicalToInteger(' +\
                                             anArg.name + ')') 
             argString = self._getFortArgsString(aFunc, noConvert=False)
-            fort_funcs.addLines('call YogiBridge_' + aFunc.name + '(' +\
-                                argString + ')') 
+            fort_funcs.addLines('call ' + bridgeName + '(' + argString + ')') 
             for anArg in aFunc.args:
                 if self._isFortranLogical(anArg):
                     if anArg.is_output:
@@ -672,11 +672,11 @@ class GenerateWrap(object):
         fType = 'integer'
         if anArg.is_mpi_type:
             if anArg.mpi_type == 'MPI_Address':
-                fType = 'integer(YogiMPI_ADDRESS_KIND)'
+                fType = 'integer(Yog_ADDRESS_KIND)'
             elif anArg.mpi_type == 'MPI_Offset':
-                fType = 'integer(YogiMPI_OFFSET_KIND)'
+                fType = 'integer(Yog_OFFSET_KIND)'
             else:
-                fType = 'integer(YogiMPI_INTEGER_KIND)' 
+                fType = 'integer(Yog_INTEGER_KIND)' 
         else:
             if self._isFortranLogical(anArg):
                 fType = 'logical'
@@ -718,8 +718,8 @@ class GenerateWrap(object):
         set_version = source_writers.CSource()
         majorVersion = str(self.mpiVersion.major)
         minorVersion = str(self.mpiVersion.minor)
-        set_version.addLines('#define YogiMPI_VERSION ' + majorVersion,
-                             '#define YogiMPI_SUBVERSION ' + minorVersion)
+        set_version.addLines('#define YOG_VERSION ' + majorVersion,
+                             '#define YOG_SUBVERSION ' + minorVersion)
         func_protos = source_writers.CSource()
         for aFunc in self.functions:
             name = self.prefix + aFunc.name

@@ -84,31 +84,31 @@ static void * check_ptr_constant(void *fort_loc) {
     return fort_loc;
 }
 
-#define YOGIBRIDGE_MPI_INIT yogibridge_mpi_init_
-#define YOGIBRIDGE_MPI_INIT_THREAD yogibridge_mpi_init_thread_
-#define YOGIBRIDGE_MPI_FINALIZE yogibridge_mpi_finalize_
-#define YOGIBRIDGE_MPI_GET_PROCESSOR_NAME yogibridge_mpi_get_processor_name_
-#define YOGIBRIDGE_MPI_ERROR_STRING yogibridge_mpi_error_string_
-#define YOGIBRIDGE_MPI_WTIME yogibridge_mpi_wtime_
-#define YOGIBRIDGE_MPI_WTICK yogibridge_mpi_wtick_
+#define YOGIBRIDGE_INIT yogibridge_init_
+#define YOGIBRIDGE_INIT_THREAD yogibridge_init_thread_
+#define YOGIBRIDGE_FINALIZE yogibridge_finalize_
+#define YOGIBRIDGE_GET_PROCESSOR_NAME yogibridge_get_processor_name_
+#define YOGIBRIDGE_ERROR_STRING yogibridge_error_string_
+#define YOG_WTIME yog_wtime_
+#define YOG_WTICK yog_wtick_
 
 @FUNCTION_DEFINES@
 
-void YOGIBRIDGE_MPI_INIT(int *ierror)
+void YOGIBRIDGE_INIT(int *ierror)
 {
     *ierror = YogiMPI_Init(NULL, NULL);
 }
 
-void YOGIBRIDGE_MPI_INIT_THREAD(int *required, int *provided, int *ierror) {
+void YOGIBRIDGE_INIT_THREAD(int *required, int *provided, int *ierror) {
     *ierror = YogiMPI_Init_thread(NULL, NULL, *required, provided);
 }
 
-void YOGIBRIDGE_MPI_FINALIZE(int *ierror)
+void YOGIBRIDGE_FINALIZE(int *ierror)
 {
     *ierror = YogiMPI_Finalize();
 }
 
-void YOGIBRIDGE_MPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
+void YOGIBRIDGE_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
                                         int name_len) {
     char *interimName = copy_and_add_null_terminator(name, name_len);
     *ierror = YogiMPI_Get_processor_name(interimName, resultlen);
@@ -116,18 +116,18 @@ void YOGIBRIDGE_MPI_GET_PROCESSOR_NAME(char *name, int *resultlen, int *ierror,
     std::strncpy(name, interimName, name_len);
 }
 
-void YOGIBRIDGE_MPI_ERROR_STRING(int *errorcode, char *string, int *resultlen, int *ierr, int string_len) {
+void YOGIBRIDGE_ERROR_STRING(int *errorcode, char *string, int *resultlen, int *ierr, int string_len) {
     char * conv_string = allocate_and_add_null_terminator(string, string_len);
     *ierr = YogiMPI_Error_string(*errorcode, conv_string, resultlen);
     copy_without_null_terminator(string, conv_string, string_len);
     delete[] conv_string;
 }
 
-double YOGIBRIDGE_MPI_WTIME() {
+double YOG_WTIME() {
     return YogiMPI_Wtime();
 }
 
-double YOGIBRIDGE_MPI_WTICK() {
+double YOG_WTICK() {
     return YogiMPI_Wtick();
 }
 

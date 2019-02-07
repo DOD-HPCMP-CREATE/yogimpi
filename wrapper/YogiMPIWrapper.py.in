@@ -170,11 +170,12 @@ class YogiMPIWrapper(object):
             print message
 
     def _buildRegEx(self, aPattern):
+        aPattern = aPattern.replace('MPI_', '')
         # Functions require an open parenthesis to follow, or
         # if there is a line continuation just trust that someone
         # put one on the next line.
         # ToDo: Actually do lookahead and find out for that last case.
-        regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+        regexString = r"(^|=|\s|\(|\)|,|\*|\+)MPI_(" + aPattern +\
                       r')([\s]*\(|[\s]*&$)'
         return re.compile(regexString, re.IGNORECASE)
 
@@ -184,17 +185,19 @@ class YogiMPIWrapper(object):
     def _createRegExes(self):
         if self.compilerLang == 'Fortran':
             for aPattern in self.mpi_constants:
-                regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+                aPattern = aPattern.replace('MPI_', '')
+                regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)MPI_(" + aPattern +\
                               r')(\s|,|\*|\)|\()'
                 self.const_regexes.append(re.compile(regexString,
                                                      re.IGNORECASE))
             for aPattern in self.mpi_functions:
                 self.func_regexes.append(self._buildRegEx(aPattern))
             for aPattern in self.mpi_time_functions:
+                aPattern = aPattern.replace('MPI_', '')
                 #self.time_regexes.append(self._buildRegEx(aPattern))
                 # Quick fix: for time functions, support non-parentheses
                 # matching for edge cases.
-                regexString = r"(^|=|\s|\(|\)|,|\*|\+)(" + aPattern +\
+                regexString = r"(^|=|\s|\(|\)|,|\*|\+)MPI_(" + aPattern +\
                               r')(\s|,|\*|\)|\()'
                 self.time_regexes.append(re.compile(regexString,
                                                     re.IGNORECASE))
@@ -411,15 +414,15 @@ class YogiMPIWrapper(object):
 
             for aRegex in self.const_regexes:
                 # Run through all the loaded MPI regular expressions.
-                line = aRegex.sub(r"\g<1>Yogi\g<2>\g<3>", line)
+                line = aRegex.sub(r"\g<1>YOG_\g<2>\g<3>", line)
 
             for aRegex in self.func_regexes:
                 # Run through all the loaded MPI regular expressions.
-                line = aRegex.sub(r"\g<1>YogiFortran_\g<2>\g<3>", line)
+                line = aRegex.sub(r"\g<1>YOG_\g<2>\g<3>", line)
 
             for aRegex in self.time_regexes:
                 # Run through all the loaded MPI regular expressions.
-                line = aRegex.sub(r"\g<1>YogiBridge_\g<2>\g<3>", line)
+                line = aRegex.sub(r"\g<1>YOG_\g<2>\g<3>", line)
 
             # Substitute "use yogimpi" for "use mpi" where applicable.
             line = YogiMPIWrapper.useMPIRegEx.sub(r"\g<1>use yogimpi\g<2>",
@@ -429,11 +432,12 @@ class YogiMPIWrapper(object):
             # problems and/or bumping the line counter. 
             if oldLine != line:
                 rawFile[i] = line
-                if fixedForm:
+                #if fixedForm:
                     # i can be modified if added lines should be skipped.
-                    i = self._checkFixedLine(rawFile, i)
-                else:
-                    i += 1
+                    #i = self._checkFixedLine(rawFile, i)
+                #else:
+                #    i += 1
+                i += 1
                 changedFile = True
             else:
                 i += 1
