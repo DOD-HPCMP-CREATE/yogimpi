@@ -718,8 +718,8 @@ class GenerateWrap(object):
         set_version = source_writers.CSource()
         majorVersion = str(self.mpiVersion.major)
         minorVersion = str(self.mpiVersion.minor)
-        set_version.addLines('#define YOG_VERSION ' + majorVersion,
-                             '#define YOG_SUBVERSION ' + minorVersion)
+        set_version.addLines('#define YogiMPI_VERSION ' + majorVersion,
+                             '#define YogiMPI_SUBVERSION ' + minorVersion)
         func_protos = source_writers.CSource()
         for aFunc in self.functions:
             name = self.prefix + aFunc.name
