@@ -463,9 +463,9 @@ class GenerateWrap(object):
         set_version = source_writers.FortranSource()
         majorVersion = str(self.mpiVersion.major)
         minorVersion = str(self.mpiVersion.minor)
-        set_version.addLines('integer, parameter :: YogiMPI_VERSION = ' +\
+        set_version.addLines('integer, parameter :: YOG_VERSION = ' +\
                              majorVersion,
-                             'integer, parameter :: YogiMPI_SUBVERSION = ' +\
+                             'integer, parameter :: YOG_SUBVERSION = ' +\
                              minorVersion)
         header_file.merge(set_version, 'SET_VERSION')
         header_file.writeFile('yogimpif.h')
