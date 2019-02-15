@@ -115,10 +115,6 @@ class YogiMPIWrapper(object):
             lLengthEnv = 'YMPI_OVERRIDE_LINE_LENGTH'
             if lLengthEnv in os.environ:
                 self.disableLineLength = bool(int(os.environ.get(lLengthEnv))) 
-            elif self.compilerName == 'gfortran':
-                # If we are on GNU and line length wasn't specified, assume
-                # we should override it anyway.
-                self.disableLineLength = True 
                
         diagMode = False
 
