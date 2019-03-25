@@ -29,8 +29,8 @@ installDir=""
 while getopts ":i:h" opt; do
   case $opt in
     i)
-      echo "Installation directory set to: $OPTARG"
-      installDir=$OPTARG
+      installDir=`readlink -f $OPTARG`
+      echo "Installation directory set to: $installDir"
       ;;
     h)
       showUsage
