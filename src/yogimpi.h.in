@@ -320,6 +320,9 @@ typedef int YogiMPI_Win;
 #define YogiMPI_LOR 11
 #define YogiMPI_LXOR 12
 #define YogiMPI_REPLACE 13
+#if YogiMPI_VERSION == 3
+#define YogiMPI_NO_OP 14
+#endif
 
 /* Null handles */ 
 #define YogiMPI_GROUP_NULL 0

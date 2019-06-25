@@ -461,13 +461,17 @@ class GenerateWrap(object):
         fInput = 'yogimpif.h.in'
         header_file = source_writers.FortranSource(inputFile=fInput)
         set_version = source_writers.FortranSource()
+        extra_op = source_writers.FortranSource()
         majorVersion = str(self.mpiVersion.major)
         minorVersion = str(self.mpiVersion.minor)
         set_version.addLines('integer, parameter :: YOG_VERSION = ' +\
                              majorVersion,
                              'integer, parameter :: YOG_SUBVERSION = ' +\
                              minorVersion)
+        if majorVersion == '3':
+            extra_op.addLines('integer, parameter :: YOG_NO_OP = 14')
         header_file.merge(set_version, 'SET_VERSION')
+        header_file.merge(extra_op, 'EXTRA_OP')
         header_file.writeFile('yogimpif.h')
 
     # Writes the C++ code that binds YogiMPI to the Fortran layer.

@@ -256,6 +256,7 @@
       integer, parameter :: YOG_LOR = 11
       integer, parameter :: YOG_LXOR = 12
       integer, parameter :: YOG_REPLACE = 13
+      @EXTRA_OP@
 
 ! Null handles
 

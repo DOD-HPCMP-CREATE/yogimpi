@@ -507,6 +507,7 @@
     <Constant name="MPI_REAL4"/>
     <Constant name="MPI_REAL8"/>
     <Constant name="MPI_REPLACE"/>
+    <Constant name="MPI_NO_OP"/>
     <Constant name="MPI_REQUEST_NULL"/>
     <Constant name="MPI_ROOT"/>
     <Constant name="MPI_SEEK_CUR"/>

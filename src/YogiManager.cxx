@@ -30,7 +30,7 @@ YogiManager::YogiManager() {
     winPool.resize(defaultPoolSize, MPI_WIN_NULL);
     numWins = winOffset = 1;
     opPool.resize(defaultPoolSize, MPI_OP_NULL);
-    numOps = opOffset = 14;
+    numOps = opOffset = 15;
     datatypePool.resize(defaultPoolSize, MPI_DATATYPE_NULL);
     numDatatypes = datatypeOffset = 46;
     infoPool.resize(defaultPoolSize, MPI_INFO_NULL);
@@ -182,6 +182,9 @@ YogiManager::YogiManager() {
     opPool.at(YogiMPI_LOR)    = MPI_LOR;
     opPool.at(YogiMPI_LXOR)   = MPI_LXOR;
     opPool.at(YogiMPI_REPLACE) = MPI_REPLACE;
+#if YogiMPI_VERSION == 3
+    opPool.at(YogiMPI_NO_OP) = MPI_NO_OP;
+#endif
 
     // Set errhandler pool constants
     errPool.at(YogiMPI_ERRORS_ARE_FATAL) = MPI_ERRORS_ARE_FATAL;
