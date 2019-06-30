@@ -39,6 +39,10 @@ YogiManager::YogiManager() {
     numGroups = groupOffset = 2;
     filePool.resize(defaultPoolSize, MPI_FILE_NULL);
     numFiles = fileOffset = 1;
+#if YogiMPI_VERSION == 3
+    messagePool.resize(defaultPoolSize, MPI_MESSAGE_NULL);
+    numMessages = messageOffset = 3;
+#endif
 
     mpiErrors[YogiMPI_SUCCESS]         = MPI_SUCCESS;
     mpiErrors[YogiMPI_ERR_BUFFER]      = MPI_ERR_BUFFER;
@@ -237,6 +241,10 @@ YogiManager::YogiManager() {
     datatypePool.at(YogiMPI_C_LONG_DOUBLE_COMPLEX) = MPI_C_LONG_DOUBLE_COMPLEX;
     datatypePool.at(YogiMPI_AINT)              = MPI_AINT;
     datatypePool.at(YogiMPI_OFFSET)            = MPI_OFFSET;
+
+#if YogiMPI_VERSION == 3
+    messagePool.at(YogiMPI_MESSAGE_NO_PROC) = MPI_MESSAGE_NO_PROC;
+#endif
 
     /* In the case of preloading a library (see below), keep a zero'd pointer
        handy. */
@@ -678,6 +686,11 @@ MPI_Comm YogiManager::commToMPI(YogiMPI_Comm in_comm) {
 MPI_Count YogiManager::countToMPI(YogiMPI_Count in_count) {
     return (MPI_Count) in_count;
 }
+
+MPI_Message YogiManager::messageToMPI(YogiMPI_Message in_message) {
+    MPI_Message a_msg = fetchFromPool(messagePool, in_message);
+    return a_msg;
+}
 #endif
 
 MPI_Datatype YogiManager::datatypeToMPI(YogiMPI_Datatype in_data) {
@@ -779,6 +792,11 @@ YogiMPI_Comm YogiManager::commToYogi(MPI_Comm in_comm) {
 #if YogiMPI_VERSION == 3
 YogiMPI_Count YogiManager::countToYogi(MPI_Count in_count) {
     return (YogiMPI_Count) in_count;
+}
+
+YogiMPI_Message YogiManager::messageToYogi(MPI_Message in_message) {
+    return insertIntoPool(messagePool, in_message, MPI_MESSAGE_NULL,
+                          messageOffset, numMessages);
 }
 #endif
 
@@ -956,6 +974,14 @@ YogiMPI_Win YogiManager::unmapWin(YogiMPI_Win to_free) {
     removeFromPool(winPool, to_free, MPI_WIN_NULL, winOffset, numWins);
     return YogiMPI_WIN_NULL;
 }
+
+#if YogiMPI_VERSION == 3
+YogiMPI_Message YogiManager::unmapMessage(YogiMPI_Message to_free) {
+    removeFromPool(messagePool, to_free, MPI_MESSAGE_NULL, messageOffset,
+                   numMessages);
+    return YogiMPI_MESSAGE_NULL;
+}
+#endif
 
 /* Used to deallocate temporary arrays.  Keeping these here to track memory 
    allocations (may implemented in future). */

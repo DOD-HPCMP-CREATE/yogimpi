@@ -3,12 +3,34 @@ include ../Make.flags
 YCC=$(INSTALLDIR)/bin/mpicc
 YF90=$(INSTALLDIR)/bin/mpif90
 
-.PHONY: clean test runctests runftests ctest ftest test
+.PHONY: clean test runctests runc2tests runc3tests runftests ctests ftests \
+        c2tests c3tests
 
-test: ctest ftest 
+runtest: runctests runftests
+
+ifeq ($(MPIMAJVERSION), 3)
+runctests: runc2tests runc3tests
+else
+runctests: runc2tests
+endif
+
+test: ctests ftests
+
+ifeq ($(MPIMAJVERSION), 3)
+ctests: c2tests c3tests
+else
+ctests: c2tests
+endif
+
+c2tests: simple createOp errorHandler nonBlocking probe testAll writeFile1 \
+         waitany collective sendrecv testComms nonblock_waitall waitsome \
+         testAttr testInfo testFileModes
+
+c3tests: mprobe
 
 testFileModes: testFileModes.c
 	$(YCC) $(CFLAGS) testFileModes.c -o testFileModes
+
 testInfo: testInfo.c
 	$(YCC) $(CFLAGS) testInfo.c -o testInfo
 
@@ -29,6 +51,9 @@ nonBlocking: nonBlocking.c
 
 probe: probe.c
 	$(YCC) $(CFLAGS) probe.c -o probe 
+
+mprobe: mprobe.c
+	$(YCC) $(CFLAGS) mprobe.c -o mprobe
 
 testAll: testAll.c
 	$(YCC) $(CFLAGS) testAll.c -o testAll 
@@ -57,7 +82,10 @@ waitsome: waitsome.c
 testAttr: testAttr.c
 	$(YCC) $(CFLAGS) testAttr.c -o testAttr
 
-runctests: ctest
+runc3tests: c3tests
+	./testRunner.sh 2 ./mprobe
+
+runc2tests: c2tests
 	./testRunner.sh 4 ./createOp
 	./testRunner.sh 4 ./errorHandler
 	./testRunner.sh 4 ./simple
@@ -76,7 +104,7 @@ runctests: ctest
 	./testRunner.sh 4 ./testInfo
 	./testRunner.sh 2 ./testFileModes
 
-runftests: ftest	
+runftests: ftests
 	./testRunner.sh 2 ./fsimple
 	./testRunner.sh 4 ./fwriteFile1
 	cmp fWriteFile.expected fWriteFile.result || exit 1
@@ -88,11 +116,6 @@ runftests: ftest
 	./testRunner.sh 4 ./fwaitsome
 	./testRunner.sh 2 ./fwtick
 	./testRunner.sh 4 ./testInfo
-	@echo "Tests passed."
-
-runtest: runctests runftests 
-
-ctest: simple createOp errorHandler nonBlocking probe testAll writeFile1 waitany collective sendrecv testComms nonblock_waitall waitsome testAttr testInfo testFileModes
 
 fsimple: fsimple.f90
 	$(YF90) $(FFLAGS) fsimple.f90 -o fsimple
@@ -124,14 +147,14 @@ fwtick: fwtick.f90
 ftestInfo: testInfo.f90
 	$(YF90) $(FFLAGS) testInfo.f90 -o ftestInfo
 
-ftest: fwriteFile1 fsendrecv fcollective ftestComms f_gatherscatter \
-       fnonblock fwaitsome fsimple fwtick ftestInfo
+ftests: fwriteFile1 fsendrecv fcollective ftestComms f_gatherscatter \
+        fnonblock fwaitsome fsimple fwtick ftestInfo
 
 clean:
 	$(RM) *.o nonBlocking sendrecv fsendrecv simple testCancelled \
               writeFile1 fwriteFile1 f_gatherscatter fnonblock \
               nonblock_waitall testComms fsimple testInfo \
-              ftestComms probe collective fcollective fwtick \
+              ftestComms probe mprobe collective fcollective fwtick \
               waitsome waitany fwaitsome createOp errorHandler testAll \
               cWriteFile.result fWriteFile.result testAttr ftestInfo \
               testFileModes

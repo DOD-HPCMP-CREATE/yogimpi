@@ -71,6 +71,9 @@ typedef int YogiMPI_Info;
 typedef int YogiMPI_File;
 typedef int YogiMPI_Errhandler;
 typedef int YogiMPI_Win;
+#if YogiMPI_VERSION == 3
+typedef int YogiMPI_Message;
+#endif
 
 /* MPI constants for return codes (both C and Fortran) */
 #define YogiMPI_SUCCESS 0 
@@ -334,6 +337,14 @@ typedef int YogiMPI_Win;
 #define YogiMPI_FILE_NULL 0
 #define YogiMPI_ERRHANDLER_NULL 0
 #define YogiMPI_WIN_NULL 0
+#if YogiMPI_VERSION == 3
+#define YogiMPI_MESSAGE_NULL 0
+#endif
+
+/* Reserved MPI_Message values */
+#if YogiMPI_VERSION == 3
+#define YogiMPI_MESSAGE_NO_PROC 1 
+#endif
 
 /* Predefined error handlers */
 #define YogiMPI_ERRORS_ARE_FATAL 1

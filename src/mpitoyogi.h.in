@@ -60,6 +60,11 @@
 #define MPI_File YogiMPI_File
 #define MPI_Errhandler YogiMPI_Errhandler
 #define MPI_Win YogiMPI_Win
+#if YogiMPI_VERSION == 3
+#define MPI_Message YogiMPI_Message
+
+#define MPI_MESSAGE_NO_PROC YogiMPI_MESSAGE_NO_PROC
+#endif
 
 #define MPI_SUCCESS YogiMPI_SUCCESS
 #define MPI_ERR_BUFFER YogiMPI_ERR_BUFFER
@@ -277,6 +282,9 @@
 #define MPI_FILE_NULL YogiMPI_FILE_NULL
 #define MPI_ERRHANDLER_NULL YogiMPI_ERRHANDLER_NULL
 #define MPI_WIN_NULL YogiMPI_WIN_NULL
+#if YogiMPI_VERSION == 3
+#define MPI_MESSAGE_NULL YogiMPI_MESSAGE_NULL
+#endif
 
 #define MPI_ERRORS_ARE_FATAL YogiMPI_ERRORS_ARE_FATAL
 #define MPI_ERRORS_RETURN YogiMPI_ERRORS_RETURN

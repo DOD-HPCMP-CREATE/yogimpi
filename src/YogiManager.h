@@ -51,6 +51,7 @@ public:
     MPI_Aint aintToMPI(YogiMPI_Aint in_aint);
 #if YogiMPI_VERSION == 3
     MPI_Count countToMPI(YogiMPI_Count in_count);
+    MPI_Message messageToMPI(YogiMPI_Message in_msg);
 #endif
     MPI_Status * statusToMPI(YogiMPI_Status * in_status);
 
@@ -76,6 +77,7 @@ public:
     YogiMPI_Aint aintToYogi(MPI_Aint in_aint);
 #if YogiMPI_VERSION == 3
     YogiMPI_Count countToYogi(MPI_Count in_count);
+    YogiMPI_Message messageToYogi(MPI_Message in_message);
 #endif
     YogiMPI_Status statusToYogi(MPI_Status &in_status, bool set_error = true);
 
@@ -103,6 +105,9 @@ public:
     YogiMPI_Op unmapOp(YogiMPI_Op to_free);
     YogiMPI_Request unmapRequest(YogiMPI_Request to_free);
     YogiMPI_Win unmapWin(YogiMPI_Win to_free);
+#if YogiMPI_VERSION == 3
+    YogiMPI_Message unmapMessage(YogiMPI_Message to_free);
+#endif
 
 protected: 
     YogiManager();
@@ -154,6 +159,11 @@ private:
     std::vector<MPI_File> filePool;
     int numFiles;
     int fileOffset;
+#if YogiMPI_VERSION == 3
+    std::vector<MPI_Message> messagePool;
+    int numMessages;
+    int messageOffset;
+#endif
     void *libraryHandle;
 };
 

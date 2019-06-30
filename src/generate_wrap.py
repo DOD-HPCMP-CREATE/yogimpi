@@ -53,7 +53,7 @@ class GenerateWrap(object):
     # Define a few things up front as class variables.
     mpiHandles = [ 'MPI_Comm', 'MPI_Datatype', 'MPI_Info', 'MPI_File',
                    'MPI_Request', 'MPI_Group', 'MPI_Op', 'MPI_Errhandler',
-                   'MPI_Win' ]
+                   'MPI_Win', 'MPI_Message' ]
 
     mpiObjects = [ 'MPI_Status' ]
 

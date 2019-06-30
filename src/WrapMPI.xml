@@ -1390,6 +1390,32 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
+  <Function name="MPI_Improbe">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+      <Convert>MPI_ANY_SOURCE</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int">
+      <Convert>MPI_ANY_TAG</Convert>
+    </Arg>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg name="flag" output="true" type="int*"/>
+    <Arg output="true" name="message" type="MPI_Message*"/>
+    <Arg output="true" name="status" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_Imrecv">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg output="true" name="buf" type="void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="message" type="MPI_Message*"/>
+    <Arg output="true" name="request" type="MPI_Request*"/>
+  </Function>
   <Function name="MPI_Ineighbor_allgather">
     <Version>3.0</Version>
     <ReturnType>int</ReturnType>
@@ -1713,6 +1739,31 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="service_name" type="char*"/>
     <Arg input="true" name="info" type="MPI_Info"/>
     <Arg name="port_name" output="true" type="char*"/>
+  </Function>
+  <Function name="MPI_Mprobe">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg input="true" name="source" type="int">
+      <Convert>MPI_PROC_NULL</Convert>
+      <Convert>MPI_ANY_SOURCE</Convert>
+    </Arg>
+    <Arg input="true" name="tag" type="int">
+      <Convert>MPI_ANY_TAG</Convert>
+    </Arg>
+    <Arg input="true" name="comm" type="MPI_Comm"/>
+    <Arg output="true" name="message" type="MPI_Message*"/>
+    <Arg output="true" name="status" type="MPI_Status*"/>
+  </Function>
+  <Function name="MPI_Mrecv">
+    <FortranSupport>no</FortranSupport>
+    <Version>3.0</Version>
+    <ReturnType>int</ReturnType>
+    <Arg output="true" name="buf" type="void*"/>
+    <Arg input="true" name="count" type="int"/>
+    <Arg input="true" name="datatype" type="MPI_Datatype"/>
+    <Arg input="true" name="message" type="MPI_Message*"/>
+    <Arg output="true" name="status" type="MPI_Status*"/>
   </Function>
   <Function name="MPI_Neighbor_allgather">
     <Version>3.0</Version>
