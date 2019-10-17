@@ -20,8 +20,8 @@ YogiMPI Overview
     will need to add -ffree-line-length-none to FFLAGS in Make.flags for proper
     compilation.
   - Set the environment variable YMPICXX to point to your MPI's C++ compiler
-    wrapper. 
-  - YogiMPI has optional debugging output enabled by setting the YDEBUG 
+    wrapper.
+  - YogiMPI has optional debugging output enabled by setting the YDEBUG
     environment variable to 1. This will create a yogimpi.log.<global_rank>
     file for each MPI rank, and it will list functions entered and exited
     by the rank. Use only when required. This can be useful when you create
@@ -46,3 +46,11 @@ YogiMPI Overview
     in /path/to/install/etc.  These can be used to add YogiMPI to the PATH and
     [DY]LD_LIBRARY_PATH.
 
+* Version Numbering *
+  - An release candidate increase (1.1.1rc1 -> 1.1.1rc2) is a minor bug fix or
+    similar change in preparation for a new release.
+  - An example of a patch release (1.1.Z) would be adding support for an MPI
+    function without changing existing behavior.
+  - An ABI change requires incrementing the minor release number (1.Y.0).
+  - A major release increment (X.0.0) would only be for a major interface
+    change.
