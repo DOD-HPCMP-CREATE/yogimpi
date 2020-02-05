@@ -8,7 +8,10 @@ import tempfile
 import filecmp
 import re
 
-# MPI constants currently supported in Fortran.
+# MPI type constants currently supported in Fortran.
+@MPI_TYPE_CONSTANTS@
+
+# All other MPI constants currently supported in Fortran.
 @MPI_CONSTANTS@
 
 # MPI objects currently supported in Fortran.
@@ -44,6 +47,7 @@ class YogiMPIWrapper(object):
 
     def __init__(self, prefixDir, compilerName, compilerLang):
         global mpiConstants
+        global mpiType_Constants
         global mpiFunctions
         global mpiTimeFunctions
         global mpiObjects
@@ -89,9 +93,12 @@ class YogiMPIWrapper(object):
         self.disableLineLength = False
         # Encapsulate the global variables for each into a class attribute.
         self.mpi_constants = mpiConstants 
+        self.mpi_type_constants = mpiType_Constants
         self.mpi_objects = mpiObjects 
         self.mpi_functions = mpiFunctions
         self.mpi_time_functions = mpiTimeFunctions
+        # Stores compiled regular expressions for MPI type constants in Fortran.
+        self.const_type_regexes = []
         # Stores compiled regular expressions for MPI constants in Fortran.
         self.const_regexes = []
         # Stores compiled regular expressions for MPI functions in Fortran.
@@ -180,14 +187,21 @@ class YogiMPIWrapper(object):
     #  C and C++ have mpitoyogi.h transformations.
     def _createRegExes(self):
         if self.compilerLang == 'Fortran':
-            for aPattern in self.mpi_constants:
+            for aPattern in self.mpi_type_constants:
                 aPattern = aPattern.replace('MPI_', '')
                 regexString = r"(^|_|=|\s|\(|\)|,|\*|\+)MPI_(" + aPattern +\
+                              r')(\s|,|\*|\)|\()'
+                self.const_type_regexes.append(re.compile(regexString,
+                                                          re.IGNORECASE))
+            for aPattern in self.mpi_constants:
+                aPattern = aPattern.replace('MPI_', '')
+                regexString = r"(^|=|\s|\(|\)|,|\*|\+)MPI_(" + aPattern +\
                               r')(\s|,|\*|\)|\()'
                 self.const_regexes.append(re.compile(regexString,
                                                      re.IGNORECASE))
             for aPattern in self.mpi_functions:
                 self.func_regexes.append(self._buildRegEx(aPattern))
+
             for aPattern in self.mpi_time_functions:
                 aPattern = aPattern.replace('MPI_', '')
                 #self.time_regexes.append(self._buildRegEx(aPattern))
@@ -407,6 +421,10 @@ class YogiMPIWrapper(object):
                 i += 1
                 continue
             oldLine = line
+
+            for aRegex in self.const_type_regexes:
+                # Run through all the loaded MPI regular expressions.
+                line = aRegex.sub(r"\g<1>YOG_\g<2>\g<3>", line)
 
             for aRegex in self.const_regexes:
                 # Run through all the loaded MPI regular expressions.

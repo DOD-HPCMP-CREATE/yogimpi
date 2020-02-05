@@ -346,8 +346,8 @@
   <Constants>
     <Constant name="MPI_2DOUBLE_PRECISION"/>
     <Constant name="MPI_2INTEGER"/>
-    <Constant name="MPI_2REAL"/>
-    <Constant name="MPI_ADDRESS_KIND"/>
+    <Constant name="MPI_2REAL" />
+    <Constant name="MPI_ADDRESS_KIND" type="yes" />
     <Constant name="MPI_ANY_SOURCE"/>
     <Constant name="MPI_ANY_TAG"/>
     <Constant name="MPI_BAND"/>
@@ -460,7 +460,7 @@
     <Constant name="MPI_INTEGER2"/>
     <Constant name="MPI_INTEGER4"/>
     <Constant name="MPI_INTEGER8"/>
-    <Constant name="MPI_INTEGER_KIND"/>
+    <Constant name="MPI_INTEGER_KIND" type="yes"/>
     <Constant name="MPI_IN_PLACE"/>
     <Constant name="MPI_IO"/>
     <Constant name="MPI_KEYVAL_INVALID"/>
@@ -496,7 +496,7 @@
     <Constant name="MPI_MODE_SEQUENTIAL"/>
     <Constant name="MPI_MODE_UNIQUE_OPEN"/>
     <Constant name="MPI_MODE_WRONLY"/>
-    <Constant name="MPI_OFFSET_KIND"/>
+    <Constant name="MPI_OFFSET_KIND" type="yes"/>
     <Constant name="MPI_OP_NULL"/>
     <Constant name="MPI_ORDER_C"/>
     <Constant name="MPI_ORDER_FORTRAN"/>
