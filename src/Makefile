@@ -16,9 +16,9 @@ manager: wrap YogiManager.cxx YogiManager.h
 	$(MPICXX) $(CXXFLAGS) $(DEBUGFLAGS) test_YogiManager.cxx YogiManager.o \
                   -ldl -o test_YogiManager
 
-wrap: generate_wrap.py wrap_objects.py WrapMPI.xml  
-	python generate_wrap.py --mpiver=$(MPIMAJVERSION).$(MPIMINVERSION) \
-               WrapMPI.xml 
+wrap: generate_wrap.py wrap_objects.py WrapMPI.xml
+	$(PYTHON) generate_wrap.py --mpiver=$(MPIMAJVERSION).$(MPIMINVERSION) \
+               WrapMPI.xml
 
 clean:
 	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx yogimpif.h \

@@ -1,39 +1,39 @@
 """
                                   COPYRIGHT
- 
+
  The following is a notice of limited availability of the code, and disclaimer
  which must be included in the prologue of the code and in all source listings
  of the code.
- 
+
  Copyright Notice
   + 2002 University of Chicago
   + 2016 Stephen Adamec
 
  Permission is hereby granted to use, reproduce, prepare derivative works, and
  to redistribute to others.  This software was authored by:
- 
+
  Mathematics and Computer Science Division
  Argonne National Laboratory, Argonne IL 60439
- 
+
  (and)
- 
+
  Department of Computer Science
  University of Illinois at Urbana-Champaign
 
  (and)
 
  Stephen Adamec
- 
+
                               GOVERNMENT LICENSE
- 
+
  Portions of this material resulted from work developed under a U.S.
  Government Contract and are subject to the following license: the Government
  is granted for itself and others acting on its behalf a paid-up, nonexclusive,
  irrevocable worldwide license in this computer software to reproduce, prepare
  derivative works, and perform publicly and display publicly.
-  
+
                                     DISCLAIMER
-  
+
  This computer code material was prepared, in part, as an account of work
  sponsored by an agency of the United States Government.  Neither the United
  States, nor the University of Chicago, nor any of their employees, makes any
@@ -49,7 +49,7 @@ class MPIVersion(object):
     def __init__(self, version):
         splitVer = version.split('.')
         self.major = int(splitVer[0].strip())
-        self.minor = int(splitVer[1].strip()) 
+        self.minor = int(splitVer[1].strip())
 
     def __eq__(self, other):
         if isinstance(other, MPIVersion):
@@ -69,7 +69,7 @@ class MPIVersion(object):
                 return True
             if self.major == other.major:
                 if self.minor < other.minor:
-                    return True 
+                    return True
             return False
         else:
             return NotImplemented
@@ -97,6 +97,12 @@ class MPIVersion(object):
         else:
             return NotImplemented
 
+    def __repr__(self):
+        return 'MPIVersion({!s})'.format(self)
+
+    def __str__(self):
+        return '{}.{}'.format(self.major, self.minor)
+
 class MPIArgument(object):
     def __init__(self):
         # Original name of the argument.
@@ -118,7 +124,7 @@ class MPIArgument(object):
         # Whether the argument is considered input.
         self.is_input = False
         # Values that, if matching Yogi equivalent of argument, cause a
-        # conversion to that value.  (Example: YogiMPI_UNDEFINED to 
+        # conversion to that value.  (Example: YogiMPI_UNDEFINED to
         # MPI_UNDEFINED).
         self.pre_convert_values = []
         # Values that, if matching Yogi equivalent of argument, cause a
@@ -130,10 +136,10 @@ class MPIArgument(object):
         self.convert_class = None
         # Whether this argument is an MPI typedef or MPI structure.
         self.is_mpi_type = False
-        # If the argument is plural, the dimensions. This is not necessarily 
+        # If the argument is plural, the dimensions. This is not necessarily
         # set for all plural arguments, but it is required for MPI type args.
         self.dims = None
-        
+
         # The following variables are only used if is_mpi_type is True.
         # Otherwise the values all remain set to False and None.
 
@@ -168,7 +174,15 @@ class MPIConvertValue(object):
         # Whether the object requires a type casting.
         self.cast_type = None
         # What version of MPI this conversion value appears.
-        self.version = 2
+        self.version = 2.0
+
+    @property
+    def version(self):
+        return self._version
+
+    @version.setter
+    def version(self, value):
+        self._version = MPIVersion(str(value))
 
 class MPIFunction(object):
     orders = [ 'first', 'beforecall', 'aftercall', 'beforereturn' ]
@@ -196,30 +210,30 @@ class MPIFunction(object):
         for line in block.split('\n'):
             if line:
                 self.codeBlocks[order].append(line.rstrip())
- 
+
     def getBlock(self, order):
         self._checkOrder(order)
         return self.codeBlocks.get(order, None)
- 
+
     def validate(self):
         for anArg in self.args:
             try:
                 anArg.validate()
             except ValueError as v:
-                print "Error validating function " + self.name + ": " + str(v)
-                print sys.exit(1)
- 
+                print("Error validating function " + self.name + ": " + str(v))
+                sys.exit(1)
+
     def cArgString(self):
         arg_string = ''
         for i, anArg in enumerate(self.args):
             if i > 0:
-                arg_string += ', ' 
+                arg_string += ', '
             argType = anArg.c_api_type
             if anArg.is_mpi_type:
                 argType = 'Yogi' + anArg.type
             arg_string += argType + ' ' + anArg.name
         return arg_string
- 
+
     def getArg(self, name):
         for anArg in self.args:
             if anArg.name == name:

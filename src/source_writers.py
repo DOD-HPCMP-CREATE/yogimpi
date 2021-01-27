@@ -1,39 +1,39 @@
 """
                                   COPYRIGHT
- 
+
  The following is a notice of limited availability of the code, and disclaimer
  which must be included in the prologue of the code and in all source listings
  of the code.
- 
+
  Copyright Notice
   + 2002 University of Chicago
   + 2016 Stephen Adamec
 
  Permission is hereby granted to use, reproduce, prepare derivative works, and
  to redistribute to others.  This software was authored by:
- 
+
  Mathematics and Computer Science Division
  Argonne National Laboratory, Argonne IL 60439
- 
+
  (and)
- 
+
  Department of Computer Science
  University of Illinois at Urbana-Champaign
 
  (and)
 
  Stephen Adamec
- 
+
                               GOVERNMENT LICENSE
- 
+
  Portions of this material resulted from work developed under a U.S.
  Government Contract and are subject to the following license: the Government
  is granted for itself and others acting on its behalf a paid-up, nonexclusive,
  irrevocable worldwide license in this computer software to reproduce, prepare
  derivative works, and perform publicly and display publicly.
-  
+
                                     DISCLAIMER
-  
+
  This computer code material was prepared, in part, as an account of work
  sponsored by an agency of the United States Government.  Neither the United
  States, nor the University of Chicago, nor any of their employees, makes any
@@ -64,7 +64,7 @@ class SourceFile(object):
         if strip:
             self.replace(oldTerm, sFile.sourceString.strip())
         else:
-            self.replace(oldTerm, sFile.sourceString) 
+            self.replace(oldTerm, sFile.sourceString)
 
     def _asList(self):
         return self.sourceString.split('\n')
@@ -86,7 +86,7 @@ class SourceFile(object):
     def addSegments(self, *rawSegments):
         for segment in rawSegments:
             self.sourceString += (' ' * self.currentIndent) + segment
-    
+
     def addUnindentedLines(self, *rawLines):
         for rawLine in rawLines:
             self.sourceString += rawLine + '\n'
@@ -98,10 +98,10 @@ class SourceFile(object):
     def addLinesNoIndent(self, *rawLines):
         for rawLine in rawLines:
             self.sourceString += rawLine + '\n'
-    
+
     def addTemplate(self, aTemplate):
         for aLine in aTemplate:
-            self.sourceString += (' ' * self.currentIndent) + aLine        
+            self.sourceString += (' ' * self.currentIndent) + aLine
 
     def newLine(self):
         self.sourceString += '\n'
@@ -113,7 +113,7 @@ class SourceFile(object):
     def _findMergeTag(self, mergeTag):
         sourceLines = self._asList()
         tagLocation = -1
-        tagIndent = 0 
+        tagIndent = 0
         for i in range(len(sourceLines)):
             result = re.match("(\s*)@" + mergeTag + "@", sourceLines[i])
             if result:
@@ -133,18 +133,18 @@ class SourceFile(object):
     #             indentation level of the mergeTag determines how the paste
     #             is placed.
     def merge(self, mergeFile, mergeTag):
-        sourceLines = self._asList() 
+        sourceLines = self._asList()
         # First, find the mergeTag.  Determine the indent.
         tagLocation, tagIndent = self._findMergeTag(mergeTag)
 
-        otherLines = mergeFile._asList() 
+        otherLines = mergeFile._asList()
         if tagIndent > 0:
             for i in range(len(otherLines)):
                 otherLines[i] = ' ' * tagIndent + otherLines[i]
         sourceLines[tagLocation:tagLocation + 1] = otherLines
         self._fromList(sourceLines)
 
-    ## Performs a simple merge of a SourceTemplate entry into this one. 
+    ## Performs a simple merge of a SourceTemplate entry into this one.
     #  mergeEntry - SourceTemplate entry to be merged into this one.
     #  mergeTag - Location at which to merge object.  Merge tags have @
     #             symbols surrounding them in the target file.
@@ -161,22 +161,22 @@ class SourceFile(object):
         if tagIndent > 0:
             for i in range(len(mergeEntry)):
                 stripEntries.append(' ' * tagIndent + mergeEntry[i].rstrip())
-        sourceLines[tagLocation:tagLocation + 1] = stripEntries 
+        sourceLines[tagLocation:tagLocation + 1] = stripEntries
         self._fromList(sourceLines)
- 
-    def writeFile(self, location, append=False):        
+
+    def writeFile(self, location, append=False):
         if append:
             handle = open(location, 'a')
         else:
             handle = open(location, 'w')
         handle.write(self.sourceString)
         handle.close()
-        
+
 class CSource(SourceFile):
-    
+
     def __init__(self, inputFile=None):
         self.functions = []
-        self.switches = [] 
+        self.switches = []
         self.cases = 0
         self.forLoops = 0
         self.insideStruct = False
@@ -189,7 +189,7 @@ class CSource(SourceFile):
             self.addLines("typedef struct " + name + " {")
             self.addIndent()
             self.insideStruct = True
-            
+
     def endStructDecl(self, name):
         if not self.insideStruct:
             raise ValueError("Error: not inside struct declaration.")
@@ -212,27 +212,27 @@ class CSource(SourceFile):
             self.removeIndent()
             self.addLines("}")
             self.forLoops -= 1
-            
+
     # Add an if statement with conditional
     def addIf(self, conditional):
         self.addLines("if (" + conditional + ") {")
         self.addIndent()
-    
-    ## End a previous if statement 
+
+    ## End a previous if statement
     def endIf(self):
         self.removeIndent()
         self.addLines("}")
-            
+
     ## Add an else if statement to an existing if statement
     def addElseIf(self, conditional):
         self.addLines("else if(" + conditional + ") {")
         self.addIndent()
 
-    ## End a previous if statement 
+    ## End a previous if statement
     def endElseIf(self):
         self.removeIndent()
         self.addLines("}")
-            
+
     ## Add an else statement to an existing if statement
     def addElse(self):
         self.addLines("else {")
@@ -242,18 +242,18 @@ class CSource(SourceFile):
     def endElse(self):
         self.removeIndent()
         self.addLines("}")
-            
+
     def addComments(self, *commentLines):
         numLines = len(commentLines)
         if numLines > 1:
             self.addLines('/*')
-            for commentLine in commentLines: 
+            for commentLine in commentLines:
                 self.addLines('* ' + commentLine)
             self.addLines('*/')
         else:
             for commentLine in commentLines:
                 self.addLines('/* ' + commentLine + ' */')
-                
+
     def addFunction(self, name, returnType, args='void'):
         self.addLines(returnType + ' ' + name + '(' + args + ') {')
         self.addIndent()
@@ -263,10 +263,10 @@ class CSource(SourceFile):
         self.addLines("switch(" + expression + ") {")
         self.addIndent()
         self.switches.append(expression)
- 
+
     def addPrototype(self, name, returnType, args='void'):
         self.addLines(returnType + ' ' + name + '(' + args + ');')
-    
+
     def endFunction(self, name):
         if not self.functions.pop() == name:
             raise ValueError("Error: " + name + " not most nested function.")
@@ -296,18 +296,18 @@ class CSource(SourceFile):
         self.addLines('}')
 
 class FortranSource(SourceFile):
-    
+
     def __init__(self, inputFile=None):
         self.modules = []
         self.subroutines = []
         self.functions = []
         self.selects = []
         self.doLoops = 0
-        self.interfaces = 0 
+        self.interfaces = 0
         self.ifBranches = 0
         self.insideType = False
         super(FortranSource,self).__init__(inputFile)
-    
+
     def addModule(self, name, parent="object"):
         self.addLines('module ' + name)
         self.addIndent()
@@ -326,7 +326,7 @@ class FortranSource(SourceFile):
             self.addLines('type ' + name)
             self.addIndent()
             self.insideType = True
-            
+
     def endTypeDecl(self, name):
         if not self.insideType:
             raise ValueError("Error: not inside type declaration.")
@@ -343,7 +343,7 @@ class FortranSource(SourceFile):
         self.addIndent()
         self.interfaces += 1
 
-    ## End a previous if statement 
+    ## End a previous if statement
     def endInterface(self):
         if self.interfaces == 0:
             raise ValueError("Error: no interfaces are open.")
@@ -357,8 +357,8 @@ class FortranSource(SourceFile):
         self.addLines("if (" + conditional + ") then")
         self.addIndent()
         self.ifBranches += 1
-    
-    ## End a previous if statement 
+
+    ## End a previous if statement
     def endIf(self):
         if self.ifBranches == 0:
             raise ValueError("Error: no if statements exist.")
@@ -366,7 +366,7 @@ class FortranSource(SourceFile):
             self.removeIndent()
             self.addLines("end if")
             self.ifBranches -= 1
-                      
+
     ## Add an else if statement to an existing if statement
     def addElseIf(self, conditional):
         if self.ifBranches == 0:
@@ -375,7 +375,7 @@ class FortranSource(SourceFile):
             self.removeIndent()
             self.addLines("else if (" + conditional + ") then")
             self.addIndent()
-    
+
     ## Add an else statement to an existing if statement
     def addElse(self):
         if self.ifBranches == 0:
@@ -384,13 +384,13 @@ class FortranSource(SourceFile):
             self.removeIndent()
             self.addLines("else")
             self.addIndent()
-            
+
     # Add an do loop with iterator
     def addDo(self, iterator):
         self.addLines("do " + iterator)
         self.addIndent()
         self.doLoops += 1
-    
+
     ## End a previous do loop
     def endDo(self):
         if self.doLoops == 0:
@@ -399,7 +399,7 @@ class FortranSource(SourceFile):
             self.removeIndent()
             self.addLines("end do")
             self.doLoops -= 1
-            
+
     def addComments(self, *commentLines):
         for commentLine in commentLines:
             self.addLines('! ' + commentLine)
@@ -408,7 +408,7 @@ class FortranSource(SourceFile):
         if bind:
             addBind = " bind(C)"
         else:
-            addBind = "" 
+            addBind = ""
         self.addLines('subroutine ' + name + '(' + args + ')' + addBind)
         self.addIndent()
         if implicit:
@@ -420,7 +420,7 @@ class FortranSource(SourceFile):
             raise ValueError("Error: " + name + " not most nested subroutine.")
         self.removeIndent()
         self.addLines('end subroutine ' + name)
-                
+
     def addFunction(self, name, returnType, args="", result=None, bind=None,
                     implicit=False):
         funcDecl = returnType + ' function ' + name + '(' + args + ')'
@@ -433,7 +433,7 @@ class FortranSource(SourceFile):
         if implicit:
             self.addLines('implicit none')
         self.functions.append(name)
-    
+
     def endFunction(self, name):
         if not self.functions.pop() == name:
             raise ValueError("Error: " + name + " not most nested function.")
@@ -463,7 +463,7 @@ class FortranSource(SourceFile):
         self.addLines('end select')
 
 class PythonSource(SourceFile):
-    
+
     def __init__(self, inputFile=None):
         self.classes = []
         self.functions = []
@@ -475,7 +475,7 @@ class PythonSource(SourceFile):
         self.addLines('class ' + name + '(' + parent + '):')
         self.addIndent()
         self.classes.append(name)
-        
+
     def addFunction(self, name, args=""):
         self.addLines('def ' + name + '(' + args + '):')
         self.addIndent()
@@ -490,21 +490,21 @@ class PythonSource(SourceFile):
         if not self.functions.pop() == name:
             raise ValueError("Error: " + name + " not most nested function.")
         self.removeIndent()
-        
+
     # Add an if statement with conditional
     def addIf(self, conditional):
         self.addLines("if " + conditional + ":")
         self.addIndent()
         self.ifBranches += 1
-    
-    ## End a previous if statement 
+
+    ## End a previous if statement
     def endIf(self):
         if self.ifBranches == 0:
             raise ValueError("Error: no if statements exist.")
         else:
             self.removeIndent()
             self.ifBranches -= 1
-            
+
     ## Add an else if statement to an existing if statement
     def addElseIf(self, conditional):
         if self.ifBranches == 0:
@@ -513,7 +513,7 @@ class PythonSource(SourceFile):
             self.removeIndent()
             self.addLines("elif " + conditional + ":")
             self.addIndent()
-    
+
     ## Add an else statement to an existing if statement
     def addElse(self):
         if self.ifBranches == 0:
@@ -528,8 +528,8 @@ class PythonSource(SourceFile):
         self.addLines("for " + conditional + ":")
         self.addIndent()
         self.forLoops += 1
-    
-    ## End a previous for loop 
+
+    ## End a previous for loop
     def endFor(self):
         if self.forLoops == 0:
             raise ValueError("Error: no for loops exist.")
@@ -562,7 +562,7 @@ class SourceTemplate(object):
                         continue
                     raise ValueError("Line read without template section!")
                 else:
-                    self.entries[activeTemplate].append(line) 
+                    self.entries[activeTemplate].append(line)
 
     def getEntry(self, name):
         if name in self.entries:

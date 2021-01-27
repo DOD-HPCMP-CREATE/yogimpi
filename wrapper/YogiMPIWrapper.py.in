@@ -80,7 +80,7 @@ class YogiMPIWrapper(object):
         # altered in a temporary location for compilation. If this happens, the
         # path of this temporary file.
         self.newPath = None
-        # Whether or not the user has specified a name for the output file, 
+        # Whether or not the user has specified a name for the output file,
         # typically with -o command line argument.
         self.namesOutput = False
         # Whether or not Yogi does only preprocessing and stops sending
@@ -92,9 +92,9 @@ class YogiMPIWrapper(object):
         # free-form source regardless of user/compiler choices.
         self.disableLineLength = False
         # Encapsulate the global variables for each into a class attribute.
-        self.mpi_constants = mpiConstants 
+        self.mpi_constants = mpiConstants
         self.mpi_type_constants = mpiType_Constants
-        self.mpi_objects = mpiObjects 
+        self.mpi_objects = mpiObjects
         self.mpi_functions = mpiFunctions
         self.mpi_time_functions = mpiTimeFunctions
         # Stores compiled regular expressions for MPI type constants in Fortran.
@@ -113,7 +113,7 @@ class YogiMPIWrapper(object):
                         '-compile_info', '-link_info' ]
         # Fortran preprocessing options Yogi directly understands.
         fortranOptions = [ '--yogi-preprocess-only' ]
-        
+
         # Obtain the debug level set by the user. The default is zero (off).
         self.debug = int(os.environ.get('YMPI_COMPILER_DEBUG', 0))
 
@@ -121,8 +121,8 @@ class YogiMPIWrapper(object):
         if self.compilerLang == 'Fortran':
             lLengthEnv = 'YMPI_OVERRIDE_LINE_LENGTH'
             if lLengthEnv in os.environ:
-                self.disableLineLength = bool(int(os.environ.get(lLengthEnv))) 
-               
+                self.disableLineLength = bool(int(os.environ.get(lLengthEnv)))
+
         diagMode = False
 
         if "--no-yogi" in self.argArray:
@@ -154,7 +154,7 @@ class YogiMPIWrapper(object):
     def _checkAssignQuotes(self, anArg):
         aRegex = YogiMPIWrapper.defQuoteEx
         retVal = aRegex.sub(r'\g<1>=' + '\\"' + r'\g<2>' + '\\"', anArg)
-        return retVal 
+        return retVal
 
     def _isSourceType(self, inputFile, language):
         for anExt in YogiMPIWrapper.extensions[language]:
@@ -163,14 +163,14 @@ class YogiMPIWrapper(object):
         return False
 
     def _showCompilerString(self):
-        self.compString = self.compilerName 
+        self.compString = self.compilerName
         self.compString += ' -I' + self.prefixDir + '/include -DYOGIMPI_ENABLED'
         self.compString += ' -L' + self.prefixDir + '/lib -lyogimpi'
-        print self.compString
+        print(self.compString)
 
     def _outputMsg(self, message):
         if self.debug:
-            print message
+            print(message)
 
     def _buildRegEx(self, aPattern):
         aPattern = aPattern.replace('MPI_', '')
@@ -211,9 +211,9 @@ class YogiMPIWrapper(object):
                               r')(\s|,|\*|\)|\()'
                 self.time_regexes.append(re.compile(regexString,
                                                     re.IGNORECASE))
-       
+
     ## Sets the source file and its command-line argument index which Yogi must
-    #  compile. 
+    #  compile.
     def setFile(self, inputFile, argLocation):
         self.sourceDir = os.path.dirname(inputFile)
         self.sourceFile = os.path.basename(inputFile)
@@ -230,8 +230,8 @@ class YogiMPIWrapper(object):
     def _stripExtension(self, filename):
         for ext in YogiMPIWrapper.extensions[self.compilerLang]:
             if filename.lower().endswith(ext):
-                return filename[:-(len(ext))] 
-        return filename 
+                return filename[:-(len(ext))]
+        return filename
 
     # Return only a file's extension.
     def _getExtension(self, filename):
@@ -240,17 +240,17 @@ class YogiMPIWrapper(object):
                 return filename[-(len(ext)):]
         return filename
 
-    ## Alters the arguments YogiMPI passes to the system compiler. This is 
+    ## Alters the arguments YogiMPI passes to the system compiler. This is
     #  important for linking, preprocessing, or directives that make YogiMPI
     #  work properly.
     def _changeArgs(self):
         for i, anArg in enumerate(self.argArray):
             if anArg.startswith('-D'):
                 # Handle quoted arguments and make sure they're preserved when
-                # passing to the system compiler and preprocessor. 
+                # passing to the system compiler and preprocessor.
                 self.argArray[i] = self._checkAssignQuotes(anArg)
 
-        self.argArray[0] = self.compilerName 
+        self.argArray[0] = self.compilerName
         if self.sourceFile:
             if self.compilerLang == 'Fortran':
                 # Fortran files require preprocssing.
@@ -280,8 +280,8 @@ class YogiMPIWrapper(object):
         for anArg in self.argArray:
             callString += anArg + ' '
         return callString
-       
-    ## Prints the call string to stdout. 
+
+    ## Prints the call string to stdout.
     def _printCommand(self):
         sys.stdout.write(self._getCallString() + '\n')
 
@@ -289,24 +289,24 @@ class YogiMPIWrapper(object):
         # Automatically assume a .f or .f77 file is fixed-form.
         if self._getExtension(sourceFile).lower() in YogiMPIWrapper.fixedExts:
             return True
-        return False 
+        return False
 
-    ## Return whether this is a line to ignore (blank or comment). 
+    ## Return whether this is a line to ignore (blank or comment).
     def _isFortranIgnoreLine(self, sourceLine, fixed=False):
-	if not sourceLine.strip():
+        if not sourceLine.strip():
             # Ignore empty lines.
-	    return True 
+            return True
         if sourceLine.lstrip().startswith('!'):
             # Ignore comment lines for free-form. Unfortunately some pseudo
             # fixed-form codes also have lines that start with this, and it
             # is expected they'll also be treated as comments.
-            return True 
+            return True
         elif fixed and sourceLine[0] in YogiMPIWrapper.f77Comments:
             # Ignore comments for fixed-form.
-            return True 
+            return True
         if sourceLine.startswith('#'):
             # Ignore preprocessor directives.
-            return True 
+            return True
         # All replace items have mpi in it, if not, no need to process line
         if 'mpi' in sourceLine.lower():
             return False
@@ -323,13 +323,13 @@ class YogiMPIWrapper(object):
             return (lineNumber + 1)
 
         # Strip off comments coming after valid expression.
-        commentStart = line.find('!') 
+        commentStart = line.find('!')
         if commentStart > -1 and line[commentStart - 1] != "\\":
             line = line[:commentStart]
             if len(line.rstrip()) <= 72:
                 # If removing the comment fixed length problems, done.
                 fileArray[lineNumber] = line.rstrip() + '\n'
-                return (lineNumber + 1) 
+                return (lineNumber + 1)
 
         # Otherwise split the line into two pieces, the second with
         # a continuation character.
@@ -354,17 +354,17 @@ class YogiMPIWrapper(object):
         return tempStr
 
     ## Calls the system preprocessor (cpp) to yield a fully expanded Fortran
-    #  source file. Sometimes this is needed in tricky situations where 
+    #  source file. Sometimes this is needed in tricky situations where
     #  Fortran source "includes" another source file that has MPI definitions.
     def _callSystemPreprocessor(self):
         cppString = ''
         for i in range(len(self.cppArgs)):
             anArg = self.cppArgs[i]
             if i > 0:
-                cppString += ' ' 
-            cppString += anArg 
+                cppString += ' '
+            cppString += anArg
         cppString += " " + self._getFullSourcePath()
-        try:   
+        try:
             fileExtension = self._getExtension(self.sourceFile)
             newFile, newPath = tempfile.mkstemp(prefix='yogiF_',
                                                 suffix=fileExtension)
@@ -374,15 +374,15 @@ class YogiMPIWrapper(object):
                                   shell=True)
             if filecmp.cmp(self._getFullSourcePath(), newPath):
                 # The files are the same, no need to do anything.
-                os.remove(newPath) 
+                os.remove(newPath)
                 return False
             else:
                 self._outputMsg("File " + self._getFullSourcePath() +\
                                 " changed when running system preprocessor," +\
-                                " new file is " + newPath) 
+                                " new file is " + newPath)
                 return newPath
         except:
-            print "YogiMPI encountered an error preprocessing Fortran source."
+            print("YogiMPI encountered an error preprocessing Fortran source.")
             raise
 
     ## Preprocesses a Fortran file, changing MPI_ to YogiFortran_ wherever
@@ -407,10 +407,10 @@ class YogiMPIWrapper(object):
             rawFile = fileHandle.readlines()
             fileHandle.close()
         else:
-            rawFile = origLines 
-            startFile = self._getFullSourcePath() 
+            rawFile = origLines
+            startFile = self._getFullSourcePath()
 
-        fixedForm = self._isFixedForm(startFile) 
+        fixedForm = self._isFixedForm(startFile)
         if neededCPP:
             os.remove(neededCPP)
 
@@ -442,8 +442,8 @@ class YogiMPIWrapper(object):
             line = YogiMPIWrapper.useMPIRegEx.sub(r"\g<1>use yogimpi\g<2>",
                                                   line)
 
-            # Detect if the line changed, and if so, handle fixed-format 
-            # problems and/or bumping the line counter. 
+            # Detect if the line changed, and if so, handle fixed-format
+            # problems and/or bumping the line counter.
             if oldLine != line:
                 rawFile[i] = line
                 #if fixedForm:
@@ -461,7 +461,7 @@ class YogiMPIWrapper(object):
                             " was unchanged.")
         else:
             fileExtension = self._getExtension(self.sourceFile)
-            if inPlace: 
+            if inPlace:
                 oldFile = self._getFullSourcePath()
                 timestr = time.strftime("%Y%m%d-%H%M%S")
                 backupPath = oldFile + '.yogi_orig_' + timestr
@@ -479,26 +479,26 @@ class YogiMPIWrapper(object):
                                                           suffix=fileExtension)
                 os.close(newFile)
                 newFile = open(self.newPath, 'w')
-                self._outputMsg("File " + self._getFullSourcePath() +\
-                                " was changed, new file is " + self.newPath)                                                         
+                self._outputMsg("File " + self._getFullSourcePath() +
+                                " was changed, new file is " + self.newPath)
                 newFile.writelines(rawFile)
                 newFile.close()
 
         return changedFile
 
     ## Passes through doing any YogiMPI flags and acts only as the underlying
-    #  serial compiler.       
+    #  serial compiler.
     def passThrough(self):
         self.argArray[0] = self.compilerName
         self.argArray.remove('--no-yogi')
         self._outputMsg("Final compile string: " + self._getCallString())
         self.rc = subprocess.call(self._getCallString(), shell=True)
- 
+
     def _doWrap(self):
         for i in range(len(self.argArray)):
             anOpt = self.argArray[i]
             if anOpt in YogiMPIWrapper.notLinkingOpts:
-                # See if this command is linking, which means we have to add 
+                # See if this command is linking, which means we have to add
                 # library flags as well as extra include flags.
                 self.isLinking = False
             elif self._isSourceType(anOpt, self.compilerLang):

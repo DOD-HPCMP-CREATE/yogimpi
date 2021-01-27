@@ -2,7 +2,7 @@
 ##
 
 # for Tcl script use only
-set     prefix          @INSTALLDIR@ 
+set     prefix          @INSTALLDIR@
 
 module-whatis   "loads the [module-info name] environment"
 

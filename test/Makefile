@@ -41,7 +41,7 @@ errorHandler: errorHandler.c
 	$(YCC) $(CFLAGS) errorHandler.c -o errorHandler
 
 createOp: createOp.c
-	$(YCC) $(CFLAGS) createOp.c -o createOp 
+	$(YCC) $(CFLAGS) createOp.c -o createOp
 
 simple: simple.c
 	$(YCC) $(CFLAGS) simple.c -o simple
@@ -50,13 +50,13 @@ nonBlocking: nonBlocking.c
 	$(YCC) $(CFLAGS) nonBlocking.c -o nonBlocking
 
 probe: probe.c
-	$(YCC) $(CFLAGS) probe.c -o probe 
+	$(YCC) $(CFLAGS) probe.c -o probe
 
 mprobe: mprobe.c
 	$(YCC) $(CFLAGS) mprobe.c -o mprobe
 
 testAll: testAll.c
-	$(YCC) $(CFLAGS) testAll.c -o testAll 
+	$(YCC) $(CFLAGS) testAll.c -o testAll
 
 writeFile1: writeFile1.c
 	$(YCC) $(CFLAGS) writeFile1.c -o writeFile1
@@ -90,7 +90,7 @@ runc2tests: c2tests
 	./testRunner.sh 4 ./errorHandler
 	./testRunner.sh 4 ./simple
 	./testRunner.sh 2 ./nonBlocking
-	./testRunner.sh 2 ./probe       
+	./testRunner.sh 2 ./probe
 	./testRunner.sh 4 ./testAll
 	./testRunner.sh 4 ./writeFile1
 	cmp cWriteFile.expected cWriteFile.result || exit 1

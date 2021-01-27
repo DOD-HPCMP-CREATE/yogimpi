@@ -1,10 +1,12 @@
 .project
 .pydevproject
+.*.swp
 Make.flags
 etc/modulefile
 etc/yogimpi.bashrc
 etc/yogimpi.cshrc
 src/*.pyc
+src/__pycache__
 src/yogimpif.h
 src/YogiManager.o
 src/libyogimpi.so

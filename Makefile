@@ -1,5 +1,5 @@
 include Make.flags
- 
+
 .PHONY: default clean test realclean
 
 default: src/libyogimpi.$(LIBEXTENSION)
@@ -28,7 +28,7 @@ install: default
 	install -m 750 wrapper/YogiMPIWrapper.py $(INSTALLDIR)/bin
 	install -m 640 Make.flags $(INSTALLDIR)
 
-test: default 
+test: default
 	$(MAKE) -C test
 
 clean:

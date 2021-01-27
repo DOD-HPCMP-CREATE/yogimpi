@@ -19,7 +19,7 @@ for tag in tags:
     for aTag in tagElem.findall(subTag):
        if tag == 'Constants':
            if aTag.attrib.get('type', None) == 'yes':
-               data['Type_Constants'].append(aTag.attrib.get('name')) 
+               data['Type_Constants'].append(aTag.attrib.get('name'))
                continue
        data[tag].append(aTag.attrib.get('name'))
 
@@ -29,8 +29,8 @@ for tag in data.keys():
     outString = varName + ' = [ '
     for i in range(len(data[tag])):
         item = data[tag][i]
-        if i > 0: 
-            outString += ', ' 
+        if i > 0:
+            outString += ', '
         outString += "'" + item + "'"
     outString += ' ]'
     wrapperContents = wrapperContents.replace(subString, outString)
