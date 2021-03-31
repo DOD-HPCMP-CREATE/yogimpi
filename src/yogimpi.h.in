@@ -288,6 +288,11 @@ typedef int YogiMPI_Message;
 #define YogiMPI_AINT 45
 #define YogiMPI_OFFSET 46
 
+/* These should probably be with the above "Optional datatypes (C)", */
+/* but they were added later so putting them here to avoid reordering the list. */
+#define YogiMPI_INT8_T 47
+#define YogiMPI_INT16_T 48
+
 /* reserved communicators (C and Fortran) */
 #define YogiMPI_COMM_WORLD 1
 #define YogiMPI_COMM_SELF 2

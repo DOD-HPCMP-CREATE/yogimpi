@@ -215,6 +215,8 @@ YogiManager::YogiManager() {
     datatypePool.at(YogiMPI_SHORT_INT)         = MPI_SHORT_INT;
     datatypePool.at(YogiMPI_LONG_DOUBLE_INT)   = MPI_LONG_DOUBLE_INT;
     datatypePool.at(YogiMPI_LONG_LONG_INT)     = MPI_LONG_LONG_INT;
+    datatypePool.at(YogiMPI_INT8_T)            = MPI_INT8_T;
+    datatypePool.at(YogiMPI_INT16_T)           = MPI_INT16_T;
     datatypePool.at(YogiMPI_INT32_T)           = MPI_INT32_T;
     datatypePool.at(YogiMPI_INT64_T)           = MPI_INT64_T;
     datatypePool.at(YogiMPI_COMPLEX)           = MPI_COMPLEX;
