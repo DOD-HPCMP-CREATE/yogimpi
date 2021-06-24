@@ -43,7 +43,6 @@ class YogiMPIWrapper(object):
     useMPIRegEx = re.compile(r"([\s]*)use[\s]+mpi([\s]+)", re.IGNORECASE)
     # Regular expression to find instances of command line preprocessor
     # definitions which have quoted values.
-    defQuoteEx = re.compile(r'(-D[a-zA-Z0-9_]+)="([a-zA-Z0-9_/]+)"')
 
     def __init__(self, prefixDir, compilerName, compilerLang):
         global mpiConstants
@@ -152,8 +151,12 @@ class YogiMPIWrapper(object):
         return self.rc
 
     def _checkAssignQuotes(self, anArg):
-        aRegex = YogiMPIWrapper.defQuoteEx
-        retVal = aRegex.sub(r'\g<1>=' + '\\"' + r'\g<2>' + '\\"', anArg)
+        (variable, sep, value) = anArg.partition('=')
+        retVal = variable + sep
+        if value.startswith('"') and value.endswith('"'):
+            retVal += r'"\"' + value[1:-1] + r'\""'
+        else:
+            retVal = anArg
         return retVal
 
     def _isSourceType(self, inputFile, language):
