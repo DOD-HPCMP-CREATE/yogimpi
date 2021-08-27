@@ -160,7 +160,7 @@ YogiManager::YogiManager() {
     yogiErrors[MPI_ERR_ASSERT]       = YogiMPI_ERR_ASSERT;
     yogiErrors[MPI_ERR_LASTCODE]     = YogiMPI_ERR_LASTCODE;
 
-    yogiComps[MPI_IDENT] = YogiMPI_IDENT; 
+    yogiComps[MPI_IDENT] = YogiMPI_IDENT;
     yogiComps[MPI_CONGRUENT] = YogiMPI_CONGRUENT;
     yogiComps[MPI_SIMILAR] = YogiMPI_SIMILAR;
     yogiComps[MPI_UNEQUAL] = YogiMPI_UNEQUAL;
@@ -279,7 +279,7 @@ void YogiManager::writeToDebugLog(const char * toWrite) {
 /* Some MPI libraries (ahem, ahem, OpenMPI and CRAY) have problems starting
    up in an environment that uses dlopen to access YogiMPI (i.e. Python
    extensions). In that case, Yogi may need to dlopen the backend MPI library
-   it hides.  
+   it hides.
 */
 void YogiManager::loadMPILibrary() {
     char *libraryName = std::getenv("YMPI_LOADLIBRARY");
@@ -298,19 +298,19 @@ int YogiManager::combinerToYogi(int in_combiner) {
             return YogiMPI_COMBINER_NAMED;
             break;
         case MPI_COMBINER_DUP:
-    	    return YogiMPI_COMBINER_DUP;        
+            return YogiMPI_COMBINER_DUP;
             break;
         case MPI_COMBINER_CONTIGUOUS:
-    	    return YogiMPI_COMBINER_CONTIGUOUS;        
+            return YogiMPI_COMBINER_CONTIGUOUS;
             break;
         case MPI_COMBINER_VECTOR:
-    	    return YogiMPI_COMBINER_VECTOR;
+            return YogiMPI_COMBINER_VECTOR;
             break;
         case MPI_COMBINER_HVECTOR_INTEGER:
-    	    return YogiMPI_COMBINER_HVECTOR_INTEGER;
+            return YogiMPI_COMBINER_HVECTOR_INTEGER;
             break;
         case MPI_COMBINER_HVECTOR:
-    	    return YogiMPI_COMBINER_HVECTOR;
+            return YogiMPI_COMBINER_HVECTOR;
             break;
         case MPI_COMBINER_INDEXED:
             return YogiMPI_COMBINER_INDEXED;
@@ -349,7 +349,7 @@ int YogiManager::combinerToYogi(int in_combiner) {
             return YogiMPI_COMBINER_RESIZED;
             break;
     }
-} 
+}
 
 int YogiManager::errorToYogi(int mpiError) {
     std::map<int,int>::iterator it = yogiErrors.find(mpiError);
@@ -376,7 +376,7 @@ int YogiManager::commattrToMPI(int comm_attr) {
           break;
       case YogiMPI_WTIME_IS_GLOBAL:
           return MPI_WTIME_IS_GLOBAL;
-          break; 
+          break;
       default:
           return comm_attr;
     }
@@ -459,7 +459,7 @@ int YogiManager::comparisonToYogi(int mpiComp)
 {
     std::map<int,int>::iterator it = yogiComps.find(mpiComp);
     if (it != yogiComps.end()) return it->second;
-    return YogiMPI_UNEQUAL; 
+    return YogiMPI_UNEQUAL;
 }
 
 int YogiManager::threadmodelToMPI(int threadmodel) {
@@ -484,7 +484,7 @@ int YogiManager::threadmodelToMPI(int threadmodel) {
 int YogiManager::typeclassToMPI(int typeclass) {
     switch(typeclass) {
       case YogiMPI_TYPECLASS_REAL:
-          return MPI_TYPECLASS_REAL; 
+          return MPI_TYPECLASS_REAL;
           break;
       case YogiMPI_TYPECLASS_INTEGER:
           return MPI_TYPECLASS_INTEGER;
@@ -624,17 +624,17 @@ int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker_in,
     T marker = std::move(static_cast<T>(marker_in));
 
     /* First see if this already exists as a constant. If it does, just
-       return the equivalent Yogi constant value. 
+       return the equivalent Yogi constant value.
      */
     typename std::vector<T>::iterator it = pool.begin();
     it = std::find(pool.begin(), pool.begin() + offset, newItem);
     if (it != pool.begin() + offset) {
-        return it - pool.begin(); 
+        return it - pool.begin();
     }
     int delta;
 
     /* Then see if the current counter exceeds the size of the vector.
-       If it does, double it. */ 
+       If it does, double it. */
     if (counter >= pool.capacity() - 1) {
         pool.resize(pool.capacity() * 2, marker);
     }
@@ -649,7 +649,7 @@ int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker_in,
         return -1;
     }
     // Bump up the counter and return the index.
-    counter++; 
+    counter++;
     return delta;
 }
 
@@ -660,25 +660,25 @@ void YogiManager::removeFromPool(std::vector<T> &pool, int index, V marker_in,
     /* Cast the marker to the type in the pool */
     T marker = std::move(static_cast<T>(marker_in));
 
-    /* First see if the current index is at or above offset. If not, do not 
+    /* First see if the current index is at or above offset. If not, do not
        make any modifications as these are considered read-only. */
     if (index < offset) return;
-    // Replace the value at index with the marker value. 
+    // Replace the value at index with the marker value.
     pool.at(index) = marker;
-    // Decrement the counter. 
+    // Decrement the counter.
     counter--;
 
 }
 
 template <typename T>
 T YogiManager::fetchFromPool(std::vector<T> &pool, int index) {
-    return pool.at(index);  
+    return pool.at(index);
 }
 
 MPI_Aint YogiManager::aintToMPI(YogiMPI_Aint in_aint) {
     return (MPI_Aint) in_aint;
 }
-   
+
 MPI_Comm YogiManager::commToMPI(YogiMPI_Comm in_comm) {
     MPI_Comm a_comm = fetchFromPool(commPool, in_comm);
     return a_comm;
@@ -761,7 +761,7 @@ void YogiManager::aintToMPI(YogiMPI_Aint * in_yogi, MPI_Aint * &out_mpi,
     }
 }
 
-void YogiManager::datatypeToMPI(YogiMPI_Datatype * in_yogi, 
+void YogiManager::datatypeToMPI(YogiMPI_Datatype * in_yogi,
                                 MPI_Datatype * &out_mpi, int count) {
     int i;
     out_mpi = new MPI_Datatype[count];
@@ -889,7 +889,7 @@ YogiMPI_Win YogiManager::winToYogi(MPI_Win in_win) {
 
 // Array conversion from MPI to Yogi
 
-void YogiManager::requestToYogi(MPI_Request * &in_mpi, 
+void YogiManager::requestToYogi(MPI_Request * &in_mpi,
                                 YogiMPI_Request * &out_yogi, int count,
                                 bool free_mpi) {
     int i;
@@ -900,7 +900,7 @@ void YogiManager::requestToYogi(MPI_Request * &in_mpi,
 }
 
 void YogiManager::aintToYogi(MPI_Aint * &in_mpi,
-                             YogiMPI_Aint * &out_yogi, int count, 
+                             YogiMPI_Aint * &out_yogi, int count,
                              bool free_mpi) {
     int i;
     for (int i = 0; i < count; i++) {
@@ -967,7 +967,7 @@ YogiMPI_Op YogiManager::unmapOp(YogiMPI_Op to_free) {
 }
 
 YogiMPI_Request YogiManager::unmapRequest(YogiMPI_Request to_free) {
-    removeFromPool(requestPool, to_free, MPI_REQUEST_NULL, requestOffset, 
+    removeFromPool(requestPool, to_free, MPI_REQUEST_NULL, requestOffset,
                    numRequests);
     return YogiMPI_REQUEST_NULL;
 }
@@ -985,7 +985,7 @@ YogiMPI_Message YogiManager::unmapMessage(YogiMPI_Message to_free) {
 }
 #endif
 
-/* Used to deallocate temporary arrays.  Keeping these here to track memory 
+/* Used to deallocate temporary arrays.  Keeping these here to track memory
    allocations (may implemented in future). */
 void YogiManager::freeRequest(MPI_Request * &to_free) {
     delete[] to_free;
