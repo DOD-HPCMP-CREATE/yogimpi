@@ -108,8 +108,7 @@ class YogiMPIWrapper(object):
         self.rc = 0
 
         # Diagnostic options Yogi directly understands.
-        diagOptions = [ '-h', '-help', '-show', '--help', '--version',
-                        '-compile_info', '-link_info' ]
+        diagOptions = [ '-h', '-help', '-show', '--help', '-compile_info', '-link_info' ]
         # Fortran preprocessing options Yogi directly understands.
         fortranOptions = [ '--yogi-preprocess-only' ]
 

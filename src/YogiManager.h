@@ -8,9 +8,9 @@
 #include <iostream>
 #include <fstream>
 
-class YogiManager 
+class YogiManager
 {
-public: 
+public:
     static const int defaultPoolSize;
 
     static YogiManager* getInstance();
@@ -30,7 +30,7 @@ public:
     int typeclassToMPI(int typeclass);
     int whenceToMPI(int whence);
     int commattrToMPI(int comm_attr);
- 
+
     int errorToYogi(int mpiError);
     int comparisonToYogi(int mpiComp);
     int providedToYogi(int provided);
@@ -58,7 +58,7 @@ public:
     // Create MPI_Status arrays when required
     void createStatus(MPI_Status *&, int);
     void createStatus(MPI_Status *&, int *);
-  
+
     // Array-conversion to MPI
     void requestToMPI(YogiMPI_Request *, MPI_Request *&, int);
     void aintToMPI(YogiMPI_Aint *, MPI_Aint *&, int);
@@ -84,7 +84,7 @@ public:
     // Array-conversion to Yogi
     void requestToYogi(MPI_Request * &in_mpi, YogiMPI_Request *& out_yogi,
                        int count, bool free_mpi = false);
-    void aintToYogi(MPI_Aint * &in_mpi, YogiMPI_Aint *& out_yogi, 
+    void aintToYogi(MPI_Aint * &in_mpi, YogiMPI_Aint *& out_yogi,
                     int count, bool free_mpi = false);
     void datatypeToYogi(MPI_Datatype * &in_mpi, YogiMPI_Datatype *& out_yogi,
                         int count, bool free_mpi = false);
@@ -94,9 +94,9 @@ public:
     void freeRequest(MPI_Request * &to_free);
     void freeAint(MPI_Aint * &to_free);
     void freeDatatype(MPI_Datatype * &to_free);
-    void freeStatus(MPI_Status * &to_free); 
+    void freeStatus(MPI_Status * &to_free);
 
-    YogiMPI_Comm unmapComm(YogiMPI_Comm to_free); 
+    YogiMPI_Comm unmapComm(YogiMPI_Comm to_free);
     YogiMPI_Datatype unmapDatatype(YogiMPI_Datatype to_free);
     YogiMPI_Errhandler unmapErrhandler(YogiMPI_Errhandler to_free);
     YogiMPI_File unmapFile(YogiMPI_File to_free);
@@ -109,7 +109,7 @@ public:
     YogiMPI_Message unmapMessage(YogiMPI_Message to_free);
 #endif
 
-protected: 
+protected:
     YogiManager();
 private:
     template <typename T, typename V>

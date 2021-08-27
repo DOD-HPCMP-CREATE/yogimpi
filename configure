@@ -182,12 +182,7 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@PYTHONCMD@|${_python}|g" \
     -e "s|@SERIALFORTRANCOMPILER@|${fortranCompiler}|g" \
-    wrapper/mpif90.in > wrapper/mpif90
-
-sed -e "s|@INSTALLDIR@|${installDir}|g" \
-    -e "s|@PYTHONCMD@|${_python}|g" \
-    -e "s|@SERIALFORTRANCOMPILER@|${fortranCompiler}|g" \
-    wrapper/mpif77.in > wrapper/mpif77
+    wrapper/mpifort.in > wrapper/mpifort
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \

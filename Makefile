@@ -23,8 +23,11 @@ install: default
 	install -m 640 etc/modulefile $(INSTALLDIR)/etc
 	install -m 750 wrapper/mpicc $(INSTALLDIR)/bin
 	install -m 750 wrapper/mpicxx $(INSTALLDIR)/bin
-	install -m 750 wrapper/mpif90 $(INSTALLDIR)/bin
-	install -m 750 wrapper/mpif77 $(INSTALLDIR)/bin
+	install -m 750 wrapper/mpifort $(INSTALLDIR)/bin
+	ln -srf $(INSTALLDIR)/bin/mpicxx $(INSTALLDIR)/bin/mpic++
+	ln -srf $(INSTALLDIR)/bin/mpicxx $(INSTALLDIR)/bin/mpiCC
+	ln -srf $(INSTALLDIR)/bin/mpifort $(INSTALLDIR)/bin/mpif77
+	ln -srf $(INSTALLDIR)/bin/mpifort $(INSTALLDIR)/bin/mpif90
 	install -m 750 wrapper/YogiMPIWrapper.py $(INSTALLDIR)/bin
 	install -m 640 Make.flags $(INSTALLDIR)
 
@@ -37,8 +40,7 @@ clean:
 
 realclean: clean
 	$(RM) wrapper/mpicc
-	$(RM) wrapper/mpif90
-	$(RM) wrapper/mpif77
+	$(RM) wrapper/mpifort
 	$(RM) wrapper/mpicxx
 	$(RM) wrapper/YogiMPIWrapper.py
 	$(RM) test/testRunner.sh
