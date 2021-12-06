@@ -94,6 +94,8 @@ static void * check_ptr_constant(void *fort_loc) {
 
 @FUNCTION_DEFINES@
 
+/* TODO: Add MPI_Comm_spawn support */
+
 void YOGIBRIDGE_INIT(int *ierror)
 {
     *ierror = YogiMPI_Init(NULL, NULL);

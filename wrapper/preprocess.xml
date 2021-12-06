@@ -62,6 +62,7 @@
     <Function name="MPI_Comm_set_info"/>
     <Function name="MPI_Comm_set_name"/>
     <Function name="MPI_Comm_size"/>
+    <Function name="MPI_Comm_spawn"/>
     <Function name="MPI_Comm_split"/>
     <Function name="MPI_Comm_split_type"/>
     <Function name="MPI_Comm_test_inter"/>
@@ -390,6 +391,7 @@
     <Constant name="MPI_DIST_GRAPH"/>
     <Constant name="MPI_DOUBLE_COMPLEX"/>
     <Constant name="MPI_DOUBLE_PRECISION"/>
+    <Constant name="MPI_ERRCODES_IGNORE"/>
     <Constant name="MPI_ERRHANDLER_NULL"/>
     <Constant name="MPI_ERROR"/>
     <Constant name="MPI_ERRORS_ARE_FATAL"/>
@@ -477,6 +479,7 @@
     <Constant name="MPI_MAX_ERROR_STRING"/>
     <Constant name="MPI_MAX_INFO_KEY"/>
     <Constant name="MPI_MAX_INFO_VAL"/>
+    <Constant name="MPI_MAX_LIBRARY_VERSION_STRING"/>
     <Constant name="MPI_MAX_OBJECT_NAME"/>
     <Constant name="MPI_MAX_PORT_NAME"/>
     <Constant name="MPI_MAX_PROCESSOR_NAME"/>

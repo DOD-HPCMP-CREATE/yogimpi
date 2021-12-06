@@ -293,6 +293,8 @@
 
 #define MPI_GROUP_EMPTY YogiMPI_GROUP_EMPTY
 
+#define MPI_MAX_LIBRARY_VERSION_STRING YogiMPI_MAX_LIBRARY_VERSION_STRING
+
 #define MPI_THREAD_SINGLE YogiMPI_THREAD_SINGLE
 #define MPI_THREAD_FUNNELED YogiMPI_THREAD_FUNNELED
 #define MPI_THREAD_SERIALIZED YogiMPI_THREAD_SERIALIZED
@@ -325,6 +327,8 @@
 #define MPI_COMBINER_RESIZED YogiMPI_COMBINER_RESIZED
 
 #define MPI_COMM_TYPE_SHARED YogiMPI_COMM_TYPE_SHARED
+
+#define MPI_ERRCODES_IGNORE YogiMPI_ERRCODES_IGNORE
 
 #define MPI_Status YogiMPI_Status
 #define MPI_STATUS_IGNORE YogiMPI_STATUS_IGNORE
@@ -370,6 +374,7 @@
 
 
 // Handle hard-coded functions
+#define MPI_Comm_spawn YogiMPI_Comm_spawn
 #define MPI_Init YogiMPI_Init
 #define MPI_Init_thread YogiMPI_Init_thread
 #define MPI_Error_class YogiMPI_Error_class

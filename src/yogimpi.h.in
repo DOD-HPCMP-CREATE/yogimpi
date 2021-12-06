@@ -358,6 +358,9 @@ typedef int YogiMPI_Message;
 /* Empty group */
 #define YogiMPI_GROUP_EMPTY 1
 
+/* Version info */
+#define YogiMPI_MAX_LIBRARY_VERSION_STRING 8192
+
 /* For supported thread levels */
 #define YogiMPI_THREAD_SINGLE 0
 #define YogiMPI_THREAD_FUNNELED 1
@@ -395,6 +398,9 @@ typedef int YogiMPI_Message;
 
 /* predefined types for MPI_Comm_split_type */
 #define YogiMPI_COMM_TYPE_SHARED    1
+
+/* Don't return error codes */
+#define YogiMPI_ERRCODES_IGNORE ((int *) 0)
 
 /* Define structure for MPI_Status - hide real object inside as int array */
 struct YogiMPI_Status
@@ -524,6 +530,8 @@ YogiMPI_Aint Yogi_ResolveAint(void *input_pointer);
 /* A couple of functions to take Fortran MPI objects and yogify them. */
 YogiMPI_Comm Yogi_ResolveFortranComm(int fortran_comm);
 YogiMPI_Group Yogi_ResolveFortranGroup(int fortran_group);
+
+int YogiMPI_Comm_spawn(const char *command, char *argv[], int maxprocs, YogiMPI_Info info, int root, YogiMPI_Comm comm, YogiMPI_Comm *intercomm, int array_of_errcodes[]);
 
 int YogiMPI_Init(int* argc, char ***argv);
 

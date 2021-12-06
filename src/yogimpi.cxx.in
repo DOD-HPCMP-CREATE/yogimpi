@@ -90,6 +90,15 @@ YogiMPI_Aint Yogi_ResolveAint(void *input_pointer) {
     return YogiManager::getInstance()->aintToYogi(*to_resolve);
 }
 
+int YogiMPI_Comm_spawn(const char *command, char *argv[], int maxprocs, YogiMPI_Info info, int root, YogiMPI_Comm comm, YogiMPI_Comm *intercomm, int array_of_errcodes[]) {
+    MPI_Info mInfo = YogiManager::getInstance()->infoToMPI(info);
+    MPI_Comm mComm = YogiManager::getInstance()->commToMPI(comm);
+    MPI_Comm mInterComm = YogiManager::getInstance()->commToMPI(*intercomm);
+    int mpi_err = MPI_Comm_spawn(command, argv, maxprocs, mInfo, root, mComm, &mInterComm, array_of_errcodes);
+    return YogiManager::getInstance()->errorToYogi(mpi_err);
+}
+
+
 int YogiMPI_Init(int* argc, char ***argv)
 {
     YogiManager::getInstance()->loadMPILibrary();
