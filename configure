@@ -21,23 +21,36 @@ function showUsage {
     echo "YDEBUG - Whether to enable YogiMPI debugging (1 for enabled)"
     echo "YVERSION - Version of MPI to support (2.1, 2.2, or 3, default is 2.1)"
     echo "YFAMILY - Compiler family (gnu or intel)"
+    echo "YPYCMD - Python command (python2 or python3, attempts to detect if unspecified)"
     exit 0
 }
 
-# Use python 2 if it works, otherwise use python 3
+# Setup python
 _python=""
-python -c "x=1" > /dev/null 2>&1
-if [[ "$?" == "0" ]]; then
-    _python="python"
-    echo "Setting up with Python 2."
+if [[ ! -z $YPYCMD ]]; then
+    $YPYCMD -c "x=1" > /dev/null 2>&1
+    if [[ "$?" == "0" ]]; then
+        _python=$YPYCMD
+        echo "Setting up Python using command: $YPYCMD"
+    else
+        echo "Supplied python command \"YPYCMD=$YPYCMD\" does not appear to be a python"
+        exit 1
+    fi
 else
+    # Use python3 if it works, otherwise try python2
     python3 -c "x=1" > /dev/null 2>&1
     if [[ "$?" == "0" ]]; then
         _python="python3"
         echo "Setting up with Python 3."
     else
-        echo "Cannot detect working version of python"
-        exit 1
+        python2 -c "x=1" > /dev/null 2>&1
+        if [[ "$?" == "0" ]]; then
+            _python="python2"
+            echo "Setting up with Python 2."
+        else
+            echo "Cannot detect working version of python"
+            exit 1
+        fi
     fi
 fi
 
