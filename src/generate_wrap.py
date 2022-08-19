@@ -43,6 +43,7 @@
  privately owned rights.
 """
 
+import argparse
 import xml.etree.ElementTree as ET
 import sys
 import wrap_objects
@@ -81,11 +82,13 @@ class GenerateWrap(object):
 #                 'MPI_Comm_copy_attr_function': 'CommCopyFunction',
 #                 'MPI_Comm_delete_attr_function': 'CommDeleteFunction'
 
-    def __init__(self, xmlInput, version):
+    def __init__(self, xmlInput, version, yogiVersion="unknown"):
         # Prefix for all the functions to wrap.
         self.prefix = 'Yogi'
         # MPI version to support
         self.mpiVersion = wrap_objects.MPIVersion(version)
+        # YogiMPI version
+        self.yogimpiVersion = yogiVersion
         # Parsed functions to wrap.
         self.functions = []
 
@@ -464,7 +467,9 @@ class GenerateWrap(object):
         extra_op = source_writers.FortranSource()
         majorVersion = str(self.mpiVersion.major)
         minorVersion = str(self.mpiVersion.minor)
-        set_version.addLines('integer, parameter :: YOG_VERSION = ' +\
+        set_version.addLines('character(*), parameter :: YOGIMPI_VERSION_STR'+\
+                             '= \'' + self.yogimpiVersion + '\'',
+                             'integer, parameter :: YOG_VERSION = ' +\
                              majorVersion,
                              'integer, parameter :: YOG_SUBVERSION = ' +\
                              minorVersion)
@@ -722,7 +727,8 @@ class GenerateWrap(object):
         set_version = source_writers.CSource()
         majorVersion = str(self.mpiVersion.major)
         minorVersion = str(self.mpiVersion.minor)
-        set_version.addLines('#define YogiMPI_VERSION ' + majorVersion,
+        set_version.addLines('#define YogiMPI_VERSION_STR "' + self.yogimpiVersion + '"',
+                             '#define YogiMPI_VERSION ' + majorVersion,
                              '#define YogiMPI_SUBVERSION ' + minorVersion)
         func_protos = source_writers.CSource()
         for aFunc in self.functions:
@@ -949,7 +955,9 @@ class GenerateWrap(object):
         return False
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print("Usage: python generate_wrap.py --mpiver=<2.1|2.2|3.0> input.xml")
-    else:
-        GenerateWrap(sys.argv[2], sys.argv[1][9:])
+    parser = argparse.ArgumentParser(description='Generate MPI wrappers.')
+    parser.add_argument('inputfile', help='The input xml file')
+    parser.add_argument('--mpiver', required=True, help='MPI version to support (2.1, 2.2, 3.0)')
+    parser.add_argument('--version', required=True, help='The version of YogiMPI')
+    args = parser.parse_args()
+    GenerateWrap(args.inputfile, args.mpiver, args.version)

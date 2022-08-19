@@ -2,6 +2,7 @@
 .pydevproject
 .*.swp
 Make.flags
+Make.version
 etc/modulefile
 etc/yogimpi.bashrc
 etc/yogimpi.cshrc
@@ -24,6 +25,7 @@ src/yogimpi_module.o
 testRunner.sh
 wrapper/mpicc
 wrapper/mpicxx
+wrapper/mpifort
 wrapper/mpif77
 wrapper/mpif90
 wrapper/YogiMPIWrapper.py
