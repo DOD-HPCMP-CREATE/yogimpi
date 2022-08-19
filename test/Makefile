@@ -1,4 +1,5 @@
-include ../Make.flags
+-include ../Make.version
+-include ../Make.flags
 
 YCC=$(INSTALLDIR)/bin/mpicc
 YF90=$(INSTALLDIR)/bin/mpif90
@@ -158,3 +159,4 @@ clean:
               waitsome waitany fwaitsome createOp errorHandler testAll \
               cWriteFile.result fWriteFile.result testAttr ftestInfo \
               testFileModes
+	$(RM) -r __pycache__ *.pyc

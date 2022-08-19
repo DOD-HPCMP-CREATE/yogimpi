@@ -1,4 +1,5 @@
-include ../Make.flags
+-include ../Make.version
+-include ../Make.flags
 
 .PHONY: wrap clean manager lib
 
@@ -18,9 +19,10 @@ manager: wrap YogiManager.cxx YogiManager.h
 
 wrap: generate_wrap.py wrap_objects.py WrapMPI.xml
 	$(PYTHON) generate_wrap.py --mpiver=$(MPIMAJVERSION).$(MPIMINVERSION) \
-               WrapMPI.xml
+               --version="$(YOGIMPI_VERSION)" WrapMPI.xml
 
 clean:
 	$(RM) mpitoyogi.h yogimpi.h yogimpi.cxx yogimpif.h \
               *.pyc *.o *.so *.mod \
               test_YogiManager yogimpi_functions.f90 yogimpi_f90bridge.cxx
+	$(RM) -r __pycache__

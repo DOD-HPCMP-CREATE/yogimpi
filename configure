@@ -10,6 +10,10 @@ function errorIfEmpty {
     fi
 }
 
+function makeVersion {
+    echo "YOGIMPI_VERSION := $1" > Make.version
+}
+
 function showUsage {
     echo "./configure -i <install prefix>"
     echo "* Required environment variables to build YogiMPI: "
@@ -24,6 +28,23 @@ function showUsage {
     echo "YPYCMD - Python command (python2 or python3, attempts to detect if unspecified)"
     exit 0
 }
+
+# Determine version
+if [[ "x${YOGIMPI_VERSION}" != "x" ]]; then
+    echo "Determine version from environment variable"
+    makeVersion ${YOGIMPI_VERSION}
+elif [[ "x$(which git)" != "x" && -e .git ]]; then
+    echo "Determine version using git"
+    YOGIMPI_VERSION=$(git describe --tags)
+    makeVersion ${YOGIMPI_VERSION}
+elif [[ -f "Make.version" ]]; then
+    echo "Determine version using Make.version file"
+    YOGIMPI_VERSION=$(cut -d ' ' -f 3 Make.version)
+else
+    YOGIMPI_VERSION="unknown"
+    makeVersion ${YOGIMPI_VERSION}
+fi
+echo "YOGIMPI_VERSION=${YOGIMPI_VERSION}"
 
 # Setup python
 _python=""
