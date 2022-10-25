@@ -23,7 +23,7 @@ function showUsage {
     echo "YMPICXX - Parallel C++ compiler wrapper"
     echo "* Optional environment variables: "
     echo "YDEBUG - Whether to enable YogiMPI debugging (1 for enabled)"
-    echo "YVERSION - Version of MPI to support (2.1, 2.2, or 3, default is 2.1)"
+    echo "YVERSION - Version of MPI to support (2.1, 2.2, or 3, default is 3)"
     echo "YFAMILY - Compiler family (gnu or intel)"
     echo "YPYCMD - Python command (python2 or python3, attempts to detect if unspecified)"
     exit 0
@@ -147,9 +147,9 @@ if [[ ! -z $YVERSION ]]; then
         exit 1
     fi
 else
-    echo "Default MPI 2.1 support enabled."
-    mpiMajVersion=2
-    mpiMinVersion=1
+    echo "Default MPI 3 support enabled."
+    mpiMajVersion=3
+    mpiMinVersion=0
 fi
 
 mpiCXX=$YMPICXX
