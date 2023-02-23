@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update and install dependencies
+      run: |
+        sudo apt-get install -y build-essential
+        sudo apt install -y mpich
+    - name: Build YogiMPI
+      env:
+        YVERSION: 3
+        YFAMILY: gnu
+        YMPICXX: mpicxx
+      run: |
+        ./configure -i ../install
+        make
+        make install
+    - name: Test YogiMPI
+      run: |
+        cd test
+        make runtest
+
