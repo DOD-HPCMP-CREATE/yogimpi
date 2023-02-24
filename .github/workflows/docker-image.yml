@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  ubuntu-20-gcc:
+  gcc-mpich:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
@@ -29,7 +29,7 @@ jobs:
         cd test
         make runtest
 
-  ubuntu-20-intel:
+  intel-oneapi:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
