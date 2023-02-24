@@ -52,13 +52,13 @@ jobs:
         YFAMILY: intel
         YMPICXX: mpicxx
       run: |
-        # activate intel oneapi
         . /opt/intel/oneapi/setvars.sh
         ./configure -i ../install
         make
         make install
     - name: Test YogiMPI
       run: |
+        . /opt/intel/oneapi/setvars.sh
         cd test
         make runtest
 
