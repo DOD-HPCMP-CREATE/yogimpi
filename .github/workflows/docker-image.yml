@@ -46,14 +46,14 @@ jobs:
         sudo apt update
         # install deps and intel
         sudo apt install -y cmake pkg-config build-essential intel-basekit intel-hpckit
-        # activate intel oneapi
-        . /opt/intel/oneapi/setvars.sh
     - name: Build YogiMPI
       env:
         YVERSION: 3
         YFAMILY: intel
         YMPICXX: mpicxx
       run: |
+        # activate intel oneapi
+        . /opt/intel/oneapi/setvars.sh
         ./configure -i ../install
         make
         make install
