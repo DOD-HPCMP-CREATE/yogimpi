@@ -1,0 +1,64 @@
+name: Docker Image CI
+
+on:
+  push:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  gcc-mpich:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update and install dependencies
+      run: |
+        sudo apt-get install -y build-essential
+        sudo apt install -y mpich
+    - name: Build YogiMPI
+      env:
+        YVERSION: 3
+        YFAMILY: gnu
+        YMPICXX: mpicxx
+      run: |
+        ./configure -i ../install
+        make
+        make install
+    - name: Test YogiMPI
+      run: |
+        cd test
+        make runtest
+
+  intel-oneapi:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update and install dependencies
+      run: |
+        # From https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/install-using-package-managers.html
+        # download the key to system keyring
+        wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+        | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+
+        # add signed entry to apt sources and configure the APT client to use
+        # Intel repository:
+        echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        sudo apt update
+        # install deps and intel
+        sudo apt install -y cmake pkg-config build-essential intel-basekit intel-hpckit
+    - name: Build YogiMPI
+      env:
+        YVERSION: 3
+        YFAMILY: intel
+        YMPICXX: mpicxx
+      run: |
+        . /opt/intel/oneapi/setvars.sh
+        ./configure -i ../install
+        make
+        make install
+    - name: Test YogiMPI
+      run: |
+        . /opt/intel/oneapi/setvars.sh
+        cd test
+        make runtest
+
