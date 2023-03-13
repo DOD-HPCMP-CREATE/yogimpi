@@ -14,7 +14,7 @@
 
 YogiMPI allows developers to build a single MPI-based binary that will run on most systems with the same operating system and basic architecture (in all uses so far, x86\_64 Linux).  The following instructions detail how to build YogiMPI, how to work with any generic MPI application, and specific instructions to compile the HELIOS application.
 
-There are some other important things to consider in order to maximize the number of systems where you can use a YogiMPI-built binary.  Please see the last section, \hyperref[choosebuild]{Choosing a Build System}, for more information.
+There are some other important things to consider in order to maximize the number of systems where you can use a YogiMPI-built binary.  Please see the last section, Choosing a Build System, for more information.
 
 \section{Setup and Using YogiMPI}
 
@@ -48,7 +48,7 @@ Note that the application that is compiled with and linked against YogiMPI is no
 \label{generic:compile}
 YogiMPI comes with pre-installed compiler wrappers named \texttt{mpicc}, \texttt{mpicxx}, \texttt{mpif77}, and \texttt{mpif90}.  These may be used just like any other compiler wrapper with your application.  This will allow you to build the application only once on your local \textit{build system}, after which it can be deployed to \textit{target systems}.
 
-I recommend removing \texttt{-xHost} and any architecture specific configuration from all compiler flag lines. Unless you are absolutely sure all systems will have at least the same chip generation or greater, you risk binary incompatibility. See \hyperref[choosebuild]{Choosing a Build System} for more information on other possibilities.
+I recommend removing \texttt{-xHost} and any architecture specific configuration from all compiler flag lines. Unless you are absolutely sure all systems will have at least the same chip generation or greater, you risk binary incompatibility. See Choosing a Build System for more information on other possibilities.
 
 In order to set up your build system environment so Yogi is ready to compile:
 

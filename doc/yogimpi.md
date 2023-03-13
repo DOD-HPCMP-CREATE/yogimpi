@@ -15,8 +15,7 @@ application.
 
 There are some other important things to consider in order to maximize
 the number of systems where you can use a YogiMPI-built binary. Please
-see the last section, [Choosing a Build System](#choosebuild), for more
-information.
+see the last section, Choosing a Build System, for more information.
 
 # Setup and Using YogiMPI
 
@@ -80,8 +79,8 @@ be deployed to *target systems*.
 I recommend removing `-xHost` and any architecture specific
 configuration from all compiler flag lines. Unless you are absolutely
 sure all systems will have at least the same chip generation or greater,
-you risk binary incompatibility. See [Choosing a Build
-System](#choosebuild) for more information on other possibilities.
+you risk binary incompatibility. See Choosing a Build System for more
+information on other possibilities.
 
 In order to set up your build system environment so Yogi is ready to
 compile:
