@@ -38,9 +38,11 @@ flexibility than traditional parallel applications.
 ## Build YogiMPI
 
 1.  Get the YogiMPI source:
+
     `git clone git@github.com:DOD-HPCMP-CREATE/yogimpi.git`
 
 2.  Check out a tag, if preferred:
+
     `git checkout v1.3.1`
 
 3.  Load your chosen compiler, MPI distribution. YogiMPI also requires Python >= 3.7.
@@ -85,8 +87,11 @@ compile:
 4.  Load YogiMPI. This can be achieved by
 
     `source /path/to/install/yogimpi/etc/yogimpi.bashrc`
+
     or by loading the module
+
     `module load /path/to/install/yogimpi/etc/modulefile`.
+
     It is **very important** that at the end of setting up your shell,
     `which mpicc` resolves to the YogiMPI wrapper version, not the MPI
     distribution version.
