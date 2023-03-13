@@ -1,12 +1,12 @@
 YogiMPI Overview
 ================
 
-* Prerequisites *
+* Prerequisites
   - Intel or GNU (4.8+) C, C++, and Fortran compiler
   - MPI distribution with compiler wrappers (e.g. mpicc, mpicxx, mpif90)
   - MPI distribution must support at least the MPI v2.1 API.
 
-* Installation *
+* Installation
   - Load your compilers and MPI wrappers into the path and runtime library path.
   - Choose an MPI API version to support. Current options are 2.1, 2.2, and 3.
     Set the YVERSION variable to any of these values. The default is 2.1.
@@ -32,7 +32,7 @@ YogiMPI Overview
     installation directory.
   - Note that some MPI deprecation warnings may be given.  These may be ignored.
 
-* Testing *
+* Testing
   - A small set of C and Fortran tests ship with YogiMPI to ensure that basic
     functionality works as expected.  This is *not* a comprehensive test suite
     but a small subset of commonly used MPI routines.
@@ -41,12 +41,12 @@ YogiMPI Overview
   - "make runtest" will build and execute all tests.  If successful, a message
     will be printed.
 
-* Modules and Source Files *
+* Modules and Source Files
   - As part of the installation, module files and a bash script are provided
     in /path/to/install/etc.  These can be used to add YogiMPI to the PATH and
     [DY]LD_LIBRARY_PATH.
 
-* Version Numbering *
+* Version Numbering
   - An release candidate increase (1.1.1rc1 -> 1.1.1rc2) is a minor bug fix or
     similar change in preparation for a new release.
   - An example of a patch release (1.1.Z) would be adding support for an MPI
