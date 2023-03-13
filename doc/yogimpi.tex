@@ -30,7 +30,7 @@ Note that the application that is compiled with and linked against YogiMPI is no
 \begin{enumerate}
 \item Get the YogiMPI source: \texttt{git clone svn+ssh://svn.create.hpc.mil/usr/local/git/yogimpi.git}
 \item Check out the current tag (at the time of writing, v0.4): \texttt{git checkout v0.4}
-\item Load your chosen compiler, MPI distribution, and ptoolsrte into the shell.
+\item Load your chosen compiler and MPI distribution. YogiMPI also requires Python >= 3.7.
 \item Set the following environment variables.  The examples use bash syntax, but [t]csh also works:
 \begin{enumerate}
 \item \texttt{YCC}: serial C compiler (e.g. \texttt{export YCC=icc} or \texttt{YCC=gcc})
@@ -48,12 +48,13 @@ Note that the application that is compiled with and linked against YogiMPI is no
 \label{generic:compile}
 YogiMPI comes with pre-installed compiler wrappers named \texttt{mpicc}, \texttt{mpicxx}, \texttt{mpif77}, and \texttt{mpif90}.  These may be used just like any other compiler wrapper with your application.  This will allow you to build the application only once on your local \textit{build system}, after which it can be deployed to \textit{target systems}.
 
+I recommend removing \texttt{-xHost} and any architecture specific configuration from all compiler flag lines. Unless you are absolutely sure all systems will have at least the same chip generation or greater, you risk binary incompatibility. See \hyperref[choosebuild]{Choosing a Build System} for more information on other possibilities.
+
 In order to set up your build system environment so Yogi is ready to compile:
 
 \begin{enumerate}
 \item Load the compiler used to build YogiMPI.
 \item Load the MPI distribution used to build YogiMPI.
-\item Load ptoolsrte.
 \item Load YogiMPI.  This can be achieved by \texttt{source /path/to/install/yogimpi/etc/yogimpi.bashrc} or by loading the module \texttt{/path/to/install/yogimpi/etc/modulefile}.  It is \textbf{very important} that at the end of setting up your shell, \texttt{which mpicc} resolves to the YogiMPI wrapper version, not the MPI distribution version.
 \end{enumerate}
 
@@ -65,80 +66,8 @@ Once you have compiled your binary on the build system, you will want the abilit
 
 \begin{enumerate}
 \item Compile YogiMPI on the target system.  You can use any MPI distribution you want; but the compiler vendor must be the same, and the version must be \textbf{equal or greater than} the one you used on the build system.  For example, if you used Intel 12 on your build system, you must use Intel 12 or greater on the target system.
-\item Set up your shell or queue script with the compiler, MPI, and ptoolsrte configuration of your choice.  The build of YogiMPI on the target system will contain an \texttt{etc/yogimpi.bashrc} and \texttt{etc/modulefile}, one of which must be sourced or loaded, respectively.
+\item Set up your shell or queue script with the compiler and MPI distribution.  The build of YogiMPI on the target system will contain an \texttt{etc/yogimpi.bashrc} and \texttt{etc/modulefile}, one of which must be sourced or loaded, respectively.
 \item Run the application normally, as if it was built with the local MPI.
-\end{enumerate}
-
-\section{Building Helios with YogiMPI}
-
-\subsection{Compile helios-tools with YogiMPI}
-
-\textit{Note: A YogiMPI build of helios-tools is usually only required once. Versions of HELIOS that depend on the same version of helios-tools may continue to leverage the same build.} 
-
-Building helios-tools with YogiMPI is straightforward and requires very little change from a normal compile. There is, however, one major limitation:
-
-\begin{itemize}
-\item ParaView \textbf{cannot} yet be built in helios-tools with YogiMPI.  If you want to use ParaView, you must compile it on the \textit{build system} and \textit{each target system}. You \textbf{can}, however, compile coviz modules in a Yogi build, and that coviz module will run on any system that has ParaView. Make sure to build ParaView with the right MPI and compiler on each target system before starting. (These are already on the DSRCs.)
-\end{itemize}
-
-\begin{enumerate}
-\item Set up a helios-tools machine configuration for your build system.  Notes:
-\begin{enumerate}
-\item Name the configuration. I recommend using \texttt{yogi\_compilername\_version}.  The MPI distribution will vary from machine to machine.
-\item In your configuration, make sure to add the following tag: \texttt{<UseYogiMPI>true</UseYogiMPI>}
-\item Mirror the same setup of compiler, MPI, ptoolsrte, and YogiMPI sourcing mentioned in the Generic Application setup within the \texttt{<Environment>} tag section of your machine configuration.
-\item Make sure ParaView is in your \texttt{<ExcludePackages>} section of your machine configuration.
-\item I recommend removing \texttt{-xHost} and any architecture specific configuration from all compiler flag lines. Unless you are absolutely sure all systems will have at least the same chip generation or greater, you risk binary incompatibility. See \hyperref[choosebuild]{Choosing a Build System} for more information on other possibilities.
-\end{enumerate}
-\item Compile helios-tools normally: \texttt{./install.py -v -c config/my-config.xml}
-\item helios-tools is almost ready to use with YogiMPI, but it needs a couple of tweaks.  This is because you'll need to carry this helios-tools build with you to multiple target systems with potentially different file paths.
-\begin{enumerate}
-
-\item Alter the \texttt{etc/<config-name>/avtools.bashrc} file.  If the avtools install for this config is in \texttt{/path/to/avtools/install/<config-name>}:
-\begin{verbatim}
-sed -i "s|/path/to/avtools/install/<config-name>|\$AVTOOLSPKGSDIR|g" \
-    /path/to/avtools/etc/<config-name>/avtools.bashrc
-\end{verbatim}
-
-\item In \texttt{etc/<config-name>/avtools.bashrc}, change the third line beginning with \texttt{export AVTOOLSPKGSDIR=} to the right location.  As you move between target systems, you can change this one line to have the right paths in place.
-
-\item You'll need to symlink the location of \texttt{ParaView-v5.0.1} in \texttt{/path/to/avtools/install/<config-name>}:
-\begin{verbatim}
-cd /path/to/avtools/install/<config-name>
-ln -s /path/to/ParaView-v5.0.1 ParaView-v5.0.1
-\end{verbatim}
-\item Set the \texttt{ParaViewLocation} variable in \texttt{avtools.bashrc}:
-\begin{verbatim}
-export ParaViewLocation=$AVTOOLSPKGSDIR/ParaView-v5.0.1
-\end{verbatim}
-\end{enumerate}
-\end{enumerate}
-
-\subsection{Compile HELIOS}
-
-Set up your compiler, MPI, ptoolsrte, helios-tools, and YogiMPI in your environment as described \hyperref[generic:compile]{for any generic application}. \texttt{which mpicc} must resolve to the YogiMPI wrapper.
-\begin{enumerate}
-\item Configure HELIOS for a YogiMPI build.
-\begin{verbatim}
-mkdir buildDir
-cd buildDir
-../path/to/helios/configure -t ../template.xml -v --yogimpi --package -i /path/to/install
-\end{verbatim}
-
-\item \texttt{./quickBuild.sh} (this will take longer than a non-Yogi build)
-
-\item Once finished, you have a HELIOS Yogi build. You can create a tarball of \texttt{/path/to/install} on your build system and copy it to target systems. 
-\end{enumerate}
-
-\subsection{Running HELIOS On A Target System}
-\begin{enumerate}
-\item On the target system, ensure YogiMPI is built.
-\item Unpack your previously built helios-tools and HELIOS binary.
-\item Adjust the helios-tools \texttt{avtools.bashrc} so that \texttt{\$AVTOOLSPKGSDIR} points to the right location, as mentioned previously, and make sure the \texttt{ParaView-v5.0.1} symlink points to the on-system build.
-\item Create a \texttt{<system>.settings} file based on examples from the source repository. This file is used by a \texttt{configure} script in the top-level of the binary directory. Using the values you provide in your settings file, it adjusts HELIOS scripts to run with whatever modules and YogiMPI are on the system. See \texttt{helios-source/scripts/sles11.settings} for an example. Once this script has been created, it can be reused for many YogiMPI binaries.
-\item \texttt{cd /path/to/helios\_binary}
-\item \texttt{./configure <system>.settings}
-\item Run the application normally. 
 \end{enumerate}
 
 \section{Extra: Choosing a Build System}

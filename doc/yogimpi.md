@@ -45,7 +45,7 @@ flexibility than traditional parallel applications.
 
     `git checkout v1.3.1`
 
-3.  Load your chosen compiler, MPI distribution. YogiMPI also requires Python >= 3.7.
+3.  Load your chosen compiler and MPI distribution. YogiMPI also requires Python >= 3.7.
 
 4.  Set the following environment variables. The examples use bash
     syntax, but \[t\]csh also works:
@@ -77,6 +77,12 @@ compiler wrapper with your application. This will allow you to build the
 application only once on your local *build system*, after which it can
 be deployed to *target systems*.
 
+I recommend removing `-xHost` and any architecture specific
+configuration from all compiler flag lines. Unless you are absolutely
+sure all systems will have at least the same chip generation or greater,
+you risk binary incompatibility. See [Choosing a Build
+System](#choosebuild) for more information on other possibilities.
+
 In order to set up your build system environment so Yogi is ready to
 compile:
 
@@ -84,7 +90,7 @@ compile:
 
 2.  Load the MPI distribution used to build YogiMPI.
 
-4.  Load YogiMPI. This can be achieved by
+3.  Load YogiMPI. This can be achieved by
 
     `source /path/to/install/yogimpi/etc/yogimpi.bashrc`
 
@@ -118,17 +124,12 @@ target system, you'll need to do the following:
     the build system. For example, if you used Intel 12 on your build
     system, you must use Intel 12 or greater on the target system.
 
-2.  Set up your shell or queue script with the compiler, MPI, and
-    ptoolsrte configuration of your choice. The build of YogiMPI on the
-    target system will contain an `etc/yogimpi.bashrc` and
-    `etc/modulefile`, one of which must be sourced or loaded,
-    respectively.
+2.  Set up your shell or queue script with the compiler and MPI
+    distribution. The build of YogiMPI on the target system will contain
+    an `etc/yogimpi.bashrc` and `etc/modulefile`, one of which must be
+    sourced or loaded, respectively.
 
 3.  Run the application normally, as if it was built with the local MPI.
-
-# Building a Project with YogiMPI
-
-## Compile MPI-using dependencies with YogiMPI
 
 # Extra: Choosing a Build System {#choosebuild}
 
