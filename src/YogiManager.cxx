@@ -737,6 +737,14 @@ MPI_Status * YogiManager::statusToMPI(YogiMPI_Status * in_status) {
     return reinterpret_cast<MPI_Status *> (in_status->realStatus);
 }
 
+MPI_Status * YogiManager::statusToMPI(const YogiMPI_Status * in_status) {
+    /* This will grab the number of bytes needed.  We don't care about
+     * structure padding since this area is never directly accessed by us.
+     * It is ensured to be larger than we need.
+    */
+    return YogiManager::statusToMPI(const_cast<YogiMPI_Status *>(in_status));
+}
+
 MPI_Win YogiManager::winToMPI(YogiMPI_Win in_win) {
     return fetchFromPool(winPool, in_win);
 }
@@ -752,6 +760,11 @@ void YogiManager::requestToMPI(YogiMPI_Request * in_yogi,
     }
 }
 
+void YogiManager::requestToMPI(const YogiMPI_Request * in_yogi,
+                               MPI_Request * &out_mpi, int count) {
+    YogiManager::requestToMPI(const_cast<YogiMPI_Request *>(in_yogi),out_mpi, count);
+}
+
 void YogiManager::aintToMPI(YogiMPI_Aint * in_yogi, MPI_Aint * &out_mpi,
                             int count) {
     int i;
@@ -761,6 +774,11 @@ void YogiManager::aintToMPI(YogiMPI_Aint * in_yogi, MPI_Aint * &out_mpi,
     }
 }
 
+void YogiManager::aintToMPI(const YogiMPI_Aint * in_yogi, MPI_Aint * &out_mpi,
+                            int count) {
+    YogiManager::aintToMPI(const_cast<YogiMPI_Aint *>(in_yogi), out_mpi, count);
+}
+
 void YogiManager::datatypeToMPI(YogiMPI_Datatype * in_yogi,
                                 MPI_Datatype * &out_mpi, int count) {
     int i;
@@ -768,6 +786,11 @@ void YogiManager::datatypeToMPI(YogiMPI_Datatype * in_yogi,
     for (int i = 0; i < count; i++) {
         out_mpi[i] = datatypeToMPI(in_yogi[i]);
     }
+}
+
+void YogiManager::datatypeToMPI(const YogiMPI_Datatype * in_yogi,
+                                MPI_Datatype * &out_mpi, int count) {
+    YogiManager::datatypeToMPI(const_cast<YogiMPI_Datatype *>(in_yogi), out_mpi, count);
 }
 
 /* Create MPI_Status arrays when required.  The MPI_Status objects remain
