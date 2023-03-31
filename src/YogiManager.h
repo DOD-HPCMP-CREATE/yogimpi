@@ -54,6 +54,7 @@ public:
     MPI_Message messageToMPI(YogiMPI_Message in_msg);
 #endif
     MPI_Status * statusToMPI(YogiMPI_Status * in_status);
+    MPI_Status * statusToMPI(const YogiMPI_Status * in_status);
 
     // Create MPI_Status arrays when required
     void createStatus(MPI_Status *&, int);
@@ -61,8 +62,11 @@ public:
 
     // Array-conversion to MPI
     void requestToMPI(YogiMPI_Request *, MPI_Request *&, int);
+    void requestToMPI(const YogiMPI_Request *, MPI_Request *&, int);
     void aintToMPI(YogiMPI_Aint *, MPI_Aint *&, int);
+    void aintToMPI(const YogiMPI_Aint *, MPI_Aint *&, int);
     void datatypeToMPI(YogiMPI_Datatype *, MPI_Datatype *&, int);
+    void datatypeToMPI(const YogiMPI_Datatype *, MPI_Datatype *&, int);
 
     YogiMPI_Offset offsetToYogi(MPI_Offset in_offset);
     YogiMPI_Errhandler errhandlerToYogi(MPI_Errhandler in_errhandler);

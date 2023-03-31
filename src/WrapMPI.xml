@@ -488,10 +488,10 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm_old" type="MPI_Comm"/>
     <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="sources[]" type="int"/>
-    <Arg input="true" name="degrees[]" type="int"/>
-    <Arg input="true" name="destinations[]" type="int"/>
-    <Arg input="true" name="weights[]" type="int">
+    <Arg input="true" name="sources[]" type="const int"/>
+    <Arg input="true" name="degrees[]" type="const int"/>
+    <Arg input="true" name="destinations[]" type="const int"/>
+    <Arg input="true" name="weights[]" type="const int">
       <Convert pointer="true" cast="int *">MPI_UNWEIGHTED</Convert>
       <Convert pointer="true" cast="int *" version="3.0">MPI_WEIGHTS_EMPTY</Convert>
     </Arg>
@@ -1153,7 +1153,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks[]" type="int"/>
+    <Arg input="true" name="ranks[]" type="const int"/>
     <Arg name="newgroup" output="true" type="MPI_Group*"/>
   </Function>
   <Function name="MPI_Group_free">
@@ -1164,7 +1164,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks[]" type="int"/>
+    <Arg input="true" name="ranks[]" type="const int"/>
     <Arg name="newgroup" output="true" type="MPI_Group*">
       <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
     </Arg>
@@ -1768,7 +1768,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Neighbor_allgather">
     <Version>3.0</Version>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>
@@ -1791,7 +1791,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Neighbor_alltoall">
     <Version>3.0</Version>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>

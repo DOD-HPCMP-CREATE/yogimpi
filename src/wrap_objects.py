@@ -115,6 +115,8 @@ class MPIArgument(object):
         self.c_api_type = None
         # Original type of the argument.
         self.type = None
+        # Whether the argument is const.
+        self.is_const = False
         # Whether the argument is a pointer.
         self.is_pointer = False
         # Whether the argument is an array.  Also makes is_pointer True.
@@ -165,6 +167,9 @@ class MPIArgument(object):
         for val in self.pre_convert_values:
             nameList.append(val.name)
         return nameList
+
+    def __str__(self):
+        return str(self.__dict__)
 
 class MPIConvertValue(object):
     def __init__(self):
@@ -231,6 +236,8 @@ class MPIFunction(object):
             argType = anArg.c_api_type
             if anArg.is_mpi_type:
                 argType = 'Yogi' + anArg.type
+                if anArg.is_const:
+                    argType = 'const ' + argType
             arg_string += argType + ' ' + anArg.name
         return arg_string
 

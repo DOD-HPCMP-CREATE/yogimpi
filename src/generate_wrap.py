@@ -155,6 +155,7 @@ class GenerateWrap(object):
                 constStr = 'const '
                 if apiType.startswith(constStr):
                     rawType = apiType[len(constStr):]
+                    thisArg.is_const = True
                 else:
                     rawType = apiType
                 thisArg.c_api_type = apiType
@@ -212,6 +213,8 @@ class GenerateWrap(object):
                         thisArg.pre_convert_values.append(val)
                     val.cast_type = conv.attrib.get('cast', None)
                     val.version = conv.attrib.get('version', wrap_objects.MPIVersion('2.0'))
+                if thisFunction.name == 'MPI_Get_count':
+                    print(thisArg)
                 thisFunction.args.append(thisArg)
             self.functions.append(thisFunction)
 
@@ -734,6 +737,8 @@ class GenerateWrap(object):
         for aFunc in self.functions:
             name = self.prefix + aFunc.name
             arg_string = aFunc.cArgString()
+            if aFunc.name == 'MPI_Get_count':
+                print(f'arg_string={arg_string}')
             func_protos.addPrototype(name, aFunc.return_type, arg_string)
             func_protos.newLine()
         c_header.merge(set_version, 'SET_VERSION')
