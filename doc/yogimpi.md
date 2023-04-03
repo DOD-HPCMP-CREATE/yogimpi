@@ -95,7 +95,7 @@ compile:
 
     or by loading the module
 
-    `module load /path/to/install/yogimpi/etc/modulefile`.
+    `module load /path/to/install/yogimpi/etc/modulefile`
 
     It is **very important** that at the end of setting up your shell,
     `which mpicc` resolves to the YogiMPI wrapper version, not the MPI
@@ -130,7 +130,7 @@ target system, you'll need to do the following:
 
 3.  Run the application normally, as if it was built with the local MPI.
 
-# Extra: Choosing a Build System {#choosebuild}
+# Extra: Choosing a Build System
 
 Several factors are involved in choosing an ideal build system that
 maximizes compatibility of a YogiMPI binary. A *build system* refers to
