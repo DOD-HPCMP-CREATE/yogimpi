@@ -377,6 +377,9 @@ int YogiManager::commattrToMPI(int comm_attr) {
       case YogiMPI_WTIME_IS_GLOBAL:
           return MPI_WTIME_IS_GLOBAL;
           break;
+      case YogiMPI_APPNUM:
+          return MPI_APPNUM;
+          break;
       default:
           return comm_attr;
     }
