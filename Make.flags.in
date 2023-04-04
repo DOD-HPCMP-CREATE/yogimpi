@@ -9,6 +9,6 @@ F90=@F90@
 # Change these if you require different compiler flags.
 FFLAGS=-I. -fPIC @FCOMPFLAGS@
 CFLAGS=-I. -fPIC
-CXXFLAGS=-I. -fPIC -std=c++11
+CXXFLAGS=-I. -fPIC -std=c++11 -Wno-deprecated-declarations
 LDFLAGS=-shared
 DEBUGFLAGS=@DEBUGFLAGS@
