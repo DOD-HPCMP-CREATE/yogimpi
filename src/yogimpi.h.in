@@ -308,11 +308,12 @@ typedef int YogiMPI_Message;
 #define YogiMPI_IO -9
 #define YogiMPI_HOST -10
 #define YogiMPI_WTIME_IS_GLOBAL -11
+#define YogiMPI_APPNUM -12
 
 /* Predefined MPI_Win attributes */
-#define YogiMPI_WIN_BASE -12
-#define YogiMPI_WIN_SIZE -13
-#define YogiMPI_WIN_DISP_UNIT -14
+#define YogiMPI_WIN_BASE -13
+#define YogiMPI_WIN_SIZE -14
+#define YogiMPI_WIN_DISP_UNIT -15
 
 /* collective operations (C and Fortran) */
 #define YogiMPI_MAX 1

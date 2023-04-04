@@ -351,6 +351,7 @@
     <Constant name="MPI_ADDRESS_KIND" type="yes" />
     <Constant name="MPI_ANY_SOURCE"/>
     <Constant name="MPI_ANY_TAG"/>
+    <Constant name="MPI_APPNUM"/>
     <Constant name="MPI_BAND"/>
     <Constant name="MPI_BOR"/>
     <Constant name="MPI_BOTTOM"/>
