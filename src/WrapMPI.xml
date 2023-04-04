@@ -1468,16 +1468,21 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_alltoallw">
+    <Code order="first">
+int comm_size;
+MPI_Comm manual_conv_comm = {manPrefix}commToMPI(comm);
+MPI_Comm_size(manual_conv_comm, &amp;comm_size);
+    </Code>
     <Version>3.0</Version>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
-    <Arg input="true" name="sendcounts[]" type="int"/>
-    <Arg input="true" name="sdispls[]" type="MPI_Aint"/>
-    <Arg input="true" name="sendtypes[]" type="MPI_Datatype"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
+    <Arg input="true" name="sendcounts[]" type="const int"/>
+    <Arg input="true" name="sdispls[]" type="const MPI_Aint" dims="comm_size"/>
+    <Arg input="true" name="sendtypes[]" type="const MPI_Datatype" dims="comm_size"/>
     <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts[]" type="int"/>
-    <Arg input="true" name="rdispls[]" type="MPI_Aint"/>
-    <Arg input="true" name="recvtypes[]" type="MPI_Datatype"/>
+    <Arg input="true" name="recvcounts[]" type="const int"/>
+    <Arg input="true" name="rdispls[]" type="const MPI_Aint" dims="comm_size"/>
+    <Arg input="true" name="recvtypes[]" type="const MPI_Datatype" dims="comm_size"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
@@ -1814,15 +1819,20 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Neighbor_alltoallw">
     <Version>3.0</Version>
+    <Code order="first">
+int comm_size;
+MPI_Comm manual_conv_comm = {manPrefix}commToMPI(comm);
+MPI_Comm_size(manual_conv_comm, &amp;comm_size);
+    </Code>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
-    <Arg input="true" name="sendcounts[]" type="int"/>
-    <Arg input="true" name="sdispls[]" type="MPI_Aint"/>
-    <Arg input="true" name="sendtypes[]" type="MPI_Datatype"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
+    <Arg input="true" name="sendcounts[]" type="const int"/>
+    <Arg input="true" name="sdispls[]" type="const MPI_Aint" dims="comm_size"/>
+    <Arg input="true" name="sendtypes[]" type="const MPI_Datatype" dims="comm_size"/>
     <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts[]" type="int"/>
-    <Arg input="true" name="rdispls[]" type="MPI_Aint"/>
-    <Arg input="true" name="recvtypes[]" type="MPI_Datatype"/>
+    <Arg input="true" name="recvcounts[]" type="const int"/>
+    <Arg input="true" name="rdispls[]" type="const MPI_Aint" dims="comm_size"/>
+    <Arg input="true" name="recvtypes[]" type="const MPI_Datatype" dims="comm_size"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Op_commutative">

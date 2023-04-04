@@ -348,6 +348,9 @@ int YogiManager::combinerToYogi(int in_combiner) {
         case MPI_COMBINER_RESIZED:
             return YogiMPI_COMBINER_RESIZED;
             break;
+        default:
+            return in_combiner;
+            break;
     }
 }
 
