@@ -148,10 +148,11 @@ int YogiMPI_Error_class(int errorcode, int* errorclass) {
 
 int YogiMPI_Finalize() {
 #ifdef YOGI_DEBUG
-    YogiManager::getInstance()->writeToDebugLog("Calling MPI_Finalize.");
+    YogiManager::getInstance()->writeToDebugLog("Entering MPI_Finalize");
 #endif
     int mpi_err = MPI_Finalize();
 #ifdef YOGI_DEBUG
+    YogiManager::getInstance()->writeToDebugLog("Exiting MPI_Finalize");
     YogiManager::getInstance()->closeDebugLog();
 #endif
     return YogiManager::getInstance()->errorToYogi(mpi_err);
