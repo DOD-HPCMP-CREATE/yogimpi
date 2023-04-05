@@ -319,7 +319,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Comm_delete_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="comm_keyval" type="int"/>
+    <Arg input="true" name="comm_keyval" type="int" class="commattr"/>
   </Function>
   <Function name="MPI_Comm_disconnect">
     <ReturnType>int</ReturnType>
@@ -414,7 +414,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Comm_set_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="comm_keyval" type="int"/>
+    <Arg input="true" name="comm_keyval" type="int" class="commattr"/>
     <Arg input="true" name="attribute_val" type="void*"/>
   </Function>
   <Function name="MPI_Comm_set_errhandler">
