@@ -113,6 +113,11 @@ public:
     YogiMPI_Message unmapMessage(YogiMPI_Message to_free);
 #endif
 
+    void copyAttrFn(int, YogiMPI_Comm_copy_attr_function*);
+    YogiMPI_Comm_copy_attr_function* copyAttrFn(int);
+    void delAttrFn(int, YogiMPI_Comm_delete_attr_function*);
+    YogiMPI_Comm_delete_attr_function* delAttrFn(int);
+
 protected:
     YogiManager();
 private:
@@ -132,6 +137,8 @@ private:
     int globalRank;
     std::ofstream debugLogFile;
 
+    std::map<int, YogiMPI_Comm_copy_attr_function*> commCopyAttrFn;
+    std::map<int, YogiMPI_Comm_delete_attr_function*> commDelAttrFn;
     std::map<int, int> yogiComps;
     std::map<int, int> mpiErrors;
     std::map<int, int> yogiErrors;
