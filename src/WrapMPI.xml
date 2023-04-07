@@ -309,12 +309,38 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm_copy_attr_fn" type="MPI_Comm_copy_attr_function*">
       <Convert pointer="true">MPI_COMM_NULL_COPY_FN</Convert>
       <Convert pointer="true">MPI_COMM_DUP_FN</Convert>
+      <Code order="convertelse">
+comm_copy_attr_keep = comm_copy_attr_fn;
+conv_comm_copy_attr_fn = [](MPI_Comm c, int k, void* e, void* i, void* o, int* f) -> int {
+    YogiMPI_Comm revert_comm = {manPrefix}commToYogi(c);
+    k = {manPrefix}commattrToMPI(k);
+    auto fn = {manPrefix}copyAttrFn(k);
+    return fn(revert_comm, k, e, i, o, f);
+};
+      </Code>
     </Arg>
     <Arg input="true" name="comm_delete_attr_fn" type="MPI_Comm_delete_attr_function*">
       <Convert pointer="true">MPI_COMM_NULL_DELETE_FN</Convert>
+      <Code order="convertelse">
+comm_delete_attr_keep = comm_delete_attr_fn;
+conv_comm_delete_attr_fn = [](MPI_Comm c, int k, void* v, void* e) -> int {
+    YogiMPI_Comm revert_comm = {manPrefix}commToYogi(c);
+    k = {manPrefix}commattrToMPI(k);
+    auto fn = {manPrefix}delAttrFn(k);
+    return fn(revert_comm, k, v, e);
+};
+      </Code>
     </Arg>
     <Arg name="comm_keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
+    <Code order="first">
+YogiMPI_Comm_copy_attr_function* comm_copy_attr_keep = nullptr;
+YogiMPI_Comm_delete_attr_function* comm_delete_attr_keep = nullptr;
+    </Code>
+    <Code order="aftercall">
+if (comm_copy_attr_keep) {manPrefix}copyAttrFn(*comm_keyval, comm_copy_attr_keep);
+if (comm_delete_attr_keep) {manPrefix}delAttrFn(*comm_keyval, comm_delete_attr_keep);
+    </Code>
   </Function>
   <Function name="MPI_Comm_delete_attr">
     <ReturnType>int</ReturnType>

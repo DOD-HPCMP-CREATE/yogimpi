@@ -213,6 +213,14 @@ class GenerateWrap(object):
                         thisArg.pre_convert_values.append(val)
                     val.cast_type = conv.attrib.get('cast', None)
                     val.version = conv.attrib.get('version', wrap_objects.MPIVersion('2.0'))
+
+                for codeElement in argElement.findall('Code'):
+                    order = codeElement.attrib.get('order', None)
+                    if order is None:
+                        raise ValueError("Code block in " + thisArg.name +\
+                                         " missing order.")
+                    thisArg.addBlock(codeElement.text, order)
+
                 thisFunction.args.append(thisArg)
             self.functions.append(thisFunction)
 
@@ -778,7 +786,12 @@ class GenerateWrap(object):
                     if anArg.pre_convert_values:
                         self._makeConstantCheck(sourceFile, anArg, before=True)
                         sourceFile.addElse()
-                    if funcType in GenerateWrap.mpiFunctionMap:
+                    elseCode = anArg.getBlock('convertelse')
+                    if elseCode is not None:
+                        for aLine in elseCode:
+                            aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
+                            sourceFile.addLines(aLine)
+                    elif funcType in GenerateWrap.mpiFunctionMap:
                         convFunc = GenerateWrap.manPrefix + 'convert' +\
                                    GenerateWrap.mpiFunctionMap[funcType]
                         sourceFile.addLines(anArg.mpi_name + ' = ' +\
