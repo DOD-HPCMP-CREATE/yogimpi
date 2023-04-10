@@ -30,58 +30,58 @@ c2tests: simple createOp errorHandler nonBlocking probe testAll writeFile1 \
 c3tests: mprobe
 
 testFileModes: testFileModes.c
-	$(YCC) $(CFLAGS) testFileModes.c -o testFileModes
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) testFileModes.c -o testFileModes
 
 testInfo: testInfo.c
-	$(YCC) $(CFLAGS) testInfo.c -o testInfo
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) testInfo.c -o testInfo
 
 testCancelled: testCancelled.c
-	$(YCC) $(CFLAGS) testCancelled.c -o testCancelled
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) testCancelled.c -o testCancelled
 
 errorHandler: errorHandler.c
-	$(YCC) $(CFLAGS) errorHandler.c -o errorHandler
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) errorHandler.c -o errorHandler
 
 createOp: createOp.c
-	$(YCC) $(CFLAGS) createOp.c -o createOp
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) createOp.c -o createOp
 
 simple: simple.c
-	$(YCC) $(CFLAGS) simple.c -o simple
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) simple.c -o simple
 
 nonBlocking: nonBlocking.c
-	$(YCC) $(CFLAGS) nonBlocking.c -o nonBlocking
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) nonBlocking.c -o nonBlocking
 
 probe: probe.c
-	$(YCC) $(CFLAGS) probe.c -o probe
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) probe.c -o probe
 
 mprobe: mprobe.c
-	$(YCC) $(CFLAGS) mprobe.c -o mprobe
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) mprobe.c -o mprobe
 
 testAll: testAll.c
-	$(YCC) $(CFLAGS) testAll.c -o testAll
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) testAll.c -o testAll
 
 writeFile1: writeFile1.c
-	$(YCC) $(CFLAGS) writeFile1.c -o writeFile1
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) writeFile1.c -o writeFile1
 
 waitany: waitany.c
-	$(YCC) $(CFLAGS) waitany.c -o waitany
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) waitany.c -o waitany
 
 collective: collective.c
-	$(YCC) $(CFLAGS) collective.c -o collective
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) collective.c -o collective
 
 sendrecv: sendrecv.c
-	$(YCC) $(CFLAGS) sendrecv.c -o sendrecv
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) sendrecv.c -o sendrecv
 
 testComms: testComms.c
-	$(YCC) $(CFLAGS) testComms.c -o testComms
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) testComms.c -o testComms
 
 nonblock_waitall: nonblock_waitall.c
-	$(YCC) $(CFLAGS) nonblock_waitall.c -o nonblock_waitall
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) nonblock_waitall.c -o nonblock_waitall
 
 waitsome: waitsome.c
-	$(YCC) $(CFLAGS) waitsome.c -o waitsome
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) waitsome.c -o waitsome
 
 testAttr: testAttr.c
-	$(YCC) $(CFLAGS) testAttr.c -o testAttr
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) testAttr.c -o testAttr
 
 runc3tests: c3tests
 	./testRunner.sh 2 ./mprobe
@@ -119,34 +119,34 @@ runftests: ftests
 	./testRunner.sh 4 ./testInfo
 
 fsimple: fsimple.f90
-	$(YF90) $(FFLAGS) fsimple.f90 -o fsimple
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) fsimple.f90 -o fsimple
 
 fwriteFile1: writeFile1.f90
-	$(YF90) $(FFLAGS) writeFile1.f90 -o fwriteFile1
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) writeFile1.f90 -o fwriteFile1
 
 fsendrecv: fsendrecv.f90
-	$(YF90) $(FFLAGS) fsendrecv.f90 -o fsendrecv
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) fsendrecv.f90 -o fsendrecv
 
 fcollective: collective.f90
-	$(YF90) $(FFLAGS) collective.f90 -o fcollective
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) collective.f90 -o fcollective
 
 ftestComms: testComms.f90
-	$(YF90) $(FFLAGS) testComms.f90 -o ftestComms
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) testComms.f90 -o ftestComms
 
 f_gatherscatter: f_gatherscatter.f90
-	$(YF90) $(FFLAGS) f_gatherscatter.f90 -o f_gatherscatter
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) f_gatherscatter.f90 -o f_gatherscatter
 
 fnonblock: fnonBlocking.f90
-	$(YF90) $(FFLAGS) fnonBlocking.f90 -o fnonblock
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) fnonBlocking.f90 -o fnonblock
 
 fwaitsome: waitsome.f90
-	$(YF90) $(FFLAGS) waitsome.f90 -o fwaitsome
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) waitsome.f90 -o fwaitsome
 
 fwtick: fwtick.f90
-	$(YF90) $(FFLAGS) fwtick.f90 -o fwtick
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) fwtick.f90 -o fwtick
 
 ftestInfo: testInfo.f90
-	$(YF90) $(FFLAGS) testInfo.f90 -o ftestInfo
+	$(YF90) $(FFLAGS) $(DEBUGFLAGS) testInfo.f90 -o ftestInfo
 
 ftests: fwriteFile1 fsendrecv fcollective ftestComms f_gatherscatter \
         fnonblock fwaitsome fsimple fwtick ftestInfo
