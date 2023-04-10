@@ -96,6 +96,8 @@ while getopts ":i:h" opt; do
   esac
 done
 
+cFlags=""
+cxxFlags=""
 fFlags=""
 debugFlags=""
 
@@ -112,6 +114,8 @@ if [[ ! -z $YFAMILY ]]; then
         cCompiler=icc
         cxxCompiler=icpc
         fortranCompiler=ifort
+        cFlags="-diag-disable=10441"
+        cxxFlags="-diag-disable=10441"
     elif [[ $YFAMILY == "gnu" ]]; then
         echo "Using GNU compiler family defaults for Yogi."
         cCompiler=gcc
@@ -188,6 +192,8 @@ sed -e "s|@PYTHON@|${_python}|g" \
     -e "s|@SERIALC@|${cCompiler}|g" \
     -e "s|@F90@|${fortranCompiler}|g" \
     -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
+    -e "s|@CCOMPFLAGS@|${cFlags}|g" \
+    -e "s|@CXXCOMPFLAGS@|${cxxFlags}|g" \
     -e "s|@FCOMPFLAGS@|${fFlags}|g" \
     -e "s|@DEBUGFLAGS@|${debugFlags}|g" \
     -e "s|@MPIMAJVERSION@|${mpiMajVersion}|g" \
