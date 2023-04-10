@@ -104,7 +104,7 @@ debugFlags=""
 if [[ ! -z $YDEBUG ]]; then
     if [[ $YDEBUG == "1" ]]; then
         echo "Enabling YogiMPI debugging output."
-        debugFlags="-DYOGI_DEBUG"
+        debugFlags="-DYOGI_DEBUG -O0 -g"
     fi
 fi
 
