@@ -293,6 +293,14 @@ typedef int YogiMPI_Message;
 #define YogiMPI_INT8_T 47
 #define YogiMPI_INT16_T 48
 
+/* MPI 3 defined C++ types */
+#if YogiMPI_VERSION == 3
+#define YogiMPI_CXX_BOOL 49
+#define YogiMPI_CXX_FLOAT_COMPLEX 50
+#define YogiMPI_CXX_DOUBLE_COMPLEX 51
+#define YogiMPI_CXX_LONG_DOUBLE_COMPLEX 52
+#endif
+
 /* reserved communicators (C and Fortran) */
 #define YogiMPI_COMM_WORLD 1
 #define YogiMPI_COMM_SELF 2
