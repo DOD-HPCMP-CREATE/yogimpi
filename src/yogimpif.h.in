@@ -221,6 +221,12 @@
       integer, parameter :: YOG_AINT = 45
       integer, parameter :: YOG_OFFSET = 46
 
+! MPI 3 C++ data types
+      integer, parameter :: YOG_CXX_BOOL = 49
+      integer, parameter :: YOG_CXX_FLOAT_COMPLEX = 50
+      integer, parameter :: YOG_CXX_DOUBLE_COMPLEX = 51
+      integer, parameter :: YOG_CXX_LONG_DOUBLE_COMPLEX = 52
+
 ! reserved communicators (C and Fortran)
       integer, parameter :: YOG_COMM_WORLD = 1
       integer, parameter :: YOG_COMM_SELF = 2

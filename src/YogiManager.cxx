@@ -32,7 +32,7 @@ YogiManager::YogiManager() {
     opPool.resize(defaultPoolSize, MPI_OP_NULL);
     numOps = opOffset = 15;
     datatypePool.resize(defaultPoolSize, MPI_DATATYPE_NULL);
-    numDatatypes = datatypeOffset = 48;
+    numDatatypes = datatypeOffset = 52;
     infoPool.resize(defaultPoolSize, MPI_INFO_NULL);
     numInfos = infoOffset = 1;
     groupPool.resize(defaultPoolSize, MPI_GROUP_NULL);
@@ -245,6 +245,10 @@ YogiManager::YogiManager() {
     datatypePool.at(YogiMPI_OFFSET)            = MPI_OFFSET;
 
 #if YogiMPI_VERSION == 3
+    datatypePool.at(YogiMPI_CXX_BOOL)            = MPI_CXX_BOOL;
+    datatypePool.at(YogiMPI_CXX_FLOAT_COMPLEX)   = MPI_CXX_FLOAT_COMPLEX;
+    datatypePool.at(YogiMPI_CXX_DOUBLE_COMPLEX)  = MPI_CXX_DOUBLE_COMPLEX;
+    datatypePool.at(YogiMPI_CXX_LONG_DOUBLE_COMPLEX) = MPI_CXX_LONG_DOUBLE_COMPLEX;
     messagePool.at(YogiMPI_MESSAGE_NO_PROC) = MPI_MESSAGE_NO_PROC;
 #endif
 
