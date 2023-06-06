@@ -158,5 +158,5 @@ clean:
               ftestComms probe mprobe collective fcollective fwtick \
               waitsome waitany fwaitsome createOp errorHandler testAll \
               cWriteFile.result fWriteFile.result testAttr ftestInfo \
-              testFileModes
+              testFileModes yogimpi.log.*
 	$(RM) -r __pycache__ *.pyc
