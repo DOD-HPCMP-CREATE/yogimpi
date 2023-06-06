@@ -29,3 +29,5 @@ wrapper/mpifort
 wrapper/mpif77
 wrapper/mpif90
 wrapper/YogiMPIWrapper.py
+installLocal
+src/yogimpi_keep.cxx
