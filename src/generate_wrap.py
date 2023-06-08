@@ -903,6 +903,7 @@ class GenerateWrap(object):
                 for aLine in bcCode:
                     aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
                     yogi_functions.addLines(aLine)
+            yogi_functions.addLines(GenerateWrap.manPrefix + 'callDepth++;')
 
             withoutIgnore = self._mpiCallString(aFunc, False)
             if aFunc.status_ignore:
@@ -925,6 +926,7 @@ class GenerateWrap(object):
                 yogi_functions.addLines(withoutIgnore)
 
             # Write a code block marked as "aftercall"
+            yogi_functions.addLines(GenerateWrap.manPrefix + 'callDepth--;')
             afterCode = aFunc.getBlock('aftercall')
             if afterCode is not None:
                 for aLine in afterCode:

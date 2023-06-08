@@ -21,6 +21,7 @@ YogiManager* YogiManager::getInstance() {
 }
 
 YogiManager::YogiManager() {
+    callDepth = 0;
     errPool.resize(defaultPoolSize, MPI_ERRHANDLER_NULL);
     numErrs = errOffset = 3;
     commPool.resize(defaultPoolSize, MPI_COMM_NULL);
@@ -277,6 +278,7 @@ void YogiManager::closeDebugLog() {
 }
 
 void YogiManager::writeToDebugLog(const char * toWrite) {
+    for (int i = 0; i < 2*callDepth; ++i) debugLogFile << " ";
     debugLogFile << toWrite << std::endl;
 }
 
