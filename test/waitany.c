@@ -6,12 +6,12 @@ int main(int argc, char *argv[])
 {
     int rank, size;
     int i, index;
-    int bufferSize = 4; 
-    
+    int bufferSize = 4;
+
     int sendBuffer[bufferSize];
     int receiveBuffer[bufferSize];
     for (i = 0; i < bufferSize; i++) {
-      sendBuffer[i] = (i * 11) + 33; 
+      sendBuffer[i] = (i * 11) + 33;
     }
 
     MPI_Request request[4];

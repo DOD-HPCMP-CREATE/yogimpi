@@ -19,7 +19,7 @@ There are some other important things to consider in order to maximize the numbe
 \section{Setup and Using YogiMPI}
 
 \subsection{Choose A Compiler and MPI}
-YogiMPI requires an Intel or GNU compiler in order to build properly.  It also requires an MPI-2 distribution against which to compile.  Tested distributions include MPICH, OpenMPI, SGI MPT, CRAY MPICH, and Intel MPI.  
+YogiMPI requires an Intel or GNU compiler in order to build properly.  It also requires an MPI-2 distribution against which to compile.  Tested distributions include MPICH, OpenMPI, SGI MPT, CRAY MPICH, and Intel MPI.
 
 The compiler choice is important.  If a compiler is used to build a binary with YogiMPI, that same compiler with an equal or greater version must be present on any system where the binary will run.
 
@@ -77,7 +77,7 @@ Several factors are involved in choosing an ideal build system that maximizes co
 One major issue in binary compatibility between Linux systems is the version of the GNU C Library (glibc) installed by the operating system. If a YogiMPI binary is created on a build system, the glibc version on the target system \textbf{must be equal to or greater than} the build system's glibc version.
 For example, SuSE Enterprise Linux 11 has a lower glibc version than CentOS 6 systems. We can verify this by checking the version on SLES 11:
 \begin{verbatim}
-sadamec@ozymandias:~> cat /etc/SuSE-release 
+sadamec@ozymandias:~> cat /etc/SuSE-release
 SUSE Linux Enterprise Server 11 (x86_64)
 VERSION = 11
 PATCHLEVEL = 1
@@ -86,14 +86,14 @@ lrwxrwxrwx 1 root root 14 2014-02-27 14:10 /lib64/libc.so.6 -> libc-2.11.1.so
 \end{verbatim}
 And on CentOS 6:
 \begin{verbatim}
-sadamec@me-saala ~]$ cat /etc/redhat-release 
+sadamec@me-saala ~]$ cat /etc/redhat-release
 CentOS release 6.8 (Final)
 [sadamec@me-saala ~]$ ls -al /lib64/libc.so*
 lrwxrwxrwx. 1 root root 12 Jun  2 10:38 /lib64/libc.so.6 -> libc-2.12.so
 \end{verbatim}
 Therefore if the build system were SLES11, the build would run on a target system that is CentOS 6; but the reverse is not true. In general, choosing the \textbf{lowest glibc version} will result in greater compatibility.
 \subsection{Compiler Optimizations}
-Another problem can occur when using chip-specific optimizations on a YogiMPI binary.  If the build system contains a newer chipset than a target system, using optimizations for that chipset may result in a binary that does not run on older hardware.  For instance, using the Intel compiler \texttt{-xHost} flag on a build system that is newer than a deployment target might result in code that cannot execute. 
+Another problem can occur when using chip-specific optimizations on a YogiMPI binary.  If the build system contains a newer chipset than a target system, using optimizations for that chipset may result in a binary that does not run on older hardware.  For instance, using the Intel compiler \texttt{-xHost} flag on a build system that is newer than a deployment target might result in code that cannot execute.
 There are several solutions to this problem:
 \begin{itemize}
 \item Do not use chip-specific optimizations.  The default hardware optimization of the Intel compiler will likely target SSE3 instructions, which have been in hardware for the last decade. Non architecture-specific optimization flags such as \texttt{-O3} are still acceptable.

@@ -17,7 +17,7 @@ include 'mpif.h'
     call MPI_COMM_RANK(world_comm, rank, ierr)
     if (rank /= world_rank) then
         call exit(1)
-    end if 
+    end if
     call MPI_FINALIZE(ierr)
 
 end program ftestComms

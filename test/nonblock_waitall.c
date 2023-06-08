@@ -43,11 +43,11 @@ int main(int argc, char* argv[]) {
     MPI_Finalize();
     exit(0);
   }
-  
+
   x = me;   /* This is the value we send, the process id */
 
   if (me == 0) {    /* Process 0 does this */
-    
+
     /* Send a message containing the process id to all other processes */
     for (i=1; i<np; i++) {
       MPI_Isend(&x, 1, MPI_INT, i, tag, MPI_COMM_WORLD, &send_req[i]);
@@ -55,8 +55,8 @@ int main(int argc, char* argv[]) {
     /* While the messages are delivered, we could do computations here */
 
     /* Wait until all messages have been sent */
-    /* Note that we use requests and statuses starting from index 1 
-       since process zero does not send to it self */ 
+    /* Note that we use requests and statuses starting from index 1
+       since process zero does not send to it self */
     MPI_Waitall(np-1, &send_req[1], &status[1]);
 
     /* Receive a message from all other processes */
@@ -66,14 +66,14 @@ int main(int argc, char* argv[]) {
     /* While the messages are delivered, we could do computations here */
 
     /* Wait until all messages have been received */
-    /* Requests and statuses start from index 1 */ 
+    /* Requests and statuses start from index 1 */
     MPI_Waitall(np-1, &recv_req[1], &status[1]);
 
     /* Print out one line for each message we received */
     for (i=1; i<np; i++) {
         actualReduceSum += y[i];
     }
-    assert(actualReduceSum == expectReduceSum); 
+    assert(actualReduceSum == expectReduceSum);
 
   } else { /* all other processes do this */
 

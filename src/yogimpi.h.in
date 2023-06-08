@@ -1,39 +1,39 @@
 /*
                                   COPYRIGHT
- 
+
  The following is a notice of limited availability of the code, and disclaimer
  which must be included in the prologue of the code and in all source listings
  of the code.
- 
+
  Copyright Notice
   + 2002 University of Chicago
   + 2016 Stephen Adamec
 
  Permission is hereby granted to use, reproduce, prepare derivative works, and
  to redistribute to others.  This software was authored by:
- 
+
  Mathematics and Computer Science Division
  Argonne National Laboratory, Argonne IL 60439
- 
+
  (and)
- 
+
  Department of Computer Science
  University of Illinois at Urbana-Champaign
 
  (and)
 
  Stephen Adamec
- 
+
                               GOVERNMENT LICENSE
- 
+
  Portions of this material resulted from work developed under a U.S.
  Government Contract and are subject to the following license: the Government
  is granted for itself and others acting on its behalf a paid-up, nonexclusive,
  irrevocable worldwide license in this computer software to reproduce, prepare
  derivative works, and perform publicly and display publicly.
-  
+
                                     DISCLAIMER
-  
+
  This computer code material was prepared, in part, as an account of work
  sponsored by an agency of the United States Government.  Neither the United
  States, nor the University of Chicago, nor any of their employees, makes any
@@ -43,7 +43,7 @@
  privately owned rights.
 */
 
-#ifndef YOGIMPI_H 
+#ifndef YOGIMPI_H
 #define YOGIMPI_H
 #ifdef __cplusplus
 extern "C" {
@@ -76,26 +76,26 @@ typedef int YogiMPI_Message;
 #endif
 
 /* MPI constants for return codes (both C and Fortran) */
-#define YogiMPI_SUCCESS 0 
-#define YogiMPI_ERR_BUFFER 1 
-#define YogiMPI_ERR_COUNT 2 
-#define YogiMPI_ERR_TYPE 3 
-#define YogiMPI_ERR_TAG 4 
-#define YogiMPI_ERR_COMM 5 
-#define YogiMPI_ERR_RANK 6 
-#define YogiMPI_ERR_REQUEST 7 
-#define YogiMPI_ERR_ROOT 8 
-#define YogiMPI_ERR_GROUP 9 
-#define YogiMPI_ERR_OP 10 
-#define YogiMPI_ERR_TOPOLOGY 11 
-#define YogiMPI_ERR_DIMS 12 
-#define YogiMPI_ERR_ARG 13 
-#define YogiMPI_ERR_UNKNOWN 14 
-#define YogiMPI_ERR_TRUNCATE 15 
-#define YogiMPI_ERR_OTHER 16 
-#define YogiMPI_ERR_INTERN 17 
-#define YogiMPI_ERR_PENDING 18 
-#define YogiMPI_ERR_IN_STATUS 19 
+#define YogiMPI_SUCCESS 0
+#define YogiMPI_ERR_BUFFER 1
+#define YogiMPI_ERR_COUNT 2
+#define YogiMPI_ERR_TYPE 3
+#define YogiMPI_ERR_TAG 4
+#define YogiMPI_ERR_COMM 5
+#define YogiMPI_ERR_RANK 6
+#define YogiMPI_ERR_REQUEST 7
+#define YogiMPI_ERR_ROOT 8
+#define YogiMPI_ERR_GROUP 9
+#define YogiMPI_ERR_OP 10
+#define YogiMPI_ERR_TOPOLOGY 11
+#define YogiMPI_ERR_DIMS 12
+#define YogiMPI_ERR_ARG 13
+#define YogiMPI_ERR_UNKNOWN 14
+#define YogiMPI_ERR_TRUNCATE 15
+#define YogiMPI_ERR_OTHER 16
+#define YogiMPI_ERR_INTERN 17
+#define YogiMPI_ERR_PENDING 18
+#define YogiMPI_ERR_IN_STATUS 19
 
 /* Part 2 for MPI I/O error constants */
 
@@ -153,7 +153,7 @@ typedef int YogiMPI_Message;
 #define YogiMPI_KEYVAL_INVALID -7
 
 /* Dist graph create constants */
-#define YogiMPI_WEIGHTS_EMPTY (int*)2 
+#define YogiMPI_WEIGHTS_EMPTY (int*)2
 #define YogiMPI_UNWEIGHTED (int*)3
 
 /* MPI asserts for one-sided communication.  Supports bitwise OR. */
@@ -203,18 +203,18 @@ typedef int YogiMPI_Message;
 /* The MPI-standard requires that the user provides an array of at least the
  * size equal to MAX_PROCESSOR_NAME.
  * However, YogiMPI will always return a null-terminated string. Therefore the
- * array has maximally MAX_PROCESSOR_NAME-1 useful characters. A 
+ * array has maximally MAX_PROCESSOR_NAME-1 useful characters. A
  * null-terminator will thus be at the index MAX_PROCESSOR_NAME-1 or before.
  * If the underlying MPI implementation returns strings that are longer than
  * YogiMPI_MAX_PROCESSOR_NAME-1, the string will be truncated.
  */
 #define YogiMPI_MAX_PROCESSOR_NAME 32
-#define YogiMPI_MAX_ERROR_STRING 32 
+#define YogiMPI_MAX_ERROR_STRING 32
 #define YogiMPI_MAX_PORT_NAME 512
 #define YogiMPI_MAX_OBJECT_NAME 64
 #define YogiMPI_MAX_DATAREP_STRING 64
 
-/* Elementary datatypes (C) */ 
+/* Elementary datatypes (C) */
 #define YogiMPI_CHAR 1
 #define YogiMPI_SHORT 2
 #define YogiMPI_INT 3
@@ -238,7 +238,7 @@ typedef int YogiMPI_Message;
 #define YogiMPI_SHORT_INT 18
 #define YogiMPI_LONG_DOUBLE_INT 19
 
-/* Optional datatypes (C) */ 
+/* Optional datatypes (C) */
 #define YogiMPI_LONG_LONG_INT 20
 #define YogiMPI_INT32_T 21
 #define YogiMPI_INT64_T 22
@@ -270,8 +270,8 @@ typedef int YogiMPI_Message;
 #define YogiMPI_REAL 33
 #define YogiMPI_DOUBLE_PRECISION 10
 
-/* Special datatypes for constructing derived datatypes */ 
-#define YogiMPI_LB 36 
+/* Special datatypes for constructing derived datatypes */
+#define YogiMPI_LB 36
 #define YogiMPI_UB 37
 
 #define YogiMPI_SIGNED_CHAR 38
@@ -303,7 +303,7 @@ typedef int YogiMPI_Message;
 #define YogiMPI_SIMILAR 2
 #define YogiMPI_UNEQUAL 3
 
-/* environmental inquiry keys (C and Fortran) */ 
+/* environmental inquiry keys (C and Fortran) */
 #define YogiMPI_TAG_UB -8
 #define YogiMPI_IO -9
 #define YogiMPI_HOST -10
@@ -314,7 +314,7 @@ typedef int YogiMPI_Message;
 #define YogiMPI_WIN_SIZE -13
 #define YogiMPI_WIN_DISP_UNIT -14
 
-/* collective operations (C and Fortran) */ 
+/* collective operations (C and Fortran) */
 #define YogiMPI_MAX 1
 #define YogiMPI_MIN 2
 #define YogiMPI_SUM 3
@@ -332,7 +332,7 @@ typedef int YogiMPI_Message;
 #define YogiMPI_NO_OP 14
 #endif
 
-/* Null handles */ 
+/* Null handles */
 #define YogiMPI_GROUP_NULL 0
 #define YogiMPI_COMM_NULL 0
 #define YogiMPI_DATATYPE_NULL 0
@@ -348,7 +348,7 @@ typedef int YogiMPI_Message;
 
 /* Reserved MPI_Message values */
 #if YogiMPI_VERSION == 3
-#define YogiMPI_MESSAGE_NO_PROC 1 
+#define YogiMPI_MESSAGE_NO_PROC 1
 #endif
 
 /* Predefined error handlers */
@@ -409,7 +409,7 @@ typedef struct YogiMPI_Status YogiMPI_Status;
 static YogiMPI_Status * const YogiMPI_STATUS_IGNORE = 0;
 static YogiMPI_Status * const YogiMPI_STATUSES_IGNORE = 0;
 
-/* 
+/*
  * MPI_Aint is implementation dependent.  Pick a long long for it locally and
  * then cast to the actual type within the function.  In some instances
  * casting may not be necessary, which can be determined at runtime.
@@ -417,13 +417,13 @@ static YogiMPI_Status * const YogiMPI_STATUSES_IGNORE = 0;
 typedef long long YogiMPI_Aint;
 
 /* MPI_Offset is implementation dependent.  Pick a long long for it locally and
- * then cast to the actual type within the function.  In some instances 
+ * then cast to the actual type within the function.  In some instances
  * casting may not be necessary, which can be determined at runtime.
  */
 typedef long long YogiMPI_Offset;
 
 /* MPI_Fint is implementation dependent.  Pick an int for it locally and
- * then cast to the actual type within the function.  In some instances 
+ * then cast to the actual type within the function.  In some instances
  * casting may not be necessary, which can be determined at runtime.
  */
 typedef int YogiMPI_Fint;
@@ -431,7 +431,7 @@ typedef int YogiMPI_Fint;
 #if YogiMPI_VERSION == 3
 
 /* MPI_Count is implementation dependent. Pick a long long int for it locally
- * and then cast to the actual type within the function.  In some instances 
+ * and then cast to the actual type within the function.  In some instances
  * casting may not be necessary, which can be determined at runtime.
  */
 typedef long long YogiMPI_Count;
@@ -483,7 +483,7 @@ typedef int YogiMPI_Grequest_query_function(void *, YogiMPI_Status *);
 typedef int YogiMPI_Datarep_conversion_function(void *, YogiMPI_Datatype, int,
                                                 void *, YogiMPI_Offset, void *);
 
-typedef int YogiMPI_Datarep_extent_function(YogiMPI_Datatype datatype, 
+typedef int YogiMPI_Datarep_extent_function(YogiMPI_Datatype datatype,
                                             YogiMPI_Aint *, void *);
 
 typedef int YogiMPI_Comm_copy_attr_function(YogiMPI_Comm oldcomm,

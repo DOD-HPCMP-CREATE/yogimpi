@@ -6,7 +6,7 @@
 //
 // Example of using MPI_Probe to dynamically allocated received messages
 //
-#include "mpi.h" 
+#include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
   int numbers[number_amount];
   int i;
   for (i = 0; i < number_amount; i++) {
-      numbers[i] = (i * 11) + 42; 
+      numbers[i] = (i * 11) + 42;
   }
 
   if (world_rank == 0) {
@@ -54,4 +54,3 @@ int main(int argc, char** argv) {
   }
   MPI_Finalize();
 }
-

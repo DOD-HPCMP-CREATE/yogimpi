@@ -3,7 +3,7 @@
 #include "yogimpi.h"
 #include <cstring>
 
-/* Copies a character array from Fortran into one that has a null terminator. 
+/* Copies a character array from Fortran into one that has a null terminator.
    The C character array is allocated on the heap. */
 static char * copy_and_add_null_terminator(char *f_string, int slen) {
     char * c_string = new char[slen + 1];
@@ -12,7 +12,7 @@ static char * copy_and_add_null_terminator(char *f_string, int slen) {
     return c_string;
 }
 
-/* Allocates a character array in C of a specified size, plus adds one more 
+/* Allocates a character array in C of a specified size, plus adds one more
    for another null terminator.  Does no copying.  The C character array is
    allocated on the heap. */
 static char * allocate_and_add_null_terminator(char *f_string, int slen) {
@@ -62,7 +62,7 @@ extern struct {
    for YogiMPI_STATUS_IGNORE and YogiMPI_STATUSES_IGNORE in Fortran.  Returns
    the original pointer address or a suitable IGNORE value in C. */
 static YogiMPI_Status * check_status_ignore(YogiMPI_Status *fort_status) {
-    if ((void *)fort_status == (void *)&(ympi1_.fignore)) { 
+    if ((void *)fort_status == (void *)&(ympi1_.fignore)) {
         return YogiMPI_STATUS_IGNORE;
     }
     if ((void *)fort_status == (void *)&(ympi1_.fignore_array)) {
@@ -78,7 +78,7 @@ static void * check_ptr_constant(void *fort_loc) {
     if (fort_loc == (void *)&(ympi2_.bottom)) {
         return YogiMPI_BOTTOM;
     }
-    else if (fort_loc == (void *)&(ympi2_.in_place)) { 
+    else if (fort_loc == (void *)&(ympi2_.in_place)) {
         return YogiMPI_IN_PLACE;
     }
     return fort_loc;

@@ -6,16 +6,16 @@ program testInfo
     logical :: flag, flagdup
     character(len=MPI_MAX_INFO_KEY) :: key, keydup
     character(len=MPI_MAX_INFO_VAL) :: value, valdup
- 
+
     call MPI_Init(ierr)
- 
+
     call MPI_Info_create(info1, ierr)
     call MPI_Info_set(info1, 'host', 'myhost.myorg.org', ierr)
     call MPI_Info_set(info1, 'file', 'runfile.txt', ierr)
     call MPI_Info_set(info1, 'soft', '2:1000:4,3:1000:7', ierr)
- 
+
     call MPI_Info_dup(info1, infodup, ierr)
- 
+
     call MPI_Info_get_nkeys(infodup, nkeysdup, ierr)
     call MPI_Info_get_nkeys(info1, nkeys, ierr)
     if (nkeys /= nkeysdup) then
@@ -30,7 +30,7 @@ program testInfo
             errs = errs + 1
             print *, 'Keys do not match: ', keydup, ' should be ', key
         end if
- 
+
         vallen = MPI_MAX_INFO_VAL
         call MPI_Info_get(info1, key, vallen, value, flag, ierr)
         call MPI_Info_get(infodup, keydup, vallen, valdup, flagdup, ierr)
@@ -41,8 +41,8 @@ program testInfo
             errs = errs + 1
             print *, 'Info values for key ', key, ' not the same after dup'
         end if
-    end do 
- 
+    end do
+
     call MPI_Info_set(info1, 'path', '/a:/b:/c/d', ierr)
     call MPI_Info_get(infodup, 'path', vallen, value, flag, ierr)
 

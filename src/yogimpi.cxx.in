@@ -1,39 +1,39 @@
 /*
                                   COPYRIGHT
- 
+
  The following is a notice of limited availability of the code, and disclaimer
  which must be included in the prologue of the code and in all source listings
  of the code.
- 
+
  Copyright Notice
   + 2002 University of Chicago
   + 2016 Stephen Adamec
 
  Permission is hereby granted to use, reproduce, prepare derivative works, and
  to redistribute to others.  This software was authored by:
- 
+
  Mathematics and Computer Science Division
  Argonne National Laboratory, Argonne IL 60439
- 
+
  (and)
- 
+
  Department of Computer Science
  University of Illinois at Urbana-Champaign
 
  (and)
 
  Stephen Adamec
- 
+
                               GOVERNMENT LICENSE
- 
+
  Portions of this material resulted from work developed under a U.S.
  Government Contract and are subject to the following license: the Government
  is granted for itself and others acting on its behalf a paid-up, nonexclusive,
  irrevocable worldwide license in this computer software to reproduce, prepare
  derivative works, and perform publicly and display publicly.
-  
+
                                     DISCLAIMER
-  
+
  This computer code material was prepared, in part, as an account of work
  sponsored by an agency of the United States Government.  Neither the United
  States, nor the University of Chicago, nor any of their employees, makes any
@@ -51,7 +51,7 @@ int Yogi_ResolveErrorCode(int *error) {
 }
 
 YogiMPI_Datatype Yogi_ResolveDatatype(void *input_pointer) {
-    MPI_Datatype *to_resolve = reinterpret_cast<MPI_Datatype *>(input_pointer); 
+    MPI_Datatype *to_resolve = reinterpret_cast<MPI_Datatype *>(input_pointer);
     return YogiManager::getInstance()->datatypeToYogi(*to_resolve);
 }
 
@@ -87,13 +87,13 @@ YogiMPI_File Yogi_ResolveFile(void *input_pointer) {
 
 YogiMPI_Aint Yogi_ResolveAint(void *input_pointer) {
     MPI_Aint *to_resolve = reinterpret_cast<MPI_Aint *>(input_pointer);
-    return YogiManager::getInstance()->aintToYogi(*to_resolve); 
+    return YogiManager::getInstance()->aintToYogi(*to_resolve);
 }
 
 int YogiMPI_Init(int* argc, char ***argv)
-{ 
+{
     YogiManager::getInstance()->loadMPILibrary();
-    int mpi_err = MPI_Init(argc, argv); 
+    int mpi_err = MPI_Init(argc, argv);
 #ifdef YOGI_DEBUG
     int glob_rank = -1;
     MPI_Comm_rank(MPI_COMM_WORLD, &glob_rank);
@@ -214,16 +214,16 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
     MPI_Datatype conv_datatype;
     conv_datatype = YogiManager::getInstance()->datatypeToMPI(datatype);
 
-    /* In order to appropriately handle this function, we must call 
+    /* In order to appropriately handle this function, we must call
      * MPI_Type_get_envelope to figure out what the user will get. This helps
      * determine if the type is derived and if new datatype handles are added
      * to our translation pool.
      */
     int num_integers, num_addresses, num_datatypes, combiner;
-    MPI_Type_get_envelope(conv_datatype, &num_integers, &num_addresses, 
+    MPI_Type_get_envelope(conv_datatype, &num_integers, &num_addresses,
                           &num_datatypes, &combiner);
-    
-    MPI_Aint * conv_array_of_addresses = new MPI_Aint[max_addresses]; 
+
+    MPI_Aint * conv_array_of_addresses = new MPI_Aint[max_addresses];
     MPI_Datatype * conv_array_of_datatypes = new MPI_Datatype[max_datatypes];
     mpi_error = MPI_Type_get_contents(conv_datatype, max_integers,
                                       max_addresses, max_datatypes,
@@ -231,7 +231,7 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
                                       conv_array_of_addresses,
                                       conv_array_of_datatypes);
     if (combiner != MPI_COMBINER_F90_COMPLEX &&
-        combiner != MPI_COMBINER_F90_REAL && 
+        combiner != MPI_COMBINER_F90_REAL &&
         combiner != MPI_COMBINER_F90_INTEGER) {
         /* The array won't be empty, so convert them to Yogi versions. */
         YogiManager::getInstance()->datatypeToYogi(conv_array_of_datatypes,

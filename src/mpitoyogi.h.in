@@ -1,39 +1,39 @@
 /*
                                   COPYRIGHT
- 
+
  The following is a notice of limited availability of the code, and disclaimer
  which must be included in the prologue of the code and in all source listings
  of the code.
- 
+
  Copyright Notice
   + 2002 University of Chicago
   + 2016 Stephen Adamec
 
  Permission is hereby granted to use, reproduce, prepare derivative works, and
  to redistribute to others.  This software was authored by:
- 
+
  Mathematics and Computer Science Division
  Argonne National Laboratory, Argonne IL 60439
- 
+
  (and)
- 
+
  Department of Computer Science
  University of Illinois at Urbana-Champaign
 
  (and)
 
  Stephen Adamec
- 
+
                               GOVERNMENT LICENSE
- 
+
  Portions of this material resulted from work developed under a U.S.
  Government Contract and are subject to the following license: the Government
  is granted for itself and others acting on its behalf a paid-up, nonexclusive,
  irrevocable worldwide license in this computer software to reproduce, prepare
  derivative works, and perform publicly and display publicly.
-  
+
                                     DISCLAIMER
-  
+
  This computer code material was prepared, in part, as an account of work
  sponsored by an agency of the United States Government.  Neither the United
  States, nor the University of Chicago, nor any of their employees, makes any
@@ -46,7 +46,7 @@
 #include "yogimpi.h"
 
 #ifndef MPITOYOGI_H
-#define MPITOYOGI_H 
+#define MPITOYOGI_H
 
 #define MPI_VERSION YogiMPI_VERSION
 #define MPI_SUBVERSION YogiMPI_SUBVERSION
@@ -164,7 +164,7 @@
 #define MPI_DISPLACEMENT_CURRENT YogiMPI_DISPLACEMENT_CURRENT
 
 #define MPI_MAX_INFO_KEY YogiMPI_MAX_INFO_KEY
-#define MPI_MAX_INFO_VAL YogiMPI_MAX_INFO_VAL 
+#define MPI_MAX_INFO_VAL YogiMPI_MAX_INFO_VAL
 
 #define MPI_ORDER_C YogiMPI_ORDER_C
 #define MPI_ORDER_FORTRAN YogiMPI_ORDER_FORTRAN
@@ -275,7 +275,7 @@
 #define MPI_REPLACE YogiMPI_REPLACE
 #define MPI_NO_OP YogiMPI_NO_OP
 
-#define MPI_GROUP_NULL YogiMPI_GROUP_NULL 
+#define MPI_GROUP_NULL YogiMPI_GROUP_NULL
 #define MPI_COMM_NULL YogiMPI_COMM_NULL
 #define MPI_DATATYPE_NULL YogiMPI_DATATYPE_NULL
 #define MPI_REQUEST_NULL YogiMPI_REQUEST_NULL
@@ -357,7 +357,7 @@
 #define MPI_Comm_copy_attr_function YogiMPI_Comm_copy_attr_function
 #define MPI_Comm_delete_attr_function YogiMPI_Comm_delete_attr_function
 
-#define MPI_CONVERSION_FN_NULL YogiMPI_CONVERSION_FN_NULL 
+#define MPI_CONVERSION_FN_NULL YogiMPI_CONVERSION_FN_NULL
 #define MPI_NULL_COPY_FN YogiMPI_NULL_COPY_FN
 #define MPI_DUP_FN YogiMPI_DUP_FN
 #define MPI_NULL_DELETE_FN YogiMPI_NULL_DELETE_FN

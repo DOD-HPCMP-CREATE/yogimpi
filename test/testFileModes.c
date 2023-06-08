@@ -13,13 +13,12 @@ int main(int argc, char **argv){
     inMode = MPI_MODE_CREATE|MPI_MODE_WRONLY|MPI_MODE_DELETE_ON_CLOSE;
     MPI_File_open(MPI_COMM_WORLD, "exampleFile", inMode, MPI_INFO_NULL, &fhw);
     MPI_File_get_amode(fhw, &outMode);
-    if (outMode != inMode) { 
+    if (outMode != inMode) {
         printf("test error, value is %d, expected %d\n", outMode, inMode);
-        testStatus = 1; 
+        testStatus = 1;
     }
-    
+
     MPI_File_close(&fhw);
     MPI_Finalize();
     return testStatus;
 }
-

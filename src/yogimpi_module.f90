@@ -6,7 +6,7 @@ contains
 
   logical function Yogi_IntegerToLogical(in_int)
 
-      integer, intent(in) :: in_int 
+      integer, intent(in) :: in_int
 
       if (in_int == 0) then
           Yogi_IntegerToLogical = .false.
@@ -21,9 +21,9 @@ contains
       logical, intent(in) :: in_logical
 
       if (in_logical .eqv. .true.) then
-          Yogi_LogicalToInteger = 1 
+          Yogi_LogicalToInteger = 1
       else
-          Yogi_LogicalToInteger = 0 
+          Yogi_LogicalToInteger = 0
       end if
 
   end function

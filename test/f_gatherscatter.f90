@@ -2,7 +2,7 @@
 ! Each processor gets different data from the root processor
 ! by way of mpi_scatter.  The data is summed and then sent back
 ! to the root processor using MPI_Gather.  The root processor
-! then prints the global sum. 
+! then prints the global sum.
 program test1
     implicit none
     include 'mpif.h'
@@ -11,11 +11,11 @@ program test1
     integer, allocatable :: myray(:),send_ray(:),back_ray(:)
     integer count
     integer :: size, mysize, i, k, j, total
-    
+
     call MPI_INIT(mpi_err)
     call MPI_COMM_SIZE(MPI_COMM_WORLD, numnodes, mpi_err)
     call MPI_COMM_RANK(MPI_COMM_WORLD, myid, mpi_err)
-    
+
     ! each processor will get count elements from the root
     count=4
     allocate(myray(count))
@@ -28,10 +28,10 @@ program test1
             send_ray(i)=i
         enddo
     endif
-    ! send different data to each processor 
+    ! send different data to each processor
     call MPI_SCATTER(send_ray, count, MPI_INTEGER, myray, count, &
                       MPI_INTEGER, my_root, MPI_COMM_WORLD, mpi_err)
-                
+
     ! each processor does a local sum
     total=sum(myray)
 

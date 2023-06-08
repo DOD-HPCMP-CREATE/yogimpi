@@ -14,7 +14,7 @@ include 'mpif.h'
     call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierr)
 
     do i=1,N
-        buf(i) = i - 1 
+        buf(i) = i - 1
     enddo
 
     offset = rank*(N/size)*4

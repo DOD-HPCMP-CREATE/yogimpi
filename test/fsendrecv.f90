@@ -1,4 +1,4 @@
-program fsendrecv 
+program fsendrecv
 
     implicit none
 

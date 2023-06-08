@@ -1,7 +1,7 @@
 #include "mpi.h"
 #include <stdio.h>
 #include <time.h>
- 
+
 int main(int argc, char *argv[])
 {
     int rank, size, flag, i;
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         while (!flag)
         {
             struct timespec sleepTime, remaining;
-            sleepTime.tv_sec = 0; 
+            sleepTime.tv_sec = 0;
             sleepTime.tv_nsec = 10000;
             nanosleep(&sleepTime, &remaining);
             MPI_Testall(size-1, r, &flag, status);

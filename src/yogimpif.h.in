@@ -1,39 +1,39 @@
 !
 !                                  COPYRIGHT
-! 
+!
 ! The following is a notice of limited availability of the code, and disclaimer
 ! which must be included in the prologue of the code and in all source listings
 ! of the code.
-! 
+!
 ! Copyright Notice
 !  + 2002 University of Chicago
 !  + 2016 Stephen Adamec
 !
 ! Permission is hereby granted to use, reproduce, prepare derivative works, and
 ! to redistribute to others.  This software was authored by:
-! 
+!
 ! Mathematics and Computer Science Division
 ! Argonne National Laboratory, Argonne IL 60439
-! 
+!
 ! (and)
-! 
+!
 ! Department of Computer Science
 ! University of Illinois at Urbana-Champaign
 !
 ! (and)
 !
 ! Stephen Adamec
-! 
+!
 !                              GOVERNMENT LICENSE
-! 
+!
 ! Portions of this material resulted from work developed under a U.S.
 ! Government Contract and are subject to the following license: the Government
 ! is granted for itself and others acting on its behalf a paid-up, nonexclusive,
 ! irrevocable worldwide license in this computer software to reproduce, prepare
 ! derivative works, and perform publicly and display publicly.
-!  
+!
 !                                    DISCLAIMER
-!  
+!
 ! This computer code material was prepared, in part, as an account of work
 ! sponsored by an agency of the United States Government.  Neither the United
 ! States, nor the University of Chicago, nor any of their employees, makes any
@@ -58,22 +58,22 @@
       integer, parameter :: YOG_ERR_BUFFER = 1
       integer, parameter :: YOG_ERR_COUNT = 2
       integer, parameter :: YOG_ERR_TYPE = 3
-      integer, parameter :: YOG_ERR_TAG = 4 
-      integer, parameter :: YOG_ERR_COMM = 5 
-      integer, parameter :: YOG_ERR_RANK = 6 
-      integer, parameter :: YOG_ERR_REQUEST = 7 
+      integer, parameter :: YOG_ERR_TAG = 4
+      integer, parameter :: YOG_ERR_COMM = 5
+      integer, parameter :: YOG_ERR_RANK = 6
+      integer, parameter :: YOG_ERR_REQUEST = 7
       integer, parameter :: YOG_ERR_ROOT = 8
-      integer, parameter :: YOG_ERR_GROUP = 9 
-      integer, parameter :: YOG_ERR_OP = 10 
-      integer, parameter :: YOG_ERR_TOPOLOGY = 11 
-      integer, parameter :: YOG_ERR_DIMS = 12 
-      integer, parameter :: YOG_ERR_ARG = 13 
-      integer, parameter :: YOG_ERR_UNKNOWN = 14 
-      integer, parameter :: YOG_ERR_TRUNCATE = 15 
-      integer, parameter :: YOG_ERR_OTHER = 16 
+      integer, parameter :: YOG_ERR_GROUP = 9
+      integer, parameter :: YOG_ERR_OP = 10
+      integer, parameter :: YOG_ERR_TOPOLOGY = 11
+      integer, parameter :: YOG_ERR_DIMS = 12
+      integer, parameter :: YOG_ERR_ARG = 13
+      integer, parameter :: YOG_ERR_UNKNOWN = 14
+      integer, parameter :: YOG_ERR_TRUNCATE = 15
+      integer, parameter :: YOG_ERR_OTHER = 16
       integer, parameter :: YOG_ERR_INTERN = 17
-      integer, parameter :: YOG_ERR_PENDING = 18 
-      integer, parameter :: YOG_ERR_IN_STATUS = 19 
+      integer, parameter :: YOG_ERR_PENDING = 18
+      integer, parameter :: YOG_ERR_IN_STATUS = 19
 
       integer, parameter :: YOG_ERR_FILE = 20
       integer, parameter :: YOG_ERR_NOT_SAME = 21
@@ -120,7 +120,7 @@
       integer, parameter :: YOG_ANY_SOURCE = -3
       integer, parameter :: YOG_ANY_TAG = -4
       integer, parameter :: YOG_UNDEFINED = -5
-      integer, parameter :: YOG_BSEND_OVERHEAD = 512 
+      integer, parameter :: YOG_BSEND_OVERHEAD = 512
       integer, parameter :: YOG_KEYVAL_INVALID = -7
 
 ! Graph creation constants.  These are pointer values in C, so they must go
@@ -193,20 +193,20 @@
       integer, parameter :: YOG_LOGICAL = 25
 
 ! datatypes for reduction functions (Fortran)
-      integer, parameter :: YOG_2REAL = 26 
-      integer, parameter :: YOG_2DOUBLE_PRECISION = 27 
+      integer, parameter :: YOG_2REAL = 26
+      integer, parameter :: YOG_2DOUBLE_PRECISION = 27
       integer, parameter :: YOG_2INTEGER = 28
 
 ! optional datatypes (Fortran)
       integer, parameter :: YOG_INTEGER1 = 29
-      integer, parameter :: YOG_INTEGER2 = 30 
-      integer, parameter :: YOG_INTEGER4 = 31 
+      integer, parameter :: YOG_INTEGER2 = 30
+      integer, parameter :: YOG_INTEGER4 = 31
       integer, parameter :: YOG_INTEGER8 = 32
       integer, parameter :: YOG_REAL4 = 33
-      integer, parameter :: YOG_REAL8 = 34 
+      integer, parameter :: YOG_REAL8 = 34
 
-! Special datatypes for constructing derived datatypes 
-      integer, parameter :: YOG_LB = 36 
+! Special datatypes for constructing derived datatypes
+      integer, parameter :: YOG_LB = 36
       integer, parameter :: YOG_UB = 37
 
 ! Extra datatypes defined in C but here (as specified by MPICH2)
@@ -220,7 +220,7 @@
 ! MPI 2.2 datatypes needed by MPI I/O
       integer, parameter :: YOG_AINT = 45
       integer, parameter :: YOG_OFFSET = 46
- 
+
 ! reserved communicators (C and Fortran)
       integer, parameter :: YOG_COMM_WORLD = 1
       integer, parameter :: YOG_COMM_SELF = 2
@@ -237,8 +237,8 @@
       integer, parameter :: YOG_HOST = -10
       integer, parameter :: YOG_WTIME_IS_GLOBAL = -11
 
-! Predefined MPI_Win attributes 
-      integer, parameter :: YOG_WIN_BASE = -12 
+! Predefined MPI_Win attributes
+      integer, parameter :: YOG_WIN_BASE = -12
       integer, parameter :: YOG_WIN_SIZE = -13
       integer, parameter :: YOG_WIN_DISP_UNIT = -14
 
@@ -264,7 +264,7 @@
       integer, parameter :: YOG_COMM_NULL = 0
       integer, parameter :: YOG_DATATYPE_NULL = 0
       integer, parameter :: YOG_REQUEST_NULL = 0
-      integer, parameter :: YOG_OP_NULL = 0 
+      integer, parameter :: YOG_OP_NULL = 0
       integer, parameter :: YOG_INFO_NULL = 0
       integer, parameter :: YOG_FILE_NULL = 0
       integer, parameter :: YOG_ERRHANDLER_NULL = 0
@@ -272,7 +272,7 @@
 
 ! Predefined error handlers
       integer, parameter :: YOG_ERRORS_ARE_FATAL = 1
-      integer, parameter :: YOG_ERRORS_RETURN = 2 
+      integer, parameter :: YOG_ERRORS_RETURN = 2
 
 ! Empty group
       integer, parameter :: YOG_GROUP_EMPTY = 1
@@ -287,7 +287,7 @@
       integer, parameter :: YOG_LOCK_EXCLUSIVE = 234
       integer, parameter :: YOG_LOCK_SHARED = 235
 
-! Topology test constants 
+! Topology test constants
       integer, parameter :: YOG_GRAPH = 1
       integer, parameter :: YOG_CART = 2
       integer, parameter :: YOG_DIST_GRAPH = 3
@@ -333,7 +333,7 @@
 
       COMMON /ympi1/ YOG_STATUS_IGNORE, YOG_STATUSES_IGNORE
       COMMON /ympi2/ YOG_IN_PLACE, YOG_BOTTOM
-      COMMON /ympi3/ YOG_UNWEIGHTED, YOG_WEIGHTS_EMPTY 
+      COMMON /ympi3/ YOG_UNWEIGHTED, YOG_WEIGHTS_EMPTY
 
       real*8 :: YOG_WTIME
       real*8 :: YOG_WTICK

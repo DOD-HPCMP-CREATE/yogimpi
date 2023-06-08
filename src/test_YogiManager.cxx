@@ -9,7 +9,7 @@ int main() {
     blah.MPI_TAG = 1001;
     blah.MPI_ERROR = 0;
     YogiMPI_Status yogi = manager->statusToYogi(blah);
-    std::cout << "Source: " << yogi.MPI_SOURCE <<std::endl;    
+    std::cout << "Source: " << yogi.MPI_SOURCE <<std::endl;
     std::cout << "Tag: " << yogi.MPI_TAG <<std::endl;
     std::cout << "Error: " << yogi.MPI_ERROR <<std::endl;
     MPI_Status *another = manager->statusToMPI(&yogi);

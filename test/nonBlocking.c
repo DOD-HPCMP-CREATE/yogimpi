@@ -4,7 +4,7 @@
 #include "mpi.h"
 
 int main(int argc, char* argv[]) {
-  
+
   int pool_size, my_rank;
   int message_len;
   const int BUFFER_SIZE = 100;
@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &pool_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
- 
+
   char *testMessage = "This is a test message to be sent.";
   message_len = strlen(testMessage);
 
@@ -29,14 +29,14 @@ int main(int argc, char* argv[]) {
 
     assert(request == MPI_REQUEST_NULL);
 
-  } 
+  }
   else if (my_rank == 1) {
 
     char recv_buffer[BUFFER_SIZE];
     int count;
     MPI_Request request;
     MPI_Status status;
-    
+
     MPI_Irecv(recv_buffer, message_len + 1, MPI_CHAR, 0, 77, MPI_COMM_WORLD,
               &request);
     MPI_Wait(&request, &status);

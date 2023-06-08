@@ -143,7 +143,7 @@ private:
     int requestOffset;
     std::vector<MPI_Win> winPool;
     int numWins;
-    int winOffset; 
+    int winOffset;
     std::vector<MPI_Op> opPool;
     int numOps;
     int opOffset;

@@ -13,7 +13,7 @@ use mpi
     if (size /= 4) then
         print *, "Please run with 4 processes."
         call MPI_Finalize(ierr)
-        call exit(1) 
+        call exit(1)
     end if
 
     do i=1,size
@@ -26,7 +26,7 @@ use mpi
         do i=1,size-1
             call MPI_Isend(sendBuffer(i+1), 1, MPI_INTEGER, i, 123, &
                            MPI_COMM_WORLD, request(i), ierr)
-        enddo 
+        enddo
         remaining = size-1
         do while (remaining > 0)
             call MPI_Waitsome(size-1, request, count, index, MPI_STATUSES_IGNORE, ierr)
@@ -36,7 +36,7 @@ use mpi
             if (count > 0) then
                 remaining = remaining - count
             endif
-        enddo 
+        enddo
     else
         call MPI_Recv(receiveBuffer, 1, MPI_INTEGER, 0, 123, MPI_COMM_WORLD, &
                       status(1,1), ierr)

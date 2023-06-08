@@ -2595,7 +2595,7 @@ else {
 if (conv_request == MPI_REQUEST_NULL) {
     *request = {manPrefix}unmapRequest(*request);
 }
-    </Code> 
+    </Code>
   </Function>
   <Function name="MPI_Waitall">
     <ReturnType>int</ReturnType>
@@ -2640,7 +2640,7 @@ if (*outcount == MPI_UNDEFINED) {
     *outcount = YogiMPI_UNDEFINED;
 }
 else {
-    int i; 
+    int i;
     for(i = 0; i &lt; *outcount; ++i) {
         int requestIndex = array_of_indices[i];
         if(conv_array_of_requests[requestIndex] == MPI_REQUEST_NULL) {

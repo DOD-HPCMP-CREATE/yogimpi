@@ -13,7 +13,7 @@ subroutine Yog_Init_thread(required, provided, ierr)
     integer, intent(in) :: required
     integer, intent(out) :: provided
     integer, intent(out) :: ierr
-    
+
     call YogiBridge_Init_thread(required, provided, ierr)
 end subroutine
 
