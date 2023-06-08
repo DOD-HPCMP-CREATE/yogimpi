@@ -94,7 +94,9 @@ int YogiMPI_Comm_spawn(const char *command, char *argv[], int maxprocs, YogiMPI_
     MPI_Info mInfo = YogiManager::getInstance()->infoToMPI(info);
     MPI_Comm mComm = YogiManager::getInstance()->commToMPI(comm);
     MPI_Comm mInterComm = YogiManager::getInstance()->commToMPI(*intercomm);
+    YogiManager::getInstance()->callDepth++;
     int mpi_err = MPI_Comm_spawn(command, argv, maxprocs, mInfo, root, mComm, &mInterComm, array_of_errcodes);
+    YogiManager::getInstance()->callDepth--;
     return YogiManager::getInstance()->errorToYogi(mpi_err);
 }
 
@@ -102,10 +104,14 @@ int YogiMPI_Comm_spawn(const char *command, char *argv[], int maxprocs, YogiMPI_
 int YogiMPI_Init(int* argc, char ***argv)
 {
     YogiManager::getInstance()->loadMPILibrary();
+    YogiManager::getInstance()->callDepth++;
     int mpi_err = MPI_Init(argc, argv);
+    YogiManager::getInstance()->callDepth--;
 #ifdef YOGI_DEBUG
     int glob_rank = -1;
+    YogiManager::getInstance()->callDepth++;
     MPI_Comm_rank(MPI_COMM_WORLD, &glob_rank);
+    YogiManager::getInstance()->callDepth--;
     YogiManager::getInstance()->setGlobalRank(glob_rank);
     YogiManager::getInstance()->openDebugLog();
     YogiManager::getInstance()->writeToDebugLog("Completed MPI_Init.");
@@ -118,11 +124,15 @@ int YogiMPI_Init_thread(int* argc, char*** argv, int required, int* provided) {
     YogiManager::getInstance()->loadMPILibrary();
 
     required = YogiManager::getInstance()->threadmodelToMPI(required);
+    YogiManager::getInstance()->callDepth++;
     mpi_error = MPI_Init_thread(argc, argv, required, provided);
+    YogiManager::getInstance()->callDepth--;
     *provided = YogiManager::getInstance()->providedToYogi(*provided);
 #ifdef YOGI_DEBUG
     int glob_rank = -1;
+    YogiManager::getInstance()->callDepth++;
     MPI_Comm_rank(MPI_COMM_WORLD, &glob_rank);
+    YogiManager::getInstance()->callDepth--;
     YogiManager::getInstance()->setGlobalRank(glob_rank);
     YogiManager::getInstance()->openDebugLog();
     YogiManager::getInstance()->writeToDebugLog("Completed MPI_Init_thread.");
@@ -150,6 +160,8 @@ int YogiMPI_Finalize() {
 #ifdef YOGI_DEBUG
     YogiManager::getInstance()->writeToDebugLog("Entering MPI_Finalize");
 #endif
+    // NOTE: Incrementing/decrementing "callDepth" around MPI_Finalize breaks
+    //       some things in some client unit tests.
     int mpi_err = MPI_Finalize();
 #ifdef YOGI_DEBUG
     YogiManager::getInstance()->writeToDebugLog("Exiting MPI_Finalize");
@@ -165,7 +177,9 @@ int YogiMPI_Get_processor_name(char* name, int* resultlen) {
 #endif
     if (MPI_MAX_PROCESSOR_NAME > YogiMPI_MAX_PROCESSOR_NAME) {
         char *tmp_name = new char[MPI_MAX_PROCESSOR_NAME];
+        YogiManager::getInstance()->callDepth++;
         mpi_error = MPI_Get_processor_name(tmp_name, resultlen);
+        YogiManager::getInstance()->callDepth--;
         std::memcpy(name, tmp_name, YogiMPI_MAX_PROCESSOR_NAME - 1);
         name[YogiMPI_MAX_PROCESSOR_NAME - 1] = '\0';
         delete[] tmp_name;
@@ -174,7 +188,9 @@ int YogiMPI_Get_processor_name(char* name, int* resultlen) {
         }
     }
     else {
+        YogiManager::getInstance()->callDepth++;
         mpi_error = MPI_Get_processor_name(name, resultlen);
+        YogiManager::getInstance()->callDepth--;
     }
 #ifdef YOGI_DEBUG
     YogiManager::getInstance()->writeToDebugLog("Exiting MPI_Get_processor_name");
@@ -190,7 +206,9 @@ int YogiMPI_Error_string(int errorcode, char* string, int* resultlen) {
     errorcode = YogiManager::getInstance()->errorToMPI(errorcode);
     if (MPI_MAX_ERROR_STRING > YogiMPI_MAX_ERROR_STRING) {
         char *tmp_string = new char[MPI_MAX_ERROR_STRING];
+        YogiManager::getInstance()->callDepth++;
         mpi_error = MPI_Error_string(errorcode, tmp_string, resultlen);
+        YogiManager::getInstance()->callDepth--;
         if (*resultlen > YogiMPI_MAX_ERROR_STRING - 1) {
             std::memcpy(string, tmp_string, YogiMPI_MAX_ERROR_STRING - 1);
             *resultlen = YogiMPI_MAX_ERROR_STRING - 1;
@@ -203,7 +221,9 @@ int YogiMPI_Error_string(int errorcode, char* string, int* resultlen) {
         delete[] tmp_string;
     }
     else {
+        YogiManager::getInstance()->callDepth++;
         mpi_error = MPI_Error_string(errorcode, string, resultlen);
+        YogiManager::getInstance()->callDepth--;
     }
 #ifdef YOGI_DEBUG
     YogiManager::getInstance()->writeToDebugLog("Exiting YogiMPI_Error_string");
@@ -230,16 +250,20 @@ int YogiMPI_Type_get_contents(YogiMPI_Datatype datatype, int max_integers,
      * to our translation pool.
      */
     int num_integers, num_addresses, num_datatypes, combiner;
+    YogiManager::getInstance()->callDepth++;
     MPI_Type_get_envelope(conv_datatype, &num_integers, &num_addresses,
                           &num_datatypes, &combiner);
+    YogiManager::getInstance()->callDepth--;
 
     MPI_Aint * conv_array_of_addresses = new MPI_Aint[max_addresses];
     MPI_Datatype * conv_array_of_datatypes = new MPI_Datatype[max_datatypes];
+    YogiManager::getInstance()->callDepth++;
     mpi_error = MPI_Type_get_contents(conv_datatype, max_integers,
                                       max_addresses, max_datatypes,
                                       array_of_integers,
                                       conv_array_of_addresses,
                                       conv_array_of_datatypes);
+    YogiManager::getInstance()->callDepth--;
     if (combiner != MPI_COMBINER_F90_COMPLEX &&
         combiner != MPI_COMBINER_F90_REAL &&
         combiner != MPI_COMBINER_F90_INTEGER) {
@@ -302,7 +326,9 @@ int YogiMPI_Type_create_darray(int size, int rank, int ndims, int array_of_gsize
         order = MPI_ORDER_FORTRAN;
     }
 
+    YogiManager::getInstance()->callDepth++;
     mpi_error = MPI_Type_create_darray(size, rank, ndims, array_of_gsizes, distribs_conv, dargs_conv, array_of_psizes, order, conv_oldtype, &conv_newtype);
+    YogiManager::getInstance()->callDepth--;
     *newtype = YogiManager::getInstance()->datatypeToYogi(conv_newtype);
 
     delete[] distribs_conv;

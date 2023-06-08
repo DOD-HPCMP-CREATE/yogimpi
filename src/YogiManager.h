@@ -15,6 +15,8 @@ public:
 
     static YogiManager* getInstance();
 
+    int callDepth;
+
     void setGlobalRank(int rank);
     void openDebugLog();
     void closeDebugLog();
