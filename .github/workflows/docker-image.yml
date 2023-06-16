@@ -50,7 +50,7 @@ jobs:
       env:
         YVERSION: 3
         YFAMILY: intel
-        YMPICXX: mpicxx
+        YMPICXX: mpiicpc
       run: |
         . /opt/intel/oneapi/setvars.sh
         ./configure -i ../install
