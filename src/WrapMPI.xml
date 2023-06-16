@@ -1873,6 +1873,17 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="user_fn" type="MPI_User_function*"/>
     <Arg input="true" name="commute" type="int"/>
     <Arg name="op" output="true" type="MPI_Op*"/>
+    <Code order="beforecall">
+YogiMPI_User_function* user_fn_keep = user_fn;
+conv_user_fn = [](void* invec, void* inoutvec, int* len, MPI_Datatype* datatype) -> void {
+    YogiMPI_Datatype revert_datatype = {manPrefix}datatypeToYogi(*datatype);
+    auto fn = {manPrefix}userFn({manPrefix}currentOp);
+    return fn(invec, inoutvec, len, &#38;revert_datatype);
+};
+    </Code>
+    <Code order="beforereturn">
+if (user_fn_keep) {manPrefix}userFn(*op, user_fn_keep);
+    </Code>
   </Function>
   <Function name="MPI_Op_free">
     <ReturnType>int</ReturnType>

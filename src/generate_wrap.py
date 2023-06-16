@@ -904,6 +904,9 @@ class GenerateWrap(object):
                     aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
                     yogi_functions.addLines(aLine)
             yogi_functions.addLines(GenerateWrap.manPrefix + 'callDepth++;')
+            for anArg in aFunc.args:
+                if anArg.type == 'MPI_Op':
+                    yogi_functions.addLines(GenerateWrap.manPrefix + 'currentOp = ' + anArg.call_name + ';')
 
             withoutIgnore = self._mpiCallString(aFunc, False)
             if aFunc.status_ignore:
