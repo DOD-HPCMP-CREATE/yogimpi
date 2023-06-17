@@ -1235,7 +1235,7 @@ if (comm_delete_attr_keep) {manPrefix}delAttrFn(*comm_keyval, comm_delete_attr_k
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks1[]" type="int"/>
+    <Arg input="true" name="ranks1[]" type="const int"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
     <Arg name="ranks2[]" output="true" type="int"/>
     <Code order="beforereturn">
