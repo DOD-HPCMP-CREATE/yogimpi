@@ -119,10 +119,6 @@ public:
     YogiMPI_Comm_copy_attr_function* copyAttrFn(int);
     void delAttrFn(int, YogiMPI_Comm_delete_attr_function*);
     YogiMPI_Comm_delete_attr_function* delAttrFn(int);
-    void userFn(int, YogiMPI_User_function*);
-    YogiMPI_User_function* userFn(int);
-
-    YogiMPI_Op currentOp;
 
 protected:
     YogiManager();
@@ -145,7 +141,6 @@ private:
 
     std::map<int, YogiMPI_Comm_copy_attr_function*> commCopyAttrFn;
     std::map<int, YogiMPI_Comm_delete_attr_function*> commDelAttrFn;
-    std::map<int, YogiMPI_User_function*> opUserFn;
     std::map<int, int> yogiComps;
     std::map<int, int> mpiErrors;
     std::map<int, int> yogiErrors;
