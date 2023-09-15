@@ -22,7 +22,6 @@ YogiManager* YogiManager::getInstance() {
 
 YogiManager::YogiManager() {
     callDepth = 0;
-    currentOp = -1;
     errPool.resize(defaultPoolSize, MPI_ERRHANDLER_NULL);
     numErrs = errOffset = 3;
     commPool.resize(defaultPoolSize, MPI_COMM_NULL);
@@ -1053,12 +1052,4 @@ void YogiManager::delAttrFn(int keyval, YogiMPI_Comm_delete_attr_function* f) {
 
 YogiMPI_Comm_delete_attr_function* YogiManager::delAttrFn(int keyval) {
     return commDelAttrFn[keyval];
-}
-
-void YogiManager::userFn(int op, YogiMPI_User_function* f) {
-    opUserFn[op] = f;
-}
-
-YogiMPI_User_function* YogiManager::userFn(int op) {
-    return opUserFn[op];
 }
