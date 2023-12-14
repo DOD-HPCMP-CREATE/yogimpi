@@ -72,6 +72,6 @@ dist: distclean
 	@echo "ARCHIVE_ROOT := $(ARCHIVE_ROOT)"
 	tar --transform "s@^@$(ARCHIVE_ROOT)/@" -cf $(ARCHIVE_FILE) \
 	    configure doc etc LICENSE Makefile Make.flags.in Make.version \
-	    README.md src test wrapper
+	    README src test wrapper
 
 realclean: distclean
