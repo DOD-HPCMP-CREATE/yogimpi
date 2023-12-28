@@ -53,6 +53,12 @@ jobs:
         YMPICXX: mpiicpc
       run: |
         . /opt/intel/oneapi/setvars.sh
+        which icc
+        which icpc
+        which ifort
+        which icx
+        which icpx
+        which ifx
         ./configure -i ../install
         make
         make install
