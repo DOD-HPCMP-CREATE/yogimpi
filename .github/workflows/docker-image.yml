@@ -52,8 +52,10 @@ jobs:
         I_MPI_CXX: icpx
         I_MPI_FC: ifx
         YVERSION: 3
-        YFAMILY: intel
-        YMPICXX: mpicc
+        YMPICXX: mpicxx
+        YCC: icx
+        YCXX: icpx
+        YF90: ifx
       run: |
         . /opt/intel/oneapi/setvars.sh
         ./configure -i ../install
