@@ -48,17 +48,14 @@ jobs:
         sudo apt install -y cmake pkg-config build-essential intel-basekit intel-hpckit
     - name: Build YogiMPI
       env:
+        I_MPI_CC: icx
+        I_MPI_CXX: icpx
+        I_MPI_FC: ifx
         YVERSION: 3
         YFAMILY: intel
-        YMPICXX: mpiicpc
+        YMPICXX: mpicc
       run: |
         . /opt/intel/oneapi/setvars.sh
-        which icc
-        which icpc
-        which ifort
-        which icx
-        which icpx
-        which ifx
         ./configure -i ../install
         make
         make install
