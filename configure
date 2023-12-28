@@ -35,7 +35,8 @@ if [[ "x${YOGIMPI_VERSION}" != "x" ]]; then
     makeVersion ${YOGIMPI_VERSION}
 elif [[ "x$(which git)" != "x" && -e .git ]]; then
     echo "Determine version using git"
-    YOGIMPI_VERSION=$(git describe --tags)
+    # Use the tag to make the version, stripping off the leading "v"
+    YOGIMPI_VERSION=$(git describe --tags | sed -e '/v/s/^.//')
     makeVersion ${YOGIMPI_VERSION}
 elif [[ -f "Make.version" ]]; then
     echo "Determine version using Make.version file"
