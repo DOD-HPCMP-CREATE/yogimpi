@@ -301,6 +301,13 @@ typedef int YogiMPI_Message;
 #define YogiMPI_CXX_LONG_DOUBLE_COMPLEX 52
 #endif
 
+/* MPI Unsigned Integer Types. */
+/* I kept breaking things when I tried to weave these in earlier */
+#define YogiMPI_UINT8_T 53
+#define YogiMPI_UINT16_T 54
+#define YogiMPI_UINT32_T 55
+#define YogiMPI_UINT64_T 56
+
 /* reserved communicators (C and Fortran) */
 #define YogiMPI_COMM_WORLD 1
 #define YogiMPI_COMM_SELF 2
