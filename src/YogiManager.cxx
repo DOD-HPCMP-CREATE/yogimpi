@@ -1041,3 +1041,19 @@ void YogiManager::freeDatatype(MPI_Datatype * &to_free) {
 void YogiManager::freeStatus(MPI_Status * &to_free) {
     delete[] to_free;
 }
+
+void YogiManager::copyAttrFn(int keyval, YogiMPI_Comm_copy_attr_function* f) {
+    commCopyAttrFn[keyval] = f;
+}
+
+YogiMPI_Comm_copy_attr_function* YogiManager::copyAttrFn(int keyval) {
+    return commCopyAttrFn[keyval];
+}
+
+void YogiManager::delAttrFn(int keyval, YogiMPI_Comm_delete_attr_function* f) {
+    commDelAttrFn[keyval] = f;
+}
+
+YogiMPI_Comm_delete_attr_function* YogiManager::delAttrFn(int keyval) {
+    return commDelAttrFn[keyval];
+}

@@ -103,8 +103,34 @@ class MPIVersion(object):
     def __str__(self):
         return '{}.{}'.format(self.major, self.minor)
 
-class MPIArgument(object):
+class MPICode(object):
+    def __init__(self, orders=None):
+        self.codeBlockOrders = []
+        self.codeBlocks = {}
+        if orders is not None:
+            self.codeBlockOrders += orders
+
+    def _checkOrder(self, order):
+        if order not in self.codeBlockOrders:
+            raise ValueError("Error setting block in function " + self.name +\
+                             ": order " + order + " not recognized.")
+
+    def addBlock(self, block, order):
+        self._checkOrder(order)
+        # Add line by line and don't add blank lines.
+        self.codeBlocks[order] = []
+        for line in block.split('\n'):
+            if line.rstrip():
+                self.codeBlocks[order].append(line.rstrip())
+
+    def getBlock(self, order):
+        self._checkOrder(order)
+        return self.codeBlocks.get(order, None)
+
+class MPIArgument(MPICode):
     def __init__(self):
+        super().__init__(orders=['convertelse'])
+
         # Original name of the argument.
         self.name = None
         # The way the argument is called in a function.
@@ -189,36 +215,18 @@ class MPIConvertValue(object):
     def version(self, value):
         self._version = MPIVersion(str(value))
 
-class MPIFunction(object):
-    orders = [ 'first', 'beforecall', 'aftercall', 'beforereturn' ]
+class MPIFunction(MPICode):
 
     def __init__(self):
+        super().__init__(orders=['first', 'beforecall', 'aftercall', 'beforereturn'])
         self.name = None
         self.status_ignore = False
         self.status_ignore_type = None
         self.status_ignore_arg = 0
         self.return_type = 'int'
         self.args = []
-        self.codeBlocks = {}
         self.fortran_support = True
         self.mpi_version = None
-
-    def _checkOrder(self, order):
-        if order not in MPIFunction.orders:
-            raise ValueError("Error setting block in function " + self.name +\
-                             ": order " + order + " not recognized.")
-
-    def addBlock(self, block, order):
-        self._checkOrder(order)
-        # Add line by line and don't add blank lines.
-        self.codeBlocks[order] = []
-        for line in block.split('\n'):
-            if line:
-                self.codeBlocks[order].append(line.rstrip())
-
-    def getBlock(self, order):
-        self._checkOrder(order)
-        return self.codeBlocks.get(order, None)
 
     def validate(self):
         for anArg in self.args:
