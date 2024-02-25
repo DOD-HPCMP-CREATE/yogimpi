@@ -130,6 +130,8 @@ private:
     template <typename T, typename V>
     int insertIntoPool(std::vector<T> &pool, T newItem, V marker_in, int offset,
                        int &counter);
+    template <typename T, typename V>
+    int insertIntoPoolIfNotFound(std::vector<T> &pool, T newItem, V marker_in, int &counter);
 
     template <typename T, typename V>
     void removeFromPool(std::vector<T> &pool, int index, V marker_in,
