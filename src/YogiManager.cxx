@@ -671,6 +671,42 @@ int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker_in,
 }
 
 template <typename T, typename V>
+int YogiManager::insertIntoPoolIfNotFound(std::vector<T> &pool, T newItem, V marker_in, int &counter) {
+
+    /* Cast the marker to the type in the pool */
+    T marker = std::move(static_cast<T>(marker_in));
+
+    /* First see if this already exists as a constant. If it does, just
+       return the equivalent Yogi constant value.
+     */
+    typename std::vector<T>::iterator it = pool.begin();
+    it = std::find(pool.begin(), pool.begin() + counter, newItem);
+    if (it != pool.begin() + counter) {
+        return it - pool.begin();
+    }
+    int delta;
+
+    /* Then see if the current counter exceeds the size of the vector.
+       If it does, double it. */
+    if (counter >= pool.capacity() - 1) {
+        pool.resize(pool.capacity() * 2, marker);
+    }
+    // After the counter, find first instance of marker, replace with newItem.
+    it = pool.begin();
+    std::advance(it, counter);
+    if (std::find(it, pool.end(), marker) != pool.end()) {
+        delta = std::distance(pool.begin(), std::find(it, pool.end(), marker));
+        pool.at(delta) = newItem;
+    }
+    else {
+        return -1;
+    }
+    // Bump up the counter and return the index.
+    counter++;
+    return delta;
+}
+
+template <typename T, typename V>
 void YogiManager::removeFromPool(std::vector<T> &pool, int index, V marker_in,
                                 int offset, int &counter) {
 
@@ -827,8 +863,8 @@ YogiMPI_Aint YogiManager::aintToYogi(MPI_Aint in_aint) {
 }
 
 YogiMPI_Comm YogiManager::commToYogi(MPI_Comm in_comm) {
-    return insertIntoPool(commPool, in_comm, MPI_COMM_NULL, commOffset,
-                          numComms);
+    //return insertIntoPoolIfNotFound(commPool, in_comm, MPI_COMM_NULL, numComms);
+    return insertIntoPool(commPool, in_comm, MPI_COMM_NULL, commOffset, numComms);
 }
 
 #if YogiMPI_VERSION == 3
@@ -837,35 +873,30 @@ YogiMPI_Count YogiManager::countToYogi(MPI_Count in_count) {
 }
 
 YogiMPI_Message YogiManager::messageToYogi(MPI_Message in_message) {
-    return insertIntoPool(messagePool, in_message, MPI_MESSAGE_NULL,
-                          messageOffset, numMessages);
+    return insertIntoPoolIfNotFound(messagePool, in_message, MPI_MESSAGE_NULL, numMessages);
 }
 #endif
 
 YogiMPI_Datatype YogiManager::datatypeToYogi(MPI_Datatype in_data) {
-    return insertIntoPool(datatypePool, in_data, MPI_DATATYPE_NULL,
-                          datatypeOffset, numDatatypes);
+    return insertIntoPoolIfNotFound(datatypePool, in_data, MPI_DATATYPE_NULL, numDatatypes);
 }
 
 YogiMPI_Errhandler YogiManager::errhandlerToYogi(MPI_Errhandler in_errhandler) {
-    return insertIntoPool(errPool, in_errhandler, MPI_ERRHANDLER_NULL,
-                          errOffset, numErrs);
+    //return insertIntoPoolIfNotFound(errPool, in_errhandler, MPI_ERRHANDLER_NULL, numErrs);
+    return insertIntoPool(errPool, in_errhandler, MPI_ERRHANDLER_NULL, errOffset, numErrs);
 }
 
 YogiMPI_File YogiManager::fileToYogi(MPI_File in_file) {
-    return insertIntoPool(filePool, in_file, MPI_FILE_NULL, fileOffset,
-                          numFiles);
+    return insertIntoPoolIfNotFound(filePool, in_file, MPI_FILE_NULL, numFiles);
 
 }
 
 YogiMPI_Group YogiManager::groupToYogi(MPI_Group in_group) {
-    return insertIntoPool(groupPool, in_group, MPI_GROUP_NULL, groupOffset,
-                          numGroups);
+    return insertIntoPoolIfNotFound(groupPool, in_group, MPI_GROUP_NULL, numGroups);
 }
 
 YogiMPI_Info YogiManager::infoToYogi(MPI_Info in_info) {
-    return insertIntoPool(infoPool, in_info, MPI_INFO_NULL, infoOffset,
-                          numInfos);
+    return insertIntoPoolIfNotFound(infoPool, in_info, MPI_INFO_NULL, numInfos);
 }
 
 YogiMPI_Offset YogiManager::offsetToYogi(MPI_Offset in_offset) {
@@ -873,12 +904,11 @@ YogiMPI_Offset YogiManager::offsetToYogi(MPI_Offset in_offset) {
 }
 
 YogiMPI_Op YogiManager::opToYogi(MPI_Op in_op) {
-    return insertIntoPool(opPool, in_op, MPI_OP_NULL, opOffset, numOps);
+    return insertIntoPoolIfNotFound(opPool, in_op, MPI_OP_NULL, numOps);
 }
 
 YogiMPI_Request YogiManager::requestToYogi(MPI_Request in_request) {
-    return insertIntoPool(requestPool, in_request, MPI_REQUEST_NULL,
-                          requestOffset, numRequests);
+    return insertIntoPool(requestPool, in_request, MPI_REQUEST_NULL, requestOffset, numRequests);
 }
 
 /* Converts an MPI_Status object back to a YogiMPI_Status object.
