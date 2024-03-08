@@ -863,7 +863,6 @@ YogiMPI_Aint YogiManager::aintToYogi(MPI_Aint in_aint) {
 }
 
 YogiMPI_Comm YogiManager::commToYogi(MPI_Comm in_comm) {
-    //return insertIntoPoolIfNotFound(commPool, in_comm, MPI_COMM_NULL, numComms);
     return insertIntoPool(commPool, in_comm, MPI_COMM_NULL, commOffset, numComms);
 }
 
@@ -873,7 +872,7 @@ YogiMPI_Count YogiManager::countToYogi(MPI_Count in_count) {
 }
 
 YogiMPI_Message YogiManager::messageToYogi(MPI_Message in_message) {
-    return insertIntoPoolIfNotFound(messagePool, in_message, MPI_MESSAGE_NULL, numMessages);
+    return insertIntoPool(messagePool, in_message, MPI_MESSAGE_NULL, messageOffset, numMessages);
 }
 #endif
 
@@ -882,21 +881,20 @@ YogiMPI_Datatype YogiManager::datatypeToYogi(MPI_Datatype in_data) {
 }
 
 YogiMPI_Errhandler YogiManager::errhandlerToYogi(MPI_Errhandler in_errhandler) {
-    //return insertIntoPoolIfNotFound(errPool, in_errhandler, MPI_ERRHANDLER_NULL, numErrs);
     return insertIntoPool(errPool, in_errhandler, MPI_ERRHANDLER_NULL, errOffset, numErrs);
 }
 
 YogiMPI_File YogiManager::fileToYogi(MPI_File in_file) {
-    return insertIntoPoolIfNotFound(filePool, in_file, MPI_FILE_NULL, numFiles);
+    return insertIntoPool(filePool, in_file, MPI_FILE_NULL, fileOffset, numFiles);
 
 }
 
 YogiMPI_Group YogiManager::groupToYogi(MPI_Group in_group) {
-    return insertIntoPoolIfNotFound(groupPool, in_group, MPI_GROUP_NULL, numGroups);
+    return insertIntoPool(groupPool, in_group, MPI_GROUP_NULL, groupOffset, numGroups);
 }
 
 YogiMPI_Info YogiManager::infoToYogi(MPI_Info in_info) {
-    return insertIntoPoolIfNotFound(infoPool, in_info, MPI_INFO_NULL, numInfos);
+    return insertIntoPool(infoPool, in_info, MPI_INFO_NULL, infoOffset, numInfos);
 }
 
 YogiMPI_Offset YogiManager::offsetToYogi(MPI_Offset in_offset) {
@@ -904,7 +902,7 @@ YogiMPI_Offset YogiManager::offsetToYogi(MPI_Offset in_offset) {
 }
 
 YogiMPI_Op YogiManager::opToYogi(MPI_Op in_op) {
-    return insertIntoPoolIfNotFound(opPool, in_op, MPI_OP_NULL, numOps);
+    return insertIntoPool(opPool, in_op, MPI_OP_NULL, opOffset, numOps);
 }
 
 YogiMPI_Request YogiManager::requestToYogi(MPI_Request in_request) {
