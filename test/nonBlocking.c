@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
   if (my_rank == 0) {
 
     char send_buffer[BUFFER_SIZE];
-    sprintf(send_buffer, testMessage);
+    sprintf(send_buffer, "%s", testMessage);
     MPI_Request request;
     MPI_Status status;
 

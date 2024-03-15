@@ -5,7 +5,7 @@ static int calls = 0;
 static int errs = 0;
 static MPI_Comm mycomm;
 
-void eh(MPI_Comm *comm, int *err, ...)
+void eh(MPI_Comm *comm, int *err)
 {
     MPI_Comm rcomm = Yogi_ResolveComm(comm);
     int code = Yogi_ResolveErrorCode(err);

@@ -5,7 +5,8 @@
 void addem(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype)
 {
     MPI_Datatype rtype = Yogi_ResolveDatatype(dtype);
-    assert(rtype == MPI_INT);
+    assert(rtype != MPI_INT);
+    assert(*dtype == MPI_INT);
     int i;
     for ( i=0; i<*len; i++ )
         inoutvec[i] += invec[i];

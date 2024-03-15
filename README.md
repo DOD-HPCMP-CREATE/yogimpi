@@ -9,7 +9,7 @@ YogiMPI Overview
 * Installation
   - Load your compilers and MPI wrappers into the path and runtime library path.
   - Choose an MPI API version to support. Current options are 2.1, 2.2, and 3.
-    Set the YVERSION variable to any of these values. The default is 2.1.
+    Set the YVERSION variable to any of these values. The default is 3.
   - Set the environment variable YCC, YCXX, and YF90 to point to your serial
     compilers.
   - As an alternative to the above compiler variables, you may also specify

@@ -309,17 +309,43 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="comm_copy_attr_fn" type="MPI_Comm_copy_attr_function*">
       <Convert pointer="true">MPI_COMM_NULL_COPY_FN</Convert>
       <Convert pointer="true">MPI_COMM_DUP_FN</Convert>
+      <Code order="convertelse">
+comm_copy_attr_keep = comm_copy_attr_fn;
+conv_comm_copy_attr_fn = [](MPI_Comm c, int k, void* e, void* i, void* o, int* f) -> int {
+    YogiMPI_Comm revert_comm = Yogi_ResolveComm(&#038;c);
+    k = {manPrefix}commattrToMPI(k);
+    auto fn = {manPrefix}copyAttrFn(k);
+    return fn(revert_comm, k, e, i, o, f);
+};
+      </Code>
     </Arg>
     <Arg input="true" name="comm_delete_attr_fn" type="MPI_Comm_delete_attr_function*">
       <Convert pointer="true">MPI_COMM_NULL_DELETE_FN</Convert>
+      <Code order="convertelse">
+comm_delete_attr_keep = comm_delete_attr_fn;
+conv_comm_delete_attr_fn = [](MPI_Comm c, int k, void* v, void* e) -> int {
+    YogiMPI_Comm revert_comm = Yogi_ResolveComm(&#038;c);
+    k = {manPrefix}commattrToMPI(k);
+    auto fn = {manPrefix}delAttrFn(k);
+    return fn(revert_comm, k, v, e);
+};
+      </Code>
     </Arg>
     <Arg name="comm_keyval" output="true" type="int*"/>
     <Arg input="true" name="extra_state" type="void*"/>
+    <Code order="first">
+YogiMPI_Comm_copy_attr_function* comm_copy_attr_keep = nullptr;
+YogiMPI_Comm_delete_attr_function* comm_delete_attr_keep = nullptr;
+    </Code>
+    <Code order="aftercall">
+if (comm_copy_attr_keep) {manPrefix}copyAttrFn(*comm_keyval, comm_copy_attr_keep);
+if (comm_delete_attr_keep) {manPrefix}delAttrFn(*comm_keyval, comm_delete_attr_keep);
+    </Code>
   </Function>
   <Function name="MPI_Comm_delete_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="comm_keyval" type="int"/>
+    <Arg input="true" name="comm_keyval" type="int" class="commattr"/>
   </Function>
   <Function name="MPI_Comm_disconnect">
     <ReturnType>int</ReturnType>
@@ -414,7 +440,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Comm_set_attr">
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm" type="MPI_Comm"/>
-    <Arg input="true" name="comm_keyval" type="int"/>
+    <Arg input="true" name="comm_keyval" type="int" class="commattr"/>
     <Arg input="true" name="attribute_val" type="void*"/>
   </Function>
   <Function name="MPI_Comm_set_errhandler">
@@ -488,10 +514,10 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="comm_old" type="MPI_Comm"/>
     <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="sources[]" type="int"/>
-    <Arg input="true" name="degrees[]" type="int"/>
-    <Arg input="true" name="destinations[]" type="int"/>
-    <Arg input="true" name="weights[]" type="int">
+    <Arg input="true" name="sources[]" type="const int"/>
+    <Arg input="true" name="degrees[]" type="const int"/>
+    <Arg input="true" name="destinations[]" type="const int"/>
+    <Arg input="true" name="weights[]" type="const int">
       <Convert pointer="true" cast="int *">MPI_UNWEIGHTED</Convert>
       <Convert pointer="true" cast="int *" version="3.0">MPI_WEIGHTS_EMPTY</Convert>
     </Arg>
@@ -1153,7 +1179,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks[]" type="int"/>
+    <Arg input="true" name="ranks[]" type="const int"/>
     <Arg name="newgroup" output="true" type="MPI_Group*"/>
   </Function>
   <Function name="MPI_Group_free">
@@ -1164,7 +1190,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group" type="MPI_Group"/>
     <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks[]" type="int"/>
+    <Arg input="true" name="ranks[]" type="const int"/>
     <Arg name="newgroup" output="true" type="MPI_Group*">
       <Convert trigger="post">MPI_GROUP_EMPTY</Convert>
     </Arg>
@@ -1209,7 +1235,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <ReturnType>int</ReturnType>
     <Arg input="true" name="group1" type="MPI_Group"/>
     <Arg input="true" name="n" type="int"/>
-    <Arg input="true" name="ranks1[]" type="int"/>
+    <Arg input="true" name="ranks1[]" type="const int"/>
     <Arg input="true" name="group2" type="MPI_Group"/>
     <Arg name="ranks2[]" output="true" type="int"/>
     <Code order="beforereturn">
@@ -1468,16 +1494,21 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
   <Function name="MPI_Ineighbor_alltoallw">
+    <Code order="first">
+int comm_size;
+MPI_Comm manual_conv_comm = {manPrefix}commToMPI(comm);
+MPI_Comm_size(manual_conv_comm, &amp;comm_size);
+    </Code>
     <Version>3.0</Version>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
-    <Arg input="true" name="sendcounts[]" type="int"/>
-    <Arg input="true" name="sdispls[]" type="MPI_Aint"/>
-    <Arg input="true" name="sendtypes[]" type="MPI_Datatype"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
+    <Arg input="true" name="sendcounts[]" type="const int"/>
+    <Arg input="true" name="sdispls[]" type="const MPI_Aint" dims="comm_size"/>
+    <Arg input="true" name="sendtypes[]" type="const MPI_Datatype" dims="comm_size"/>
     <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts[]" type="int"/>
-    <Arg input="true" name="rdispls[]" type="MPI_Aint"/>
-    <Arg input="true" name="recvtypes[]" type="MPI_Datatype"/>
+    <Arg input="true" name="recvcounts[]" type="const int"/>
+    <Arg input="true" name="rdispls[]" type="const MPI_Aint" dims="comm_size"/>
+    <Arg input="true" name="recvtypes[]" type="const MPI_Datatype" dims="comm_size"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
     <Arg name="request" output="true" type="MPI_Request*"/>
   </Function>
@@ -1768,7 +1799,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Neighbor_allgather">
     <Version>3.0</Version>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>
@@ -1791,7 +1822,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   <Function name="MPI_Neighbor_alltoall">
     <Version>3.0</Version>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
     <Arg input="true" name="sendcount" type="int"/>
     <Arg input="true" name="sendtype" type="MPI_Datatype"/>
     <Arg name="recvbuf" output="true" type="void*"/>
@@ -1814,15 +1845,20 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
   </Function>
   <Function name="MPI_Neighbor_alltoallw">
     <Version>3.0</Version>
+    <Code order="first">
+int comm_size;
+MPI_Comm manual_conv_comm = {manPrefix}commToMPI(comm);
+MPI_Comm_size(manual_conv_comm, &amp;comm_size);
+    </Code>
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="sendbuf" type="void*"/>
-    <Arg input="true" name="sendcounts[]" type="int"/>
-    <Arg input="true" name="sdispls[]" type="MPI_Aint"/>
-    <Arg input="true" name="sendtypes[]" type="MPI_Datatype"/>
+    <Arg input="true" name="sendbuf" type="const void*"/>
+    <Arg input="true" name="sendcounts[]" type="const int"/>
+    <Arg input="true" name="sdispls[]" type="const MPI_Aint" dims="comm_size"/>
+    <Arg input="true" name="sendtypes[]" type="const MPI_Datatype" dims="comm_size"/>
     <Arg name="recvbuf" output="true" type="void*"/>
-    <Arg input="true" name="recvcounts[]" type="int"/>
-    <Arg input="true" name="rdispls[]" type="MPI_Aint"/>
-    <Arg input="true" name="recvtypes[]" type="MPI_Datatype"/>
+    <Arg input="true" name="recvcounts[]" type="const int"/>
+    <Arg input="true" name="rdispls[]" type="const MPI_Aint" dims="comm_size"/>
+    <Arg input="true" name="recvtypes[]" type="const MPI_Datatype" dims="comm_size"/>
     <Arg input="true" name="comm" type="MPI_Comm"/>
   </Function>
   <Function name="MPI_Op_commutative">
@@ -1837,6 +1873,17 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Arg input="true" name="user_fn" type="MPI_User_function*"/>
     <Arg input="true" name="commute" type="int"/>
     <Arg name="op" output="true" type="MPI_Op*"/>
+    <Code order="beforecall">
+YogiMPI_User_function* user_fn_keep = user_fn;
+conv_user_fn = [](void* invec, void* inoutvec, int* len, MPI_Datatype* datatype) -> void {
+    YogiMPI_Datatype revert_datatype = Yogi_ResolveDatatype(datatype);
+    auto fn = {manPrefix}userFn({manPrefix}currentOp);
+    return fn(invec, inoutvec, len, &#38;revert_datatype);
+};
+    </Code>
+    <Code order="beforereturn">
+if (user_fn_keep) {manPrefix}userFn(*op, user_fn_keep);
+    </Code>
   </Function>
   <Function name="MPI_Op_free">
     <ReturnType>int</ReturnType>

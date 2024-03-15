@@ -8,12 +8,14 @@
 #include <iostream>
 #include <fstream>
 
-class YogiManager 
+class YogiManager
 {
-public: 
+public:
     static const int defaultPoolSize;
 
     static YogiManager* getInstance();
+
+    int callDepth;
 
     void setGlobalRank(int rank);
     void openDebugLog();
@@ -30,7 +32,7 @@ public:
     int typeclassToMPI(int typeclass);
     int whenceToMPI(int whence);
     int commattrToMPI(int comm_attr);
- 
+
     int errorToYogi(int mpiError);
     int comparisonToYogi(int mpiComp);
     int providedToYogi(int provided);
@@ -54,15 +56,19 @@ public:
     MPI_Message messageToMPI(YogiMPI_Message in_msg);
 #endif
     MPI_Status * statusToMPI(YogiMPI_Status * in_status);
+    MPI_Status * statusToMPI(const YogiMPI_Status * in_status);
 
     // Create MPI_Status arrays when required
     void createStatus(MPI_Status *&, int);
     void createStatus(MPI_Status *&, int *);
-  
+
     // Array-conversion to MPI
     void requestToMPI(YogiMPI_Request *, MPI_Request *&, int);
+    void requestToMPI(const YogiMPI_Request *, MPI_Request *&, int);
     void aintToMPI(YogiMPI_Aint *, MPI_Aint *&, int);
+    void aintToMPI(const YogiMPI_Aint *, MPI_Aint *&, int);
     void datatypeToMPI(YogiMPI_Datatype *, MPI_Datatype *&, int);
+    void datatypeToMPI(const YogiMPI_Datatype *, MPI_Datatype *&, int);
 
     YogiMPI_Offset offsetToYogi(MPI_Offset in_offset);
     YogiMPI_Errhandler errhandlerToYogi(MPI_Errhandler in_errhandler);
@@ -84,19 +90,21 @@ public:
     // Array-conversion to Yogi
     void requestToYogi(MPI_Request * &in_mpi, YogiMPI_Request *& out_yogi,
                        int count, bool free_mpi = false);
-    void aintToYogi(MPI_Aint * &in_mpi, YogiMPI_Aint *& out_yogi, 
+    void aintToYogi(MPI_Aint * &in_mpi, YogiMPI_Aint *& out_yogi,
                     int count, bool free_mpi = false);
     void datatypeToYogi(MPI_Datatype * &in_mpi, YogiMPI_Datatype *& out_yogi,
                         int count, bool free_mpi = false);
     void statusToYogi(MPI_Status * &in_mpi, YogiMPI_Status *& out_yogi,
                       int count, bool free_mpi = false);
 
+    YogiMPI_Datatype datatypeToYogiFindOnly(MPI_Datatype in_data);
+
     void freeRequest(MPI_Request * &to_free);
     void freeAint(MPI_Aint * &to_free);
     void freeDatatype(MPI_Datatype * &to_free);
-    void freeStatus(MPI_Status * &to_free); 
+    void freeStatus(MPI_Status * &to_free);
 
-    YogiMPI_Comm unmapComm(YogiMPI_Comm to_free); 
+    YogiMPI_Comm unmapComm(YogiMPI_Comm to_free);
     YogiMPI_Datatype unmapDatatype(YogiMPI_Datatype to_free);
     YogiMPI_Errhandler unmapErrhandler(YogiMPI_Errhandler to_free);
     YogiMPI_File unmapFile(YogiMPI_File to_free);
@@ -109,9 +117,21 @@ public:
     YogiMPI_Message unmapMessage(YogiMPI_Message to_free);
 #endif
 
-protected: 
+    void copyAttrFn(int, YogiMPI_Comm_copy_attr_function*);
+    YogiMPI_Comm_copy_attr_function* copyAttrFn(int);
+    void delAttrFn(int, YogiMPI_Comm_delete_attr_function*);
+    YogiMPI_Comm_delete_attr_function* delAttrFn(int);
+    void userFn(int, YogiMPI_User_function*);
+    YogiMPI_User_function* userFn(int);
+
+    YogiMPI_Op currentOp;
+
+protected:
     YogiManager();
 private:
+    template <typename T>
+    int findInPool(std::vector<T> &pool, T newItem, int counter);
+
     template <typename T, typename V>
     int insertIntoPool(std::vector<T> &pool, T newItem, V marker_in, int offset,
                        int &counter);
@@ -128,6 +148,9 @@ private:
     int globalRank;
     std::ofstream debugLogFile;
 
+    std::map<int, YogiMPI_Comm_copy_attr_function*> commCopyAttrFn;
+    std::map<int, YogiMPI_Comm_delete_attr_function*> commDelAttrFn;
+    std::map<int, YogiMPI_User_function*> opUserFn;
     std::map<int, int> yogiComps;
     std::map<int, int> mpiErrors;
     std::map<int, int> yogiErrors;

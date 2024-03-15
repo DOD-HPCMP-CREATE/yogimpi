@@ -8,5 +8,7 @@ from YogiMPIWrapper import YogiMPIWrapper
 binDir = os.path.dirname(os.path.realpath(__file__))
 rootDir = os.path.realpath(binDir + '/..')
 
-thisWrapper = YogiMPIWrapper(rootDir, '@SERIALCCOMPILER@', 'C')
+thisWrapper = YogiMPIWrapper(rootDir,
+                             '@SERIALCCOMPILER@',
+                             'C')
 sys.exit(thisWrapper.getRC())

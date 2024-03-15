@@ -293,6 +293,21 @@ typedef int YogiMPI_Message;
 #define YogiMPI_INT8_T 47
 #define YogiMPI_INT16_T 48
 
+/* MPI 3 defined C++ types */
+#if YogiMPI_VERSION == 3
+#define YogiMPI_CXX_BOOL 49
+#define YogiMPI_CXX_FLOAT_COMPLEX 50
+#define YogiMPI_CXX_DOUBLE_COMPLEX 51
+#define YogiMPI_CXX_LONG_DOUBLE_COMPLEX 52
+#endif
+
+/* MPI Unsigned Integer Types. */
+/* I kept breaking things when I tried to weave these in earlier */
+#define YogiMPI_UINT8_T 53
+#define YogiMPI_UINT16_T 54
+#define YogiMPI_UINT32_T 55
+#define YogiMPI_UINT64_T 56
+
 /* reserved communicators (C and Fortran) */
 #define YogiMPI_COMM_WORLD 1
 #define YogiMPI_COMM_SELF 2
@@ -308,11 +323,12 @@ typedef int YogiMPI_Message;
 #define YogiMPI_IO -9
 #define YogiMPI_HOST -10
 #define YogiMPI_WTIME_IS_GLOBAL -11
+#define YogiMPI_APPNUM -12
 
 /* Predefined MPI_Win attributes */
-#define YogiMPI_WIN_BASE -12
-#define YogiMPI_WIN_SIZE -13
-#define YogiMPI_WIN_DISP_UNIT -14
+#define YogiMPI_WIN_BASE -13
+#define YogiMPI_WIN_SIZE -14
+#define YogiMPI_WIN_DISP_UNIT -15
 
 /* collective operations (C and Fortran) */
 #define YogiMPI_MAX 1
@@ -358,6 +374,9 @@ typedef int YogiMPI_Message;
 /* Empty group */
 #define YogiMPI_GROUP_EMPTY 1
 
+/* Version info */
+#define YogiMPI_MAX_LIBRARY_VERSION_STRING 8192
+
 /* For supported thread levels */
 #define YogiMPI_THREAD_SINGLE 0
 #define YogiMPI_THREAD_FUNNELED 1
@@ -395,6 +414,9 @@ typedef int YogiMPI_Message;
 
 /* predefined types for MPI_Comm_split_type */
 #define YogiMPI_COMM_TYPE_SHARED    1
+
+/* Don't return error codes */
+#define YogiMPI_ERRCODES_IGNORE ((int *) 0)
 
 /* Define structure for MPI_Status - hide real object inside as int array */
 struct YogiMPI_Status
@@ -524,6 +546,8 @@ YogiMPI_Aint Yogi_ResolveAint(void *input_pointer);
 /* A couple of functions to take Fortran MPI objects and yogify them. */
 YogiMPI_Comm Yogi_ResolveFortranComm(int fortran_comm);
 YogiMPI_Group Yogi_ResolveFortranGroup(int fortran_group);
+
+int YogiMPI_Comm_spawn(const char *command, char *argv[], int maxprocs, YogiMPI_Info info, int root, YogiMPI_Comm comm, YogiMPI_Comm *intercomm, int array_of_errcodes[]);
 
 int YogiMPI_Init(int* argc, char ***argv);
 

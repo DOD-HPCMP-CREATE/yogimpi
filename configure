@@ -10,6 +10,10 @@ function errorIfEmpty {
     fi
 }
 
+function makeVersion {
+    echo "YOGIMPI_VERSION := $1" > Make.version
+}
+
 function showUsage {
     echo "./configure -i <install prefix>"
     echo "* Required environment variables to build YogiMPI: "
@@ -19,25 +23,56 @@ function showUsage {
     echo "YMPICXX - Parallel C++ compiler wrapper"
     echo "* Optional environment variables: "
     echo "YDEBUG - Whether to enable YogiMPI debugging (1 for enabled)"
-    echo "YVERSION - Version of MPI to support (2.1, 2.2, or 3, default is 2.1)"
+    echo "YVERSION - Version of MPI to support (2.1, 2.2, or 3, default is 3)"
     echo "YFAMILY - Compiler family (gnu or intel)"
+    echo "YPYCMD - Python command (python2 or python3, attempts to detect if unspecified)"
     exit 0
 }
 
-# Use python 2 if it works, otherwise use python 3
-_python=""
-python -c "x=1" > /dev/null 2>&1
-if [[ "$?" == "0" ]]; then
-    _python="python"
-    echo "Setting up with Python 2."
+# Determine version
+if [[ "x${YOGIMPI_VERSION}" != "x" ]]; then
+    echo "Determine version from environment variable"
+    makeVersion ${YOGIMPI_VERSION}
+elif [[ "x$(which git)" != "x" && -e .git ]]; then
+    echo "Determine version using git"
+    # Use the tag to make the version, stripping off the leading "v"
+    YOGIMPI_VERSION=$(git describe --tags | sed -e '/v/s/^.//')
+    makeVersion ${YOGIMPI_VERSION}
+elif [[ -f "Make.version" ]]; then
+    echo "Determine version using Make.version file"
+    YOGIMPI_VERSION=$(cut -d ' ' -f 3 Make.version)
 else
+    YOGIMPI_VERSION="unknown"
+    makeVersion ${YOGIMPI_VERSION}
+fi
+echo "YOGIMPI_VERSION=${YOGIMPI_VERSION}"
+
+# Setup python
+_python=""
+if [[ ! -z $YPYCMD ]]; then
+    $YPYCMD -c "x=1" > /dev/null 2>&1
+    if [[ "$?" == "0" ]]; then
+        _python=$YPYCMD
+        echo "Setting up Python using command: $YPYCMD"
+    else
+        echo "Supplied python command \"YPYCMD=$YPYCMD\" does not appear to be a python"
+        exit 1
+    fi
+else
+    # Use python3 if it works, otherwise try python2
     python3 -c "x=1" > /dev/null 2>&1
     if [[ "$?" == "0" ]]; then
         _python="python3"
         echo "Setting up with Python 3."
     else
-        echo "Cannot detect working version of python"
-        exit 1
+        python2 -c "x=1" > /dev/null 2>&1
+        if [[ "$?" == "0" ]]; then
+            _python="python2"
+            echo "Setting up with Python 2."
+        else
+            echo "Cannot detect working version of python"
+            exit 1
+        fi
     fi
 fi
 
@@ -62,13 +97,15 @@ while getopts ":i:h" opt; do
   esac
 done
 
+cFlags=""
+cxxFlags=""
 fFlags=""
 debugFlags=""
 
 if [[ ! -z $YDEBUG ]]; then
     if [[ $YDEBUG == "1" ]]; then
         echo "Enabling YogiMPI debugging output."
-        debugFlags="-DYOGI_DEBUG"
+        debugFlags="-DYOGI_DEBUG -O0 -g"
     fi
 fi
 
@@ -78,6 +115,8 @@ if [[ ! -z $YFAMILY ]]; then
         cCompiler=icc
         cxxCompiler=icpc
         fortranCompiler=ifort
+        cFlags="-diag-disable=10441 -wd1786"
+        cxxFlags="-diag-disable=10441 -wd1786"
     elif [[ $YFAMILY == "gnu" ]]; then
         echo "Using GNU compiler family defaults for Yogi."
         cCompiler=gcc
@@ -113,9 +152,9 @@ if [[ ! -z $YVERSION ]]; then
         exit 1
     fi
 else
-    echo "Default MPI 2.1 support enabled."
-    mpiMajVersion=2
-    mpiMinVersion=1
+    echo "Default MPI 3 support enabled."
+    mpiMajVersion=3
+    mpiMinVersion=0
 fi
 
 mpiCXX=$YMPICXX
@@ -154,6 +193,8 @@ sed -e "s|@PYTHON@|${_python}|g" \
     -e "s|@SERIALC@|${cCompiler}|g" \
     -e "s|@F90@|${fortranCompiler}|g" \
     -e "s|@LIBEXTENSION@|${libraryExtension}|g" \
+    -e "s|@CCOMPFLAGS@|${cFlags}|g" \
+    -e "s|@CXXCOMPFLAGS@|${cxxFlags}|g" \
     -e "s|@FCOMPFLAGS@|${fFlags}|g" \
     -e "s|@DEBUGFLAGS@|${debugFlags}|g" \
     -e "s|@MPIMAJVERSION@|${mpiMajVersion}|g" \
@@ -182,12 +223,7 @@ sed -e "s|@INSTALLDIR@|${installDir}|g" \
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@PYTHONCMD@|${_python}|g" \
     -e "s|@SERIALFORTRANCOMPILER@|${fortranCompiler}|g" \
-    wrapper/mpif90.in > wrapper/mpif90
-
-sed -e "s|@INSTALLDIR@|${installDir}|g" \
-    -e "s|@PYTHONCMD@|${_python}|g" \
-    -e "s|@SERIALFORTRANCOMPILER@|${fortranCompiler}|g" \
-    wrapper/mpif77.in > wrapper/mpif77
+    wrapper/mpifort.in > wrapper/mpifort
 
 sed -e "s|@INSTALLDIR@|${installDir}|g" \
     -e "s|@LIBPATHVAR@|${libraryPathVar}|g" \

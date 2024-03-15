@@ -43,6 +43,7 @@
  privately owned rights.
 """
 
+import argparse
 import xml.etree.ElementTree as ET
 import sys
 import wrap_objects
@@ -81,11 +82,13 @@ class GenerateWrap(object):
 #                 'MPI_Comm_copy_attr_function': 'CommCopyFunction',
 #                 'MPI_Comm_delete_attr_function': 'CommDeleteFunction'
 
-    def __init__(self, xmlInput, version):
+    def __init__(self, xmlInput, version, yogiVersion="unknown"):
         # Prefix for all the functions to wrap.
         self.prefix = 'Yogi'
         # MPI version to support
         self.mpiVersion = wrap_objects.MPIVersion(version)
+        # YogiMPI version
+        self.yogimpiVersion = yogiVersion
         # Parsed functions to wrap.
         self.functions = []
 
@@ -152,6 +155,7 @@ class GenerateWrap(object):
                 constStr = 'const '
                 if apiType.startswith(constStr):
                     rawType = apiType[len(constStr):]
+                    thisArg.is_const = True
                 else:
                     rawType = apiType
                 thisArg.c_api_type = apiType
@@ -209,6 +213,14 @@ class GenerateWrap(object):
                         thisArg.pre_convert_values.append(val)
                     val.cast_type = conv.attrib.get('cast', None)
                     val.version = conv.attrib.get('version', wrap_objects.MPIVersion('2.0'))
+
+                for codeElement in argElement.findall('Code'):
+                    order = codeElement.attrib.get('order', None)
+                    if order is None:
+                        raise ValueError("Code block in " + thisArg.name +\
+                                         " missing order.")
+                    thisArg.addBlock(codeElement.text, order)
+
                 thisFunction.args.append(thisArg)
             self.functions.append(thisFunction)
 
@@ -464,7 +476,9 @@ class GenerateWrap(object):
         extra_op = source_writers.FortranSource()
         majorVersion = str(self.mpiVersion.major)
         minorVersion = str(self.mpiVersion.minor)
-        set_version.addLines('integer, parameter :: YOG_VERSION = ' +\
+        set_version.addLines('character(*), parameter :: YOGIMPI_VERSION_STR'+\
+                             '= \'' + self.yogimpiVersion + '\'',
+                             'integer, parameter :: YOG_VERSION = ' +\
                              majorVersion,
                              'integer, parameter :: YOG_SUBVERSION = ' +\
                              minorVersion)
@@ -722,7 +736,8 @@ class GenerateWrap(object):
         set_version = source_writers.CSource()
         majorVersion = str(self.mpiVersion.major)
         minorVersion = str(self.mpiVersion.minor)
-        set_version.addLines('#define YogiMPI_VERSION ' + majorVersion,
+        set_version.addLines('#define YogiMPI_VERSION_STR "' + self.yogimpiVersion + '"',
+                             '#define YogiMPI_VERSION ' + majorVersion,
                              '#define YogiMPI_SUBVERSION ' + minorVersion)
         func_protos = source_writers.CSource()
         for aFunc in self.functions:
@@ -771,7 +786,12 @@ class GenerateWrap(object):
                     if anArg.pre_convert_values:
                         self._makeConstantCheck(sourceFile, anArg, before=True)
                         sourceFile.addElse()
-                    if funcType in GenerateWrap.mpiFunctionMap:
+                    elseCode = anArg.getBlock('convertelse')
+                    if elseCode is not None:
+                        for aLine in elseCode:
+                            aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
+                            sourceFile.addLines(aLine)
+                    elif funcType in GenerateWrap.mpiFunctionMap:
                         convFunc = GenerateWrap.manPrefix + 'convert' +\
                                    GenerateWrap.mpiFunctionMap[funcType]
                         sourceFile.addLines(anArg.mpi_name + ' = ' +\
@@ -883,6 +903,10 @@ class GenerateWrap(object):
                 for aLine in bcCode:
                     aLine = aLine.replace('{manPrefix}', GenerateWrap.manPrefix)
                     yogi_functions.addLines(aLine)
+            yogi_functions.addLines(GenerateWrap.manPrefix + 'callDepth++;')
+            for anArg in aFunc.args:
+                if anArg.type == 'MPI_Op':
+                    yogi_functions.addLines(GenerateWrap.manPrefix + 'currentOp = ' + anArg.call_name + ';')
 
             withoutIgnore = self._mpiCallString(aFunc, False)
             if aFunc.status_ignore:
@@ -905,6 +929,7 @@ class GenerateWrap(object):
                 yogi_functions.addLines(withoutIgnore)
 
             # Write a code block marked as "aftercall"
+            yogi_functions.addLines(GenerateWrap.manPrefix + 'callDepth--;')
             afterCode = aFunc.getBlock('aftercall')
             if afterCode is not None:
                 for aLine in afterCode:
@@ -949,7 +974,9 @@ class GenerateWrap(object):
         return False
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print("Usage: python generate_wrap.py --mpiver=<2.1|2.2|3.0> input.xml")
-    else:
-        GenerateWrap(sys.argv[2], sys.argv[1][9:])
+    parser = argparse.ArgumentParser(description='Generate MPI wrappers.')
+    parser.add_argument('inputfile', help='The input xml file')
+    parser.add_argument('--mpiver', required=True, help='MPI version to support (2.1, 2.2, 3.0)')
+    parser.add_argument('--version', required=True, help='The version of YogiMPI')
+    args = parser.parse_args()
+    GenerateWrap(args.inputfile, args.mpiver, args.version)

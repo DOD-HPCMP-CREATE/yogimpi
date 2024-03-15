@@ -108,8 +108,7 @@ class YogiMPIWrapper(object):
         self.rc = 0
 
         # Diagnostic options Yogi directly understands.
-        diagOptions = [ '-h', '-help', '-show', '--help', '--version',
-                        '-compile_info', '-link_info' ]
+        diagOptions = [ '-h', '-help', '-show', '--help', '-compile_info', '-link_info' ]
         # Fortran preprocessing options Yogi directly understands.
         fortranOptions = [ '--yogi-preprocess-only' ]
 
@@ -159,9 +158,13 @@ class YogiMPIWrapper(object):
             retVal = anArg
         return retVal
 
-    def _isSourceType(self, inputFile, language):
+    def _isSourceType(self, inputFile, language, curIndex=0):
+        if curIndex > 0:
+            prevArg = self.argArray[curIndex-1]
+        else:
+            prevArg = None
         for anExt in YogiMPIWrapper.extensions[language]:
-            if inputFile.lower().endswith(anExt):
+            if inputFile.lower().endswith(anExt) and prevArg != '-o':
                 return True
         return False
 
@@ -504,7 +507,7 @@ class YogiMPIWrapper(object):
                 # See if this command is linking, which means we have to add
                 # library flags as well as extra include flags.
                 self.isLinking = False
-            elif self._isSourceType(anOpt, self.compilerLang):
+            elif self._isSourceType(anOpt, self.compilerLang, curIndex=i):
                 # Find the source file to preprocess, if any.
                 self.setFile(anOpt, i)
             elif anOpt == '-o':
