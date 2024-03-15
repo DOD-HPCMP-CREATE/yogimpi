@@ -52,7 +52,7 @@ int Yogi_ResolveErrorCode(int *error) {
 
 YogiMPI_Datatype Yogi_ResolveDatatype(void *input_pointer) {
     MPI_Datatype *to_resolve = reinterpret_cast<MPI_Datatype *>(input_pointer);
-    return YogiManager::getInstance()->datatypeToYogi(*to_resolve);
+    return YogiManager::getInstance()->datatypeToYogiFindOnly(*to_resolve);
 }
 
 YogiMPI_Comm Yogi_ResolveComm(void *input_pointer) {
@@ -72,7 +72,7 @@ YogiMPI_Group Yogi_ResolveFortranGroup(int fortran_group) {
 
 YogiMPI_Offset Yogi_ResolveOffset(void *input_pointer) {
     MPI_Offset *to_resolve = reinterpret_cast<MPI_Offset *>(input_pointer);
-    return YogiManager::getInstance()->aintToYogi(*to_resolve);
+    return YogiManager::getInstance()->offsetToYogi(*to_resolve);
 }
 
 YogiMPI_Win Yogi_ResolveWin(void *input_pointer) {
