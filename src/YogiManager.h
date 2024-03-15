@@ -97,6 +97,8 @@ public:
     void statusToYogi(MPI_Status * &in_mpi, YogiMPI_Status *& out_yogi,
                       int count, bool free_mpi = false);
 
+    YogiMPI_Datatype datatypeToYogiFindOnly(MPI_Datatype in_data);
+
     void freeRequest(MPI_Request * &to_free);
     void freeAint(MPI_Aint * &to_free);
     void freeDatatype(MPI_Datatype * &to_free);
@@ -127,11 +129,12 @@ public:
 protected:
     YogiManager();
 private:
+    template <typename T>
+    int findInPool(std::vector<T> &pool, T newItem, int counter);
+
     template <typename T, typename V>
     int insertIntoPool(std::vector<T> &pool, T newItem, V marker_in, int offset,
                        int &counter);
-    template <typename T, typename V>
-    int insertIntoPoolIfNotFound(std::vector<T> &pool, T newItem, V marker_in, int &counter);
 
     template <typename T, typename V>
     void removeFromPool(std::vector<T> &pool, int index, V marker_in,

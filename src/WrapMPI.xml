@@ -312,7 +312,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
       <Code order="convertelse">
 comm_copy_attr_keep = comm_copy_attr_fn;
 conv_comm_copy_attr_fn = [](MPI_Comm c, int k, void* e, void* i, void* o, int* f) -> int {
-    YogiMPI_Comm revert_comm = {manPrefix}commToYogi(c);
+    YogiMPI_Comm revert_comm = Yogi_ResolveComm(&#038;c);
     k = {manPrefix}commattrToMPI(k);
     auto fn = {manPrefix}copyAttrFn(k);
     return fn(revert_comm, k, e, i, o, f);
@@ -324,7 +324,7 @@ conv_comm_copy_attr_fn = [](MPI_Comm c, int k, void* e, void* i, void* o, int* f
       <Code order="convertelse">
 comm_delete_attr_keep = comm_delete_attr_fn;
 conv_comm_delete_attr_fn = [](MPI_Comm c, int k, void* v, void* e) -> int {
-    YogiMPI_Comm revert_comm = {manPrefix}commToYogi(c);
+    YogiMPI_Comm revert_comm = Yogi_ResolveComm(&#038;c);
     k = {manPrefix}commattrToMPI(k);
     auto fn = {manPrefix}delAttrFn(k);
     return fn(revert_comm, k, v, e);
@@ -1876,7 +1876,7 @@ MPI_Comm_size(manual_conv_comm, &amp;comm_size);
     <Code order="beforecall">
 YogiMPI_User_function* user_fn_keep = user_fn;
 conv_user_fn = [](void* invec, void* inoutvec, int* len, MPI_Datatype* datatype) -> void {
-    YogiMPI_Datatype revert_datatype = {manPrefix}datatypeToYogi(*datatype);
+    YogiMPI_Datatype revert_datatype = Yogi_ResolveDatatype(datatype);
     auto fn = {manPrefix}userFn({manPrefix}currentOp);
     return fn(invec, inoutvec, len, &#38;revert_datatype);
 };

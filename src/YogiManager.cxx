@@ -633,6 +633,13 @@ int YogiManager::rootToMPI(int root) {
     return root;
 }
 
+template <typename T>
+int YogiManager::findInPool(std::vector<T> &pool, T item, int counter) {
+    typename std::vector<T>::iterator it = pool.begin();
+    it = std::find(pool.begin(), pool.begin() + counter, item);
+    return it - pool.begin();
+}
+
 template <typename T, typename V>
 int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker_in,
                                 int offset, int &counter) {
@@ -658,42 +665,6 @@ int YogiManager::insertIntoPool(std::vector<T> &pool, T newItem, V marker_in,
     // After the offset, find first instance of marker, replace with newItem.
     it = pool.begin();
     std::advance(it, offset);
-    if (std::find(it, pool.end(), marker) != pool.end()) {
-        delta = std::distance(pool.begin(), std::find(it, pool.end(), marker));
-        pool.at(delta) = newItem;
-    }
-    else {
-        return -1;
-    }
-    // Bump up the counter and return the index.
-    counter++;
-    return delta;
-}
-
-template <typename T, typename V>
-int YogiManager::insertIntoPoolIfNotFound(std::vector<T> &pool, T newItem, V marker_in, int &counter) {
-
-    /* Cast the marker to the type in the pool */
-    T marker = std::move(static_cast<T>(marker_in));
-
-    /* First see if this already exists as a constant. If it does, just
-       return the equivalent Yogi constant value.
-     */
-    typename std::vector<T>::iterator it = pool.begin();
-    it = std::find(pool.begin(), pool.begin() + counter, newItem);
-    if (it != pool.begin() + counter) {
-        return it - pool.begin();
-    }
-    int delta;
-
-    /* Then see if the current counter exceeds the size of the vector.
-       If it does, double it. */
-    if (counter >= pool.capacity() - 1) {
-        pool.resize(pool.capacity() * 2, marker);
-    }
-    // After the counter, find first instance of marker, replace with newItem.
-    it = pool.begin();
-    std::advance(it, counter);
     if (std::find(it, pool.end(), marker) != pool.end()) {
         delta = std::distance(pool.begin(), std::find(it, pool.end(), marker));
         pool.at(delta) = newItem;
@@ -877,7 +848,7 @@ YogiMPI_Message YogiManager::messageToYogi(MPI_Message in_message) {
 #endif
 
 YogiMPI_Datatype YogiManager::datatypeToYogi(MPI_Datatype in_data) {
-    return insertIntoPoolIfNotFound(datatypePool, in_data, MPI_DATATYPE_NULL, numDatatypes);
+    return insertIntoPool(datatypePool, in_data, MPI_DATATYPE_NULL, datatypeOffset, numDatatypes);
 }
 
 YogiMPI_Errhandler YogiManager::errhandlerToYogi(MPI_Errhandler in_errhandler) {
@@ -994,6 +965,10 @@ void YogiManager::statusToYogi(MPI_Status * &in_mpi, YogiMPI_Status *& out_yogi,
         out_yogi[i] = statusToYogi(in_mpi[i]);
     }
     if (free_mpi) freeStatus(in_mpi);
+}
+
+YogiMPI_Datatype YogiManager::datatypeToYogiFindOnly(MPI_Datatype in_data) {
+    return findInPool(datatypePool, in_data, numDatatypes);
 }
 
 // Removing Yogi handles
