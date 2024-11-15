@@ -115,8 +115,8 @@ if [[ ! -z $YFAMILY ]]; then
         cCompiler=icc
         cxxCompiler=icpc
         fortranCompiler=ifort
-        cFlags="-diag-disable=10441 -wd1786"
-        cxxFlags="-diag-disable=10441 -wd1786"
+        cFlags="-diag-disable=10441"
+        cxxFlags="-diag-disable=10441"
     elif [[ $YFAMILY == "gnu" ]]; then
         echo "Using GNU compiler family defaults for Yogi."
         cCompiler=gcc

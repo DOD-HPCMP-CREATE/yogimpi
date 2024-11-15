@@ -170,8 +170,8 @@ class YogiMPIWrapper(object):
 
     def _showCompilerString(self):
         self.compString = self.compilerName
-        self.compString += ' -I' + self.prefixDir + '/include -DYOGIMPI_ENABLED'
-        self.compString += ' -L' + self.prefixDir + '/lib -lyogimpi'
+        self.compString += ' -I"' + self.prefixDir + '/include" -DYOGIMPI_ENABLED'
+        self.compString += ' -L"' + self.prefixDir + '/lib" -lyogimpi'
         print(self.compString)
 
     def _outputMsg(self, message):
@@ -272,11 +272,11 @@ class YogiMPIWrapper(object):
                     objectName = self._stripExtension(self.sourceFile) + '.o'
                     self.argArray.append('-o ' + objectName)
             # Lovingly add Yogi's include directories to the mix.
-            self.argArray.insert(self.sourceArgLocation, '-I' +\
-                                 self.prefixDir + '/include -DYOGIMPI_ENABLED')
+            self.argArray.insert(self.sourceArgLocation, '-I"' +\
+                                 self.prefixDir + '/include" -DYOGIMPI_ENABLED')
         if self.isLinking:
             # Linking is happening, so add Yogi's libdir and library flags.
-            self.argArray.append('-L' + self.prefixDir + '/lib -lyogimpi')
+            self.argArray.append('-L"' + self.prefixDir + '/lib" -lyogimpi')
 
     ## Return the entire command-line argument string. This string includes
     #  any changes Yogi has made (so-far) to pass down instructions to the
