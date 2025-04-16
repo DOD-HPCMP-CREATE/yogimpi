@@ -1057,7 +1057,7 @@ if (comm_delete_attr_keep) {manPrefix}delAttrFn(*comm_keyval, comm_delete_attr_k
   </Function>
   <Function name="MPI_Get_address">
     <ReturnType>int</ReturnType>
-    <Arg input="true" name="location" type="void*"/>
+    <Arg input="true" name="location" type="const void*"/>
     <Arg name="address" output="true" type="MPI_Aint*"/>
   </Function>
   <Function name="MPI_Get_count">
