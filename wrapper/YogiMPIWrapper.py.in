@@ -40,7 +40,7 @@ class YogiMPIWrapper(object):
     # The regular expression to find instances of use mpi in a Fortran file.
     # This is a newer Fortran 90 style that deprecates the "include 'mpif.h'"
     # We look for both.
-    useMPIRegEx = re.compile(r"([\s]*)use[\s]+mpi([\s]*)", re.IGNORECASE)
+    useMPIRegEx = re.compile(r"([\s]*)use[\s]+mpi([\s,])", re.IGNORECASE)
     # Regular expression to find instances of command line preprocessor
     # definitions which have quoted values.
 
