@@ -308,6 +308,10 @@ typedef int YogiMPI_Message;
 #define YogiMPI_UINT32_T 55
 #define YogiMPI_UINT64_T 56
 
+#if YogiMPI_VERSION == 3
+#define YogiMPI_COUNT 57
+#endif
+
 /* reserved communicators (C and Fortran) */
 #define YogiMPI_COMM_WORLD 1
 #define YogiMPI_COMM_SELF 2

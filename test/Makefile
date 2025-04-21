@@ -25,7 +25,7 @@ endif
 
 c2tests: simple createOp errorHandler nonBlocking probe testAll writeFile1 \
          waitany collective sendrecv testComms nonblock_waitall waitsome \
-         testAttr testInfo testFileModes
+         testAttr testInfo testFileModes types
 
 c3tests: mprobe
 
@@ -83,6 +83,9 @@ waitsome: waitsome.c
 testAttr: testAttr.c
 	$(YCC) $(CFLAGS) $(DEBUGFLAGS) testAttr.c -o testAttr
 
+types: types.c
+	$(YCC) $(CFLAGS) $(DEBUGFLAGS) types.c -o types
+
 runc3tests: c3tests
 	./testRunner.sh 2 ./mprobe
 
@@ -104,6 +107,7 @@ runc2tests: c2tests
 	./testRunner.sh 4 ./testAttr
 	./testRunner.sh 4 ./testInfo
 	./testRunner.sh 2 ./testFileModes
+	./testRunner.sh 4 ./types
 
 runftests: ftests
 	./testRunner.sh 2 ./fsimple
@@ -154,7 +158,7 @@ ftests: fwriteFile1 fsendrecv fcollective ftestComms f_gatherscatter \
 clean:
 	$(RM) *.o nonBlocking sendrecv fsendrecv simple testCancelled \
               writeFile1 fwriteFile1 f_gatherscatter fnonblock \
-              nonblock_waitall testComms fsimple testInfo \
+              nonblock_waitall testComms fsimple testInfo types \
               ftestComms probe mprobe collective fcollective fwtick \
               waitsome waitany fwaitsome createOp errorHandler testAll \
               cWriteFile.result fWriteFile.result testAttr ftestInfo \
